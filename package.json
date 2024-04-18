@@ -17,9 +17,10 @@
   "scripts": {
     "dev": "vite -c config/vite.config.js",
     "build": "vite build -c config/vite.config.js",
-    "preview": "vite preview -c config/vite.config.js",
-    "preview:dev": "npm run preview -- -m dev",
-    "deploy:dev": "npm run build -- -m dev && netlify deploy --alias dev",
+    "_preview": "vite preview -c config/vite.config.js",
+    "preview": "npm run build && npm run _preview",
+    "preview:dev": "npm run build -- -m development && npm run _preview -- -m development",
+    "deploy:dev": "npm run build -- -m development && netlify deploy --alias dev",
     "deploy:prod": "npm run build && netlify deploy --prod",
     "clear": "rm -rf node_modules && rm -rf .cache"
   },

@@ -35,6 +35,7 @@ createApp({
 	plugins: [],
 	preload: async () => {},
 	init: async () => {
+		console.log(__DEBUG__);
 		addRouteGuard()
 	}
 });
