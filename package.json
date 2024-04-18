@@ -1,0 +1,43 @@
+{
+  "name": "echoes-of-memories",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "description": "",
+  "author": "Dakumisu",
+  "license": "ISC",
+  "imports": {
+    "#app/*": "./app/*",
+    "#webgl/*": "./webgl/*",
+    "#utils/*": "./utils/*",
+    "#assets/*": "./assets/*",
+    "#config/*": "./config/*",
+    "#/*": "./*"
+  },
+  "scripts": {
+    "dev": "vite -c config/vite.config.js",
+    "build": "vite build -c config/vite.config.js",
+    "preview": "vite preview -c config/vite.config.js",
+    "preview:dev": "npm run preview -- -m dev",
+    "deploy:dev": "npm run build -- -m dev && netlify deploy --alias dev",
+    "deploy:prod": "npm run build && netlify deploy --prod",
+    "clear": "rm -rf node_modules && rm -rf .cache"
+  },
+  "dependencies": {
+    "@rollup/pluginutils": "^5.0.2",
+    "@vitejs/plugin-vue": "^4.0.0",
+    "netlify-cli": "^16.9.3",
+    "sass": "^1.57.1",
+    "three": "^0.163.0",
+    "vite": "^4.0.4",
+    "vue": "^3.2.45",
+    "vue-router": "^4.1.6"
+  },
+  "devDependencies": {
+    "@tweakpane/plugin-essentials": "^0.2.1",
+    "tweakpane": "^4.0.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

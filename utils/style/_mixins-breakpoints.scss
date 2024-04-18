@@ -1,0 +1,64 @@
+// WIDTH MIXINS
+@mixin below($max) {
+	@media (max-width: #{ $max - 1px }) {
+		@content;
+	}
+}
+
+@mixin between($min, $max) {
+	@media (min-width: #{ $min }) and (max-width: #{ $max - 1px }) {
+		@content;
+	}
+}
+
+@mixin above($min) {
+	@media (min-width: #{ $min }) {
+		@content;
+	}
+}
+
+// HEIGHT MIXINS
+@mixin below-height($max) {
+	@media (max-height: #{ $max - 1px }) {
+		@content;
+	}
+}
+
+@mixin between-height($min, $max) {
+	@media (min-height: #{ $min }) and (max-height: #{ $max - 1px }) {
+		@content;
+	}
+}
+
+@mixin above-height($min) {
+	@media (min-height: #{ $min }) {
+		@content;
+	}
+}
+
+// HEIGHT + WIDTH MIXINS
+@mixin below-size($maxW, $maxH) {
+	@media (max-width: #{ $maxW - 1px }) and (max-height: #{ $maxH - 1px }) {
+		@content;
+	}
+}
+
+@mixin above-size($minW, $minH) {
+	@media (min-width: #{ $minW }) and (min-height: #{ $minH }) {
+		@content;
+	}
+}
+
+@mixin debug-breakpoints($debug, $breakpoints) {
+	@if $debug {
+		$str: '';
+
+		@each $name, $value in $breakpoints {
+			$str: $str + '|#{$name}=#{$value}';
+		}
+
+		:root {
+			--project-debug-breakpoints: #{$str};
+		}
+	}
+}

@@ -1,0 +1,75 @@
+@use "sass:map";
+
+// Put default easing in another file for better maintainability
+@use "./easings";
+
+@function _superget($type, $key, $obj, $defs) {
+	@if map.has-key($obj, $key) {
+		@return map.get($obj, $key);
+	} @else if map.has-key($defs, $key) {
+		@return map.get($defs, $key);
+	} @else {
+		@error "#{$type} #{$key} wasn\"t found";
+	}
+}
+
+// -------------- Z-INDEXES ---------------
+$_z-indexes: () !default;
+$_def-z-indexes: (
+	app: 1,
+	webgl: 0
+);
+
+@function z($key) {
+	@return _superget("Z-Index", $key, $_z-indexes, $_def-z-indexes);
+}
+
+// --------------- COLORS -----------------
+$_colors: () !default;
+$_def-colors: (
+	black: #000,
+	white: #fff
+);
+
+@function color($key) {
+	@return _superget("Color", $key, $_colors, $_def-colors);
+}
+
+// -------------- EASINGS -----------------
+$_easings: () !default;
+
+@function easing($key) {
+	@return _superget("Easing", $key, $_easings, easings.$easings);
+}
+
+@function ease($key) {
+	@return _superget("Easing", $key, $_easings, easings.$easings);
+}
+
+// -------- CONSTANT VARIABLES ------------
+$_constants: () !default;
+$_def-constants: ();
+
+@function const($key) {
+	@return _superget("Constant", $key, $_constants, $_def-constants);
+}
+
+// ------------ BREAKPOINTS ---------------
+$_bp-width: () !default;
+$_bp-height: () !default;
+$_def-bp-width: ();
+$_def-bp-height: ();
+
+@function breakpoint-width($key) {
+	@return _superget("Breakpoint Width", $key, $_bp-width, $_def-bp-width);
+}
+
+@function breakpoint-height($key) {
+	@return _superget("Breakpoint Height", $key, $_bp-height, $_def-bp-height);
+}
+
+@function bp($key) { @return breakpoint-width($key); }
+
+@function bpw($key) { @return breakpoint-width($key); }
+
+@function bph($key) { @return breakpoint-height($key); }

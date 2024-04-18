@@ -1,0 +1,19 @@
+@mixin truncate($lines: 2) {
+	display: -webkit-box;
+	-webkit-line-clamp: $lines;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+@function glow($value) {
+	@return
+		-1px -1px 0      #fff,
+		0    -1px 0      #fff,
+		1px  -1px 0      #fff,
+		1px  0    0      #fff,
+		1px  1px  0      #fff,
+		0    1px  0      #fff,
+		-1px 1px  0      #fff,
+		-1px 0    0      #fff,
+		0    0    $value #fff;
+}

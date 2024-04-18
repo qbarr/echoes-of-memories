@@ -1,0 +1,36 @@
+{
+  "compileOnSave": false,
+  "exclude": [
+    "dist",
+    ".cache",
+    "node_modules",
+    "@vue/reactivity",
+    "@vue/runtime-core"
+  ],
+  "include": [
+    "config/**/*",
+    "app/**/*",
+    "assets/**/*",
+    "utils/**/*",
+    "webgl/**/*",
+    "public/**/*"
+  ],
+  "compilerOptions": {
+    "jsx": "preserve",
+    "checkJs": false,
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": false,
+    "baseUrl": ".",
+    "paths": {
+      "#webgl/*": [ "./webgl/*" ],
+      "#app/*": [ "./app/*" ],
+      "#utils/*": [ "./utils/*" ],
+      "#assets/*": [ "./assets/*" ],
+      "#public/*": [ "./public/*" ],
+      "#config/*": [ "./config/*" ]
+    }
+  }
+}
