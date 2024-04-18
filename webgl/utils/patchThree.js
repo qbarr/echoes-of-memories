@@ -55,6 +55,18 @@ function addDamp() {
 		return this;
 	};
 
+	Vector4.prototype.damp = function damp(v, lambda, dt) {
+		return this.lerp(v, 1 - Math.exp(-lambda * 0.05 * dt));
+	}
+
+	Vector4.prototype.dampVectors = function dampVectors(v1, v2, lambda, dt) {
+		this.x = MathUtils.lerp(v1.x, v2.x, 1 - Math.exp(-lambda * 0.05 * dt));
+		this.y = MathUtils.lerp(v1.y, v2.y, 1 - Math.exp(-lambda * 0.05 * dt));
+		this.z = MathUtils.lerp(v1.z, v2.z, 1 - Math.exp(-lambda * 0.05 * dt));
+		this.w = MathUtils.lerp(v1.w, v2.w, 1 - Math.exp(-lambda * 0.05 * dt));
+		return this;
+	}
+
 	Quaternion.prototype.sdamp = function sdamp(q, lambda, dt) {
 		return this.slerp(q, 1 - Math.exp(-lambda * 0.05 * dt));
 	};

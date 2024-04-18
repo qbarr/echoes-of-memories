@@ -25,19 +25,18 @@ if (typeof __DEBUG__ !== 'undefined' && __DEBUG__) {
 		style += 'border-radius: 4px;padding: 1px 6px 0;';
 		pre.push(style);
 		pre.push(prefix);
+		pre.push('\n');
 
 		return {
-		info: console.debug.bind(console, ...pre), // eslint-disable-line
-		debug: console.debug.bind(console, ...pre), // eslint-disable-line
-		log: console.log.bind(console, ...pre), // eslint-disable-line
+			info: console.debug.bind(console, ...pre), // eslint-disable-line
+			debug: console.debug.bind(console, ...pre), // eslint-disable-line
+			log: console.log.bind(console, ...pre), // eslint-disable-line
 			warn: console.warn.bind(console, ...pre),
 			error: console.error.bind(console, ...pre)
 		};
 	};
 } else {
-	logger = function logger() {
-		return noopObj;
-	};
+	logger = function logger() { return noopObj };
 }
 
 const createLogger = logger;
