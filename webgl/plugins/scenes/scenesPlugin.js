@@ -53,10 +53,16 @@ export function scenesPlugin(webgl) {
 			curScene.isActive = false;
 			curScene.needsUpdate = false;
 			curScene.needsRender = false;
+
+			// __DEBUG__ && curScene.component.unregisterDebugCamera();
+			curScene.component.detach();
 		}
 
 		current.set(scene);
 		const nextScene = current.value;
+
+		// __DEBUG__ && nextScene.component.registerDebugCamera();
+		nextScene.component.attach();
 
 		await nextScene.enter();
 		nextScene.isActive = true;

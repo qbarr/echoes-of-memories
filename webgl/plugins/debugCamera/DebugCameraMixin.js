@@ -29,6 +29,18 @@ export default class DebugCameraMixin extends BaseMixin {
 		if (!el.isScene) return;
 		el.unregisterDebugCamera();
 	}
+
+	componentAttached() {
+		const el = this.base;
+		if (!el.isScene) return;
+		el.registerDebugCamera({ scene: el });
+	}
+
+	componentDetached() {
+		const el = this.base;
+		if (!el.isScene) return;
+		el.unregisterDebugCamera();
+	}
 }
 
 function registerDebugCamera(data) {
