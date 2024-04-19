@@ -100,8 +100,8 @@ function addRoutesToGui(app) {
 
 	gui.addBlade({
 		view: 'buttongrid',
-		size: [CELLS_PER_ROW, rows],
-		cells: (x, y) => cells[y * CELLS_PER_ROW + x],
+		size: [ CELLS_PER_ROW, rows ],
+		cells: (x, y) => cells[ y * CELLS_PER_ROW + x ],
 		label: 'Routes',
 	}).on('click', ({ index }) => {
 		const { path } = cells[index[1] * CELLS_PER_ROW + index[0]]

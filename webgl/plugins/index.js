@@ -14,9 +14,9 @@ export const plugins = [
 	__DEBUG__ && debugPlugin,
 	fboPlugin,
 	qualityPlugin,
+	viewportPlugin,
 	rendererPlugin,
 	timePlugin,
-	viewportPlugin,
 	__DEBUG__ && debugCameraPlugin,
 
 	/* PROJECT PLUGINS */

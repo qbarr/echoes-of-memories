@@ -1,6 +1,7 @@
 import { clamp, median } from '#utils/maths';
 import { w } from '#utils/state';
 
+
 export function qualityPlugin(webgl) {
 	const LS_KEY = 'webgl-quality';
 	const RESTART_DELAY = 300;
@@ -41,10 +42,7 @@ export function qualityPlugin(webgl) {
 	const fpsAverage = w(60);
 	const quality = w(1);
 
-	webgl.$hooks.afterSetup.watchOnce(init);
-	webgl.$hooks.beforeStart.watchOnce(start);
-
-	const api = webgl.$quality = {
+	const api = {
 		get pingPongScore() { return pingPongScore },
 		get bigPingPongScore() { return bigPingPongScore },
 		fps,
@@ -255,5 +253,14 @@ export function qualityPlugin(webgl) {
 		fpsAverage.set(newAverage);
 	}
 
-	return api;
+	return {
+		install: () => {
+			webgl.$quality = api;
+		},
+		load: () => {
+			const { afterSetup, beforeStart } = webgl.$hooks;
+			afterSetup.watchOnce(init);
+			beforeStart.watchOnce(start);
+		}
+	}
 }

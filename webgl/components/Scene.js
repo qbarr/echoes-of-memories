@@ -6,7 +6,7 @@ import BaseScene from '#webgl/core/BaseScene';
 
 
 export default class Scene extends BaseScene {
-	mixins = [ 'debugCamera']
+	mixins = [ 'debugCamera' ]
 
 	init() {
 		this.camera = this.add(BaseCamera);

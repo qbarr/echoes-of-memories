@@ -36,12 +36,6 @@ export function createApp(options = {}) {
 
 	// Start app lifecycle once DOM is ready
 	onDOMReady(async () => {
-		// // Load preview
-		// /// #if typeof __DEBUG__ !== 'undefined' && __DEBUG__ && typeof __CMS_CAN_PREVIEW__ !== 'undefined' && __CMS_CAN_PREVIEW__
-		// const preview = await import('virtual:vitevue/cms/preview.js');
-		// await preview.default({ appInstance });
-		// /// #endif
-
 		// Before plugin load
 		if (options.beforePluginsInstall) await options.beforePluginsInstall();
 
@@ -89,20 +83,19 @@ export function createApp(options = {}) {
 		// Mount app
 		if (options.init) await t(options.init(appInstance));
 
-		if (plugins.$preloader && options.beforePreloaderExit) {
+		if (plugins.$preloader && options.beforePreloaderExit)
 			plugins.$preloader.beforeExit(options.beforePreloaderExit);
-		}
 
 		appInstance.$onBeforeMount(async () => {
 			if (options.beforeMount) await t(options.beforeMount(appInstance));
 		});
+
 		appInstance.$onAfterMount(async () => {
 			if (options.afterMount) await t(options.afterMount(appInstance));
 		});
 
-		if (options.mountTo !== false) {
+		if (options.mountTo !== false)
 			appInstance.mount(options.mountTo ?? '#app');
-		}
 
 		// Free plugin hooks from memory
 		pluginBeforeLoads.length = 0;

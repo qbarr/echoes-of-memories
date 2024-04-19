@@ -3,7 +3,7 @@ import { ShaderChunk } from 'three';
 import { createLogger } from '#utils/debug';
 import { idsFromGlob } from '#utils/misc';
 import { patchThree } from '#webgl/utils/patchThree.js';
-import { hooksPlugin } from '#webgl/plugins/hooks/hooksPlugin.js';
+import { createHooks } from '#webgl/utils/createHooks';
 
 const chunks = idsFromGlob(
 	import.meta.glob('../shaders/chunks/*.glsl', { eager: true })
@@ -62,7 +62,7 @@ export function initializeWebgl({
 	Object.assign(api, config.methods ?? {}, config.data ?? {});
 
 	// Add hooks support (mandatory plugin)
-	hooksPlugin(api);
+	createHooks(api);
 
 	// Initialize some global things into three.js
 	// Register shader chunks
@@ -104,12 +104,23 @@ export function initializeWebgl({
 	function installPlugins() {
 		plugins = plugins.filter(Boolean);
 		api.usePlugin = usePlugin;
-		for (const plugin of plugins) {
+
+		// Call each plugin + install
+		for (let i = 0; i < plugins.length; i++) {
+			const plugin = plugins[ i ];
 			const isArr = Array.isArray(plugin);
 			const plug = isArr ? plugin[ 0 ] : plugin;
 			const opts = isArr ? plugin[ 1 ] : {};
-			usePlugin(plug, opts);
+			const p = usePlugin(plug, opts);
+			plugins[ i ] = [p, opts]
 		}
+
+		// Call each load method
+		for (let i = 0; i < plugins.length; i++) {
+			const [load, opts] = plugins[ i ];
+			load?.call(api, api, opts);
+		}
+
 		plugins = [];
 	}
 
@@ -130,7 +141,10 @@ export function initializeWebgl({
 	function usePlugin(plugin, opts = {}) {
 		const helpers = { log: NOOP };
 		opts = Object.assign({}, helpers, opts);
-		if (plugin.install) return plugin.install.call(api, api, opts);
-		if (typeof plugin === 'function') return plugin.call(api, api, opts);
+		const p = plugin.call(api, api, opts);
+		const install = p?.install ?? p;
+		install.call(api, api, opts);
+		const load = p?.load ?? NOOP;
+		return load
 	}
 }

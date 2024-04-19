@@ -4,7 +4,7 @@ import { capitalize } from '#utils/str';
 
 const NOOP = a => a;
 
-export function hooksPlugin(o) {
+export function createHooks(o) {
 	const hooks = {};
 
 	o.$hooks = hooks;
@@ -50,13 +50,5 @@ export function hooksPlugin(o) {
 			beforeAction = afterAction = null;
 			hooks[ name ] = NOOP;
 		}
-	}
-
-	return {
-		install: (webgl) => {
-			// webgl.$hooks = hooks;
-			// webgl.$createHook = createHook;
-		},
-		load: () => {}
 	}
 }

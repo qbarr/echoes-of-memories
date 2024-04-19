@@ -17,13 +17,17 @@ Object3D.prototype.updateMatrixWorld = function (force) {
 	updateMatrixTemp.call(this, force);
 };
 
+
 export function debugPlugin(webgl) {
 	if (!webgl.$app.$gui) return;
 
 	// const { $hooks, $app } = webgl;
 
 	// Add gui
-	const api = webgl.$gui = {};
+	const api = {
+		$debug : {}
+	};
+
 	api.debugStats = {
 		gpu: w('---'),
 		cpu: w('---')
@@ -32,11 +36,11 @@ export function debugPlugin(webgl) {
 	const gui = webgl.$app.$gui;
 	const page = gui.webglPage || gui;
 
-	webgl.$debug = api.$debug || {};
-	webgl.$debug.storage = webgl.$app.$debug.storage;
+	api.$debug.storage = webgl.$app.$debug.storage;
+
 
 	gui.methods.forEach(k => {
-		if (k in page) webgl.$gui[ k ] = page[ k ].bind(page);
+		if (k in page) api[ k ] = page[ k ].bind(page);
 	});
 
 	const fstats = api.addFolder({ title: 'Stats' });
@@ -57,78 +61,7 @@ export function debugPlugin(webgl) {
 	};
 
 	let timerQuery;
-	webgl.$hooks.afterSetup.watchOnce(() => {
-		// Prepare webgl2 timer query (taken from picogl)
-		const exts = webgl.$threeRenderer.extensions;
-		const gl = webgl.$threeRenderer.getContext();
-		const hasTimerQuery = exts.has('EXT_disjoint_timer_query_webgl2');
-		timerQuery = hasTimerQuery && new Query(gl, TIME_ELAPSED_EXT);
-		if (!timerQuery) delete api.debugStats.gpu;
 
-		const viewOverlay = storageSync(
-			'overlay-stats-visible',
-			w(true),
-			{ storage: webgl.$debug.storage }
-		);
-
-		fstats.addBinding({ viewOverlay }, 'viewOverlay', { label: 'Show overlay' });
-
-		for (const k in stats) {
-			const opts = { interval: 30, readonly: true };
-			if (k !== 'fps') opts.format = v => Math.floor(v);
-			if (k === 'cpu') {
-				opts.label = 'cpu time';
-				opts.format = v => v.toFixed(2) + 'ms';
-			} else if (k === 'gpu') {
-				opts.label = 'gpu time';
-				opts.format = v => v.toFixed(2) + 'ms';
-			} else if (k === 'textureMemory' || k === 'geometryMemory') {
-				opts.format = v => ~~v + 'mb';
-			}
-
-			stats[ '_' + k ] = fstats.addBinding(stats, k, opts);
-		}
-
-		if (!hasTimerQuery) stats._gpu.dispose();
-
-		if (typeof window.debugWebglSpriteCount !== 'undefined') {
-			fstats.addBinding(window, 'debugWebglSpriteCount', {
-				format: v => Math.floor(v),
-				label: 'sprites',
-				readonly: true
-			});
-		}
-		if (typeof window.debugSignalCount !== 'undefined') {
-			fstats.addBinding(window, 'debugSignalCount', {
-				format: v => Math.floor(v),
-				label: 'signals',
-				readonly: true
-			});
-		}
-		if (typeof window.debugWebglComponentCount !== 'undefined') {
-			fstats.addBinding(window, 'debugWebglComponentCount', {
-				format: v => Math.floor(v),
-				label: 'components',
-				readonly: true
-			});
-		}
-
-		const statsOverlay = createStatsOverlay();
-		viewOverlay.watchImmediate(v => {
-			if (v) statsOverlay.show();
-			else statsOverlay.hide();
-		});
-	});
-
-	webgl.$hooks.beforeFrame.watch(startFrame);
-
-	webgl.$hooks.afterFrame.watch(() => {
-		endFrame();
-		updateFps();
-
-		// updateUnclampedFps();
-		updateThreeProps();
-	});
 
 	let cpuTime = 0;
 	const cpuValues = new Array(6).fill(1);
@@ -248,7 +181,86 @@ export function debugPlugin(webgl) {
 	}
 
 	return {
-		install: () => {},
-		load: () => {}
+		install: () => {
+			webgl.$gui = api
+			webgl.$debug = api;
+		},
+		load: () => {
+			const { $hooks, $debug } = webgl;
+			const { afterSetup, beforeFrame, afterFrame } = $hooks;
+
+			afterSetup.watchOnce(() => {
+				// Prepare webgl2 timer query (taken from picogl)
+				const exts = webgl.$threeRenderer.extensions;
+				const gl = webgl.$threeRenderer.getContext();
+				const hasTimerQuery = exts.has('EXT_disjoint_timer_query_webgl2');
+				timerQuery = hasTimerQuery && new Query(gl, TIME_ELAPSED_EXT);
+				if (!timerQuery) delete api.debugStats.gpu;
+
+				const viewOverlay = storageSync(
+					'overlay-stats-visible',
+					w(true),
+					{ storage: $debug.storage }
+				);
+
+				fstats.addBinding({ viewOverlay }, 'viewOverlay', { label: 'Show overlay' });
+
+				for (const k in stats) {
+					const opts = { interval: 30, readonly: true };
+					if (k !== 'fps') opts.format = v => Math.floor(v);
+					if (k === 'cpu') {
+						opts.label = 'cpu time';
+						opts.format = v => v.toFixed(2) + 'ms';
+					} else if (k === 'gpu') {
+						opts.label = 'gpu time';
+						opts.format = v => v.toFixed(2) + 'ms';
+					} else if (k === 'textureMemory' || k === 'geometryMemory') {
+						opts.format = v => ~~v + 'mb';
+					}
+
+					stats[ '_' + k ] = fstats.addBinding(stats, k, opts);
+				}
+
+				if (!hasTimerQuery) stats._gpu.dispose();
+
+				if (typeof window.debugWebglSpriteCount !== 'undefined') {
+					fstats.addBinding(window, 'debugWebglSpriteCount', {
+						format: v => Math.floor(v),
+						label: 'sprites',
+						readonly: true
+					});
+				}
+				if (typeof window.debugSignalCount !== 'undefined') {
+					fstats.addBinding(window, 'debugSignalCount', {
+						format: v => Math.floor(v),
+						label: 'signals',
+						readonly: true
+					});
+				}
+				if (typeof window.debugWebglComponentCount !== 'undefined') {
+					fstats.addBinding(window, 'debugWebglComponentCount', {
+						format: v => Math.floor(v),
+						label: 'components',
+						readonly: true
+					});
+				}
+
+				const statsOverlay = createStatsOverlay();
+				viewOverlay.watchImmediate(v => {
+					if (v) statsOverlay.show();
+					else statsOverlay.hide();
+				});
+			});
+
+			beforeFrame.watch(startFrame);
+
+			afterFrame.watch(() => {
+				endFrame();
+				updateFps();
+
+				// updateUnclampedFps();
+				updateThreeProps();
+			});
+		}
 	}
 }

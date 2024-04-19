@@ -6,17 +6,12 @@ import { raf } from '#utils/raf';
 
 const MAXFRAME = Number.MAX_SAFE_INTEGER;
 
-const stableIntervals = [
-	30,
-	60,
-	120,
-	144,
-	240
-].map(target => {
-	const delta = 0.75;
-	target = 1000 / target;
-	return [ target + delta, target, target - delta ];
-});
+const stableIntervals = [ 30, 60, 120, 144, 240 ]
+	.map(target => {
+		const delta = 0.75;
+		target = 1000 / target;
+		return [ target + delta, target, target - delta ];
+	});
 
 export function timePlugin(webgl) {
 	const averageDt = createMovingAverage(20);
@@ -34,15 +29,8 @@ export function timePlugin(webgl) {
 	// Used by the quality plugin
 	const qualityDt = createMovingAverage(6);
 
-	webgl.$hooks.afterSetup.watchOnce(() => {
-		webgl.$viewport && webgl.$viewport.visible.watch(() => needsReset = true);
-	});
 
-	webgl.$hooks.afterFrame.watchOnce(() => {
-		needsReset = true;
-	});
-
-	const api = webgl.$time = {
+	const api = {
 		dt: 0, // Raw, pure delta time
 
 		qualityDt: 0, //(only used to measure quality)
@@ -162,5 +150,21 @@ export function timePlugin(webgl) {
 		if (!api.isStarted) return;
 		if (!api.isPaused) api.playingElapsed += dt;
 		webgl.$hooks.frame();
+	}
+
+	return {
+		install: () => {
+			webgl.$time = api;
+		},
+		load: () => {
+			const { $viewport, $hooks } = webgl;
+			const { afterSetup, afterFrame } = $hooks;
+
+			afterSetup.watchOnce(() => {
+				$viewport && $viewport.visible.watch(() => needsReset = true);
+			});
+
+			afterFrame.watchOnce(() => needsReset = true);
+		}
 	}
 }

@@ -1,8 +1,9 @@
-import { watch, watchSyncEffect } from 'vue';
 import { Vector2 } from 'three';
+import { watch, watchSyncEffect } from 'vue';
 
-import { s, w, holdEmits, releaseEmits } from '#utils/state';
 import { debounce } from '#utils/async';
+import { holdEmits, releaseEmits, s, w } from '#utils/state';
+
 
 export function viewportPlugin(webgl, opts = {}) {
 	const vp = webgl.$app.$viewport;
@@ -15,7 +16,11 @@ export function viewportPlugin(webgl, opts = {}) {
 	const ddelay = (opts.debounceDelay ?? 150);
 	let debouncedUpdate = ddelay <= 0 ? update : debounce(update, ddelay);
 
-	webgl.$viewport = {
+	let newWidth = 0;
+	let newHeight = 0;
+	let newPixelRatio = 0;
+
+	const api = {
 		size,
 		visible,
 		ratio,
@@ -31,22 +36,11 @@ export function viewportPlugin(webgl, opts = {}) {
 		},
 	};
 
-	let newWidth = 0;
-	let newHeight = 0;
-	let newPixelRatio = 0;
-
-	watch(vp, () => {
-		if (webgl.$viewport.useManualResize) return;
-		resize(vp.width, vp.height);
-	}, { immediate: true });
-
-	watchSyncEffect(() => {
-		visible.set(vp.visible);
-	});
-
 	function resize() {
-		webgl.$canvas.style.width = vp.width + 'px';
-		webgl.$canvas.style.height = vp.height + 'px';
+		Object.assign(webgl.$canvas.style, {
+			width: vp.width + 'px',
+			height: vp.height + 'px',
+		});
 		debouncedUpdate();
 	}
 
@@ -56,10 +50,6 @@ export function viewportPlugin(webgl, opts = {}) {
 		newPixelRatio = vp.pixelRatio;
 	}
 
-	// Force viewport metrics to update BEFORE rendering
-	webgl.$hooks.afterStart.watchOnce(resize);
-	webgl.$hooks.beforeFrame.watch(frame);
-
 	function frame() {
 		const sizeVec = size.value;
 		const sizeChanged = sizeVec.x !== newWidth || sizeVec.y !== newHeight;
@@ -68,15 +58,39 @@ export function viewportPlugin(webgl, opts = {}) {
 		if (!sizeChanged && !pixelRatioChanged) return;
 
 		holdEmits();
+
 		if (sizeChanged) {
 			sizeVec.set(newWidth, newHeight);
 			size.set(sizeVec, true);
 			ratio.set(sizeVec.x / sizeVec.y);
 		}
+
 		if (pixelRatioChanged) {
 			pixelRatio.set(newPixelRatio);
 		}
+
 		changed.emit();
 		releaseEmits();
+	}
+
+	return {
+		install: (webgl) => {
+			webgl.$viewport = api;
+
+			const { afterStart, beforeFrame } = webgl.$hooks;
+			afterStart.watchOnce(resize);
+			beforeFrame.watch(frame);
+		},
+		load: () => {
+			watch(vp,
+				() => {
+					if (api.useManualResize) return;
+					resize(vp.width, vp.height);
+				},
+				{ immediate: true }
+			);
+
+			watchSyncEffect(() => visible.set(vp.visible));
+		}
 	}
 }

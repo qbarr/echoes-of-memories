@@ -5,6 +5,7 @@ import createFilter from '../../utils/createFilter';
 
 import { Vector2, Vector4 } from 'three';
 
+
 /// #if __DEBUG__
 const fs = /* glsl */`
 precision highp float;
@@ -28,7 +29,6 @@ const noop = () => {};
 export function fboPlugin(webgl) {
 	const api = { createBuffer, registerBuffer: noop, unregisterBuffer: noop };
 	const storage = webgl?.$debug?.storage ?? localStorage;
-	webgl.$fbo = api;
 
 	let initialized;
 
@@ -186,4 +186,11 @@ export function fboPlugin(webgl) {
 		refreshGui();
 	}
 	/// #endif
+
+	return {
+		install: () => {
+			webgl.$fbo = api;
+		},
+		load: () => {}
+	}
 }

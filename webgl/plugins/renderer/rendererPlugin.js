@@ -42,7 +42,7 @@ export function rendererPlugin(webgl) {
 		afterInit: s()
 	};
 
-	const api = webgl.$renderer = {
+	const api = {
 		setup,
 		options,
 		hooks,
@@ -151,5 +151,12 @@ export function rendererPlugin(webgl) {
 		pixelRatio.set(renderer.getPixelRatio());
 		tVec3.release();
 		releaseEmits();
+	}
+
+	return {
+		install: () => {
+			webgl.$renderer = api;
+		},
+		load: () => {}
 	}
 }

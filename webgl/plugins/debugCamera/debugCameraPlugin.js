@@ -15,12 +15,13 @@ const FOV_MIN = 10;
 const FOV_MAX = 170;
 const DEFAULT_FOV = 75;
 
+
 export function debugCameraPlugin(webgl) {
 	const scenes = new Map();
 
 	const storage = webgl.$app.$debug.storage ?? storage;
 
-	const api = webgl.$debugCamera = {
+	const api = {
 		init,
 		update,
 		enabled: w(!!+storage.getItem(lsKey('enabled'))),
@@ -35,10 +36,10 @@ export function debugCameraPlugin(webgl) {
 		gui: {}
 	};
 
-	let copiedTimeout, gui, cam, isInit;
+	let copiedTimeout, cam, isInit;
 
-	webgl.registerMixin('debugCamera', DebugCameraMixin);
-	webgl.$hooks.afterStart.watch(init);
+	// webgl.registerMixin('debugCamera', DebugCameraMixin);
+	// webgl.$hooks.afterStart.watch(init);
 
 	const cinematicMode = cinematicTool(webgl, api);
 
@@ -48,6 +49,7 @@ export function debugCameraPlugin(webgl) {
 	let orbitCamera, fpsCamera;
 	fpsCamera = api.fpsCamera = new FpsCamera({ fps: true });
 	orbitCamera = api.orbitCamera = new OrbitCamera({});
+
 
 	function updateFOV(v) {
 		v = clamp(FOV_MIN, FOV_MAX, v);
@@ -65,7 +67,7 @@ export function debugCameraPlugin(webgl) {
 
 		const scene = setScene(storage.getItem(lsKey('scene')));
 
-		webgl.$hooks.afterUpdate.watch(() => update());
+		webgl.$hooks.afterUpdate.watch(update);
 		cinematicMode.init();
 
 		api.fov.watchImmediate(updateFOV);
@@ -87,15 +89,13 @@ export function debugCameraPlugin(webgl) {
 	}
 
 	function initGUI() {
-		gui = api.gui = webgl.$gui.addFolder(Object.assign({
+		const gui = api.gui = webgl.$gui.addFolder(Object.assign({
 			title: 'Debug Camera',
 			index: 0
 		}));
 
 		let btn = gui.toggleButton = gui.addBinding(api, 'Camera enabled', { index: 1 });
-		btn.on('change', (v) => {
-			api.enabled.set(v.value);
-		});
+		btn.on('change', ({ value }) => api.enabled.set(value));
 
 		// btn = gui.resetButton = gui.addButton({ title: `Reset Camera`, index: 4 });
 		// btn.on('click', () => resetCamera());
@@ -141,6 +141,7 @@ export function debugCameraPlugin(webgl) {
 			'}'
 		].join('\n');
 
+		const { gui } = api;
 		navigator.clipboard.writeText(str)
 			.then(() => {
 				gui.copyButton.title = 'Copied!';
@@ -212,6 +213,7 @@ export function debugCameraPlugin(webgl) {
 	}
 
 	function refreshScenes() {
+		const { gui } = api;
 		if (gui.scenesList) gui.scenesList.dispose();
 		if (![ ...scenes.keys() ].length) return;
 
@@ -229,6 +231,7 @@ export function debugCameraPlugin(webgl) {
 	}
 
 	function refreshCameras() {
+		const { gui } = api;
 		if (gui.camerasList) gui.camerasList.dispose();
 
 		if (!api.scene) return;
@@ -257,6 +260,7 @@ export function debugCameraPlugin(webgl) {
 	}
 
 	function refreshTargets() {
+		const { gui } = api
 		if (gui.targetsList) gui.targetsList.dispose();
 		const scene = api.scene;
 		if (!scene) return;
@@ -271,9 +275,7 @@ export function debugCameraPlugin(webgl) {
 
 		if (scene.state.Camera === 'FPS') gui.targetsList.disabled = true;
 
-		gui.targetsList.on('change', v => {
-			setTarget();
-		});
+		gui.targetsList.on('change', v => setTarget());
 	}
 
 	function setTarget() {
@@ -302,6 +304,7 @@ export function debugCameraPlugin(webgl) {
 		storage.setItem(lsKey('scene'), name);
 
 		refreshGUI(false);
+		const { gui } = api;
 		if (gui.scenesList) gui.scenesList.refresh();
 		setCamera(scene.state.Camera);
 		api.scene.use();
@@ -311,10 +314,11 @@ export function debugCameraPlugin(webgl) {
 	function refreshGUI(
 		needScenesRefresh = true,
 		needCamerasRefresh = true,
-		needTargetsRefresh = true) {
-		if (needScenesRefresh) refreshScenes();
-		if (needCamerasRefresh) refreshCameras();
-		if (needTargetsRefresh) refreshTargets();
+		needTargetsRefresh = true
+	) {
+		needScenesRefresh && refreshScenes();
+		needCamerasRefresh && refreshCameras();
+		needTargetsRefresh && refreshTargets();
 	}
 
 	function reset() {
@@ -333,5 +337,15 @@ export function debugCameraPlugin(webgl) {
 		}
 		scene.update(api.currentCamera);
 		cinematicMode.update(api.currentCamera);
+	}
+
+	return {
+		install: () => {
+			webgl.$debugCamera = api;
+			webgl.registerMixin('debugCamera', DebugCameraMixin);
+		},
+		load: () => {
+			webgl.$hooks.afterStart.watch(init);
+		}
 	}
 }
