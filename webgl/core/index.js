@@ -5,6 +5,7 @@ import { idsFromGlob } from '#utils/misc';
 import { patchThree } from '#webgl/utils/patchThree.js';
 import { createHooks } from '#webgl/utils/createHooks';
 
+
 const chunks = idsFromGlob(
 	import.meta.glob('../shaders/chunks/*.glsl', { eager: true })
 );
@@ -53,9 +54,6 @@ export function initializeWebgl({
 
 		// Global webgl state used internally
 		$store: {},
-
-		// TODO: build a proper scenes plugin
-		$scenes: {}
 	};
 
 	// Add methods & data to the api

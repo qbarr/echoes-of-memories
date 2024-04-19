@@ -225,9 +225,7 @@ export function debugCameraPlugin(webgl) {
 			options
 		});
 
-		gui.scenesList.on('change', v => {
-			setScene(v.value);
-		});
+		gui.scenesList.on('change', ({ value }) => setScene(value));
 	}
 
 	function refreshCameras() {

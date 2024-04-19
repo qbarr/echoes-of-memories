@@ -25,6 +25,8 @@ export default class MainScene extends BaseScene {
 		this.addObject3D(this.mesh);
 
 		this.scale = 0
+
+		console.log(this);
 	}
 
 	async enter() {

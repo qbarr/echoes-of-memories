@@ -1,10 +1,16 @@
 import { w } from '#utils/state';
+/// #if __DEBUG__
+/// #code import { storageSync } from '#utils/state';
+/// #endif
 
 
 const NOOP = v => v;
 
 export function scenesPlugin(webgl) {
 	const current = w(null)
+	/// #if __DEBUG__
+	/// #code const savedCurrentScene = storageSync('webgl:scenesPlugin:current', w(null));
+	/// #endif
 
 	const api = {
 		list: [],
@@ -18,22 +24,24 @@ export function scenesPlugin(webgl) {
 	}
 
 	function create(name, Class) {
-		const scene = new Class();
-		scene.triggerInit();
+		const Scene = new Class();
+		Scene.triggerInit();
+
 		const s = api[ name ] = {
 			name,
 			id: Symbol(name),
 			isActive: true,
 			needsUpdate: true,
 			needsRender: true,
-			component: scene,
-			leave: () => scene.leave(),
-			enter: () => scene.enter(),
-			update: () => scene.triggerUpdate(),
-			render: () => scene.triggerRender(),
+			component: Scene,
+			leave: () => Scene.leave(),
+			enter: () => Scene.enter(),
+			update: () => Scene.triggerUpdate(),
+			render: () => Scene.triggerRender(),
 		};
+
 		api.list.push(s);
-		return scene;
+		return s;
 	}
 
 	function getSceneByComponent(component) {
@@ -54,14 +62,15 @@ export function scenesPlugin(webgl) {
 			curScene.needsUpdate = false;
 			curScene.needsRender = false;
 
-			// __DEBUG__ && curScene.component.unregisterDebugCamera();
 			curScene.component.detach();
 		}
 
+		/// #if __DEBUG__
+		/// #code savedCurrentScene.set(scene.name);
+		/// #endif
 		current.set(scene);
 		const nextScene = current.value;
 
-		// __DEBUG__ && nextScene.component.registerDebugCamera();
 		nextScene.component.attach();
 
 		await nextScene.enter();
@@ -91,7 +100,7 @@ export function scenesPlugin(webgl) {
 			label: 'Current Scene',
 			readonly: true,
 		})
-		current.watch(({ name }) => o.name = name)
+		current.watchImmediate(({ name }) => o.name = name)
 
 
 		let CELLS_PER_ROW = 3
@@ -121,7 +130,16 @@ export function scenesPlugin(webgl) {
 		},
 		load: () => {
 			webgl.$hooks.afterStart.watchOnce(() => {
-				if (!current.value) set(api.list[0], true);
+				if (!current.value) {
+					set(savedCurrentScene.value ?? api.list[0], true);
+				}
+
+				for (let i = 0; i < api.list.length; i++) {
+					const scene = api.list[i];
+					if (scene.isActive) continue
+					scene.component.detach();
+				}
+
 				__DEBUG__ && devtools();
 			})
 		}
