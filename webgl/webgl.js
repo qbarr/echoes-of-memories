@@ -1,5 +1,9 @@
-import Scene from './components/Scene';
+import AnotherScene from './components/AnotherScene';
+import MainScene from './components/MainScene';
+import TestScene from './components/TestScene';
+
 import { createWebgl, webgl } from './core';
+
 
 export default createWebgl({
 	async setup() {
@@ -22,23 +26,20 @@ export default createWebgl({
 		$time.clampTo60fps = false;
 		$time.start();
 
-		$scenes.main = new Scene();
-		$scenes.main.triggerInit();
+		$scenes.create('main', MainScene);
+		$scenes.create('test', TestScene);
+		$scenes.create('another', AnotherScene);
 
 		webgl.$log('WebGL started');
 	},
 
 	update() {
 		const { $scenes } = webgl;
-		const scene = $scenes.main;
-		if (!scene) return;
-		scene.triggerUpdate();
+		$scenes.update();
 	},
 
 	render() {
 		const { $scenes } = webgl;
-		const scene = $scenes.main;
-		if (!scene) return;
-		scene.triggerRender();
+		$scenes.render();
 	}
 });

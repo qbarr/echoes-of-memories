@@ -72,6 +72,9 @@ export default class BaseScene extends BaseComponent {
 		return this._cam.forced || this._cam.current;
 	}
 
+	async enter() {}
+	async leave() {}
+
 	render() {
 		const renderer = this.webgl.$threeRenderer;
 		const camera = this.getCurrentCamera();

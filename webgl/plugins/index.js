@@ -3,6 +3,7 @@ import { qualityPlugin } from './quality/qualityPlugin.js';
 import { rendererPlugin } from './renderer/rendererPlugin.js';
 import { timePlugin } from './time/timePlugin.js';
 import { viewportPlugin } from './viewport/viewportPlugin.js';
+import { scenesPlugin } from './scenes/scenesPlugin.js';
 
 /// #if __DEBUG__
 import { debugPlugin } from './debug/debugPlugin.js';
@@ -17,6 +18,7 @@ export const plugins = [
 	viewportPlugin,
 	rendererPlugin,
 	timePlugin,
+	scenesPlugin,
 	__DEBUG__ && debugCameraPlugin,
 
 	/* PROJECT PLUGINS */
