@@ -6,6 +6,10 @@
   "description": "",
   "author": "Dakumisu",
   "license": "ISC",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
   "eslintConfig": {
     "extends": "@gobz/eslint-config"
   },
@@ -45,8 +49,5 @@
     "#assets/*": "./assets/*",
     "#config/*": "./config/*",
     "#/*": "./*"
-  },
-  "engines": {
-    "node": ">=20"
   }
 }

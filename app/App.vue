@@ -3,13 +3,12 @@
 		<RouterView />
 	</main>
 	<WebGL />
-	<Debug v-if="isDebug"/>
+	<!-- #if __DEBUG__ -->
+	<Debug/>
+	<!-- #endif -->
 </template>
 
 <script setup>
-	import { shallowRef } from 'vue';
-
-	const isDebug = shallowRef(__DEBUG__)
 </script>
 
 <style lang="scss">

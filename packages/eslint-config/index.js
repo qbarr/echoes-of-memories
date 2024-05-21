@@ -21,7 +21,7 @@ module.exports = {
 		'ecmaVersion': 2022
 	},
 
-	// Often used rules in vitevue
+	// Often used rules
 	'globals': {
 		'__DEBUG__': 'readonly',
 		'__ENVIRONMENT__': 'readonly'
