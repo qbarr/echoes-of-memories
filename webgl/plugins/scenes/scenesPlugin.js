@@ -12,6 +12,8 @@ export function scenesPlugin(webgl) {
 	/// #code const savedCurrentScene = storageSync('webgl:scenesPlugin:current', w(null));
 	/// #endif
 
+	console.log('scenesPlugin', webgl);
+
 	const api = {
 		list: [],
 
@@ -34,13 +36,15 @@ export function scenesPlugin(webgl) {
 			needsUpdate: true,
 			needsRender: true,
 			component: Scene,
-			leave: () => Scene.leave(),
-			enter: () => Scene.enter(),
-			update: () => Scene.triggerUpdate(),
-			render: () => Scene.triggerRender(),
+
+			leave: Scene.leave.bind(Scene),
+			enter: Scene.enter.bind(Scene),
+			update: Scene.triggerUpdate.bind(Scene),
+			render: Scene.triggerRender.bind(Scene),
 		};
 
 		api.list.push(s);
+
 		return s;
 	}
 

@@ -6,13 +6,11 @@
   "description": "",
   "author": "Dakumisu",
   "license": "ISC",
-  "imports": {
-    "#app/*": "./app/*",
-    "#webgl/*": "./webgl/*",
-    "#utils/*": "./utils/*",
-    "#assets/*": "./assets/*",
-    "#config/*": "./config/*",
-    "#/*": "./*"
+  "eslintConfig": {
+    "extends": "@gobz/eslint-config"
+  },
+  "stylelint": {
+    "extends": "@gobz/stylelint-config"
   },
   "scripts": {
     "dev": "vite -c config/vite.config.js",
@@ -22,7 +20,7 @@
     "preview:dev": "npm run build -- -m development && npm run _preview -- -m development",
     "deploy:dev": "npm run build -- -m development && netlify deploy --alias dev",
     "deploy:prod": "npm run build && netlify deploy --prod",
-    "clear": "rm -rf node_modules && rm -rf .cache"
+    "clean": "rm -rf node_modules && rm -rf .cache"
   },
   "dependencies": {
     "@rollup/pluginutils": "^5.0.2",
@@ -36,7 +34,17 @@
   },
   "devDependencies": {
     "@tweakpane/plugin-essentials": "^0.2.1",
-    "tweakpane": "^4.0.3"
+    "tweakpane": "^4.0.3",
+    "@gobz/stylelint-config": "file:packages/stylelint-config",
+    "@gobz/eslint-config": "file:packages/eslint-config"
+  },
+  "imports": {
+    "#app/*": "./app/*",
+    "#webgl/*": "./webgl/*",
+    "#utils/*": "./utils/*",
+    "#assets/*": "./assets/*",
+    "#config/*": "./config/*",
+    "#/*": "./*"
   },
   "engines": {
     "node": ">=20"

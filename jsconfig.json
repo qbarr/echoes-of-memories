@@ -2,6 +2,7 @@
   "compileOnSave": false,
   "exclude": [
     "dist",
+    "build",
     ".cache",
     "node_modules",
     "@vue/reactivity",
