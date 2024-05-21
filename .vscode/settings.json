@@ -1,0 +1,143 @@
+{
+  "files.exclude": {},
+  "search.useIgnoreFiles": false,
+  "search.useGlobalIgnoreFiles": false,
+  "search.exclude": {
+    "**/editor": true,
+    "**/.content-cache": true,
+    "**/node_modules": true,
+    "**/*.log": true,
+  },
+  "editor.autoClosingQuotes": "always",
+  "javascript.preferences.quoteStyle": "single",
+  "typescript.preferences.quoteStyle": "single",
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#c0bec8",
+    "titleBar.activeForeground": "#000",
+    "commandCenter.background": "#ffffff02",
+    "commandCenter.border": "#ffffff33",
+    "commandCenter.foreground": "#fff"
+  },
+  "editor.formatOnPaste": false,
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "explicit"
+  },
+  "editor.insertSpaces": false,
+  "editor.renderWhitespace": "all",
+  "editor.tabCompletion": "on",
+  "editor.tabSize": 4,
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  },
+  "emmet.includeLanguages": {
+    "ejs": "html",
+  },
+  "files.associations": {
+    "*.ejs": "html"
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "Vue.volar"
+  },
+  "html.format.enable": false,
+  "html.validate.styles": false,
+  "html.validate.scripts": false,
+  "javascript.format.enable": false,
+  "javascript.validate.enable": false,
+  "javascript.suggestionActions.enabled": false,
+  "typescript.format.enable": false,
+  "typescript.validate.enable": false,
+  "typescript.preferences.importModuleSpecifierEnding": "js",
+  "css.validate": false,
+  "scss.validate": false,
+  "stylelint.validate": [
+    "css",
+    "scss",
+    "html",
+    "ejs",
+    "vue"
+  ],
+  "javascript.preferences.autoImportFileExcludePatterns": [
+    "@vue/runtime-core",
+    "@vue/runtime-dom",
+    "@vue/reactivity",
+    "@vue/shared",
+    "three/src/**"
+  ],
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    ".gitignore": ".gitkeep, .gitattributes, .gitmodules, .gitmessage, .mailmap, .git-blame*",
+    "package.json": ".browserslist*, .editorconfig, .firebase*, .npm*, .nvmrc, .pm2*, .prettier*, .stylelint*, tsconfig.json, .vscode*, .yarnrc*, eslint*, firebase.json, database-debug*, firebase-debug*, firestore-debug*, pubsub-debug*, ui-debug*, lerna*, package-lock.json, package.nls*.json, pm2.*, pnpm*, prettier*, stylelint*, typedoc*, vercel*, workspace.json, yarn*",
+    "readme*": "authors, changelog*, contributing*, contributors, history.md, license*, readme*",
+  },
+  "todo-tree.tree.showBadges": false,
+  "todo-tree.highlights.defaultHighlight": {
+    "type": "text-and-comment",
+    "icon": "circle"
+  },
+  "todo-tree.highlights.customHighlight": {
+    "BUG": {
+      "foreground": "#000",
+      "background": "#ff5555e8",
+      "iconColour": "#ff5555e8"
+    },
+    "FIXME": {
+      "foreground": "#000",
+      "background": "#FCE566",
+      "iconColour": "#FCE566"
+    },
+    "TODO!!": {
+      "foreground": "#000",
+      "background": "#ff5555e8",
+      "iconColour": "#ff5555e8"
+    },
+    "TODO!": {
+      "foreground": "#000",
+      "background": "#FCE566",
+      "iconColour": "#FCE566"
+    },
+    "TODO": {
+      "foreground": "#000",
+      "background": "#ffffffaa",
+      "iconColour": "#ffffffaa",
+      "icon": "circle"
+    },
+    "HACK": {
+      "foreground": "#000",
+      "background": "#62c8fcad",
+      "iconColour": "#5cc9ffa0"
+    },
+    "NOTE": {
+      "foreground": "#ccc",
+      "background": "#ffffff22",
+      "iconColour": "#5cc9ffa0",
+      "icon": "comment"
+    },
+    "???": {
+      "foreground": "#ccc",
+      "background": "#ffffff22",
+      "iconColour": "#5cc9ffa0",
+      "icon": "question"
+    },
+    "DONE": {
+      "background": "#ffffff00",
+      "iconColour": "#40d675c7",
+      "icon": "check-circle"
+    }
+  },
+  "todo-tree.general.tags": [
+    "BUG",
+    "FIXME",
+    "TODO!!",
+    "TODO!",
+    "TODO",
+    "HACK",
+    "???",
+    "NOTE",
+    "DONE"
+  ]
+}
