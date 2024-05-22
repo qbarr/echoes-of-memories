@@ -12,7 +12,6 @@ import {
 } from 'three';
 
 export default function createTexture(opts) {
-	console.log(opts);
 	const isWebGL2 = webgl.$threeRenderer.capabilities.isWebGL2;
 
 	const tex = new Texture(opts.img);

@@ -1,15 +1,13 @@
 import { DataTexture } from 'three';
 
-import { webgl } from '#webgl/core';
 
-import createTexture from '#webgl/utils/createTexture';
 import { files } from '#utils/files';
+import createTexture from '#webgl/utils/createTexture';
 
 import loadJSON from '#utils/files/loadJSON';
 import loadOBJ from '#utils/files/loadOBJ';
 import loadAtlas from './loadAtlas';
 import loadGLTF from './loadGLTF';
-import loadFont from './loadFont';
 import loadImage from './loadImage';
 
 import manifest from '#assets/manifest';
@@ -22,7 +20,6 @@ export function assetsPlugin(webgl) {
 	files.registerLoader(loadJSON);
 	files.registerLoader(loadGLTF);
 	files.registerLoader(loadOBJ);
-	files.registerLoader(loadFont);
 
 	let pgen = null;
 	const data = {};
@@ -46,10 +43,12 @@ export function assetsPlugin(webgl) {
 		data,
 		textures,
 		objects,
-		load,
 		pgen,
 		materials,
-		geometries
+		geometries,
+
+		load,
+		getFont
 	};
 
 
@@ -64,7 +63,13 @@ export function assetsPlugin(webgl) {
 
 	tasks.avif = tasks.webp = tasks.jpg = tasks.png = tasks.tex;
 	tasks.glb = tasks.gltf;
-	tasks.fnt = tasks.font;
+
+	function getFont(id) {
+		const data = api.data[ id ];
+		const texture = api.textures[ id ];
+		if (!data || !texture) return;
+		return { data, texture };
+	};
 
 	const loadPromises = [];
 
@@ -153,22 +158,14 @@ export function assetsPlugin(webgl) {
 	}
 
 
-	async function fontTask({ id, file, opts, onLoad = NOOP }) {
-		return files.load(file, {
-			onLoad: d => data[ id ] = d
-		});
-	}
-
-
 	async function msdfFontTask({ id, file, opts, onLoad = NOOP }) {
 		const { data, url } = file
-
 
 		const fontData = { file: { url: data }, id, opts };
 		const imgData = { file: { url }, id, opts };
 
 		const [ font, img ] = await Promise.all([
-			fontTask(fontData),
+			jsonTask(fontData),
 			textureTask(imgData)
 		]);
 

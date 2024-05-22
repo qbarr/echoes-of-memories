@@ -158,10 +158,14 @@ export function timePlugin(webgl) {
 		},
 		load: () => {
 			const { $viewport, $hooks } = webgl;
-			const { afterSetup, afterFrame } = $hooks;
+			const { afterSetup, afterStart, afterFrame } = $hooks;
 
 			afterSetup.watchOnce(() => {
 				$viewport && $viewport.visible.watch(() => needsReset = true);
+			});
+
+			afterStart.watchOnce(() => {
+				start();
 			});
 
 			afterFrame.watchOnce(() => needsReset = true);

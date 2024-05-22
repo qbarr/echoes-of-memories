@@ -1,6 +1,4 @@
-import AnotherScene from './components/Scenes/AnotherScene';
 import MainScene from './components/Scenes/MainScene';
-import TestScene from './components/Scenes/TestScene';
 
 import { createWebgl, webgl } from './core';
 
@@ -28,11 +26,8 @@ export default createWebgl({
 		$renderer.resize();
 
 		$time.clampTo60fps = false;
-		$time.start();
 
 		$scenes.create('main', MainScene);
-		$scenes.create('test', TestScene);
-		$scenes.create('another', AnotherScene);
 
 		webgl.$log('WebGL started');
 	},
