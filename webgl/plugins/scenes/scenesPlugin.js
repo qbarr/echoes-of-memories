@@ -12,7 +12,6 @@ export function scenesPlugin(webgl) {
 	/// #code const savedCurrentScene = storageSync('webgl:scenesPlugin:current', w(null));
 	/// #endif
 
-	console.log('scenesPlugin');
 
 	const api = {
 		list: [],

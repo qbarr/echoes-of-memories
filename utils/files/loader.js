@@ -42,6 +42,7 @@ function load(url, opts = {}) {
 	// Test if a loading is already running
 	if (loadPromises[ url ]) return loadPromises[ url ];
 
+	url = url.url || url;
 	url = resolveUrl(url);
 
 	let p;
