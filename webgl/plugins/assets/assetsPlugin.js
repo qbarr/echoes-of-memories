@@ -197,9 +197,9 @@ export function assetsPlugin(webgl) {
 			webgl.$assets = api;
 		},
 		load: () => {
-			// webgl.$hooks.afterSetup.watchOnce(() => {
-			// 	loadGLTF.initDRACOLoader();
-			// });
+			webgl.$hooks.afterSetup.watchOnce(() => {
+				loadGLTF.initDRACOLoader();
+			});
 		}
 	}
 }

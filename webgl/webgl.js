@@ -1,4 +1,5 @@
 import MainScene from './components/Scenes/MainScene';
+import UIScene from './components/Scenes/UIScene';
 
 import { createWebgl, webgl } from './core';
 
@@ -28,6 +29,7 @@ export default createWebgl({
 		$time.clampTo60fps = false;
 
 		$scenes.create('main', MainScene);
+		$scenes.create('ui', UIScene);
 
 		webgl.$log('WebGL started');
 	},

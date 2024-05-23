@@ -1,10 +1,11 @@
 <template>
 	<section>
-		<!-- <h1>Home</h1> -->
+		<GLText text="Home" tag="h1" />
 	</section>
 </template>
 
 <script setup>
+	import GLText from '#app/components/GLText/GLText.vue'
 </script>
 
 <style lang="scss" scoped>

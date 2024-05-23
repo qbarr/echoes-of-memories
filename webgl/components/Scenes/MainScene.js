@@ -1,19 +1,16 @@
 
-import BaseCamera from '#webgl/core/BaseCamera';
 import BaseScene from '#webgl/core/BaseScene';
-
-import { wait } from '#utils/async';
+import { MainCamera } from '../Cameras/MainCamera';
 import { MSDFTextMesh } from '../Text';
 
+import { wait } from '#utils/async';
 
 
 export default class MainScene extends BaseScene {
 	mixins = [ 'debugCamera' ]
 
 	init() {
-		this.camera = this.add(BaseCamera);
-		this.camera.base.position.set(0, 0.2, 5).multiplyScalar(3);
-		this.camera.base.lookAt(0, 0, 0);
+		this.camera = this.add(MainCamera);
 
 		this.add(MSDFTextMesh, {
 			font: 'VCR_OSD_MONO',

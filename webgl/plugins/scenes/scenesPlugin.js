@@ -113,7 +113,7 @@ export function scenesPlugin(webgl) {
 				value: scene.name,
 			})),
 			value: current.value.name,
-		}).on('select', ({ value }) => set(value))
+		}).on('change', ({ value }) => set(value))
 	}
 	/// #endif
 
