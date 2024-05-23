@@ -1,38 +1,75 @@
 import BaseComponent from '#webgl/core/BaseComponent';
 import { Mesh, Object3D } from 'three';
 import MSDFTextGeometry from '../MSDFTextGeometry';
-import MSDFTextMaterial from '../MSDFTextMaterial';
+import MSDFTextMaterial, { uniforms } from '../MSDFTextMaterial';
+import { varsToUniforms } from '#webgl/utils/varToUniform';
 
+
+const defaultOptions = {
+	color: uniforms.common.uColor.value,
+	opacity: uniforms.common.uOpacity.value,
+
+	strokeColor: uniforms.stroke.uStrokeColor.value,
+	strokeOpacity: uniforms.stroke.uStrokeOpacity.value,
+	strokeOutsetWidth: uniforms.stroke.uStrokeOutsetWidth.value,
+	strokeInsetWidth: uniforms.stroke.uStrokeInsetWidth.value,
+
+	width: null,
+	align: 'left',
+	lineHeight: null,
+	letterSpacing: 0,
+	tabSize: 4,
+}
 
 export default class MSDFTextMesh extends BaseComponent {
 	constructor({ content = '', font = 'VCR_OSD_MONO', ...props } = {}) {
+		props = Object.assign(defaultOptions, props);
 		super(props);
 
 		this.font = font;
 		this.content = content;
+		this.centerMesh = props.centerMesh ?? true;
 
 		const { $assets } = this.webgl;
 		const { data, texture } = ($assets.getFont(font) ?? $assets.getFont('VCR_OSD_MONO'))
 
-		const geometry = this.geo = new MSDFTextGeometry({
+
+		/* Geometry */
+		const geoProps = Object.assign({}, {
 			text: content,
 			font: data,
-			width: props.width ?? null,
-			align: props.align ?? 'left',
-			lineHeight: props.lineHeight ?? null,
-			letterSpacing: props.letterSpacing ?? 0,
-			tabSize: props.tabSize ?? 4,
+			width: props.width,
+			align: props.align,
+			lineHeight: props.lineHeight,
+			letterSpacing: props.letterSpacing,
+			tabSize: props.tabSize,
 		});
+		const geometry = this.geo = new MSDFTextGeometry(geoProps);
 
+		/* Material */
+		const matProps = Object.assign({},
+			varsToUniforms({
+				color: props.color,
+				opacity: props.opacity,
+				strokeColor: props.strokeColor,
+				strokeOpacity: props.strokeOpacity,
+				strokeOutsetWidth: props.strokeOutsetWidth,
+				strokeInsetWidth: props.strokeInsetWidth,
+			})
+		);
 		const material = this.mat = new MSDFTextMaterial({
 			uniforms: {
 				uMap: { value: texture },
+				...matProps
 			}
 		});
 
+
+		/* Mesh */
 		const text = this.mesh = new Mesh(geometry, material);
 		text.scale.setScalar(0.01);
 		text.scale.y *= -1;
+		this.updateTextPosition()
 
 		this.base = new Object3D();
 		this.base.add(text);
@@ -43,13 +80,15 @@ export default class MSDFTextMesh extends BaseComponent {
 		this.content = content;
 	}
 
-	update() {
+	updateTextPosition(force = false) {
+		if (!this.centerMesh) {
+			this.mesh.position.set(0, 0, 0);
+			return;
+		}
 
-		if (!this.props.alignCenter) return
-		// center text according to its width
-		const { width } = this.geo._layout._options
-		if (width === null) return;
-		this.mesh.position.x = -width / 2;
+		const { width, height } = this.geo._layout
+		if (width !== null) this.mesh.position.x = (-width / 2) * 0.01
+		if (height !== null) this.mesh.position.y = (-height / 2) * 0.01
 	}
 
 	/// #if __DEBUG__
@@ -87,8 +126,10 @@ export default class MSDFTextMesh extends BaseComponent {
 				fw.numberGui.disabled = !value;
 				if (value) {
 					this.geo.update({ width: fw.value });
+					this.updateTextPosition();
 				} else {
 					this.geo.update({ width: null });
+					this.updateTextPosition();
 				}
 			});
 
@@ -111,8 +152,10 @@ export default class MSDFTextMesh extends BaseComponent {
 				flh.numberGui.disabled = !value;
 				if (value) {
 					this.geo.update({ lineHeight: flh.value });
+					this.updateTextPosition()
 				} else {
 					this.geo.update({ lineHeight: null });
+					this.updateTextPosition()
 				}
 			});
 
@@ -122,6 +165,12 @@ export default class MSDFTextMesh extends BaseComponent {
 			.on('change', ({ value }) => this.geo.update({ letterSpacing: value }));
 		gui.addBinding(o, 'tabSize', { label: 'Tab Size', min: 0, max: 10, step: 1 })
 			.on('change', ({ value }) => this.geo.update({ tabSize: value }));
+
+		gui.addSeparator();
+
+		gui.addBinding(this, 'centerMesh', { label: 'Center Mesh' })
+			.on('change', ({ value }) => this.updateTextPosition());
+
 	}
 	/// #endif
 }
