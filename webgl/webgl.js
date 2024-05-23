@@ -7,11 +7,15 @@ import { createWebgl, webgl } from './core';
 
 export default createWebgl({
 	async setup() {
-		const { $renderer } = webgl;
+		const { $renderer, $scenes } = webgl;
 		$renderer.setup({ alias: false, antialias: false });
 		$renderer.instance.setClearColor(0x838383, 0);
-
 		webgl.$log('WebGL setup');
+
+		$scenes.create('main', MainScene);
+		$scenes.create('test', TestScene);
+		$scenes.create('another', AnotherScene);
+
 	},
 
 	async preload() {
@@ -30,10 +34,9 @@ export default createWebgl({
 		$time.clampTo60fps = false;
 		$time.start();
 
-		$scenes.create('main', MainScene);
-		$scenes.create('test', TestScene);
-		$scenes.create('another', AnotherScene);
 
+
+		// webgl.$fbo.createBuffer({ name: 'test', width: 512, height: 512 });
 		webgl.$log('WebGL started');
 	},
 

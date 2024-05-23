@@ -15,6 +15,7 @@ export function scenesPlugin(webgl) {
 
 	const api = {
 		list: [],
+		current,
 
 		create,
 		set,
@@ -132,7 +133,7 @@ export function scenesPlugin(webgl) {
 			webgl.$scenes = api;
 		},
 		load: () => {
-			webgl.$hooks.afterStart.watchOnce(() => {
+			webgl.$hooks.afterSetup.watchOnce(() => {
 				if (!current.value) {
 					set(savedCurrentScene.value ?? api.list[0], true);
 				}

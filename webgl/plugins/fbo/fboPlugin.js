@@ -191,6 +191,8 @@ export function fboPlugin(webgl) {
 		install: () => {
 			webgl.$fbo = api;
 		},
-		load: () => {}
+		load: () => {
+			init()
+		}
 	}
 }

@@ -79,7 +79,7 @@ export default class BaseScene extends BaseComponent {
 		const renderer = this.webgl.$threeRenderer;
 		const camera = this.getCurrentCamera();
 		if (!camera) return;
-		renderer.render(this.base, camera.cam);
+		// renderer.render(this.base, camera.cam);
 	}
 
 	triggerRender() {

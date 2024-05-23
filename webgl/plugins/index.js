@@ -2,6 +2,7 @@ import { assetsPlugin } from './assets/assetsPlugin.js';
 import { fboPlugin } from './fbo/fboPlugin.js';
 import { qualityPlugin } from './quality/qualityPlugin.js';
 import { rendererPlugin } from './renderer/rendererPlugin.js';
+import { composerPlugin } from './composer/composerPlugin.js';
 import { scenesPlugin } from './scenes/scenesPlugin.js';
 import { timePlugin } from './time/timePlugin.js';
 import { viewportPlugin } from './viewport/viewportPlugin.js';
@@ -18,6 +19,7 @@ export const plugins = [
 	qualityPlugin,
 	viewportPlugin,
 	rendererPlugin,
+	composerPlugin,
 	timePlugin,
 	scenesPlugin,
 	__DEBUG__ && debugCameraPlugin,
