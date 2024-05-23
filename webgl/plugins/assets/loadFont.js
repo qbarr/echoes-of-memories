@@ -4,6 +4,7 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 const loader = new FontLoader();
 
 export default function loadFont(url, opts) {
+	console.log(url, opts);
 	return new Promise((resolve) => {
 		const onLoad = data => {
 			console.log(data);
@@ -24,6 +25,6 @@ export default function loadFont(url, opts) {
 
 loadFont.loader = {
 	name: 'font',
-	extensions: [ '.fnt' ],
+	extensions: [ '.json' ],
 	function: loadFont
 };

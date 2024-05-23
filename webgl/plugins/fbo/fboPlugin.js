@@ -43,7 +43,6 @@ export function fboPlugin(webgl) {
 	/// #endif
 
 	function createBuffer(opts) {
-		init();
 		const buffer = _createBuffer(opts);
 		/// #if __DEBUG__
 		if (opts.name) registerBuffer(opts.name, buffer);
@@ -166,7 +165,6 @@ export function fboPlugin(webgl) {
 	}
 
 	function registerBuffer(name, buffer) {
-		init();
 		if (buffers.has(buffer) || buffersByName.has(name)) return;
 		buffers.set(buffer, name);
 		buffersByName.set(name, buffer);
@@ -174,7 +172,6 @@ export function fboPlugin(webgl) {
 	}
 
 	function unregisterBuffer(name) {
-		init();
 		if (!name || name === 'None') return;
 		if (buffersByName.has(name)) {
 			buffers.delete(buffersByName.get(name));
@@ -192,7 +189,7 @@ export function fboPlugin(webgl) {
 			webgl.$fbo = api;
 		},
 		load: () => {
-			init()
+			webgl.$hooks.afterSetup.watchOnce(init);
 		}
 	}
 }

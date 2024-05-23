@@ -106,25 +106,15 @@ export function scenesPlugin(webgl) {
 		})
 		current.watchImmediate(({ name }) => o.name = name)
 
-
-		let CELLS_PER_ROW = 3
-		const rows = Math.ceil(api.list.length / CELLS_PER_ROW)
-		const cells = Array.from({ length: rows * CELLS_PER_ROW }, (_, i) => {
-			const scene = api.list[i]
-			if (!scene) return null
-			return { title: scene.name, value: scene.component }
-		}).filter(Boolean)
-		CELLS_PER_ROW = Math.min(CELLS_PER_ROW, cells.length)
-
 		gui.addBlade({
-			view: 'buttongrid',
-			size: [ CELLS_PER_ROW, rows ],
-			cells: (x, y) => cells[ y * CELLS_PER_ROW + x ],
+			view: 'list',
 			label: 'Scenes',
-		}).on('click', ({ index }) => {
-			const { value } = cells[index[1] * CELLS_PER_ROW + index[0]]
-			set(value)
-		})
+			options: api.list.map(scene => ({
+				text: scene.name,
+				value: scene.name,
+			})),
+			value: current.value.name,
+		}).on('change', ({ value }) => set(value))
 	}
 	/// #endif
 

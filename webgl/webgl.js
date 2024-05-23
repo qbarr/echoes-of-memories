@@ -1,6 +1,5 @@
-import AnotherScene from './components/Scenes/AnotherScene';
 import MainScene from './components/Scenes/MainScene';
-import TestScene from './components/Scenes/TestScene';
+import UIScene from './components/Scenes/UIScene';
 
 import { createWebgl, webgl } from './core';
 
@@ -13,8 +12,7 @@ export default createWebgl({
 		webgl.$log('WebGL setup');
 
 		$scenes.create('main', MainScene);
-		$scenes.create('test', TestScene);
-		$scenes.create('another', AnotherScene);
+		$scenes.create('ui', UIScene);
 
 	},
 
@@ -32,7 +30,7 @@ export default createWebgl({
 		$renderer.resize();
 
 		$time.clampTo60fps = false;
-		$time.start();
+
 
 
 
