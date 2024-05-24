@@ -1,6 +1,5 @@
 import path from "path";
 import fs, { promises as fsPromises } from "fs";
-// import minimist from "minimist";
 
 import vttToJson from "vtt-to-json";
 
@@ -10,7 +9,7 @@ import { sources } from "#assets/subtitles/sources.js";
 
 const root = process.cwd();
 
-const _AUDIOS_PATH = path.join(root, "/assets/audios");
+const _AUDIOS_PATH = path.join(root, "/assets/audios/vocals");
 const _EXPORT_PATH = path.join(root, "/assets/subtitles/export");
 const _VTT_EXPORT_OPTION = {
 	outputDir: _EXPORT_PATH,

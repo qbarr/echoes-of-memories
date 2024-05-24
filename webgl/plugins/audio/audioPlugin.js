@@ -1,4 +1,3 @@
-import { Howl, Howler } from "howler";
 
 export function audioPlugin(app, opts = {}) {
 	const api = {
