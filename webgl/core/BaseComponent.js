@@ -179,7 +179,7 @@ export default class BaseComponent {
 		if (!child.isComponent) {
 			child = new child(props);
 		} else {
-			mountTo = props;
+			// mountTo = props;
 			props = child.props;
 		}
 

@@ -1,6 +1,6 @@
 <template>
 	<section>
-		<GLText text="Home" tag="h1" />
+		<!-- <GLText text="Home" tag="h1" /> -->
 	</section>
 </template>
 

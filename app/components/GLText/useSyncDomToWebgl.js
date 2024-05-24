@@ -1,88 +1,112 @@
-import { Frustum, Matrix4, Object3D, Vector3 } from 'three';
+import { Frustum, Object3D, Vector2, Vector3 } from 'three';
+import { onBeforeMount, onMounted, ref, shallowRef, unref } from 'vue';
 
+import { useBounding } from '#app/composables/useBounding/useBounding';
+import { app } from '#app/core';
+import { map } from '#utils/maths';
 import { webgl } from '#webgl/core';
-import { debounce } from '#utils/async';
-import screenToWorld from './screenToWorld';
 
-const vec3 = new Vector3();
-const F = new Frustum();
-const object3d = new Object3D();
 
-export function useSyncDomToWebgl(node, force = false) {
-	if (!node) return;
+const vec3a = new Vector3();
+const vec3b = new Vector3();
+const frustrum = new Frustum();
+const dummy = new Object3D();
 
-	const nodeBounds = {};
-	const api = {};
+const getNode = (root) => {
+	let node = unref(root);
+	return node.$el ?? node;
+}
 
-	const computeNodeBounds = () => {
-		const { top, left, width, height } = node.getBoundingClientRect();
-		const x = left + width / 2;
-		const y = top + height / 2;
-		return { x, y, width, height };
-	};
+export function useSyncDomWebGL($$ref, object) {
+	let node = null;
+	let resizeSignal = null;
+	const isInViewport = shallowRef(false);
+	const position = ref(new Vector3());
+	const scale = ref(new Vector2(1, 1));
 
-	const resize = debounce(
-		() => {
-			Object.assign(nodeBounds, computeNodeBounds());
-		},
-		200
-	);
+	const renderer = webgl.$threeRenderer;
+	const scene = webgl.$scenes.get('ui')
+	const camera = scene._cam.current.base;
 
-	webgl.hooks.afterResize.watch(resize);
-	resize();
-
-	Object.assign(node, { sync: api });
-
-	return Object.assign(api, {
-		node,
-
-		nodeBounds,
-		position: new Vector3(),
-		isInViewport: false,
-		force,
-
-		resize,
-		update,
-		destroy
+	const { bounding, update: updateBounding } = useBounding($$ref, {
+		updateOnResize: true,
+		updateOnScroll: false
 	});
 
+	onMounted(async () => {
+		node = getNode($$ref);
+
+		if (object) {
+			scene.isReady ?? await scene.isReady;
+			scene.add(object);
+		}
+
+		const dbs = webgl.$renderer.drawingBufferSize;
+		resizeSignal = dbs.watchImmediate(resize, this);
+
+		setTimeout(update, 100);
+	})
+
+	onBeforeMount(destroy)
+
+	return {
+		position,
+		scale,
+		update,
+	}
+
+
+	function resize() {
+		updateBounding();
+		update();
+	}
 
 	function destroy() {
-		webgl.hooks.afterResize.unwatch(resize);
-		delete node.sync;
+		node = null;
+		resizeSignal?.unwatch();
+		scene.remove?.(object);
+	}
+
+	function updatePos() {
+		if (!camera || !renderer) return;
+
+		// const dbs = webgl.$renderer.drawingBufferSize;
+		// const ratio = dbs.value.x / dbs.value.y;
+
+		const { width: vpw, height: vph, viewportRatio } = app.$viewport;
+		position.value.x = map(bounding.left, 0, vpw, -1, 1) * viewportRatio;
+		position.value.y = map(bounding.bottom, 0, vph, 1, -1);
+
+		// position.value.set(
+		// 	map(bounding.x, 0, dbs.value.x, -1, 1) * ratio,
+		// 	map(bounding.y, 0, dbs.value.y, 1, -1)
+		// )
+
+		console.log('position', position.value);
+
+		// Update object position
+		object?.position.copy(position.value);
+	}
+
+	function updateScale() {
+		if (!camera || !renderer) return;
+
+		const { width: vpw, height: vph, viewportRatio } = app.$viewport;
+
+		scale.value.set(
+			bounding.width / vpw * 2 * viewportRatio,
+			bounding.height / vph * 2
+		);
+
+		console.log('scale', scale.value);
+
+		// object.updateGeo({ width: bounding.width });
+
+		object?.scale.copy(scale.value);
 	}
 
 	function update() {
-		const { instance: renderer } = webgl.$renderer;
-		const camera = webgl.$game.currentChapter?.camera?.base;
-		if (!camera || !renderer) return;
-
-		// Screen position
-		object3d.updateMatrix();
-		object3d.updateMatrixWorld(false);
-
-		api.force && Object.assign(nodeBounds, computeNodeBounds());
-
-		// World position
-		screenToWorld(
-			{ x: nodeBounds.x, y: nodeBounds.y },
-			camera, 0, vec3, camera.position.z
-		);
-
-		object3d.localToWorld(vec3);
-
-		// Check frustrum to avoid positions behind camera
-		const mat4 = Matrix4.get();
-		F.setFromProjectionMatrix(
-			mat4.multiplyMatrices(
-				camera.projectionMatrix,
-				camera.matrixWorldInverse
-			)
-		);
-		mat4.release();
-
-		api.position.copy(vec3);
-
-		api.isInViewport = F.containsPoint(vec3);
+		updatePos();
+		updateScale();
 	}
 }

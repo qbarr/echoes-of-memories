@@ -1,5 +1,5 @@
 import { onBeforeUnmount, onMounted, unref } from 'vue';
-import { useEventListener as rawUseEventListener } from '~app/utils/useEventListener';
+import { useEventListener as rawUseEventListener } from '#utils/dom';
 
 export function useEventListener(handler, listener, callback, opts = {}) {
 	let unwatch = null;

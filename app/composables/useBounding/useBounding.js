@@ -1,6 +1,7 @@
 import { onBeforeUnmount, onMounted, reactive, shallowRef, unref } from 'vue';
 
 import { useEventListener } from '#app/composables/useEventListener/useEventListener';
+import { useSize } from '../useSize/useSize';
 // import { useIntersectionObserver } from '../useIntersection/useIntersectionObserver';
 // import { useResizeObserver } from '../useResizeObserver/useResizeObserver';
 
@@ -27,7 +28,6 @@ const getNode = (root) => {
 export function useBounding(root, { updateOnResize = true, updateOnScroll = true } = {}) {
 	let node = null;
 	const bounding = reactive({});
-
 	const isVisible = shallowRef(false);
 
 	const update = (force = false) => {
@@ -35,6 +35,8 @@ export function useBounding(root, { updateOnResize = true, updateOnScroll = true
 		if (!isVisible.value && !force) return;
 		return computeBoundingClient(node, bounding);
 	};
+
+	useSize({ ref: root, cb: update });
 
 	// useIntersectionObserver()
 	// 	.observe(root, {

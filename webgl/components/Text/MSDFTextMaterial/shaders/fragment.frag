@@ -1,5 +1,6 @@
 // Varyings
 varying vec2 vUv;
+varying vec2 vLayoutUv;
 
 // Uniforms: Common
 uniform float uOpacity;
@@ -20,7 +21,6 @@ void main() {
     // Common
     // Texture sample
 	vec2 uv = vUv;
-	// uv.y = 1.0 - uv.y;
 
     vec3 s = texture2D(uMap, uv).rgb;
 

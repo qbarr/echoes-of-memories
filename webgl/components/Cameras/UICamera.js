@@ -10,13 +10,19 @@ export class UICamera extends BaseCamera {
 		this.cam.updateProjectionMatrix();
 	}
 
+	// afterInit() {
+	// 	super.afterInit();
+	// 	this.cam.position.z = 100
+	// }
+
 	resize(s) {
 		const { x: width, y: height } = s;
+		const ratio = width / height;
 
-		this.cam.left = -width * .5 * .01;
-		this.cam.right = width * .5 * .01;
-		this.cam.top = height * .5 * .01;
-		this.cam.bottom = -height * .5 * .01;
+		this.cam.left = -ratio;
+		this.cam.right = ratio;
+		this.cam.top = 1;
+		this.cam.bottom = -1;
 		this.cam.updateProjectionMatrix();
 	}
 }

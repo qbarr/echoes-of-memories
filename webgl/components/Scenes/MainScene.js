@@ -12,9 +12,10 @@ export default class MainScene extends BaseScene {
 	init() {
 		this.camera = this.add(MainCamera);
 
-		this.add(MSDFTextMesh, {
+		const t = this.add(MSDFTextMesh, {
 			font: 'VCR_OSD_MONO',
 			content: 'Home',
+			centerMesh: true,
 		});
 	}
 

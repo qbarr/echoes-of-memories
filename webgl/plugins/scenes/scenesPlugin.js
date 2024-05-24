@@ -17,17 +17,25 @@ export function scenesPlugin(webgl) {
 		list: [],
 		current,
 
+		get current() {
+			return current.value;
+		},
+
 		create,
 		set,
 		switch: set,
+		get,
 
 		update,
 		render,
 	}
 
+	function init() {
+		api.list.forEach(scene => scene.component.triggerInit());
+	}
+
 	function create(name, Class) {
 		const Scene = new Class();
-		Scene.triggerInit();
 
 		const s = api[ name ] = {
 			name,
@@ -50,6 +58,11 @@ export function scenesPlugin(webgl) {
 
 	function getSceneByComponent(component) {
 		return api.list.find(s => s.component === component);
+	}
+
+	function get(id) {
+		if(!api[id]) throw new Error(`Scene with id ${id} not found`);
+		return api[id].component;
 	}
 
 	async function set(scene, force = false) {
@@ -123,7 +136,9 @@ export function scenesPlugin(webgl) {
 			webgl.$scenes = api;
 		},
 		load: () => {
-			webgl.$hooks.afterSetup.watchOnce(() => {
+			webgl.$hooks.beforeStart.watchOnce(() => {
+				init()
+
 				if (!current.value) {
 					set(savedCurrentScene.value ?? api.list[0], true);
 				}
@@ -136,6 +151,8 @@ export function scenesPlugin(webgl) {
 
 				__DEBUG__ && devtools();
 			})
+
+			webgl.$getCurrentScene = () => current.value.component;
 		}
 	}
 }

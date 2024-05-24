@@ -1,5 +1,5 @@
 import BaseComponent from '#webgl/core/BaseComponent';
-import { Mesh, Object3D } from 'three';
+import { Mesh, Object3D, Vector2, Vector3 } from 'three';
 import MSDFTextGeometry from '../MSDFTextGeometry';
 import MSDFTextMaterial, { uniforms } from '../MSDFTextMaterial';
 import { varsToUniforms } from '#webgl/utils/varToUniform';
@@ -21,6 +21,8 @@ const defaultOptions = {
 	tabSize: 4,
 }
 
+const SCALE = 0.1;
+
 export default class MSDFTextMesh extends BaseComponent {
 	constructor({ content = '', font = 'VCR_OSD_MONO', ...props } = {}) {
 		props = Object.assign(defaultOptions, props);
@@ -28,11 +30,12 @@ export default class MSDFTextMesh extends BaseComponent {
 
 		this.font = font;
 		this.content = content;
-		this.centerMesh = props.centerMesh ?? true;
+		this.centerMesh = props.centerMesh ?? false;
+		this.position = new Vector3();
+		this.scale = new Vector2(1, 1);
 
 		const { $assets } = this.webgl;
-		const { data, texture } = ($assets.getFont(font) ?? $assets.getFont('VCR_OSD_MONO'))
-
+		const { data, texture } = $assets.getFont(font)
 
 		/* Geometry */
 		const geoProps = Object.assign({}, {
@@ -67,7 +70,7 @@ export default class MSDFTextMesh extends BaseComponent {
 
 		/* Mesh */
 		const text = this.mesh = new Mesh(geometry, material);
-		text.scale.setScalar(0.01);
+		text.scale.setScalar(SCALE);
 		text.scale.y *= -1;
 		this.updateTextPosition()
 
@@ -80,6 +83,12 @@ export default class MSDFTextMesh extends BaseComponent {
 		this.content = content;
 	}
 
+	updateGeo(arg = {}) {
+		this.geo.update(arg);
+		this.updateTextPosition();
+		if (arg.text) this.content = arg.text;
+	}
+
 	updateTextPosition(force = false) {
 		if (!this.centerMesh) {
 			this.mesh.position.set(0, 0, 0);
@@ -87,13 +96,18 @@ export default class MSDFTextMesh extends BaseComponent {
 		}
 
 		const { width, height } = this.geo._layout
-		if (width !== null) this.mesh.position.x = (-width / 2) * 0.01
-		if (height !== null) this.mesh.position.y = (-height / 2) * 0.01
+		if (width !== null) this.mesh.position.x = -width * .5 * this.mesh.scale.x
+		if (height !== null) this.mesh.position.y = height * .5 * this.mesh.scale.y
+	}
+
+	update() {
+		this.base.position.copy(this.position);
+		this.base.scale.set(this.scale.x, this.scale.y, 1);
 	}
 
 	/// #if __DEBUG__
 	devtools() {
-		const gui = this.webgl.$gui.addFolder({title: 'Text'});
+		const gui = this.webgl.$gui.addFolder({ title: this.name });
 
 		gui.addBinding(this, 'content', { label: 'Content' })
 			.on('change', ({ value }) => this.edit(value));

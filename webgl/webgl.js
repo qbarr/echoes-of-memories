@@ -9,10 +9,11 @@ export default createWebgl({
 		const { $renderer, $scenes } = webgl;
 		$renderer.setup({ alias: false, antialias: false });
 		$renderer.instance.setClearColor(0x838383, 0);
-		webgl.$log('WebGL setup');
 
 		$scenes.create('main', MainScene);
 		$scenes.create('ui', UIScene);
+
+		webgl.$log('WebGL setup');
 
 	},
 
@@ -31,10 +32,6 @@ export default createWebgl({
 
 		$time.clampTo60fps = false;
 
-
-
-
-		// webgl.$fbo.createBuffer({ name: 'test', width: 512, height: 512 });
 		webgl.$log('WebGL started');
 	},
 

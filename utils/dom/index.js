@@ -47,3 +47,5 @@ export function autoblurButtons(selector = document) {
 		autoblurButtons.__isSet = false;
 	};
 }
+
+export * from './useEventListener.js';
