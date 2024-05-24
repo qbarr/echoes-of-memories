@@ -22,7 +22,7 @@ export function composerPlugin(webgl) {
 	function init() {
 
 	    const { $renderer, $scenes, $composer } = webgl
-		const scene = $scenes.current.value.component
+		const scene = $scenes.current.component
 		const composer = new EffectComposer($renderer.instance);
 		$renderer.instance.setRenderTarget(target)
 		composer.renderToScreen = true
@@ -40,7 +40,7 @@ export function composerPlugin(webgl) {
 
 	function bloomEffect() {
 		const { $renderer, $scenes, $composer } = webgl
-		const scene = $scenes.current.value.component
+		const scene = $scenes.current.component
 
 		const selection = new Selection()
 		const selectiveBloom = new SelectiveBloomEffect(scene.base, scene.getCurrentCamera().base, {
@@ -57,7 +57,7 @@ export function composerPlugin(webgl) {
 		// this.shaderPass.uniforms.uTime.value += .1
 		$renderer.instance.clear()
 		// console.log(webgl.$scenes.current, webgl.$scenes.current.camera)
-		// webgl.$renderer.instance.render(webgl.$scenes.current.value, webgl.$scenes.current.value.camera)
+		// webgl.$renderer.instance.render(webgl.$scenes.current, webgl.$scenes.current.camera)
 		// shaderPass.uniforms.tDepth.value = target.texture
 
 		$renderer.instance.setRenderTarget(null)
