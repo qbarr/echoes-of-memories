@@ -43,7 +43,7 @@ export function debugPlugin(webgl) {
 		if (k in page) api[ k ] = page[ k ].bind(page);
 	});
 
-	const fstats = api.addFolder({ title: 'Stats' });
+	const fstats = api.addFolder({ title: '🏎️ Stats' });
 	// const requestIdleCallback = window.requestIdleCallback;
 
 	const stats = {

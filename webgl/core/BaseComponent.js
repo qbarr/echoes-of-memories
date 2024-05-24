@@ -99,7 +99,7 @@ export default class BaseComponent {
 		if (this.init) this.init();
 		this.isInit = true;
 		if (this.afterInit) this.afterInit();
-		if (USE_DEBUG) this.devtools && this.devtools();
+		if (USE_DEBUG) this.devtools && this.devtools(this.parent?.gui);
 	}
 
 

@@ -6,7 +6,7 @@ import fragmentShader from '#webgl/shaders/composer/fragment.glsl'
 import { SelectiveBloomEffect } from 'postprocessing';
 
 export function composerPlugin(webgl) {
-	const api = { init, update }
+	const api = { init, update, instance: null }
 	const target = new WebGLRenderTarget(700, 700, {
 		count: 1
 	})
@@ -35,13 +35,12 @@ export function composerPlugin(webgl) {
 		composer.addPass(renderPass)
 		composer.addPass(shaderPass)
 		shaderPass.renderToScreen = true
-		$composer.instance = composer
+		api.instance = composer
 	}
 
 	function bloomEffect() {
 		const { $renderer, $scenes, $composer } = webgl
-		const scene = $scenes.current.component
-
+		const scene = webgl.$getCurrentScene()
 		const selection = new Selection()
 		const selectiveBloom = new SelectiveBloomEffect(scene.base, scene.getCurrentCamera().base, {
 			intensity: 1.5
@@ -52,6 +51,10 @@ export function composerPlugin(webgl) {
 	function update() {
 
 		const { $renderer, $scenes, $composer } = webgl
+		api.instance.passes.forEach(pass => {
+			if (!pass.camera) return
+			pass.camera = webgl.$getCurrentScene().getCurrentCamera().base
+		})
 		// webgl.scene.overrideMaterial = this.depthMaterial
 		$renderer.instance.setRenderTarget(target)
 		// this.shaderPass.uniforms.uTime.value += .1
@@ -62,7 +65,7 @@ export function composerPlugin(webgl) {
 
 		$renderer.instance.setRenderTarget(null)
 		$renderer.instance.clear()
-		$composer.instance.render()
+		api.instance.render()
 
 	}
 
@@ -73,7 +76,6 @@ export function composerPlugin(webgl) {
 		load: () => {
 			webgl.$hooks.afterStart.watchOnce(init)
 			webgl.$hooks.beforeFrame.watch(update)
-
 		}
 	}
 }

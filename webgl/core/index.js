@@ -76,6 +76,9 @@ export function initializeWebgl({
 	hook('setup', true, true, async () => {
 		api.$hooks.installPlugins();
 
+		// Separate plugins' gui
+		__DEBUG__ && webgl.$gui.addBlade({ view: 'separator' })
+
 		// Register global mixins
 		if (config.mixins) {
 			for (const k in config.mixins) {

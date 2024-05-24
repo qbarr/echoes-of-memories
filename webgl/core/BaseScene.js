@@ -46,6 +46,12 @@ export default class BaseScene extends BaseComponent {
 		this.hooks.afterMatrixWorldUpdate.emit();
 	}
 
+	beforeInit() {
+		/// #if __DEBUG__
+		this.gui = this.webgl.$gui.addFolder({ title: '🗿 ' + this.name });
+		/// #endif
+	}
+
 	attach() { BaseComponent.triggerAttached(this, this) }
 	detach() { BaseComponent.triggerDetached(this, this) }
 

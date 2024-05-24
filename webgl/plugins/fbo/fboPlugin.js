@@ -63,8 +63,8 @@ export function fboPlugin(webgl) {
 		});
 
 		gui = webgl.$gui.addFolder({
-			title: 'Framebuffers',
-			index: 4
+			title: '🖼️ Framebuffers',
+			index: 1
 		});
 
 

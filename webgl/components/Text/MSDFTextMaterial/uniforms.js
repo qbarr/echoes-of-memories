@@ -13,7 +13,7 @@ export default {
 	stroke: {
 		uStrokeColor: { value: { r: 0, g: 0, b: 0 } },
 		uStrokeOpacity: { value: 1.0 },
-		uStrokeOutsetWidth: { value: 0.0 },
+		uStrokeOutsetWidth: { value: 1.0 },
 		uStrokeInsetWidth: { value: 0.0 },
 	},
 };

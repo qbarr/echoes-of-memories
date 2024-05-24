@@ -1,8 +1,8 @@
 import BaseComponent from '#webgl/core/BaseComponent';
+import { varsToUniforms } from '#webgl/utils/varToUniform';
 import { Mesh, Object3D, Vector2, Vector3 } from 'three';
 import MSDFTextGeometry from '../MSDFTextGeometry';
 import MSDFTextMaterial, { uniforms } from '../MSDFTextMaterial';
-import { varsToUniforms } from '#webgl/utils/varToUniform';
 
 
 const defaultOptions = {
@@ -11,8 +11,7 @@ const defaultOptions = {
 
 	strokeColor: uniforms.stroke.uStrokeColor.value,
 	strokeOpacity: uniforms.stroke.uStrokeOpacity.value,
-	strokeOutsetWidth: uniforms.stroke.uStrokeOutsetWidth.value,
-	strokeInsetWidth: uniforms.stroke.uStrokeInsetWidth.value,
+	strokeWidth: uniforms.stroke.uStrokeInsetWidth.value,
 
 	width: null,
 	align: 'left',
@@ -56,8 +55,8 @@ export default class MSDFTextMesh extends BaseComponent {
 				opacity: props.opacity,
 				strokeColor: props.strokeColor,
 				strokeOpacity: props.strokeOpacity,
-				strokeOutsetWidth: props.strokeOutsetWidth,
-				strokeInsetWidth: props.strokeInsetWidth,
+				// strokeOutsetWidth: props.strokeOutsetWidth,
+				strokeInsetWidth: props.strokeWidth,
 			})
 		);
 		const material = this.mat = new MSDFTextMaterial({
@@ -81,12 +80,13 @@ export default class MSDFTextMesh extends BaseComponent {
 	edit(content) {
 		this.geo.update({ text: content });
 		this.content = content;
+		this.updateTextPosition();
 	}
 
 	updateGeo(arg = {}) {
 		this.geo.update(arg);
-		this.updateTextPosition();
 		if (arg.text) this.content = arg.text;
+		this.updateTextPosition();
 	}
 
 	updateTextPosition(force = false) {
@@ -106,8 +106,8 @@ export default class MSDFTextMesh extends BaseComponent {
 	}
 
 	/// #if __DEBUG__
-	devtools() {
-		const gui = this.webgl.$gui.addFolder({ title: this.name });
+	devtools(_gui) {
+		const gui = (_gui ?? this.webgl.$gui).addFolder({ title: this.name });
 
 		gui.addBinding(this, 'content', { label: 'Content' })
 			.on('change', ({ value }) => this.edit(value));
@@ -131,20 +131,16 @@ export default class MSDFTextMesh extends BaseComponent {
 		}
 
 		fw.numberGui = gui.addBinding(fw, 'value', { label: 'Width', min: 0, max: 1000 })
-			.on('change', ({ value }) => this.geo.update({ width: value }));
+			.on('change', ({ value }) => this.updateGeo({ width: value }));
 		fw.numberGui.disabled = !fw.forced;
 
 		gui.addBinding(fw, 'forced', { label: 'Force Width' })
 			.on('change', ({ value }) => {
 				fw.forced = value;
 				fw.numberGui.disabled = !value;
-				if (value) {
-					this.geo.update({ width: fw.value });
-					this.updateTextPosition();
-				} else {
-					this.geo.update({ width: null });
-					this.updateTextPosition();
-				}
+				value
+					? this.updateGeo({ width: fw.value })
+					: this.updateGeo({ width: null });
 			});
 
 		gui.addSeparator();
@@ -157,20 +153,16 @@ export default class MSDFTextMesh extends BaseComponent {
 		}
 
 		flh.numberGui = gui.addBinding(flh, 'value', { label: 'Line Height', min: 0, max: 1000 })
-			.on('change', ({ value }) => this.geo.update({ lineHeight: value }));
+			.on('change', ({ value }) => this.updateGeo({ lineHeight: value }));
 		flh.numberGui.disabled = !flh.forced;
 
 		gui.addBinding(flh, 'forced', { label: 'Force Line Height' })
 			.on('change', ({ value }) => {
 				flh.forced = value;
 				flh.numberGui.disabled = !value;
-				if (value) {
-					this.geo.update({ lineHeight: flh.value });
-					this.updateTextPosition()
-				} else {
-					this.geo.update({ lineHeight: null });
-					this.updateTextPosition()
-				}
+				value
+					? this.updateGeo({ lineHeight: flh.value })
+					: this.updateGeo({ lineHeight: null });
 			});
 
 		gui.addSeparator();
