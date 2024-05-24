@@ -2,7 +2,7 @@ import { cache } from './cache.js';
 
 // let i = 0;
 
-export default function loadImage(url, opts) {
+export default function loadImage(url, opts = {}) {
 	return new Promise((resolve) => {
 		const node = new Image();
 		node.loading = 'eager';

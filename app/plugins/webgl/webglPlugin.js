@@ -8,6 +8,7 @@ import WebGL from './WebGL.vue';
 /// #code const getLoadWebgl = import('#webgl/core/loader.js');
 /// #else
 import { loadWebgl } from '#webgl/core/loader.js';
+import { wait } from '#utils/async';
 /// #code import * as THREE from 'three';
 /// #endif
 

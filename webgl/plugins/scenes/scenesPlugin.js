@@ -12,20 +12,30 @@ export function scenesPlugin(webgl) {
 	/// #code const savedCurrentScene = storageSync('webgl:scenesPlugin:current', w(null));
 	/// #endif
 
+
 	const api = {
 		list: [],
+		current,
+
+		get current() {
+			return current.value;
+		},
 
 		create,
 		set,
 		switch: set,
+		get,
 
 		update,
 		render,
 	}
 
+	function init() {
+		api.list.forEach(scene => scene.component.triggerInit());
+	}
+
 	function create(name, Class) {
 		const Scene = new Class();
-		Scene.triggerInit();
 
 		const s = api[ name ] = {
 			name,
@@ -34,18 +44,25 @@ export function scenesPlugin(webgl) {
 			needsUpdate: true,
 			needsRender: true,
 			component: Scene,
-			leave: () => Scene.leave(),
-			enter: () => Scene.enter(),
-			update: () => Scene.triggerUpdate(),
-			render: () => Scene.triggerRender(),
+
+			leave: Scene.leave.bind(Scene),
+			enter: Scene.enter.bind(Scene),
+			update: Scene.triggerUpdate.bind(Scene),
+			render: Scene.triggerRender.bind(Scene),
 		};
 
 		api.list.push(s);
+
 		return s;
 	}
 
 	function getSceneByComponent(component) {
 		return api.list.find(s => s.component === component);
+	}
+
+	function get(id) {
+		if(!api[id]) throw new Error(`Scene with id ${id} not found`);
+		return api[id].component;
 	}
 
 	async function set(scene, force = false) {
@@ -102,25 +119,15 @@ export function scenesPlugin(webgl) {
 		})
 		current.watchImmediate(({ name }) => o.name = name)
 
-
-		let CELLS_PER_ROW = 3
-		const rows = Math.ceil(api.list.length / CELLS_PER_ROW)
-		const cells = Array.from({ length: rows * CELLS_PER_ROW }, (_, i) => {
-			const scene = api.list[i]
-			if (!scene) return null
-			return { title: scene.name, value: scene.component }
-		}).filter(Boolean)
-		CELLS_PER_ROW = Math.min(CELLS_PER_ROW, cells.length)
-
 		gui.addBlade({
-			view: 'buttongrid',
-			size: [ CELLS_PER_ROW, rows ],
-			cells: (x, y) => cells[ y * CELLS_PER_ROW + x ],
+			view: 'list',
 			label: 'Scenes',
-		}).on('click', ({ index }) => {
-			const { value } = cells[index[1] * CELLS_PER_ROW + index[0]]
-			set(value)
-		})
+			options: api.list.map(scene => ({
+				text: scene.name,
+				value: scene.name,
+			})),
+			value: current.value.name,
+		}).on('change', ({ value }) => set(value))
 	}
 	/// #endif
 
@@ -129,7 +136,9 @@ export function scenesPlugin(webgl) {
 			webgl.$scenes = api;
 		},
 		load: () => {
-			webgl.$hooks.afterStart.watchOnce(() => {
+			webgl.$hooks.beforeStart.watchOnce(() => {
+				init()
+
 				if (!current.value) {
 					set(savedCurrentScene.value ?? api.list[0], true);
 				}
@@ -142,6 +151,8 @@ export function scenesPlugin(webgl) {
 
 				__DEBUG__ && devtools();
 			})
+
+			webgl.$getCurrentScene = () => current.value.component;
 		}
 	}
 }

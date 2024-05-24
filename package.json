@@ -6,13 +6,9 @@
   "description": "",
   "author": "Dakumisu",
   "license": "ISC",
-  "imports": {
-    "#app/*": "./app/*",
-    "#webgl/*": "./webgl/*",
-    "#utils/*": "./utils/*",
-    "#assets/*": "./assets/*",
-    "#config/*": "./config/*",
-    "#/*": "./*"
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
   },
   "scripts": {
     "dev": "vite -c config/vite.config.js",
@@ -22,27 +18,36 @@
     "preview:dev": "npm run build -- -m development && npm run _preview -- -m development",
     "deploy:dev": "npm run build -- -m development && netlify deploy --alias dev",
     "deploy:prod": "npm run build && netlify deploy --prod",
-    "clear": "rm -rf node_modules && rm -rf .cache"
+    "clean": "rm -rf node_modules && rm -rf .cache"
   },
   "dependencies": {
     "@rollup/pluginutils": "^5.0.2",
+    "@tweakpane/plugin-essentials": "^0.2.1",
     "@vitejs/plugin-vue": "^4.0.0",
     "generate-subtitles": "^1.0.6",
     "minimist": "^1.2.8",
     "netlify-cli": "^16.9.3",
+    "postprocessing": "^6.35.4",
+    "quad-indices": "^2.0.1",
     "sass": "^1.57.1",
     "three": "^0.163.0",
+    "tweakpane": "^4.0.3",
     "vite": "^4.0.4",
     "vtt-to-json": "^0.1.1",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6",
-    "yargs": "^17.7.2"
+    "yargs": "^17.7.2",
+    "word-wrapper": "^1.0.7"
   },
-  "devDependencies": {
-    "@tweakpane/plugin-essentials": "^0.2.1",
-    "tweakpane": "^4.0.3"
-  },
-  "engines": {
-    "node": ">=20"
+  "workspaces": [
+    "packages/*"
+  ],
+  "imports": {
+    "#app/*": "./app/*",
+    "#webgl/*": "./webgl/*",
+    "#utils/*": "./utils/*",
+    "#assets/*": "./assets/*",
+    "#config/*": "./config/*",
+    "#/*": "./*"
   }
 }

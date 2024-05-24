@@ -110,12 +110,12 @@ export function initializeWebgl({
 			const plug = isArr ? plugin[ 0 ] : plugin;
 			const opts = isArr ? plugin[ 1 ] : {};
 			const p = usePlugin(plug, opts);
-			plugins[ i ] = [p, opts]
+			plugins[ i ] = [ p, opts ]
 		}
 
 		// Call each load method
 		for (let i = 0; i < plugins.length; i++) {
-			const [load, opts] = plugins[ i ];
+			const [ load, opts ] = plugins[ i ];
 			load?.call(api, api, opts);
 		}
 

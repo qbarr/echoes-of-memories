@@ -1,21 +1,28 @@
-import AnotherScene from './components/AnotherScene';
-import MainScene from './components/MainScene';
-import TestScene from './components/TestScene';
+import MainScene from './components/Scenes/MainScene';
+import UIScene from './components/Scenes/UIScene';
 
 import { createWebgl, webgl } from './core';
 
 
 export default createWebgl({
 	async setup() {
-		const { $renderer } = webgl;
+		const { $renderer, $scenes } = webgl;
 		$renderer.setup({ alias: false, antialias: false });
 		$renderer.instance.setClearColor(0x838383, 0);
 
+		$scenes.create('main', MainScene);
+		$scenes.create('ui', UIScene);
+
 		webgl.$log('WebGL setup');
+
 	},
 
 	async preload() {
+		const { load } = webgl.$assets;
 
+		await Promise.all([
+			load('msdf-font/VCR_OSD_MONO'),
+		]);
 	},
 
 	async start() {
@@ -24,11 +31,6 @@ export default createWebgl({
 		$renderer.resize();
 
 		$time.clampTo60fps = false;
-		$time.start();
-
-		$scenes.create('main', MainScene);
-		$scenes.create('test', TestScene);
-		$scenes.create('another', AnotherScene);
 
 		webgl.$log('WebGL started');
 	},

@@ -2,14 +2,16 @@
 	<main class="ui">
 		<RouterView />
 	</main>
+
 	<WebGL />
+
 	<Debug v-if="isDebug"/>
 </template>
 
 <script setup>
 	import { shallowRef } from 'vue';
 
-	const isDebug = shallowRef(__DEBUG__)
+	const isDebug = shallowRef(__DEBUG__ ?? false);
 </script>
 
 <style lang="scss">
@@ -22,14 +24,13 @@
 	justify-content: center;
 	width: 100vw;
 	height: var(--vp-height);
-	// min-height: 100vh;
 	overflow: hidden;
 }
 
 .page {
+	position: relative;
 	width: 100%;
 	height: 100vh;
-	position: relative;
 }
 
 p,

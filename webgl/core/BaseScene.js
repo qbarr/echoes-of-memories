@@ -3,6 +3,7 @@ import { Scene } from 'three';
 import BaseComponent from './BaseComponent.js';
 import BaseCamera from './BaseCamera.js';
 import { s } from '#utils/state';
+import { deferredPromise } from '#utils/async/deferredPromise.js';
 
 function toggleCam(cam, state) {
 	if (!cam || cam.isUsed == state) return;
@@ -16,6 +17,7 @@ export default class BaseScene extends BaseComponent {
 		props.autoAttach = !!(props.autoAttach ?? true);
 		super(props, true);
 		this.isScene = true;
+		this.isReady = deferredPromise();
 
 		this.hooks = {
 			afterMatrixWorldUpdate: s(),
@@ -32,6 +34,9 @@ export default class BaseScene extends BaseComponent {
 		super.triggerInit();
 		if (!this.camera) this.camera = this.add(BaseCamera);
 		if (this.props.autoAttach) this.attach();
+
+		this.isReady.resolve();
+		this.isReady = null;
 	}
 
 	triggerUpdate() {
@@ -79,7 +84,7 @@ export default class BaseScene extends BaseComponent {
 		const renderer = this.webgl.$threeRenderer;
 		const camera = this.getCurrentCamera();
 		if (!camera) return;
-		renderer.render(this.base, camera.cam);
+		// renderer.render(this.base, camera.cam);
 	}
 
 	triggerRender() {
