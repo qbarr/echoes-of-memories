@@ -9,6 +9,7 @@ import loadOBJ from '#utils/files/loadOBJ';
 import loadAtlas from './loadAtlas';
 import loadGLTF from './loadGLTF';
 import loadImage from './loadImage';
+import loadAudio from './loadAudio';
 
 import manifest from '#assets/manifest';
 
@@ -20,9 +21,11 @@ export function assetsPlugin(webgl) {
 	files.registerLoader(loadJSON);
 	files.registerLoader(loadGLTF);
 	files.registerLoader(loadOBJ);
+	files.registerLoader(loadAudio);
 
 	let pgen = null;
 	const data = {};
+	const sounds = {};
 	const textures = { black: new DataTexture(new Uint8Array([ 0, 0, 0, 255 ]), 1, 1) };
 	const objects = {};
 	const spritesheets = {};
@@ -43,6 +46,7 @@ export function assetsPlugin(webgl) {
 		data,
 		textures,
 		objects,
+		sounds,
 		pgen,
 		materials,
 		geometries,
@@ -59,6 +63,7 @@ export function assetsPlugin(webgl) {
 		'spritesheet': spritesheetTask,
 		'json': jsonTask,
 		'font': msdfFontTask,
+		'audio': audioTask,
 	};
 
 	tasks.avif = tasks.webp = tasks.jpg = tasks.png = tasks.tex;
@@ -134,6 +139,12 @@ export function assetsPlugin(webgl) {
 		} });
 	}
 
+	async function audioTask({ id, file, opts }) {
+		// console.log('audioTask', opts)
+		return files.load(file, { audioListener: opts.audioListener, onLoad: (audio) => {
+			sounds[ id ] = audio;
+		} });
+	}
 
 	async function spritesheetTask({ id, file, ...opts }) {
 		const textureID = 'spritesheet-' + id;
@@ -168,8 +179,6 @@ export function assetsPlugin(webgl) {
 			jsonTask(fontData),
 			textureTask(imgData)
 		]);
-
-		console.log(font, img);
 	}
 
 

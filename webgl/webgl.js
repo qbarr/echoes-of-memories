@@ -19,9 +19,11 @@ export default createWebgl({
 
 	async preload() {
 		const { load } = webgl.$assets;
+		const { $sounds } = webgl;
 
 		await Promise.all([
 			load('msdf-font/VCR_OSD_MONO'),
+			$sounds.preload()
 		]);
 	},
 

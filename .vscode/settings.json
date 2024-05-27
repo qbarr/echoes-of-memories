@@ -139,5 +139,50 @@
     "???",
     "NOTE",
     "DONE"
-  ]
+  ],
+  "todohighlight.keywords": [
+	{
+		"text": "/// #if DEBUG",
+		"backgroundColor": "none",
+		"fontWeight": "normal",
+		"color": "lightgray"
+	},
+	{
+		"text": "/// #if __DEBUG__",
+		"backgroundColor": "none",
+		"fontWeight": "normal",
+		"color": "lightgray"
+	},
+	{
+		"text": "/// #if !DEBUG",
+		"backgroundColor": "none",
+		"fontWeight": "normal",
+		"color": "lightgray"
+	},
+	{
+		"text": "/// #if !__DEBUG__",
+		"backgroundColor": "none",
+		"fontWeight": "normal",
+		"color": "lightgray"
+	},
+	{
+		"text": "/// #endif",
+		"backgroundColor": "none",
+		"fontWeight": "normal",
+		"color": "lightgray"
+	},
+	{
+		"text": "/// #else",
+		"backgroundColor": "none",
+		"fontWeight": "normal",
+		"color": "lightgray"
+	},
+	{
+		"text": "/// #code",
+		"backgroundColor": "none",
+		"fontWeight": "normal",
+		"color": "lightpink"
+	}
+],
+"todohighlight.keywordsPattern": "",
 }
