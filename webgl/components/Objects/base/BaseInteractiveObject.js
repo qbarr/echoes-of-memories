@@ -5,7 +5,6 @@ import { useInteraction } from './useInteraction';
 import { useProximity } from './useProximity';
 import { w } from '#utils/state';
 
-
 export class BaseInteractiveObject extends BaseComponent {
 	static isInteractiveObject = true;
 
@@ -14,30 +13,34 @@ export class BaseInteractiveObject extends BaseComponent {
 
 		this.base = new Object3D();
 
-		const { padding } = useInteraction(this)
-		this.padding = padding
+		const { padding } = useInteraction(this);
+		this.padding = padding;
 
-		useProximity(this)
+		const { threshold } = useProximity(this);
+		this.threshold = threshold;
 	}
 
 	onClick() {
-		this.log('click');
+		this.log('INTERACTION:click');
 	}
-
 	onHold() {
-		this.log('hold');
+		this.log('INTERACTION:hold');
 	}
-
 	onEnter() {
-		this.log('enter');
+		this.log('INTERACTION:enter');
 	}
-
 	onLeave() {
-		this.log('leave');
+		this.log('INTERACTION:leave');
 	}
 
-	onProximity() {
-		this.log('proximity');
+	onEnterPerimeter() {
+		this.log('PERIMETER:enter');
+	}
+	onLeavePerimeter() {
+		this.log('PERIMETER:leave');
+	}
+	onInsidePerimeter(distance, normDistance) {
+		this.log('PERIMETER:inside', distance, normDistance);
 	}
 
 	update() {}

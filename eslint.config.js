@@ -1,7 +1,7 @@
 import globals from 'globals';
 import pluginVue from 'eslint-plugin-vue';
 
-export default [
+const config = [
 	{
 		languageOptions: {
 			globals: {
@@ -10,5 +10,7 @@ export default [
 			},
 		},
 	},
-	...pluginVue.configs[('flat/essential', 'flat/recommended')],
+	...pluginVue.configs['flat/recommended'],
 ];
+
+export default config;
