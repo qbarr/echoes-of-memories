@@ -90,7 +90,7 @@ export function debugCameraPlugin(webgl) {
 
 	function initGUI() {
 		const gui = api.gui = webgl.$gui.addFolder(Object.assign({
-			title: 'Debug Camera',
+			title: '🎥 Debug Camera',
 			index: 0
 		}));
 

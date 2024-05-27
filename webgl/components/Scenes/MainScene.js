@@ -4,6 +4,7 @@ import { MainCamera } from '../Cameras/MainCamera';
 import { MSDFTextMesh } from '../Text';
 
 import { wait } from '#utils/async';
+import { Cube } from '../Objects/Cube';
 
 
 export default class MainScene extends BaseScene {
@@ -17,6 +18,8 @@ export default class MainScene extends BaseScene {
 			content: 'Home',
 			centerMesh: true,
 		});
+
+		this.add(Cube)
 	}
 
 	async enter() {

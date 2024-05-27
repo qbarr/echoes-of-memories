@@ -1,5 +1,5 @@
 {
-  "name": "stylelint-config-test",
+  "name": "@gobz/stylelint-config-gobz",
   "version": "1.0.1",
   "type": "module",
   "author": "Gobz",

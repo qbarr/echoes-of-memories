@@ -4,8 +4,8 @@ import { webgl } from '#webgl/core';
 import { deepCopy } from '#webgl/utils/deepCopy';
 import uniforms from './uniforms';
 
-import fs from './shaders/fragment.frag?hotshader';
-import vs from './shaders/vertex.vert?hotshader';
+import fs from './fragment.frag?hotshader';
+import vs from './vertex.vert?hotshader';
 
 
 const defaultOptions = {

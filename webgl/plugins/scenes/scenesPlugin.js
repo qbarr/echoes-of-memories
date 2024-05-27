@@ -110,7 +110,7 @@ export function scenesPlugin(webgl) {
 
 	/// #if __DEBUG__
 	function devtools() {
-		const gui = webgl.$gui.addFolder({ title: 'Scenes' });
+		const gui = webgl.$gui.addFolder({ title: '🐠 Scenes', index: 1 });
 
 		const o = { name: '' }
 		const sceneMonitor = gui.addBinding(o, 'name', {

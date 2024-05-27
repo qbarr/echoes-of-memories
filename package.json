@@ -1,5 +1,5 @@
 {
-  "name": "echoes-of-memories",
+  "name": "@gobz/echoes-of-memories",
   "version": "1.0.0",
   "private": false,
   "type": "module",
@@ -38,6 +38,12 @@
     "vue-router": "^4.1.6",
     "yargs": "^17.7.2",
     "word-wrapper": "^1.0.7"
+  },
+  "devDependencies": {
+    "eslint": "^9.3.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vue": "^9.26.0",
+    "globals": "^15.3.0"
   },
   "workspaces": [
     "packages/*"
