@@ -2,7 +2,7 @@ import BaseComponent from '#webgl/core/BaseComponent';
 import { Object3D } from 'three';
 
 import { useInteraction } from './useInteraction';
-import { useSoundProximity } from './useSoundProximity';
+import { useProximity } from './useProximity';
 import { w } from '#utils/state';
 
 
@@ -17,7 +17,7 @@ export class BaseInteractiveObject extends BaseComponent {
 		const { padding } = useInteraction(this)
 		this.padding = padding
 
-		useSoundProximity(this)
+		useProximity(this)
 	}
 
 	onClick() {
@@ -34,6 +34,10 @@ export class BaseInteractiveObject extends BaseComponent {
 
 	onLeave() {
 		this.log('leave');
+	}
+
+	onProximity() {
+		this.log('proximity');
 	}
 
 	update() {}

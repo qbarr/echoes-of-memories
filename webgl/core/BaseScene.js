@@ -19,8 +19,9 @@ export default class BaseScene extends BaseComponent {
 		this.isScene = true;
 		this.isReady = deferredPromise();
 
-		this.hooks = {
+		this.$hooks = {
 			afterMatrixWorldUpdate: s(),
+			onCameraChange: s(),
 		};
 
 		this._cam = { current: false, forced: false };
@@ -43,7 +44,7 @@ export default class BaseScene extends BaseComponent {
 		super.triggerUpdate();
 		if (this.isDestroyed) return;
 		this.base.updateMatrixWorld();
-		this.hooks.afterMatrixWorldUpdate.emit();
+		this.$hooks.afterMatrixWorldUpdate.emit();
 	}
 
 	beforeInit() {
@@ -66,6 +67,8 @@ export default class BaseScene extends BaseComponent {
 		toggleCam(cam.current, false);
 		cam.current = v;
 		if (!cam.forced) toggleCam(cam.current, false);
+
+		this.$hooks.onCameraChange.emit(this.getCurrentCamera());
 	}
 
 	get overrideCamera() { return this._cam.forced }
@@ -77,6 +80,8 @@ export default class BaseScene extends BaseComponent {
 		toggleCam(cam.current, false);
 		cam.forced = v;
 		toggleCam(cam.forced, true);
+
+		this.$hooks.onCameraChange.emit(this.getCurrentCamera());
 	}
 
 	getCurrentCamera() {
@@ -101,7 +106,7 @@ export default class BaseScene extends BaseComponent {
 
 	destroy() {
 		this.detach();
-		for (let k in this.hooks) this.hooks[ k ].unwatchAll();
+		for (let k in this.$hooks) this.$hooks[ k ].unwatchAll();
 		super.destroy();
 	}
 }

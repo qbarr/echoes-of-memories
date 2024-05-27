@@ -16,14 +16,34 @@
     "webgl/**/*",
     "public/**/*"
   ],
+
   "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+
+    "lib": ["dom", "dom.iterable", "esnext"],
+
+    "resolvePackageJsonImports": false,
+    "resolvePackageJsonExports": true,
+    "incremental": true,
+
+    // For convenience into bundled part of vitevue project
+    "resolveJsonModule": true,
+
+    // Required in Vue projects
     "jsx": "preserve",
-    "checkJs": false,
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "node",
+    "jsxImportSource": "vue",
+    "noEmit": true,
+
+    // Recommended
+    "importHelpers": true,
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
+    "checkJs": false,
+    "allowJs": true,
+
     "baseUrl": ".",
     "paths": {
       "#webgl/*": [ "./webgl/*" ],

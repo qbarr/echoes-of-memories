@@ -78,11 +78,11 @@ export function assetsPlugin(webgl) {
 		return loadPromises[ fileID ] = execLoad(fileID, opts);
 	}
 
-	function execLoad(fileID, { onLoad, type, id, ...opts } = {}) {
+	function execLoad(fileID, { onLoad, type, id, bypassManifest = false, ...opts } = {}) {
 		const preloader = webgl.$app.$preloader;
 		const task = !preloader.finished ? preloader.task : NOOP;
 		let file = manifest[ fileID ];
-		if (!file) return;
+		if (!file && !bypassManifest) return;
 
 		let url = typeof file === 'string' ? file : file.url;
 

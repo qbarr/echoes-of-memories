@@ -8,7 +8,7 @@
     "stylelint.vscode-stylelint",
     "christian-kohler.npm-intellisense",
     "christian-kohler.path-intellisense",
-    "leonzalion.vscode-ejs",
-    "Vue.volar"
+    "Vue.volar",
+    "esbenp.prettier-vscode"
   ]
 }

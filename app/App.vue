@@ -5,13 +5,13 @@
 
 	<WebGL />
 
-	<Debug v-if="isDebug"/>
+	<Debug v-if="isDebug" />
 </template>
 
 <script setup>
-	import { shallowRef } from 'vue';
+import { shallowRef } from 'vue';
 
-	const isDebug = shallowRef(__DEBUG__ ?? false);
+const isDebug = shallowRef(__DEBUG__ ?? false);
 </script>
 
 <style lang="scss">

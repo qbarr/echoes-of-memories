@@ -36,6 +36,8 @@ export function composerPlugin(webgl) {
 		composer.addPass(shaderPass)
 		shaderPass.renderToScreen = true
 		api.instance = composer
+
+		scene.$hooks.onCameraChange.watch(onCameraChange)
 	}
 
 	function bloomEffect() {
@@ -48,13 +50,23 @@ export function composerPlugin(webgl) {
 		selectiveBloom.selection = selection
 	}
 
+	function onCameraChange(cam) {
+		console.log(cam);
+		const { passes } = api.instance
+		passes.forEach(pass => {
+			if (!pass.camera) return
+			pass.camera = cam.base
+		})
+	}
+
+
 	function update() {
 
 		const { $renderer, $scenes, $composer } = webgl
-		api.instance.passes.forEach(pass => {
-			if (!pass.camera) return
-			pass.camera = webgl.$getCurrentScene().getCurrentCamera().base
-		})
+		// api.instance.passes.forEach(pass => {
+		// 	if (!pass.camera) return
+		// 	pass.camera = webgl.$getCurrentScene().getCurrentCamera().base
+		// })
 		// webgl.scene.overrideMaterial = this.depthMaterial
 		$renderer.instance.setRenderTarget(target)
 		// this.shaderPass.uniforms.uTime.value += .1
