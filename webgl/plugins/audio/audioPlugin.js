@@ -17,15 +17,15 @@ export function audioPlugin(webgl, opts = {}) {
 		unmute,
 		getMasterVolume,
 
-		preload
+		preload,
 	};
 
 	function init() {
-		console.log('Audio plugin init', audioListener.getMasterVolume());
+		console.log('Audio plugin init');
 
 		const { $assets } = webgl;
 		api.sounds = $assets.sounds;
-	};
+	}
 
 	function play({ id }) {
 		try {
@@ -43,7 +43,7 @@ export function audioPlugin(webgl, opts = {}) {
 		}
 	}
 
-	function playMany({ ids = []}) {
+	function playMany({ ids = [] }) {
 		try {
 			ids.forEach(play);
 		} catch (e) {
@@ -51,7 +51,7 @@ export function audioPlugin(webgl, opts = {}) {
 		}
 	}
 
-	function stopMany({ ids = []}) {
+	function stopMany({ ids = [] }) {
 		try {
 			ids.forEach(stop);
 		} catch (e) {
@@ -83,29 +83,31 @@ export function audioPlugin(webgl, opts = {}) {
 		const { load } = webgl.$assets;
 
 		return Promise.all(
-			Object.entries(_AUDIOS_).map(async ([key, url]) => {
-				const [file, extension] = key.split('/').pop().split('.');
+			Object.entries(_AUDIOS_).map(async ([path, module]) => {
+				const [file, extension] = path.split('/').pop().split('.');
+				const directory = path.split('/').slice(0, -1).pop();
 
 				return await load(file, {
 					type: 'audio',
-					audioListener
+					directory,
+					audioListener,
 				});
-			})
+			}),
 		);
-	};
+	}
 
 	return {
 		install: (webgl) => {
 			/// #if __DEBUG__
-			console.log("[Audio plugin] Install");
+			console.log('[Audio plugin] Install');
 			/// #endif
 			webgl.$sounds = api;
 		},
 		load: async (webgl) => {
 			/// #if __DEBUG__
-			console.log("[Audio plugin] Load");
+			console.log('[Audio plugin] Load');
 			/// #endif
-			webgl.$hooks.afterStart.watchOnce(init)
+			webgl.$hooks.afterStart.watchOnce(init);
 		},
 	};
 }

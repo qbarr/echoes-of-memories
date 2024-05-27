@@ -5,7 +5,6 @@ import { useInteraction } from './useInteraction';
 import { useProximity } from './useProximity';
 import { w } from '#utils/state';
 
-
 export class BaseInteractiveObject extends BaseComponent {
 	static isInteractiveObject = true;
 
@@ -14,10 +13,10 @@ export class BaseInteractiveObject extends BaseComponent {
 
 		this.base = new Object3D();
 
-		const { padding } = useInteraction(this)
-		this.padding = padding
+		const { padding } = useInteraction(this);
+		this.padding = padding;
 
-		useProximity(this)
+		useProximity(this);
 	}
 
 	onClick() {
@@ -29,7 +28,7 @@ export class BaseInteractiveObject extends BaseComponent {
 	}
 
 	onEnter() {
-		this.log('enter');
+		this.log('enter', this.base);
 	}
 
 	onLeave() {
