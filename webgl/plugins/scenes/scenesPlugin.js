@@ -3,15 +3,13 @@ import { w } from '#utils/state';
 /// #code import { storageSync } from '#utils/state';
 /// #endif
 
-
-const NOOP = v => v;
+const NOOP = (v) => v;
 
 export function scenesPlugin(webgl) {
-	const current = w(null)
+	const current = w(null);
 	/// #if __DEBUG__
 	/// #code const savedCurrentScene = storageSync('webgl:scenesPlugin:current', w(null));
 	/// #endif
-
 
 	const api = {
 		list: [],
@@ -28,16 +26,16 @@ export function scenesPlugin(webgl) {
 
 		update,
 		render,
-	}
+	};
 
 	function init() {
-		api.list.forEach(scene => scene.component.triggerInit());
+		api.list.forEach((scene) => scene.component.triggerInit());
 	}
 
 	function create(name, Class) {
 		const Scene = new Class();
 
-		const s = api[ name ] = {
+		const s = (api[name] = {
 			name,
 			id: Symbol(name),
 			isActive: true,
@@ -49,7 +47,7 @@ export function scenesPlugin(webgl) {
 			enter: Scene.enter.bind(Scene),
 			update: Scene.triggerUpdate.bind(Scene),
 			render: Scene.triggerRender.bind(Scene),
-		};
+		});
 
 		api.list.push(s);
 
@@ -57,11 +55,11 @@ export function scenesPlugin(webgl) {
 	}
 
 	function getSceneByComponent(component) {
-		return api.list.find(s => s.component === component);
+		return api.list.find((s) => s.component === component);
 	}
 
 	function get(id) {
-		if(!api[id]) throw new Error(`Scene with id ${id} not found`);
+		if (!api[id]) throw new Error(`Scene with id ${id} not found`);
 		return api[id].component;
 	}
 
@@ -74,7 +72,7 @@ export function scenesPlugin(webgl) {
 		if (curScene === scene && !force) return;
 
 		if (curScene) {
-			await curScene.leave()
+			await curScene.leave();
 			curScene.isActive = false;
 			curScene.needsUpdate = false;
 			curScene.needsRender = false;
@@ -112,47 +110,44 @@ export function scenesPlugin(webgl) {
 	function devtools() {
 		const gui = webgl.$gui.addFolder({ title: '🐠 Scenes', index: 1 });
 
-		const o = { name: '' }
+		const o = { name: '' };
 		const sceneMonitor = gui.addBinding(o, 'name', {
 			label: 'Current Scene',
 			readonly: true,
-		})
-		current.watchImmediate(({ name }) => o.name = name)
+		});
+		current.watchImmediate(({ name }) => (o.name = name));
 
 		gui.addBlade({
 			view: 'list',
 			label: 'Scenes',
-			options: api.list.map(scene => ({
+			options: api.list.map((scene) => ({
 				text: scene.name,
 				value: scene.name,
 			})),
 			value: current.value.name,
-		}).on('change', ({ value }) => set(value))
+		}).on('change', ({ value }) => set(value));
 	}
 	/// #endif
 
 	return {
 		install: () => {
 			webgl.$scenes = api;
+			webgl.$getCurrentScene = () => api.current.component;
 		},
 		load: () => {
 			webgl.$hooks.beforeStart.watchOnce(() => {
-				init()
+				if (!current.value) set(savedCurrentScene.value ?? api.list[0], true);
 
-				if (!current.value) {
-					set(savedCurrentScene.value ?? api.list[0], true);
-				}
+				init();
 
 				for (let i = 0; i < api.list.length; i++) {
 					const scene = api.list[i];
-					if (scene.isActive) continue
+					if (scene.isActive) continue;
 					scene.component.detach();
 				}
 
 				__DEBUG__ && devtools();
-			})
-
-			webgl.$getCurrentScene = () => current.value.component;
-		}
-	}
+			});
+		},
+	};
 }

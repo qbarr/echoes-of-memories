@@ -6,8 +6,6 @@
 	<WebGL />
 
 	<Debug v-if="isDebug" />
-
-	<p>{{ text }}</p>
 </template>
 
 <script setup>

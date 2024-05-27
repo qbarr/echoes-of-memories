@@ -16,27 +16,31 @@ export class BaseInteractiveObject extends BaseComponent {
 		const { padding } = useInteraction(this);
 		this.padding = padding;
 
-		useProximity(this);
+		const { threshold } = useProximity(this);
+		this.threshold = threshold;
 	}
 
 	onClick() {
-		this.log('click');
+		this.log('INTERACTION:click');
 	}
-
 	onHold() {
-		this.log('hold');
+		this.log('INTERACTION:hold');
 	}
-
 	onEnter() {
-		this.log('enter', this.base);
+		this.log('INTERACTION:enter');
 	}
-
 	onLeave() {
-		this.log('leave');
+		this.log('INTERACTION:leave');
 	}
 
-	onProximity() {
-		this.log('proximity');
+	onEnterPerimeter() {
+		this.log('PERIMETER:enter');
+	}
+	onLeavePerimeter() {
+		this.log('PERIMETER:leave');
+	}
+	onInsidePerimeter(distance, normDistance) {
+		this.log('PERIMETER:inside', distance, normDistance);
 	}
 
 	update() {}

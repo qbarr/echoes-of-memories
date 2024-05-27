@@ -9,6 +9,11 @@ export class Cube extends BaseInteractiveObject {
 		mesh.position.set(0, 0, 0);
 		this.base.add(mesh);
 
-		this.padding.set(1)
+		this.padding.set(1);
+	}
+
+	update() {
+		this.base.rotation.y += 0.01;
+		this.base.position.y = Math.sin(this.base.rotation.y);
 	}
 }
