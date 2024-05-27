@@ -39,9 +39,7 @@ export function useProximity(Class) {
 	/// #endif
 
 	function init() {
-		console.log('HERE');
 		const scene = webgl.$getCurrentScene();
-		console.log(scene);
 		scene.$hooks.onCameraChange.watch(onCameraChange);
 		camera = scene.getCurrentCamera().base;
 
@@ -82,8 +80,6 @@ export function useProximity(Class) {
 		/// #endif
 
 		/// #if __DEBUG__
-		debugMesh.position.copy(Class.base.position);
-
 		if (forcedStates.inside || states.inside) debugMesh.material.color.setHex(0x00ff00);
 		else debugMesh.material.color.setHex(0xff0000);
 		/// #endif
