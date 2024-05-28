@@ -75,6 +75,7 @@ export function scenesPlugin(webgl) {
 
 		if (curScene) {
 			await curScene.leave();
+
 			curScene.isActive = false;
 			curScene.needsUpdate = false;
 			curScene.needsRender = false;
@@ -138,7 +139,8 @@ export function scenesPlugin(webgl) {
 		},
 		load: () => {
 			webgl.$hooks.beforeStart.watchOnce(() => {
-				if (!current.value) set(savedCurrentScene.value ?? api.list[0], true);
+				if (!current.value)
+					set(savedCurrentScene.value ?? api.list[0], true);
 
 				init();
 

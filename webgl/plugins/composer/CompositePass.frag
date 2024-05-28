@@ -5,6 +5,7 @@ precision highp float;
 uniform float time;
 uniform vec4 resolution;
 uniform sampler2D tMap;
+uniform sampler2D tMapBloom;
 uniform sampler2D tBloom;
 
 varying vec2 vUv;
@@ -36,6 +37,7 @@ void main() {
 	vec2 uv = vUv;
 
 	vec4 tex = texture2D(tMap, uv);
+	tex += texture2D(tMapBloom, uv);
 	tex.rgb += texture2D(tBloom, uv).rgb;
 
 	// TODO: replace by blue noise texture

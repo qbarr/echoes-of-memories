@@ -7,8 +7,10 @@ import App from './App.vue';
 
 createApp({
 	component: App,
-	preload: async () => {},
+	preload: async (_, app) => {
+		// await app.$manifest.init();
+	},
 	init: async () => {
-		addRouteGuard()
-	}
+		addRouteGuard();
+	},
 });

@@ -1,0 +1,10 @@
+{
+  "file_id": {
+    "files": {
+      "sub_file_id.ext": [
+        "generated_files_folder/id OR hashed_id.ext"
+      ]
+    },
+    "type": "ext"
+  }
+}

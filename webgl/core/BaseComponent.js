@@ -26,6 +26,7 @@ export default class BaseComponent {
 		m.dynamic = [];
 
 		this.static = false;
+		this.needBloom = false;
 
 		this.webgl = getWebGL();
 		this.scene = null;

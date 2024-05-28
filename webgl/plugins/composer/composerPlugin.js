@@ -7,9 +7,15 @@ export function composerPlugin(webgl) {
 	const buffers = {};
 	const filters = {};
 
+	const uniforms = {};
+	const defines = {};
+
 	const api = {
 		buffers,
 		filters,
+
+		uniforms,
+		defines,
 
 		resize,
 		update,
@@ -20,24 +26,20 @@ export function composerPlugin(webgl) {
 		const { $assets, $threeRenderer, $renderer, $hooks, $fbo } = webgl;
 		const { textures } = $assets;
 
-		buffers.main = $fbo.createBuffer({
-			name: 'Main',
-		});
+		buffers.main = $fbo.createBuffer({ name: 'Main' });
+		buffers.selectiveBloom = $fbo.createBuffer({ name: 'Selective Bloom' });
+		buffers.depth = $fbo.createBuffer({ name: 'Detph' });
+		// buffers.ui = $fbo.createBuffer({ name: 'UI' });
 
-		const uniforms = (api.uniforms = {
+		Object.assign(uniforms, {
 			...webgl.uniforms,
 			tMap: { value: buffers.main.texture, type: 't' },
+			tMapBloom: { value: buffers.selectiveBloom.texture, type: 't' },
 		});
 
-		const defines = (api.defines = {
-			...webgl.defines,
-		});
+		Object.assign(defines, { ...webgl.defines });
 
-		filters.main = createFilter({
-			// fragmentShader: CompositeFragment,
-			uniforms,
-			defines,
-		});
+		filters.main = createFilter({ uniforms, defines });
 		CompositeFragment.use(filters.main.material);
 
 		useUnrealBloom(api);
@@ -55,17 +57,31 @@ export function composerPlugin(webgl) {
 		api.$unrealBloom.resize(width, height);
 	}
 
-	function update() {}
+	function update() {
+		const { $scenes } = webgl;
+		$scenes.ui.component.triggerUpdate();
+	}
 
 	function render() {
+		const { $scenes } = webgl;
 		const scene = webgl.$getCurrentScene();
 		const renderer = webgl.$threeRenderer;
 
 		// Render raw scene to main buffer
 		renderer.setRenderTarget(buffers.main);
 		renderer.clear();
-		scene?.triggerRender();
-		api.uniforms.tMap.value = buffers.main.texture;
+		scene.toggleSelectedBloom(false);
+		scene.triggerRender();
+		uniforms.tMap.value = buffers.main.texture;
+
+		// Render selected bloom to selectiveBloom buffer
+		renderer.setRenderTarget(buffers.selectiveBloom);
+		renderer.clear();
+		scene.toggleSelectedBloom(true);
+		scene.triggerRender();
+		renderer.clearDepth();
+		$scenes.ui.component.triggerRender();
+		uniforms.tMapBloom.value = buffers.selectiveBloom.texture;
 
 		api.$unrealBloom.render(scene);
 

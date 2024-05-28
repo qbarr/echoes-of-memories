@@ -194,7 +194,6 @@ export function raycastPlugin(webgl) {
 		else scene = object.scene ?? webgl.$getCurrentScene();
 
 		const { id } = webgl.$scenes.getSceneByComponent(scene);
-		console.log(webgl.$scenes.getSceneByComponent(scene));
 
 		if (!scenes.has(scene)) {
 			scenes.set(id, {

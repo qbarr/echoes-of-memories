@@ -160,9 +160,7 @@ export const useUnrealBloom = (composer, { iterations = 5 } = {}) => {
 		depthWrite: false,
 		glslVersion: GLSL3,
 	}));
-	console.log(bloomFilter.uniforms);
 	UnrealBloomCompositeFragment.use(bloomFilter.material);
-	console.log(UnrealBloomCompositeFragment);
 
 	strength.watch((v) => (bloomFilter.uniforms.uBloomStrength.value = v));
 	radius.watch((v) => (bloomFilter.uniforms.uBloomRadius.value = v));

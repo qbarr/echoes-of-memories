@@ -1,3 +1,4 @@
+import { MeshBasicMaterial } from 'three';
 import MainScene from './components/Scenes/MainScene';
 import UIScene from './components/Scenes/UIScene';
 
@@ -5,7 +6,8 @@ import { createWebgl, webgl } from './core';
 
 export default createWebgl({
 	async setup() {
-		const { $renderer, $scenes } = webgl;
+		const { $renderer, $scenes, $assets } = webgl;
+
 		$renderer.setup({ alias: false, antialias: false });
 		$renderer.instance.setClearColor(0x838383, 0);
 

@@ -3,6 +3,8 @@ import { BaseInteractiveObject } from './base/BaseInteractiveObject';
 
 export class Cube extends BaseInteractiveObject {
 	init() {
+		// this.needBloom = true;
+
 		const geometry = new BoxGeometry(1, 1, 1);
 		const material = new MeshNormalMaterial();
 		const mesh = new Mesh(geometry, material);

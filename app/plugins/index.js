@@ -1,14 +1,14 @@
 /// #if __DEBUG__
-import { debugPlugin } from './debug/debugPlugin.js'
+/// #code import { debugPlugin } from './debug/debugPlugin.js'
 /// #endif
 
-import { devicePlugin } from './device/devicePlugin.js'
-import { preloaderPlugin } from './preloader/preloaderPlugin.js'
-import { routerPlugin } from './router/routerPlugin.js'
-import { storePlugin } from './store/storePlugin.js'
-import { viewportPlugin } from './viewport/viewportPlugin.js'
-import { webglPlugin } from './webgl/webglPlugin.js'
-
+import { devicePlugin } from './device/devicePlugin.js';
+import { manifestPlugin } from './manifest/manifestPlugin.js';
+import { preloaderPlugin } from './preloader/preloaderPlugin.js';
+import { routerPlugin } from './router/routerPlugin.js';
+import { storePlugin } from './store/storePlugin.js';
+import { viewportPlugin } from './viewport/viewportPlugin.js';
+import { webglPlugin } from './webgl/webglPlugin.js';
 
 export const plugins = [
 	/* CORE PLUGINS */
@@ -21,5 +21,5 @@ export const plugins = [
 	webglPlugin,
 
 	/* PROJECT PLUGINS */
-	// ...
-]
+	// manifestPlugin,
+];
