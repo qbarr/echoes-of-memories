@@ -1,93 +1,92 @@
-import { w } from '#utils/state';
-import { WebGLRenderTarget } from 'three';
-import { EffectComposer, RenderPass, ShaderPass } from 'three/examples/jsm/Addons.js';
-import vertexShader from '#webgl/shaders/composer/vertex.glsl'
-import fragmentShader from '#webgl/shaders/composer/fragment.glsl'
-import { SelectiveBloomEffect } from 'postprocessing';
+import createFilter from '#webgl/utils/createFilter';
+
+import CompositeFragment from './CompositePass.frag?hotshader';
+import { useUnrealBloom } from './UnrealBloom';
 
 export function composerPlugin(webgl) {
-	const api = { init, update, instance: null }
-	const target = new WebGLRenderTarget(700, 700, {
-		count: 1
-	})
-	const shaderPass = new ShaderPass({
-		uniforms: {
-			tDepth: { value: target.texture },
-			tDiffuse: { value: null }
-		},
-		vertexShader,
-		fragmentShader
-	}, 'tDiffuse')
+	const buffers = {};
+	const filters = {};
+
+	const api = {
+		buffers,
+		filters,
+
+		resize,
+		update,
+		render,
+	};
 
 	function init() {
+		const { $assets, $threeRenderer, $renderer, $hooks, $fbo } = webgl;
+		const { textures } = $assets;
 
-	    const { $renderer, $scenes, $composer } = webgl
-		const scene = $scenes.current.component
-		const composer = new EffectComposer($renderer.instance);
-		$renderer.instance.setRenderTarget(target)
-		composer.renderToScreen = true
+		buffers.main = $fbo.createBuffer({
+			name: 'Main',
+		});
 
-		const renderPass = new RenderPass(
-			scene.base,
-			scene.getCurrentCamera().base
-		)
-		console.log(renderPass)
-		composer.addPass(renderPass)
-		composer.addPass(shaderPass)
-		shaderPass.renderToScreen = true
-		api.instance = composer
+		const uniforms = (api.uniforms = {
+			...webgl.uniforms,
+			tMap: { value: buffers.main.texture, type: 't' },
+		});
 
-		scene.$hooks.onCameraChange.watch(onCameraChange)
+		const defines = (api.defines = {
+			...webgl.defines,
+		});
+
+		filters.main = createFilter({
+			// fragmentShader: CompositeFragment,
+			uniforms,
+			defines,
+		});
+		CompositeFragment.use(filters.main.material);
+
+		useUnrealBloom(api);
+
+		$renderer.drawingBufferSize.watchImmediate(resize);
+		$hooks.beforeUpdate.watch(update);
+
+		__DEBUG__ && devtools();
 	}
 
-	function bloomEffect() {
-		const { $renderer, $scenes, $composer } = webgl
-		const scene = webgl.$getCurrentScene()
-		const selection = new Selection()
-		const selectiveBloom = new SelectiveBloomEffect(scene.base, scene.getCurrentCamera().base, {
-			intensity: 1.5
-		})
-		selectiveBloom.selection = selection
+	function resize({ width, height }) {
+		if (!width || !height) return;
+
+		buffers.main.setSize(width, height);
+		api.$unrealBloom.resize(width, height);
 	}
 
-	function onCameraChange(cam) {
-		console.log(cam);
-		const { passes } = api.instance
-		passes.forEach(pass => {
-			if (!pass.camera) return
-			pass.camera = cam.base
-		})
+	function update() {}
+
+	function render() {
+		const scene = webgl.$getCurrentScene();
+		const renderer = webgl.$threeRenderer;
+
+		// Render raw scene to main buffer
+		renderer.setRenderTarget(buffers.main);
+		renderer.clear();
+		scene?.triggerRender();
+		api.uniforms.tMap.value = buffers.main.texture;
+
+		api.$unrealBloom.render(scene);
+
+		// Render composite pass
+		renderer.setRenderTarget(null);
+		filters.main.render();
 	}
 
-
-	function update() {
-
-		const { $renderer, $scenes, $composer } = webgl
-		// api.instance.passes.forEach(pass => {
-		// 	if (!pass.camera) return
-		// 	pass.camera = webgl.$getCurrentScene().getCurrentCamera().base
-		// })
-		// webgl.scene.overrideMaterial = this.depthMaterial
-		$renderer.instance.setRenderTarget(target)
-		// this.shaderPass.uniforms.uTime.value += .1
-		$renderer.instance.clear()
-		// console.log(webgl.$scenes.current, webgl.$scenes.current.camera)
-		// webgl.$renderer.instance.render(webgl.$scenes.current, webgl.$scenes.current.camera)
-		// shaderPass.uniforms.tDepth.value = target.texture
-
-		$renderer.instance.setRenderTarget(null)
-		$renderer.instance.clear()
-		api.instance.render()
-
+	/// #if __DEBUG__
+	function devtools() {
+		const gui = webgl.$gui.addFolder({ title: '✨ Composer', index: 5 });
+		api.$unrealBloom.devtools(gui);
 	}
+	/// #endif
 
 	return {
 		install: () => {
 			webgl.$composer = api;
 		},
 		load: () => {
-			webgl.$hooks.afterStart.watchOnce(init)
-			webgl.$hooks.beforeFrame.watch(update)
-		}
-	}
+			webgl.$hooks.afterStart.watchOnce(init);
+		},
+	};
 }

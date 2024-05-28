@@ -1,11 +1,5 @@
 import { getWebGL } from '#webgl/core';
-import {
-	LinearFilter,
-	NoColorSpace,
-	RGBAFormat,
-	SRGBColorSpace,
-	WebGLRenderTarget
-} from 'three';
+import { LinearFilter, NoColorSpace, RGBAFormat, SRGBColorSpace, WebGLRenderTarget } from 'three';
 
 // Small helper to easily create render buffers
 // They will be register to fbo debugger if available
@@ -25,12 +19,13 @@ export default function createBuffer({
 	scale = 1,
 	srgb = false,
 	colorSpace = NoColorSpace,
-	generateMipmaps = false
+	generateMipmaps = false,
+	...opts
 } = {}) {
 	if (!webgl) webgl = getWebGL();
 	const dbs = webgl.$renderer.drawingBufferSize;
 
-	if (name == null) name = `RenderTarget.${ defaultNameIndex++ }`;
+	if (name == null) name = `RenderTarget.${defaultNameIndex++}`;
 
 	let isResizing = false;
 	let listeningDbs = false;
@@ -46,8 +41,8 @@ export default function createBuffer({
 		magFilter: LinearFilter,
 		format: format,
 		colorSpace,
-		depthBuffer: !!depth,
-		stencilBuffer: !!(stencil ?? depth)
+		depthBuffer: !!depth || !!opts?.depthBuffer,
+		stencilBuffer: !!(stencil ?? depth),
 	});
 
 	rt.texture.generateMipmaps = !!generateMipmaps;
@@ -63,7 +58,7 @@ export default function createBuffer({
 
 	// Automatically register RT to fbo debugger
 	rt.texture.name = name;
-	if (__DEBUG__) webgl.$fbo?.registerBuffer?.(name, rt);
+	// if (__DEBUG__) webgl.$fbo?.registerBuffer?.(name, rt);
 
 	// Disable clone
 	rt.clone = clone;

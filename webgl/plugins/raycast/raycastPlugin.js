@@ -3,13 +3,13 @@ import { Raycaster, Vector2 } from 'three';
 import { clampedMap } from '#utils/maths';
 import { w } from '#utils/state';
 
-
-const NOOP = v => v;
+const NOOP = (v) => v;
 const opts = { passive: false };
 
 export function raycastPlugin(webgl) {
-	const objects = new WeakMap();
-	const rawList = [];
+	const scenes = new WeakMap();
+	let currentScene = null;
+
 	const intersects = [];
 	let holdingMouseTimeout = null;
 	let cameraNeedsUpdate = false;
@@ -27,12 +27,21 @@ export function raycastPlugin(webgl) {
 	const raycaster = new Raycaster();
 
 	const api = {
-		get count() { return rawList.length },
-		get objects() { return objects },
-		get raycaster() { return raycaster },
-
-		camera: null,
-		setCamera: c => api.camera = c,
+		get count() {
+			const scene = webgl.$scenes.current;
+			if (!scenes.has(scene.id)) return 0;
+			const { objects } = scenes.get(scene.id);
+			return objects.size;
+		},
+		get objects() {
+			const scene = webgl.$scenes.current;
+			if (!scenes.has(scene.id)) return [];
+			const { objects } = scenes.get(scene.id);
+			return objects;
+		},
+		get raycaster() {
+			return raycaster;
+		},
 
 		add,
 		remove,
@@ -40,25 +49,29 @@ export function raycastPlugin(webgl) {
 		listen,
 		stop,
 
-		update
+		update,
 	};
 
 	function toggle(shouldListen, { $el = document } = {}) {
 		const ev = shouldListen ? 'addEventListener' : 'removeEventListener';
 
-		$el[ ev ]('touchstart', onDown, opts);
-		$el[ ev ]('touchmove', onMove, opts);
-		$el[ ev ]('touchend', onUp, opts);
-		$el[ ev ]('touchcancel', onUp, opts);
+		$el[ev]('touchstart', onDown, opts);
+		$el[ev]('touchmove', onMove, opts);
+		$el[ev]('touchend', onUp, opts);
+		$el[ev]('touchcancel', onUp, opts);
 
-		$el[ ev ]('mousedown', onDown, opts);
-		$el[ ev ]('mousemove', onMove, opts);
-		$el[ ev ]('mouseup', onUp, opts);
-		$el[ ev ]('mouseleave', onUp, opts);
+		$el[ev]('mousedown', onDown, opts);
+		$el[ev]('mousemove', onMove, opts);
+		$el[ev]('mouseup', onUp, opts);
+		$el[ev]('mouseleave', onUp, opts);
 	}
 
-	function listen() { toggle(true) }
-	function stop() { toggle(false) }
+	function listen() {
+		toggle(true);
+	}
+	function stop() {
+		toggle(false);
+	}
 
 	function onDown(ev) {
 		/// #if __DEBUG__
@@ -72,25 +85,28 @@ export function raycastPlugin(webgl) {
 		pointer.justClicked = true;
 		pointer.clickPosition.copy(pointer.position);
 
-		holdingMouseTimeout = setTimeout(() => pointer.isHolding = pointer.isPressed, 150);
+		holdingMouseTimeout = setTimeout(() => (pointer.isHolding = pointer.isPressed), 150);
 	}
 
 	function onUp() {
 		pointer.isPressed = false;
 		pointer.hasClicked =
-			pointer.position.distanceTo(pointer.clickPosition) < .01
-			&& !pointer.isHolding;
+			pointer.position.distanceTo(pointer.clickPosition) < 0.01 && !pointer.isHolding;
 
 		holdingMouseTimeout && clearTimeout(holdingMouseTimeout);
 		holdingMouseTimeout = null;
 		pointer.isHolding = false;
 		pointer.justClicked = false;
 
+		const scene = webgl.$scenes.current;
+		if (!scenes.has(scene.id)) return;
+		const { objects, rawList } = scenes.get(scene.id);
+
 		for (let i = 0; i < rawList.length; i++) {
-			const obj = objects.get(rawList[ i ]);
+			const obj = objects.get(rawList[i]);
 			if (!obj) continue;
 			if (!obj.isRaycasted.value) continue;
-			const raycastedObject = raycaster.intersectObject(obj.object, true)[ 0 ];
+			const raycastedObject = raycaster.intersectObject(obj.object, true)[0];
 			pointer.hasClicked && obj.onClick(raycastedObject);
 			obj.onUp(raycastedObject);
 		}
@@ -103,45 +119,45 @@ export function raycastPlugin(webgl) {
 		let y = 0;
 
 		if (touches) {
-			x = touches[ 0 ].clientX;
-			y = touches[ 0 ].clientY;
+			x = touches[0].clientX;
+			y = touches[0].clientY;
 		} else {
 			x = clientX;
 			y = clientY;
 		}
 
-		pointer.position.set(
-			clampedMap(x, 0, width, -1, 1),
-			clampedMap(y, 0, height, 1, -1),
-		);
+		pointer.position.set(clampedMap(x, 0, width, -1, 1), clampedMap(y, 0, height, 1, -1));
 	}
 
-	function createRaycastableObject(object, {
-		onEnter: onOriginalEnter = NOOP,
-		onLeave: onOriginalLeave = NOOP,
-		onMove = NOOP,
-		onDown = NOOP,
-		onUp = NOOP,
-		onHold = NOOP,
-		onHover = NOOP,
-		onClick = NOOP,
+	function createRaycastableObject(
+		object,
+		{
+			onEnter: onOriginalEnter = NOOP,
+			onLeave: onOriginalLeave = NOOP,
+			onMove = NOOP,
+			onDown = NOOP,
+			onUp = NOOP,
+			onHold = NOOP,
+			onHover = NOOP,
+			onClick = NOOP,
 
-		onBeforeSetCamera = NOOP,
-		onAfterSetCamera = NOOP,
+			onBeforeSetCamera = NOOP,
+			onAfterSetCamera = NOOP,
 
-		onBeforeRaycast = NOOP,
-		onAfterRaycast = NOOP,
-		forceVisible = false,
-		...opts
-	} = {}) {
+			onBeforeRaycast = NOOP,
+			onAfterRaycast = NOOP,
+			forceVisible = false,
+			...opts
+		} = {},
+	) {
 		const isRaycasted = w(false);
 
-		const onEnter = a => {
+		const onEnter = (a) => {
 			isRaycasted.set(true);
 			onOriginalEnter?.(a);
 		};
 
-		const onLeave = e => {
+		const onLeave = (e) => {
 			isRaycasted.set(false);
 			onOriginalLeave?.(e);
 		};
@@ -170,49 +186,73 @@ export function raycastPlugin(webgl) {
 		};
 	}
 
-
 	function add(object, opts = {}) {
-		if (objects.has(object)) return;
+		let scene = null;
 
+		if (opts.forcedScene) scene = opts.forcedScene;
+		else if (object.parent?.isScene) scene = object.parent;
+		else scene = object.scene ?? webgl.$getCurrentScene();
+
+		const { id } = webgl.$scenes.getSceneByComponent(scene);
+		console.log(webgl.$scenes.getSceneByComponent(scene));
+
+		if (!scenes.has(scene)) {
+			scenes.set(id, {
+				objects: new WeakMap(),
+				rawList: [],
+			});
+		}
+
+		const { objects, rawList } = scenes.get(id);
+
+		if (objects.has(object)) return;
 		const obj = createRaycastableObject(object, opts);
+
 		objects.set(object, obj);
 		rawList.push(object);
 
-		cameraNeedsUpdate = !!rawList
-			.filter(o => (o.onBeforeSetCamera === NOOP || o.onAfterSetCamera === NOOP))
-			.length;
+		cameraNeedsUpdate = !!rawList.filter(
+			(o) => o.onBeforeSetCamera === NOOP || o.onAfterSetCamera === NOOP,
+		).length;
 
 		return { object: obj, remove: () => remove(object) };
 	}
 
-
 	function remove(...listObjects) {
 		for (let i = 0; i < listObjects.length; i++) {
-			const object = listObjects[ i ];
-			if (!objects.has(object)) return __DEBUG__ && console.warn(`Object ${ object } not registered`);
+			const object = listObjects[i];
+
+			const scene = webgl.$scenes.current;
+			if (!scenes.has(scene.id)) return;
+			const { objects, rawList } = scenes.get(scene.id);
+
+			if (!objects.has(object))
+				return __DEBUG__ && console.warn(`Object ${object} not registered`);
 
 			// Remove from objects
 			rawList.splice(rawList.indexOf(object), 1);
 			objects.delete(object);
 		}
 
-		cameraNeedsUpdate = !!rawList
-			.filter(o => (o.onBeforeSetCamera === NOOP || o.onAfterSetCamera === NOOP))
-			.length;
+		cameraNeedsUpdate = !!rawList.filter(
+			(o) => o.onBeforeSetCamera === NOOP || o.onAfterSetCamera === NOOP,
+		).length;
 	}
 
-
-
-
 	function update() {
+		const scene = webgl.$scenes.current;
+		if (!scenes.has(scene.id)) return;
+
+		const { objects, rawList } = scenes.get(scene.id);
+
 		if (!rawList.length) return;
 
-		const cam = api.camera = webgl.$getCurrentScene().getCurrentCamera().base;
+		const cam = scene.component.getCurrentCamera().base;
 
 		// Update raycaster globally
 		if (!cameraNeedsUpdate) {
 			for (let i = 0; i < rawList.length; i++) {
-				const obj = objects.get(rawList[ i ]);
+				const obj = objects.get(rawList[i]);
 				if (!obj) continue;
 				obj.onBeforeSetCamera(cam);
 			}
@@ -220,15 +260,14 @@ export function raycastPlugin(webgl) {
 			raycaster.setFromCamera(pointer.position, cam);
 
 			for (let i = 0; i < rawList.length; i++) {
-				const obj = objects.get(rawList[ i ]);
+				const obj = objects.get(rawList[i]);
 				if (!obj) continue;
 				obj.onAfterSetCamera(cam);
 			}
 		}
 
-
 		for (let i = 0; i < rawList.length; i++) {
-			const obj = objects.get(rawList[ i ]);
+			const obj = objects.get(rawList[i]);
 			if (!obj) continue;
 
 			const {
@@ -260,7 +299,7 @@ export function raycastPlugin(webgl) {
 
 			onAfterRaycast(raycaster);
 
-			const intersect = intersects.find(i => i.object === object);
+			const intersect = intersects.find((i) => i.object === object);
 			const shouldIntersect = !!intersect;
 
 			if (_isRaycasted.value !== shouldIntersect) {
@@ -291,14 +330,10 @@ export function raycastPlugin(webgl) {
 		},
 		load: () => {
 			webgl.$hooks.afterSetup.watchOnce(listen);
-			webgl.$hooks.afterStart.watchOnce(() => {
-				api.camera = webgl.$getCurrentScene().getCurrentCamera().base;
-			});
 			webgl.$hooks.beforeUpdate.watch(update);
-		}
-	}
+		},
+	};
 }
-
 
 /// #if __DEBUG__
 function preventDebug(ev) {
@@ -307,15 +342,13 @@ function preventDebug(ev) {
 /// #endif
 
 function intersectObject(object, raycaster, intersects, recursive) {
-	if (object.layers.test(raycaster.layers))
-		object.raycast(raycaster, intersects);
-
+	if (object.layers.test(raycaster.layers)) object.raycast(raycaster, intersects);
 
 	if (recursive === true) {
 		const children = object.children;
 
 		for (let i = 0, l = children.length; i < l; i++) {
-			intersectObject(children[ i ], raycaster, intersects, true);
+			intersectObject(children[i], raycaster, intersects, true);
 		}
 	}
 }

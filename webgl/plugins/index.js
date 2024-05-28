@@ -13,7 +13,6 @@ import { timePlugin } from './time/timePlugin.js';
 import { viewportPlugin } from './viewport/viewportPlugin.js';
 import { raycastPlugin } from './raycast/raycastPlugin.js';
 
-
 export const plugins = [
 	/* CORE PLUGINS */
 	__DEBUG__ && debugPlugin,
@@ -28,5 +27,5 @@ export const plugins = [
 	assetsPlugin,
 
 	/* PROJECT PLUGINS */
-	raycastPlugin
-]
+	raycastPlugin,
+];

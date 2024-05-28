@@ -24,6 +24,8 @@ export function scenesPlugin(webgl) {
 		switch: set,
 		get,
 
+		getSceneByComponent,
+
 		update,
 		render,
 	};
@@ -43,8 +45,8 @@ export function scenesPlugin(webgl) {
 			needsRender: true,
 			component: Scene,
 
-			leave: Scene.leave.bind(Scene),
-			enter: Scene.enter.bind(Scene),
+			enter: Scene.triggerEnter.bind(Scene),
+			leave: Scene.triggerLeave.bind(Scene),
 			update: Scene.triggerUpdate.bind(Scene),
 			render: Scene.triggerRender.bind(Scene),
 		});
