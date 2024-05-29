@@ -23,6 +23,7 @@ export default createWebgl({
 		await Promise.all([
 			load('msdf-font/VCR_OSD_MONO'), //
 			load('blue-noise'),
+			load('scene1')
 		]);
 	},
 

@@ -12,6 +12,7 @@ import { scenesPlugin } from './scenes/scenesPlugin.js';
 import { timePlugin } from './time/timePlugin.js';
 import { viewportPlugin } from './viewport/viewportPlugin.js';
 import { raycastPlugin } from './raycast/raycastPlugin.js';
+import { gpgpuPlugin } from './gpgpu/gpgpuPlugin.js';
 
 export const plugins = [
 	/* CORE PLUGINS */
@@ -25,6 +26,7 @@ export const plugins = [
 	scenesPlugin,
 	__DEBUG__ && debugCameraPlugin,
 	assetsPlugin,
+	gpgpuPlugin,
 
 	/* PROJECT PLUGINS */
 	raycastPlugin,

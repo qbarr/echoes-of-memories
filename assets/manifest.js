@@ -5,6 +5,6 @@ const glb = (path) => ({ url: `/assets/${path}.glb` });
 
 export default {
 	'msdf-font/VCR_OSD_MONO': msdf('msdf/VCR_OSD_MONO'),
-	scene1: glb('models/scene1'),
+	'scene1': glb('models/model'),
 	'blue-noise': png('canvas/blue-noise', { repeat: true }),
 };

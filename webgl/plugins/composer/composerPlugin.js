@@ -119,13 +119,13 @@ export function composerPlugin(webgl) {
 		// uniforms.tMap.value = buffers.grayscale1.texture;
 
 		// Render selected bloom to selectiveBloom buffer
-		renderer.setRenderTarget(buffers.selectiveBloom);
-		renderer.clear();
-		scene.toggleSelectedBloom(true);
-		scene.triggerRender();
-		renderer.clearDepth();
-		$scenes.ui.component.triggerRender();
-		uniforms.tMapBloom.value = buffers.selectiveBloom.texture;
+		// renderer.setRenderTarget(buffers.selectiveBloom);
+		// renderer.clear();
+		// scene.toggleSelectedBloom(true);
+		// scene.triggerRender();
+		// renderer.clearDepth();
+		// $scenes.ui.component.triggerRender();
+		// uniforms.tMapBloom.value = buffers.selectiveBloom.texture;
 
 		// renderer.setRenderTarget(buffers.grayscale2);
 		// renderer.clear();
@@ -135,7 +135,7 @@ export function composerPlugin(webgl) {
 		// uniforms.tMapBloom.value = buffers.grayscale2.texture;
 
 		// Render Unreal Bloom pass
-		api.$unrealBloom.render(scene);
+		// api.$unrealBloom.render(scene);
 
 		// Render composite pass
 		renderer.setRenderTarget(null);
