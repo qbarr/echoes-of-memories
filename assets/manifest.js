@@ -4,7 +4,7 @@ const msdf = (path) => ({ data: `/assets/${path}.json`, url: `/assets/${path}.pn
 const glb = (path) => ({ url: `/assets/${path}.glb` });
 
 export default {
-	'msdf-font/VCR_OSD_MONO': msdf('fonts/msdf/VCR_OSD_MONO'),
+	'msdf-font/VCR_OSD_MONO': msdf('msdf/VCR_OSD_MONO'),
 	scene1: glb('models/scene1'),
 	'blue-noise': png('canvas/blue-noise', { repeat: true }),
 };

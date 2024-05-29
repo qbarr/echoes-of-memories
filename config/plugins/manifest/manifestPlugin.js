@@ -11,7 +11,9 @@ export function manifestPlugin() {
 	const dummy = {
 		file_id: {
 			files: {
-				'sub_file_id.ext': ['generated_files_folder/id OR hashed_id.ext'],
+				'sub_file_id.ext': [
+					'generated_files_folder/id OR hashed_id.ext',
+				],
 			},
 			type: 'ext',
 		},
@@ -35,19 +37,35 @@ export function manifestPlugin() {
 		async generateBundle(_options, bundle) {
 			await Promise.all(
 				Object.entries(rawManifest).map(async ([key, value]) => {
-					if (key.includes('sprites')) {
-						const { atlas, json } = value;
+					if (key.includes('sprites') || key.includes('msdf')) {
+						const { url: img, data } = value;
 
-						const [atlasFileName, atlasExt] = atlas.split('/').pop().split('.');
-						const [jsonFileName, jsonExt] = json.split('/').pop().split('.');
+						const [atlasFileName, atlasExt] = img
+							.split('/')
+							.pop()
+							.split('.');
+						const [jsonFileName, jsonExt] = data
+							.split('/')
+							.pop()
+							.split('.');
 
-						const atlasSubFolder = atlas.split('/assets/').pop().split('/').shift();
-						const jsonSubFolder = json.split('/assets/').pop().split('/').shift();
+						const atlasSubFolder = img
+							.split('/assets/')
+							.pop()
+							.split('/')
+							.shift();
+						const jsonSubFolder = data
+							.split('/assets/')
+							.pop()
+							.split('/')
+							.shift();
 
-						const atlasSrc = fs.readFileSync(path.join(root, atlas));
-						const jsonSrc = fs.readFileSync(path.join(root, json));
+						const atlasSrc = fs.readFileSync(path.join(root, img));
+						const jsonSrc = fs.readFileSync(path.join(root, data));
 
-						bundle[`assets/${atlasSubFolder}/${atlasFileName}.${atlasExt}`] = {
+						bundle[
+							`assets/${atlasSubFolder}/${atlasFileName}.${atlasExt}`
+						] = {
 							name: `${atlasFileName}.${atlasExt}`,
 							isAsset: true,
 							type: 'asset',
@@ -55,7 +73,9 @@ export function manifestPlugin() {
 							source: atlasSrc,
 						};
 
-						bundle[`assets/${jsonSubFolder}/${jsonFileName}.${jsonExt}`] = {
+						bundle[
+							`assets/${jsonSubFolder}/${jsonFileName}.${jsonExt}`
+						] = {
 							name: `${jsonFileName}.${jsonExt}`,
 							isAsset: true,
 							type: 'asset',
@@ -68,7 +88,11 @@ export function manifestPlugin() {
 
 					const { url } = value;
 					const [id, ext] = url.split('/').pop().split('.');
-					const subFolder = url.split('/assets/').pop().split('/').shift();
+					const subFolder = url
+						.split('/assets/')
+						.pop()
+						.split('/')
+						.shift();
 
 					const src = fs.readFileSync(path.join(root, url));
 

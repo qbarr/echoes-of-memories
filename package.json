@@ -18,6 +18,7 @@
     "preview:dev": "npm run build -- -m development && npm run _preview -- -m development",
     "deploy:dev": "npm run build -- -m development && netlify deploy --alias dev",
     "deploy:prod": "npm run build && netlify deploy --prod",
+    "deploy": "npm run deploy:prod",
     "clean": "rm -rf node_modules && rm -rf .cache"
   },
   "dependencies": {

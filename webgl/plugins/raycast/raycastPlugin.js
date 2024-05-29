@@ -29,13 +29,13 @@ export function raycastPlugin(webgl) {
 	const api = {
 		get count() {
 			const scene = webgl.$scenes.current;
-			if (!scenes.has(scene.id)) return 0;
+			if (!scenes.has(scene?.id)) return 0;
 			const { objects } = scenes.get(scene.id);
 			return objects.size;
 		},
 		get objects() {
 			const scene = webgl.$scenes.current;
-			if (!scenes.has(scene.id)) return [];
+			if (!scenes.has(scene?.id)) return [];
 			const { objects } = scenes.get(scene.id);
 			return objects;
 		},
@@ -85,13 +85,17 @@ export function raycastPlugin(webgl) {
 		pointer.justClicked = true;
 		pointer.clickPosition.copy(pointer.position);
 
-		holdingMouseTimeout = setTimeout(() => (pointer.isHolding = pointer.isPressed), 150);
+		holdingMouseTimeout = setTimeout(
+			() => (pointer.isHolding = pointer.isPressed),
+			150,
+		);
 	}
 
 	function onUp() {
 		pointer.isPressed = false;
 		pointer.hasClicked =
-			pointer.position.distanceTo(pointer.clickPosition) < 0.01 && !pointer.isHolding;
+			pointer.position.distanceTo(pointer.clickPosition) < 0.01 &&
+			!pointer.isHolding;
 
 		holdingMouseTimeout && clearTimeout(holdingMouseTimeout);
 		holdingMouseTimeout = null;
@@ -99,14 +103,17 @@ export function raycastPlugin(webgl) {
 		pointer.justClicked = false;
 
 		const scene = webgl.$scenes.current;
-		if (!scenes.has(scene.id)) return;
+		if (!scenes.has(scene?.id)) return;
 		const { objects, rawList } = scenes.get(scene.id);
 
 		for (let i = 0; i < rawList.length; i++) {
 			const obj = objects.get(rawList[i]);
 			if (!obj) continue;
 			if (!obj.isRaycasted.value) continue;
-			const raycastedObject = raycaster.intersectObject(obj.object, true)[0];
+			const raycastedObject = raycaster.intersectObject(
+				obj.object,
+				true,
+			)[0];
 			pointer.hasClicked && obj.onClick(raycastedObject);
 			obj.onUp(raycastedObject);
 		}
@@ -126,7 +133,10 @@ export function raycastPlugin(webgl) {
 			y = clientY;
 		}
 
-		pointer.position.set(clampedMap(x, 0, width, -1, 1), clampedMap(y, 0, height, 1, -1));
+		pointer.position.set(
+			clampedMap(x, 0, width, -1, 1),
+			clampedMap(y, 0, height, 1, -1),
+		);
 	}
 
 	function createRaycastableObject(
@@ -222,11 +232,13 @@ export function raycastPlugin(webgl) {
 			const object = listObjects[i];
 
 			const scene = webgl.$scenes.current;
-			if (!scenes.has(scene.id)) return;
+			if (!scenes.has(scene?.id)) return;
 			const { objects, rawList } = scenes.get(scene.id);
 
 			if (!objects.has(object))
-				return __DEBUG__ && console.warn(`Object ${object} not registered`);
+				return (
+					__DEBUG__ && console.warn(`Object ${object} not registered`)
+				);
 
 			// Remove from objects
 			rawList.splice(rawList.indexOf(object), 1);
@@ -240,7 +252,7 @@ export function raycastPlugin(webgl) {
 
 	function update() {
 		const scene = webgl.$scenes.current;
-		if (!scenes.has(scene.id)) return;
+		if (!scenes.has(scene?.id)) return;
 
 		const { objects, rawList } = scenes.get(scene.id);
 
@@ -311,7 +323,8 @@ export function raycastPlugin(webgl) {
 				onDown(intersect);
 			}
 
-			if (!shouldIntersect || (!object.visible && !forceVisible)) continue;
+			if (!shouldIntersect || (!object.visible && !forceVisible))
+				continue;
 
 			onHover(intersect);
 			onMove(intersect);
@@ -341,7 +354,8 @@ function preventDebug(ev) {
 /// #endif
 
 function intersectObject(object, raycaster, intersects, recursive) {
-	if (object.layers.test(raycaster.layers)) object.raycast(raycaster, intersects);
+	if (object.layers.test(raycaster.layers))
+		object.raycast(raycaster, intersects);
 
 	if (recursive === true) {
 		const children = object.children;
