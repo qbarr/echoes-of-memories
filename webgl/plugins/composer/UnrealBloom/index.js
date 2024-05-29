@@ -56,10 +56,11 @@ export const useUnrealBloom = (composer, { iterations = 5 } = {}) => {
 	buffers.luminosity = $fbo.createBuffer({
 		name: 'Luminosity',
 		depth: false,
+		alpha: false,
 	});
 	buffers.bloom = $fbo.createBuffer({
 		name: 'UnrealBloom',
-		alpha: true,
+		alpha: false,
 	});
 
 	for (let i = 0, l = nMips; i < l; i++) {
@@ -186,6 +187,8 @@ export const useUnrealBloom = (composer, { iterations = 5 } = {}) => {
 	}
 
 	function render(scene, renderer) {
+		if (!enabled.value) return;
+
 		renderer = renderer ?? $threeRenderer;
 
 		// Extract bright areas
@@ -231,11 +234,36 @@ export const useUnrealBloom = (composer, { iterations = 5 } = {}) => {
 	function devtools(_gui) {
 		const gui = _gui.addFolder({ title: 'UnrealBloom' });
 
-		gui.addBinding(threshold, 'value', { label: 'Threshold', min: 0, max: 1, step: 0.01 });
-		gui.addBinding(smoothing, 'value', { label: 'Smoothing', min: 0, max: 1, step: 0.01 });
-		gui.addBinding(strength, 'value', { label: 'Strength', min: 0, max: 3, step: 0.01 });
-		gui.addBinding(radius, 'value', { label: 'Radius', min: 0, max: 2, step: 0.01 });
-		gui.addBinding(spread, 'value', { label: 'Spread', min: 0, max: 2, step: 0.01 });
+		gui.addBinding(threshold, 'value', {
+			label: 'Threshold',
+			min: 0,
+			max: 1,
+			step: 0.01,
+		});
+		gui.addBinding(smoothing, 'value', {
+			label: 'Smoothing',
+			min: 0,
+			max: 1,
+			step: 0.01,
+		});
+		gui.addBinding(strength, 'value', {
+			label: 'Strength',
+			min: 0,
+			max: 3,
+			step: 0.01,
+		});
+		gui.addBinding(radius, 'value', {
+			label: 'Radius',
+			min: 0,
+			max: 2,
+			step: 0.01,
+		});
+		gui.addBinding(spread, 'value', {
+			label: 'Spread',
+			min: 0,
+			max: 2,
+			step: 0.01,
+		});
 	}
 	/// #endif
 

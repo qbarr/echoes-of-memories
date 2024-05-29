@@ -4,6 +4,7 @@ import { MSDFTextMesh } from '../Text';
 
 import { wait } from '#utils/async';
 import { Cube } from '../Objects/Cube';
+import { Color } from 'three';
 
 export default class MainScene extends BaseScene {
 	mixins = ['debugCamera'];
@@ -15,9 +16,14 @@ export default class MainScene extends BaseScene {
 			font: 'VCR_OSD_MONO',
 			content: 'Home',
 			centerMesh: true,
+			color: new Color('blue'),
 		});
 		t.needBloom = true;
 
-		this.add(Cube);
+		const cube1 = this.add(Cube);
+		const cube2 = this.add(Cube, { color: 'blue' });
+		cube2.base.position.x = 2;
+		const cube3 = this.add(Cube, { color: 'green' });
+		cube3.base.position.x = -2;
 	}
 }

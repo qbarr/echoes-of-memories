@@ -20,7 +20,10 @@ export default createWebgl({
 	async preload() {
 		const { load } = webgl.$assets;
 
-		await Promise.all([load('msdf-font/VCR_OSD_MONO')]);
+		await Promise.all([
+			load('msdf-font/VCR_OSD_MONO'), //
+			load('blue-noise'),
+		]);
 	},
 
 	async start() {

@@ -87,10 +87,8 @@ export default class MSDFTextMesh extends BaseComponent {
 	) {
 		this.content = content;
 
-		if (this.editInterval) {
-			clearInterval(this.editInterval);
-			this.editInterval;
-		}
+		clearInterval(this.editInterval);
+		this.editInterval = null;
 
 		if (letterByLetter) {
 			const letters = content.split('');

@@ -1,5 +1,5 @@
 {
-  "name": "@gobz/echoes-of-memories",
+  "name": "echoes-of-memories",
   "version": "1.0.0",
   "private": false,
   "type": "module",
@@ -41,9 +41,6 @@
     "eslint-plugin-vue": "^9.26.0",
     "globals": "^15.3.0"
   },
-  "workspaces": [
-    "packages/*"
-  ],
   "imports": {
     "#app/*": "./app/*",
     "#webgl/*": "./webgl/*",

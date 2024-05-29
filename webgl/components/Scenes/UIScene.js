@@ -1,4 +1,5 @@
 import BaseScene from '#webgl/core/BaseScene';
+import { Color } from 'three';
 import { UICamera } from '../Cameras/UICamera';
 import { MSDFTextMesh } from '../Text';
 

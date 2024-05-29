@@ -1,6 +1,5 @@
 import { cache } from '#utils/files/cache';
 
-
 export default function loadImage(url, opts = {}) {
 	return new Promise((resolve) => {
 		const node = new Image();
@@ -17,8 +16,8 @@ export default function loadImage(url, opts = {}) {
 			resolve(obj);
 		};
 
-		const onError = err => {
-			if (DEBUG) console.error(err);
+		const onError = (err) => {
+			if (__DEBUG__) console.error(err);
 		};
 
 		// If not the same host, add crossorigin attr
@@ -41,6 +40,6 @@ export default function loadImage(url, opts = {}) {
 
 loadImage.loader = {
 	name: 'image',
-	extensions: [ '.jpg', '.png', '.webp', '.avif', '.gif', '.jpeg' ],
-	function: loadImage
+	extensions: ['.jpg', '.png', '.webp', '.avif', '.gif', '.jpeg'],
+	function: loadImage,
 };

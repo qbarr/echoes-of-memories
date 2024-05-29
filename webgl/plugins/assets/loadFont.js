@@ -6,7 +6,7 @@ const loader = new FontLoader();
 export default function loadFont(url, opts) {
 	console.log(url, opts);
 	return new Promise((resolve) => {
-		const onLoad = data => {
+		const onLoad = (data) => {
 			console.log(data);
 			const obj = { data, url };
 			if (opts.onLoad) opts.onLoad(obj);
@@ -15,8 +15,8 @@ export default function loadFont(url, opts) {
 			resolve(obj);
 		};
 
-		const onError = err => {
-			if (DEBUG) console.error(err);
+		const onError = (err) => {
+			if (__DEBUG__) console.error(err);
 		};
 
 		loader.load(url, onLoad, null, onError);
@@ -25,6 +25,6 @@ export default function loadFont(url, opts) {
 
 loadFont.loader = {
 	name: 'font',
-	extensions: [ '.json' ],
-	function: loadFont
+	extensions: ['.json'],
+	function: loadFont,
 };

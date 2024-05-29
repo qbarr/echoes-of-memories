@@ -88,6 +88,8 @@ export function assetsPlugin(webgl) {
 
 		let url = typeof file === 'string' ? file : file.url;
 
+		Object.assign(opts, file.opts ?? {});
+
 		id = id || fileID.split('/').pop();
 		const subID = fileID.split('/').shift();
 		if (!type && fileID.includes('sprites')) type = 'spritesheet';
