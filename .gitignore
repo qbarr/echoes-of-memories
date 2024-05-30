@@ -26,6 +26,7 @@ yarn-error.log*
 .turbo
 .cache
 .lm
+# .gen
 
 # Local Netlify folder
 .netlify

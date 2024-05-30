@@ -91,6 +91,7 @@ export const useUnrealBloom = (composer, { iterations = 5 } = {}) => {
 		},
 		defines,
 		blending: NoBlending,
+		toneMapped: false,
 		depthTest: false,
 		depthWrite: false,
 		glslVersion: GLSL3,

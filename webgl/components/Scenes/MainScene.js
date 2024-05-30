@@ -16,7 +16,7 @@ export default class MainScene extends BaseScene {
 			font: 'VCR_OSD_MONO',
 			content: 'Home',
 			centerMesh: true,
-			color: new Color('blue'),
+			// color: new Color('blue'),
 		});
 		t.needBloom = true;
 

@@ -1,4 +1,3 @@
-import { MeshBasicMaterial } from 'three';
 import MainScene from './components/Scenes/MainScene';
 import UIScene from './components/Scenes/UIScene';
 
@@ -9,12 +8,10 @@ export default createWebgl({
 		const { $renderer, $scenes, $assets } = webgl;
 
 		$renderer.setup({ alias: false, antialias: false });
-		$renderer.instance.setClearColor(0x838383, 0);
+		$renderer.instance.setClearColor(0x000000, 0);
 
 		$scenes.create('main', MainScene);
 		$scenes.create('ui', UIScene);
-
-		webgl.$log('WebGL setup');
 	},
 
 	async preload() {
@@ -27,13 +24,8 @@ export default createWebgl({
 	},
 
 	async start() {
-		const { $renderer, $time, $scenes } = webgl;
-
+		const { $renderer } = webgl;
 		$renderer.resize();
-
-		$time.clampTo60fps = false;
-
-		webgl.$log('WebGL started');
 	},
 
 	update() {

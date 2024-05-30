@@ -7,7 +7,7 @@ import { paths } from '#config/utils/paths.js';
 const root = process.cwd();
 
 export function manifestPlugin() {
-	const fileId = 'manifest.json';
+	const output_file = 'manifest.json';
 	const dummy = {
 		file_id: {
 			files: {
@@ -25,7 +25,7 @@ export function manifestPlugin() {
 	// if (!fs.existsSync(path.join(paths.assets, '.gen')))
 	// 	fs.mkdirSync(path.join(paths.assets, '.gen'));
 	// const genFolder = path.join(paths.assets, '.gen');
-	// const outputFile = path.join(genFolder, fileId);
+	// const outputFile = path.join(genFolder, output_file);
 	// fs.writeFileSync(outputFile, JSON.stringify(dummy, null, 2));
 
 	// export manifest json file as a virtual module

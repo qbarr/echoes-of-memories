@@ -65,7 +65,7 @@ void main() {
 	// tex.rgb = mix(vec3(dot(tex.rgb, vec3(0.299, 0.587, 0.114))), tex.rgb, luminance);
 
 	// TODO: replace by blue noise texture
-	// tex.rgb = mix(tex.rgb, dither(tex.rgb), uDitherStrength);
+	tex.rgb = mix(tex.rgb, dither(tex.rgb), uDitherStrength);
 
 	gl_FragColor = tex;
 	gl_FragColor.a = 1.0;
