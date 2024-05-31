@@ -2,15 +2,13 @@
 export function manifestPlugin() {
 	let manifest = null;
 	const api = {
-		init,
-		list: () => manifest,
+		load,
+		data: () => manifest,
 		get,
 	};
 
-	async function init() {
-		// console.log(manifestUrl);
+	async function load() {
 		manifest = await (await fetch('/assets/.gen/manifest.json')).json();
-		console.log('Manifest loaded', manifest);
 	}
 
 	function get(id) {
@@ -24,10 +22,22 @@ export function manifestPlugin() {
 	}
 
 	function resolveAsset(_asset) {
-		const asset = Object.assign({}, { ..._asset });
+		const asset = {};
 
-		if (asset.url) asset.url = resolvePath(asset.url);
-		if (asset.data) asset.data = asset.data;
+		Object.assign(asset, {
+			opts: _asset.opts,
+			type: _asset.type,
+			files: [],
+		});
+
+		const filesValues = Object.values(_asset.files);
+		for (const { url, filename, origin } of filesValues) {
+			asset.files.push({
+				filename,
+				url: resolvePath(url),
+				origin,
+			});
+		}
 
 		return asset;
 	}

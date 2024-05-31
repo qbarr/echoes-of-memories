@@ -1,16 +1,9 @@
-// const png = (path, arg = {}) => ({ url: `${path}.png`, opts: arg });
-// const tp = (path) => ({ data: `${path}.json`, url: `${path}.png` }); // prettier-ignore
-// const msdf = (path) => ({ data: `${path}.json`, url: `${path}.png` }); // prettier-ignore
-// const glb = (path) => ({ url: `${path}.glb` });
-// const ktx2 = (path, arg = {}) => ({ url: `${path}.ktx2`, opts: arg });
 const png = (path, arg = {}) => ({
-	url: `${path}.png`,
+	url: path,
 	opts: arg,
-	type: 'image',
+	type: 'png',
 });
 const msdf = (path, args = {}) => ({
-	// data: `${path}.json`,
-	// atlas: `${path}.png`,
 	url: `${path}/*.[ktx2|png|json]`,
 	type: 'msdf',
 	opts: args,
@@ -24,8 +17,11 @@ const ktx2 = (path, arg = {}) => ({
 const copy = (path) => ({ url: path });
 
 export default {
-	// 'msdf-font/VCR_OSD_MONO': copy('msdf/**/'),
-	'msdf-font/VCR_OSD_MONO': msdf('msdf/VCR_OSD_MONO'),
+	'msdf-font/VCR_OSD_MONO': msdf('msdf/**/'),
+	// 'msdf-font/VCR_OSD_MONO': msdf('msdf/VCR_OSD_MONO'),
+	// 'msdf-font/POUET_LA_FONT': msdf('msdf/POUET_LA_FONT'),
+	// 'msdf-font': msdf('msdf/**'),
 	scene1: glb('models/scene1'),
 	noises: png('canvas/*.png', { repeat: true }),
+	// 'blue-noise': png('canvas/blue-noise.png', { repeat: true }),
 };

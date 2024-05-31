@@ -14,12 +14,8 @@ const getFolder = (folder) => {
 
 const createFolder = (folder, force = false) => {
 	const _folder = path.join(paths.assets, folder);
-
-	if (fs.existsSync(_folder) && force)
-		fs.rmdirSync(_folder, { recursive: true });
-
+	if (fs.existsSync(_folder) && force) fs.rm(_folder, { recursive: true });
 	if (!fs.existsSync(_folder)) fs.mkdirSync(_folder);
-
 	return _folder;
 };
 
@@ -30,7 +26,7 @@ const getFile = (file) => {
 
 const removeFolder = (folder) => {
 	const _folder = path.join(paths.assets, folder);
-	if (fs.existsSync(_folder)) fs.rmdirSync(_folder, { recursive: true });
+	if (fs.existsSync(_folder)) fs.rm(_folder, { recursive: true });
 };
 
 const getFileDataFromHash = (hash, manifest) => {
@@ -43,22 +39,6 @@ const getFileDataFromHash = (hash, manifest) => {
 		}
 	}
 	return null;
-};
-
-const addToBundle = (bundle, file) => {
-	const { filename, url } = file;
-	const src = path.join(root, filename);
-
-	// remove first slash
-	const _url = url.slice(1);
-
-	bundle[_url] = {
-		name: filename,
-		isAsset: true,
-		type: 'asset',
-		fileName: _url,
-		source: fs.readFileSync(src),
-	};
 };
 
 const Parser = {
@@ -89,7 +69,8 @@ const Parser = {
 							.join(folder, subFolder, file)
 							.split('assets/')
 							.pop();
-					return { id, ext, subFolder, url };
+					const filename = `${id}.${ext}`;
+					return { filename, id, ext, subFolder, url };
 				});
 			})
 			.flat()
@@ -107,7 +88,9 @@ const Parser = {
 				const [id, ext] = file.split('.');
 				const url =
 					'/assets/' + path.join(folder, file).split('assets/').pop();
-				return { id, ext, url };
+				const filename = `${id}.${ext}`;
+
+				return { filename, id, ext, url };
 			})
 			.flat()
 			.filter(Boolean);
@@ -121,6 +104,7 @@ const Parser = {
 		const [folder, file] = url.split('/');
 		const [id, ext] = file.split('.');
 		const _url = '/assets/' + url;
+		const filename = `${id}.${ext}`;
 
 		const hashedId = createHash(id, Parser.needCache);
 		const hashedFile = {
@@ -132,7 +116,7 @@ const Parser = {
 
 		return {
 			[`${id}.${ext}`]: {
-				file: { id, url: _url, ext, subFolder: folder },
+				file: { filename, id, url: _url, ext, subFolder: folder },
 				hash: hashedFile,
 			},
 		};
@@ -199,8 +183,6 @@ export function manifestPlugin() {
 				Object.assign(manifest, { [key]: { files, type, opts } });
 			}
 
-			console.log(manifest);
-
 			const gen_folder = getFolder('.gen') || createFolder('.gen');
 
 			// write all the files to the .gen folder
@@ -222,15 +204,10 @@ export function manifestPlugin() {
 			for (const [key, value] of manifest_entries) {
 				const { files } = value;
 				const files_entries = Object.entries(files);
-				for (const [
-					file,
-					{
-						file: { url, ext },
-						hash,
-					},
-				] of files_entries) {
-					delete files[file].file;
-					files[file] = hash;
+				for (const [filename, { file, hash }] of files_entries) {
+					delete files[filename].file;
+					files[filename] = hash;
+					files[filename].origin = file;
 				}
 			}
 

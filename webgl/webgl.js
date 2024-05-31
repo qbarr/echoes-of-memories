@@ -17,9 +17,11 @@ export default createWebgl({
 	async preload() {
 		const { load } = webgl.$assets;
 
+		// prettier-ignore
 		await Promise.all([
-			load('msdf-font/VCR_OSD_MONO'), //
-			load('blue-noise'),
+			load('msdf-font/VCR_OSD_MONO'),
+			load('noises'),
+			load('scene1'),
 		]);
 	},
 
