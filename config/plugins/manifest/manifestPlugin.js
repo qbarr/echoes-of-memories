@@ -1,10 +1,12 @@
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
+
+import { getFlags } from '#config/utils/flags.js';
+import { hash as createHash } from '#config/utils/hash.js';
+import { paths } from '#config/utils/paths.js';
+import { virtual as createVirtual } from '#config/utils/virtual.js';
 
 import rawManifest from '#assets/manifest.js';
-import { paths } from '#config/utils/paths.js';
-import { hash as createHash } from '#config/utils/hash.js';
-import { virtual } from '#config/utils/virtual.js';
 
 const root = process.cwd();
 
@@ -46,6 +48,7 @@ const getFileDataFromHash = (hash, manifest) => {
 const Parser = {
 	mode: 'development', // production or development
 	needCache: false,
+
 	parseUrl: (file) => {
 		if (file.url.includes('/**')) return Parser.parseDoubleStar(file);
 		if (file.url.includes('/*')) return Parser.parseStar(file);
@@ -160,14 +163,9 @@ export function manifestPlugin() {
 	const { assets } = paths;
 	const manifest = {};
 
-	const whitelist = ['--clearCache', '--manifestForceHash'];
-	const Flags = process.argv
-		.slice(2)
-		.map((arg) => arg.split('='))
-		.filter(([key]) => whitelist.includes(key))
-		.reduce((acc, [key, _]) => ({ ...acc, [key]: true }), {});
+	const Flags = getFlags(['--clearCache', '--manifestForceHash']);
 
-	const v = virtual({
+	const virtual = createVirtual({
 		':virtual:/manifest': () => {
 			return `export default ${JSON.stringify(manifest, null, 2)}`;
 		},
@@ -175,7 +173,6 @@ export function manifestPlugin() {
 
 	return {
 		name: 'manifest-plugin',
-		// apply: 'build',
 
 		async configResolved(config) {
 			if (Flags['--clearCache']) removeFolder('gen');
@@ -194,7 +191,7 @@ export function manifestPlugin() {
 				Object.assign(manifest, { [key]: { files, type, opts } });
 			}
 
-			const gen_folder = getFolder('gen') || createFolder('gen');
+			const gen_folder = createFolder('gen');
 
 			// write all the files to the gen folder
 			const files_entries = Object.entries(manifest);
@@ -234,22 +231,12 @@ export function manifestPlugin() {
 			if (!gen_folder) return;
 
 			const files = fs.readdirSync(gen_folder);
+			const manifest = getFile(`${gen_folder}/manifest.json`);
+			if (!manifest) return;
+
 			for (const file of files) {
-				// if (file === 'manifest.json') {
-				// 	const src = path.join(gen_folder, file);
-				// 	const filename = `assets/gen/${file}`;
-				// 	// add to the bundle
-				// 	bundle[filename] = {
-				// 		name: file,
-				// 		isAsset: true,
-				// 		type: 'asset',
-				// 		fileName: filename,
-				// 		source: fs.readFileSync(src),
-				// 	};
-				// 	continue;
-				// }
-				const manifest = getFile(`${gen_folder}/manifest.json`);
-				if (!manifest) return;
+				if (file === 'manifest.json') continue;
+
 				const data = getFileDataFromHash(file, manifest);
 				if (!data) continue;
 
@@ -273,7 +260,7 @@ export function manifestPlugin() {
 			}
 		},
 
-		resolveId: v.resolveId,
-		load: v.load,
+		resolveId: virtual.resolveId,
+		load: virtual.load,
 	};
 }
