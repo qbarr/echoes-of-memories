@@ -1,7 +1,7 @@
-const png = (path, arg = {}) => ({
+const img = (path, arg = {}) => ({
 	url: path,
 	opts: arg,
-	type: 'png',
+	type: 'img',
 });
 const msdf = (path, args = {}) => ({
 	url: `${path}/*.[ktx2|png|json]`,
@@ -17,11 +17,8 @@ const ktx2 = (path, arg = {}) => ({
 const copy = (path) => ({ url: path });
 
 export default {
-	'msdf-font/VCR_OSD_MONO': msdf('msdf/**/'),
-	// 'msdf-font/VCR_OSD_MONO': msdf('msdf/VCR_OSD_MONO'),
-	// 'msdf-font/POUET_LA_FONT': msdf('msdf/POUET_LA_FONT'),
-	// 'msdf-font': msdf('msdf/**'),
+	'msdf-font/VCR_OSD_MONO': msdf('msdf/VCR_OSD_MONO'),
 	scene1: glb('models/scene1'),
-	noises: png('canvas/*.png', { repeat: true }),
+	noises: img('canvas/*.png', { repeat: true }),
 	// 'blue-noise': png('canvas/blue-noise.png', { repeat: true }),
 };

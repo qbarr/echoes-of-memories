@@ -13,9 +13,8 @@ import loadFile from './loadFile';
 const loaders = {};
 const loadPromises = {};
 
-let basepath = typeof VV_PROJECT_BASEPATH !== 'undefined'
-	? VV_PROJECT_BASEPATH
-	: '/';
+let basepath =
+	typeof __PROJECT_BASEPATH__ !== 'undefined' ? __PROJECT_BASEPATH__ : '/';
 
 function list() {
 	return cache.list();
@@ -40,18 +39,21 @@ function load(url, opts = {}) {
 	if (cache.get(url)) return Promise.resolve(cache.get(url));
 
 	// Test if a loading is already running
-	if (loadPromises[ url ]) return loadPromises[ url ];
+	if (loadPromises[url]) return loadPromises[url];
 
 	url = url.url || url;
 	url = resolveUrl(url);
 
 	let p;
-	if (opts.loader && loaders[ opts.loader ]) p = loaders[ opts.loader ].function(url, opts);
+	if (opts.loader && loaders[opts.loader])
+		p = loaders[opts.loader].function(url, opts);
 	else p = autoselectLoader(url, opts);
 
 	if (p) {
-		loadPromises[ url ] = p;
-		p.then(() => { loadPromises[ url ] = null });
+		loadPromises[url] = p;
+		p.then(() => {
+			loadPromises[url] = null;
+		});
 	}
 
 	return p;
@@ -59,16 +61,16 @@ function load(url, opts = {}) {
 
 function registerLoader(opts) {
 	if (opts.loader) opts = opts.loader;
-	loaders[ opts.name ] = opts;
+	loaders[opts.name] = opts;
 }
 
 function autoselectLoader(url, opts) {
 	for (const k in loaders) {
-		const loader = loaders[ k ];
+		const loader = loaders[k];
 		if (loader.extensions) {
 			const exts = loader.extensions;
 			for (let i = 0; i < exts.length; i++) {
-				const ext = exts[ i ];
+				const ext = exts[i];
 				if (url.endsWith(ext)) {
 					return loader.function(url, opts);
 				}
@@ -88,5 +90,5 @@ export default {
 	load,
 	setBasepath,
 	resolveUrl,
-	registerLoader
+	registerLoader,
 };

@@ -1,14 +1,19 @@
-// import manifestUrl from 'virtual:manifest/manifest.json';
+// import manifest from 'virtual:manifest/datas';
+
 export function manifestPlugin() {
 	let manifest = null;
+
 	const api = {
 		load,
-		data: () => manifest,
+		get datas() {
+			return manifest;
+		},
 		get,
 	};
 
 	async function load() {
-		manifest = await (await fetch('/assets/.gen/manifest.json')).json();
+		manifest = (await import(':virtual:/manifest')).default;
+		console.log('Manifest loaded', manifest);
 	}
 
 	function get(id) {

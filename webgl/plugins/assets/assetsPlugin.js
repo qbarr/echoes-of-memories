@@ -62,7 +62,7 @@ export function assetsPlugin(webgl) {
 		font: msdfFontTask,
 	};
 
-	tasks.avif = tasks.webp = tasks.jpg = tasks.png = tasks.tex;
+	tasks.avif = tasks.webp = tasks.jpg = tasks.png = tasks.img = tasks.tex;
 	tasks.glb = tasks.gltf;
 	tasks.msdf = tasks.font;
 
