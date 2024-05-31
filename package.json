@@ -25,6 +25,7 @@
     "@rollup/pluginutils": "^5.0.2",
     "@tweakpane/plugin-essentials": "^0.2.1",
     "@vitejs/plugin-vue": "^4.0.0",
+    "md5": "^2.3.0",
     "netlify-cli": "^16.9.3",
     "postprocessing": "^6.35.4",
     "quad-indices": "^2.0.1",
