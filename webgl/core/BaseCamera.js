@@ -22,8 +22,7 @@ export default class BaseCamera extends BaseComponent {
 		this.resizeSignal = dbs.watchImmediate(this.resize, this);
 	}
 
-	used() {
-	}
+	used() {}
 
 	unused() {}
 

@@ -1,13 +1,13 @@
-
 import BaseScene from '#webgl/core/BaseScene';
 import { BoxGeometry, Mesh } from 'three';
 import { UICamera } from '../Cameras/UICamera';
 import { MSDFTextMesh } from '../Text';
 import { map } from '#utils/maths';
 
+import { Subtitles } from '../Subtitles/Subtitles';
 
 export default class UIScene extends BaseScene {
-	mixins = [ 'debugCamera' ]
+	mixins = ['debugCamera'];
 
 	init() {
 		this.camera = this.add(UICamera);
@@ -33,6 +33,7 @@ export default class UIScene extends BaseScene {
 		// this.cubeMesh4.position.set(1 * ratio, 1, 0);
 
 		// this.base.add(this.cubeMesh1, this.cubeMesh2, this.cubeMesh3, this.cubeMesh4);
+		this.add(Subtitles);
 	}
 
 	async enter() {
@@ -46,11 +47,9 @@ export default class UIScene extends BaseScene {
 	update() {
 		// const dbs = this.webgl.$renderer.drawingBufferSize;
 		// const ratio = dbs.value.x / dbs.value.y;
-
 		// this.cubeMesh1.position.set(-1 * ratio, -1, 0);
 		// this.cubeMesh2.position.set(1 * ratio, -1, 0);
 		// this.cubeMesh3.position.set(-1 * ratio, 1, 0);
 		// this.cubeMesh4.position.set(1 * ratio, 1, 0);
 	}
 }
-

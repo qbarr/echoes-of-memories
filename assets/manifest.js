@@ -10,9 +10,9 @@ export default {
 	'msdf-font/VCR_OSD_MONO': msdf('fonts/msdf/VCR_OSD_MONO'),
 	scene1: glb('models/scene1'),
 
-	ocean: mp3('audios/positional/ocean'),
-	cameronDiaz: wav('audios/vocals/cameronDiaz'),
+	// positionals,
+	dsi: ogg('audios/positional/dsi'),
 	christianBale: wav('audios/vocals/christianBale'),
-	leonardoDicaprio: wav('audios/vocals/leonardoDicaprio'),
-	timotheeChalamet: wav('audios/vocals/timotheeChalamet'),
+	// vocals,
+	kaizen: wav('audios/vocals/kaizen'),
 };

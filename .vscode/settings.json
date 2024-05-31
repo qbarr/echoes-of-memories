@@ -12,7 +12,8 @@
 	"javascript.preferences.quoteStyle": "single",
 	"typescript.preferences.quoteStyle": "single",
 	"workbench.colorCustomizations": {
-		"titleBar.activeBackground": "#c0bec8",
+		"titleBar.activeBackground": "#78420c",
+		"activityBar.background": "#472707",
 		"titleBar.activeForeground": "#000",
 		"commandCenter.background": "#ffffff02",
 		"commandCenter.border": "#ffffff33",

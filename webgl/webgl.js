@@ -3,7 +3,6 @@ import UIScene from './components/Scenes/UIScene';
 
 import { createWebgl, webgl } from './core';
 
-
 export default createWebgl({
 	async setup() {
 		const { $renderer, $scenes } = webgl;
@@ -14,16 +13,16 @@ export default createWebgl({
 		$scenes.create('ui', UIScene);
 
 		webgl.$log('WebGL setup');
-
 	},
 
 	async preload() {
 		const { load } = webgl.$assets;
-		const { $sounds } = webgl;
+		const { $sounds, $subtitles } = webgl;
 
 		await Promise.all([
 			load('msdf-font/VCR_OSD_MONO'),
-			$sounds.preload()
+			$sounds.preload(),
+			$subtitles.preload(),
 		]);
 	},
 
@@ -45,5 +44,5 @@ export default createWebgl({
 	render() {
 		const { $scenes } = webgl;
 		$scenes.render();
-	}
+	},
 });

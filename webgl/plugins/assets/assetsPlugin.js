@@ -143,7 +143,9 @@ export function assetsPlugin(webgl) {
 			directory: opts.directory,
 			audioListener: opts.audioListener,
 			onLoad: (audio) => {
-				sounds[id] = audio;
+				sounds[id] = {
+					audio,
+				};
 			},
 		});
 	}
