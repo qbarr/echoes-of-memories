@@ -1,7 +1,7 @@
 import { webgl } from '#webgl/core/index.js';
 import { GLSL3, NoBlending, Vector2, Vector3, WebGLRenderTarget } from 'three';
 
-import { w } from '#utils/state';
+import { storageSync, w } from '#utils/state';
 import createFilter from '#webgl/utils/createFilter.js';
 import createBuffer from '#webgl/utils/createBuffer.js';
 
@@ -14,13 +14,22 @@ const BlurDirectionY = new Vector2(0, 1);
 const DUMMY_DIR = new Vector2();
 const DUMMY_RT = new WebGLRenderTarget(1, 1, { depthBuffer: false });
 
-export const useUnrealBloom = (composer, { iterations = 5 } = {}) => {
+const defaultParams = {
+	threshold: 0.13, // 0.57,
+	smoothing: 0.47, // 0.68,
+	strength: 1.08, // 1.6,
+	radius: 1.28, // 0.78,
+	spread: 0.65, // 0.65,
+};
+
+export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 	/* Params */
-	const threshold = w(0.3);
-	const smoothing = w(0.7);
-	const strength = w(1.2);
-	const radius = w(0.4);
-	const spread = w(1);
+	const sk = 'webgl:composer:UnrealBloom:';
+	const threshold = storageSync(sk + 'threshold', w(defaultParams.threshold));
+	const smoothing = storageSync(sk + 'smoothing', w(defaultParams.smoothing));
+	const strength = storageSync(sk + 'strength', w(defaultParams.strength));
+	const radius = storageSync(sk + 'radius', w(defaultParams.radius));
+	const spread = storageSync(sk + 'spread', w(defaultParams.spread));
 
 	const enabled = w(true);
 
@@ -67,13 +76,13 @@ export const useUnrealBloom = (composer, { iterations = 5 } = {}) => {
 		const rtHor = createBuffer({
 			name: `UnrealBloom:HorizontalBlur#${i}`,
 			alpha: true,
-			scale: 0.25,
+			scale: 0.5,
 			depth: false,
 		});
 		const rtVer = createBuffer({
 			name: `UnrealBloom:VerticalBlur#${i}`,
 			alpha: true,
-			scale: 0.25,
+			scale: 0.5,
 			depth: false,
 		});
 
@@ -264,6 +273,14 @@ export const useUnrealBloom = (composer, { iterations = 5 } = {}) => {
 			min: 0,
 			max: 2,
 			step: 0.01,
+		});
+
+		gui.addButton({ title: 'Reset' }).on('click', () => {
+			threshold.set(defaultParams.threshold, true);
+			smoothing.set(defaultParams.smoothing, true);
+			strength.set(defaultParams.strength, true);
+			radius.set(defaultParams.radius, true);
+			spread.set(defaultParams.spread, true);
 		});
 	}
 	/// #endif

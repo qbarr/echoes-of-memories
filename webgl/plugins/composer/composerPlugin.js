@@ -2,10 +2,12 @@ import createFilter from '#webgl/utils/createFilter';
 import { Vector2 } from 'three';
 
 import CompositeFragment from './CompositePass.frag?hotshader';
-import { useUnrealBloom } from './UnrealBloom';
+import { useUnrealBloomPass } from './UnrealBloom';
+import { useLutPass } from './LUT';
+import { useDepthPass } from './Depth';
 // import { useGrayscale } from './Grayscale';
 
-import GrayscaleFragment from './Grayscale/GrayscaleFragment.frag?hotshader';
+// import GrayscaleFragment from './Grayscale/GrayscaleFragment.frag?hotshader';
 
 import { prng } from '#utils/maths/prng.js';
 
@@ -35,13 +37,13 @@ export function composerPlugin(webgl) {
 		const { textures } = $assets;
 
 		buffers.main = $fbo.createBuffer({ name: 'Main' });
-		buffers.selectiveBloom = $fbo.createBuffer({ name: 'Selective Bloom' });
-		buffers.depth = $fbo.createBuffer({ name: 'Detph' });
+		buffers.mainBloom = $fbo.createBuffer({ name: 'Selective Bloom' });
+		// buffers.depth = $fbo.createBuffer({ name: 'Detph' });
 
 		Object.assign(uniforms, {
 			...webgl.uniforms,
 			tMap: { value: buffers.main.texture, type: 't' },
-			tMapBloom: { value: buffers.selectiveBloom.texture, type: 't' },
+			tMapBloom: { value: buffers.mainBloom.texture, type: 't' },
 
 			// Dither uniforms
 			// uBlueNoiseMap: { value: textures['blue-noise'], type: 't' },
@@ -52,8 +54,8 @@ export function composerPlugin(webgl) {
 			uBichromy: { value: 0.0 },
 			uSaturation: { value: 1.0 },
 
-			// Grayscale
-			uGrayStrength: { value: 0.0 },
+			// // Grayscale
+			// uGrayStrength: { value: 0.0 },
 		});
 
 		Object.assign(defines, { ...webgl.defines });
@@ -62,22 +64,24 @@ export function composerPlugin(webgl) {
 		CompositeFragment.use(filters.composite.material);
 
 		// Grayscale pass
-		buffers.grayscale1 = $fbo.createBuffer({ name: 'Grayscale1' });
-		buffers.grayscale2 = $fbo.createBuffer({ name: 'Grayscale2' });
-		filters.grayscale = createFilter({
-			uniforms: {
-				...uniforms,
-				tMap: { value: null, type: 't' },
-			},
-			defines,
-		});
-		filters.grayscale.setMap = (map) => {
-			filters.grayscale.material.uniforms.tMap.value = map;
-		};
-		GrayscaleFragment.use(filters.grayscale.material);
+		// buffers.grayscale1 = $fbo.createBuffer({ name: 'Grayscale1' });
+		// buffers.grayscale2 = $fbo.createBuffer({ name: 'Grayscale2' });
+		// filters.grayscale = createFilter({
+		// 	uniforms: {
+		// 		...uniforms,
+		// 		tMap: { value: null, type: 't' },
+		// 	},
+		// 	defines,
+		// });
+		// filters.grayscale.setMap = (map) => {
+		// 	filters.grayscale.material.uniforms.tMap.value = map;
+		// };
+		// GrayscaleFragment.use(filters.grayscale.material);
 
 		// useGrayscale(api);
-		useUnrealBloom(api);
+		useDepthPass(api);
+		useUnrealBloomPass(api);
+		useLutPass(api);
 
 		$renderer.drawingBufferSize.watchImmediate(resize);
 		$hooks.beforeUpdate.watch(update);
@@ -101,41 +105,52 @@ export function composerPlugin(webgl) {
 
 	function render() {
 		const { $scenes } = webgl;
-		const scene = webgl.$getCurrentScene();
+		const scene = $scenes.current.component;
 		const renderer = webgl.$threeRenderer;
 
 		// Render raw scene to main buffer
-		renderer.setRenderTarget(buffers.main);
-		renderer.clear();
-		scene.toggleSelectedBloom(false);
-		scene.triggerRender();
-		uniforms.tMap.value = buffers.main.texture;
-
-		// renderer.setRenderTarget(buffers.grayscale1);
+		// renderer.setRenderTarget(buffers.main);
 		// renderer.clear();
-		// filters.grayscale.setMap(buffers.main.texture);
-		// filters.grayscale.render();
+		// scene.toggleSelectedBloom(false);
+		// scene.triggerRender();
+		// uniforms.tMap.value = buffers.main.texture;
 
-		// uniforms.tMap.value = buffers.grayscale1.texture;
+		// // renderer.setRenderTarget(buffers.grayscale1);
+		// // renderer.clear();
+		// // filters.grayscale.setMap(buffers.main.texture);
+		// // filters.grayscale.render();
 
-		// Render selected bloom to selectiveBloom buffer
-		renderer.setRenderTarget(buffers.selectiveBloom);
-		renderer.clear();
-		scene.toggleSelectedBloom(true);
-		scene.triggerRender();
-		renderer.clearDepth();
-		$scenes.ui.component.triggerRender();
-		uniforms.tMapBloom.value = buffers.selectiveBloom.texture;
+		// // uniforms.tMap.value = buffers.grayscale1.texture;
+
+		// // Render selected bloom to mainBloom buffer
+		// renderer.setRenderTarget(buffers.mainBloom);
+		// renderer.clear();
+		// scene.toggleSelectedBloom(true);
+		// scene.triggerRender();
+		// renderer.clearDepth();
+		// $scenes.ui.component.triggerRender();
+		// uniforms.tMapBloom.value = buffers.mainBloom.texture;
 
 		// renderer.setRenderTarget(buffers.grayscale2);
 		// renderer.clear();
-		// filters.grayscale.setMap(buffers.selectiveBloom.texture);
+		// filters.grayscale.setMap(buffers.mainBloom.texture);
 		// filters.grayscale.render();
 
 		// uniforms.tMapBloom.value = buffers.grayscale2.texture;
 
+		api.$depth.render(scene);
+
+		renderer.setRenderTarget(buffers.main);
+		renderer.clear();
+		scene.toggleSelectedBloom(false);
+		scene.triggerRender();
+		renderer.clearDepth();
+		$scenes.ui.component.triggerRender();
+		uniforms.tMap.value = buffers.main.texture;
+
 		// Render Unreal Bloom pass
 		api.$unrealBloom.render(scene);
+		api.$lut.render();
 
 		// Render composite pass
 		renderer.setRenderTarget(null);
@@ -149,14 +164,16 @@ export function composerPlugin(webgl) {
 			gui.addBinding(obj, 'value', { label, min, max, step });
 
 		api.$unrealBloom.devtools(gui);
+		gui.addSeparator();
+		api.$lut.devtools(gui);
 
 		gui.addSeparator();
 		add(uniforms.uDitherStrength, { label: 'Dither Strength', max: 2 });
 		gui.addSeparator();
 		add(uniforms.uBichromy, { label: 'Bichromy' });
 		add(uniforms.uSaturation, { label: 'Saturation' });
-		gui.addSeparator();
-		add(uniforms.uGrayStrength, { label: 'Grayscale' });
+		// gui.addSeparator();
+		// add(uniforms.uGrayStrength, { label: 'Grayscale' });
 	}
 	/// #endif
 

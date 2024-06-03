@@ -21,7 +21,9 @@ export default createWebgl({
 		await Promise.all([
 			load('msdf-font/VCR_OSD_MONO'),
 			load('noises'),
+			load('luts'),
 			load('scene1'),
+			load('chambre'),
 		]);
 	},
 

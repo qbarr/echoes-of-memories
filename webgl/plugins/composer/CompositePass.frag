@@ -1,6 +1,6 @@
 precision highp float;
 
-#define PI2 6.283185307179586476925286766559
+// #define PI2 6.283185307179586476925286766559
 
 uniform float time;
 uniform vec4 resolution;
@@ -14,10 +14,15 @@ uniform float uDitherStrength;
 uniform float uBichromy;
 uniform float uSaturation;
 
+// Depth
+uniform float zNear;
+uniform float zFar;
+
 // Passes
 uniform sampler2D tMap;
 uniform sampler2D tMapBloom;
 uniform sampler2D tBloom;
+uniform sampler2D tDepth;
 
 varying vec2 vUv;
 
@@ -46,13 +51,23 @@ vec3 dither(vec3 color) {
 	return color + dither_shift_RGB;
 }
 
+float calc_depth(float z) {
+	// float near = zNear;
+	float near = 1.;
+	// float far = zFar;
+	float far = 5.;
+	return (2.0 * near) / (far + near - z * (far - near));
+}
+
+#include <packing>
+#include <common>
+
 void main() {
 	vec2 uv = vUv;
 
 	// Composite
 	vec4 tex = texture2D(tMap, uv);
 	tex += texture2D(tBloom, uv);
-	tex += texture2D(tMapBloom, uv);
 
 	// Tint - Bichromy
 	tex.rgb = mix(tex.rgb, vec3(dot(tex.rgb, vec3(0.299, 0.587, 0.114))), uBichromy);
@@ -69,4 +84,12 @@ void main() {
 
 	gl_FragColor = tex;
 	gl_FragColor.a = 1.0;
+
+	// vec4 depthColor = texture2D(tDepth, uv);
+	// float geometryZ = calc_depth(unpackRGBAToDepth(depthColor));
+	// float sceneZ = calc_depth(gl_FragCoord.z);
+	// float _distance = 0.4;
+	// float softAlpha = smoothstep(0., _distance, saturate(geometryZ - sceneZ));
+
+	// gl_FragColor.rgb = mix(tex.rgb, vec3(0.0), softAlpha);
 }

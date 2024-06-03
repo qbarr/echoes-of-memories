@@ -122,8 +122,6 @@ export function assetsPlugin(webgl) {
 		const { $preloader, $manifest } = webgl.$app;
 		const task = !$preloader.finished ? $preloader.task : NOOP;
 
-		console.log(fileID);
-
 		let file = $manifest.get(fileID);
 		if (!file && !bypassManifest) return;
 		if (!file.files) return;
@@ -181,7 +179,6 @@ export function assetsPlugin(webgl) {
 	}
 
 	async function gltfTask({ id, url }) {
-		console.log('gltfTask', id, url);
 		return files.load(url, {
 			onLoad: (obj) => {
 				objects[id] = obj;
