@@ -13,6 +13,7 @@ export function audioPlugin(webgl, opts = {}) {
 		audioListener,
 
 		current: null,
+		currentId: null,
 		masterVolume: 1,
 
 		progress: 0,
@@ -29,6 +30,7 @@ export function audioPlugin(webgl, opts = {}) {
 		unmute,
 		setMasterVolume,
 		getMasterVolume,
+		setCurrent,
 
 		preload,
 		getSound,
@@ -37,28 +39,88 @@ export function audioPlugin(webgl, opts = {}) {
 	/// #if __DEBUG__
 	function devTools() {
 		const $gui = webgl.$app.$gui;
-
-		const gui = webgl.$gui.addFolder({ title: '🔊 Audio' });
+		// const gui = webgl.$gui.addFolder({ title: '🔊 Audio' });
+		api.gui = webgl.$gui.addFolder({ title: '🔊 Audio' });
 		const { sounds } = webgl.$assets;
 
 		api.current = Object.values(sounds)[0];
-		gui.addBinding(api, 'masterVolume', {
-			label: 'Master Volume',
-			min: 0,
-			max: 1,
-		}).on('change', () => audioListener.setMasterVolume(api.masterVolume));
-		gui.addBlade({
-			view: 'list',
-			label: 'Sounds',
-			options: Object.entries(sounds).map(([id, sound]) => ({
-				text: id,
-				value: id,
-			})),
-			value: api.current,
-		}).on('change', ({ value }) => (api.current = value));
+		api.currentId = Object.keys(sounds)[0];
+		api.gui
+			.addBinding(api, 'masterVolume', {
+				label: 'Master Volume',
+				min: 0,
+				max: 1,
+			})
+			.on('change', () => audioListener.setMasterVolume(api.masterVolume));
+		let CELLS_PER_ROW = 2;
+		const cells = [
+			{
+				title: 'Mute',
+				action: mute,
+			},
+			{
+				title: 'Unmute',
+				action: unmute,
+			},
+			{
+				title: 'Play',
+				action: () => play({ id: api.currentId }),
+			},
+			{
+				title: 'Pause',
+				action: () => pause({ id: api.currentId }),
+			},
+		];
+		const rows = Math.ceil(cells.length / CELLS_PER_ROW);
+		CELLS_PER_ROW = Math.min(CELLS_PER_ROW, cells.length);
 
-		gui.addButton({ title: 'Play' }).on('click', () => play({ id: api.current }));
-		gui.addButton({ title: 'Pause' }).on('click', () => pause({ id: api.current }));
+		api.gui
+			.addBlade({
+				view: 'list',
+				label: 'Sounds',
+				options: Object.entries(sounds).map(([id, sound]) => ({
+					text: id,
+					value: id,
+				})),
+				value: api.currentId,
+			})
+			.on('change', ({ value }) => {
+				setCurrent({ id: value, audio: sounds[value] });
+			});
+		api.gui.addBinding(api, 'currentId', {
+			label: 'Current Sound',
+			readonly: true,
+		});
+		api.gui
+			.addBlade({
+				view: 'buttongrid',
+				size: [CELLS_PER_ROW, rows],
+				cells: (x, y) => cells[y * CELLS_PER_ROW + x],
+				label: 'Actions',
+			})
+			.on('click', ({ index }) => {
+				const { action } = cells[index[1] * CELLS_PER_ROW + index[0]];
+				action();
+			});
+
+		api.progress_debug = api.gui.addBinding(api, 'progress', {
+			label: 'Audio progress',
+			view: 'slider',
+			readonly: true,
+			value: api.progress,
+		});
+
+		// api.timeline_debug = api.gui
+		// 	.addBinding(api, 'progress', {
+		// 		label: 'Timeline',
+		// 		view: 'slider',
+		// 		value: api.progress,
+		// 		min: 0,
+		// 		max: api.current.audio.buffer.duration * 1000,
+		// 	})
+		// 	.on('change', (tl) => {
+		// 		changeTimelineDebug(tl.value);
+		// 	});
 	}
 	/// #endif
 
@@ -79,14 +141,49 @@ export function audioPlugin(webgl, opts = {}) {
 		raf.add(update);
 	}
 
-	function setCurrentSound({ id }) {
-		api.current = id;
+	function updateDebugPogressValue() {
+		api.progress = 0;
+		api.progress_debug.max = api.current.audio.buffer.duration * 1000;
+		api.progress_debug.value = api.progress;
+		// api.timeline_debug.max = api.current.audio.buffer.duration * 1000;
+		// api.timeline_debug.value = api.progress;
+	}
+
+	function changeTimelineDebug(value) {
+		if (api.current.audio.isPlaying) {
+			pause({ id: api.currentId });
+		}
+
+		const time = Math.floor(value);
+		api.current.audio.offset = time;
+		api.progress = time;
+	}
+
+	function setCurrent({ id, audio }) {
+		if (api.current.audio.isPlaying) {
+			stop({ id: api.currentId });
+		}
+
+		console.log('setCurrent', api.current);
+
+		if (api.current.subtitles) {
+			webgl.$subtitles.flush();
+		}
+
+		api.currentId = id;
+		api.current = audio;
+		api.progress = 0;
+
+		updateDebugPogressValue();
+
 		return api.current;
 	}
 
 	function play({ id }) {
 		const { $assets, $subtitles } = webgl;
 		const { sounds } = $assets;
+
+		setCurrent({ id, audio: sounds[id] });
 
 		try {
 			api.startedAt = performance.now();
@@ -203,19 +300,20 @@ export function audioPlugin(webgl, opts = {}) {
 	}
 
 	function update() {
-		const current = webgl.$assets.sounds[api.current];
+		const { current } = api;
 
 		if (!current) return;
 
 		const currentTime = current.audio.context.currentTime;
 		const startedAt = current.audio._startedAt;
-		const duration = current.audio.buffer.duration * 1000;
+		const duration = (Math.floor(current.audio.buffer.duration * 100) / 100) * 1000;
 
 		if (current.audio.isPlaying) {
 			const currentTime = performance.now() - api.startedAt;
 			const progress = api.totalElapsed + currentTime;
 
 			api.progress = Math.ceil(progress);
+			api.progress_debug.value = api.progress;
 		}
 
 		if (current.subtitles) {
@@ -226,9 +324,8 @@ export function audioPlugin(webgl, opts = {}) {
 		}
 
 		if (api.progress >= duration) {
-			console.log('[Audio plugin] Sound ended');
 			api.progress = 0;
-			stop({ id: api.current });
+			stop({ id: api.currentId });
 			webgl.$subtitles.flush();
 		}
 	}

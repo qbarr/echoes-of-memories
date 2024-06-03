@@ -78,10 +78,6 @@ export function subtitlesPlugin(webgl, opts = {}) {
 	}
 
 	function getContentByTime({ id, time }) {
-		// if (!api.tempSubtitles.length) {
-		// 	api.currentPart.value = '';
-		// }
-
 		for (let i = 0; i < api.tempSubtitles.length; i++) {
 			const subtitle = api.tempSubtitles[i];
 
@@ -93,7 +89,7 @@ export function subtitlesPlugin(webgl, opts = {}) {
 	}
 
 	function flush() {
-		console.log('[Subtitles plugin] FLUSH');
+		api.tempSubtitles = [];
 		api.currentPart.value = '';
 	}
 
