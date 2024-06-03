@@ -30,8 +30,7 @@ export const plugins = [
 	audioPlugin,
 	__DEBUG__ && debugCameraPlugin,
 	assetsPlugin,
-	raycastPlugin,
 
 	/* PROJECT PLUGINS */
-	// ...
+	raycastPlugin,
 ];

@@ -1,7 +1,11 @@
 import { storageSync, w } from '#utils/state/index.js';
 import { webgl } from '#webgl/core';
-
-import { IcosahedronGeometry, Mesh, MeshBasicMaterial, SphereGeometry } from 'three';
+import {
+	IcosahedronGeometry,
+	Mesh,
+	MeshBasicMaterial,
+	SphereGeometry,
+} from 'three';
 
 const NOOP = () => {};
 const surchargeMethod = (_class, id, cb, before) => {
@@ -33,14 +37,17 @@ export function useProximity(Class) {
 
 	/// #if __DEBUG__
 	let debugMesh = null;
-	const displayDebug = storageSync('webgl:' + Class.name + ':proximity:debug', w(false));
+	const displayDebug = storageSync(
+		'webgl:' + Class.name + ':proximity:debug',
+		w(false),
+	);
 	const forcedStates = {
 		inside: false,
 	};
 	/// #endif
 
 	function init() {
-		const scene = webgl.$getCurrentScene();
+		const scene = Class.scene ?? webgl.$getCurrentScene();
 		scene.$hooks.onCameraChange.watch(onCameraChange);
 		camera = scene.getCurrentCamera().base;
 
@@ -68,22 +75,26 @@ export function useProximity(Class) {
 			states.inside = true;
 			states.outside = false;
 			onEnter();
+			__DEBUG__ && debugMesh.material.color.setHex(0x00ff00);
 		} else if (distance > threshold.value && states.inside) {
 			states.inside = false;
 			states.outside = true;
 			onLeave();
+			__DEBUG__ && debugMesh.material.color.setHex(0xff0000);
 		}
 
 		/// #if __DEBUG__
-		if (forcedStates.inside || states.inside) onInside(distance, normDistance);
+		if (forcedStates.inside || states.inside)
+			onInside(distance, normDistance);
 		/// #else
 		if (states.inside) onInside(distance, normDistance);
 		/// #endif
 
-		/// #if __DEBUG__
-		if (forcedStates.inside || states.inside) debugMesh.material.color.setHex(0x00ff00);
-		else debugMesh.material.color.setHex(0xff0000);
-		/// #endif
+		// /// #if __DEBUG__
+		// if (forcedStates.inside || states.inside)
+		// 	debugMesh.material.color.setHex(0x00ff00);
+		// else debugMesh.material.color.setHex(0xff0000);
+		// /// #endif
 	}
 
 	function destroy() {
@@ -100,7 +111,12 @@ export function useProximity(Class) {
 		gui.addBinding(forcedStates, 'inside', { label: 'Force Inside' });
 		gui.addSeparator();
 		gui.addBinding(displayDebug, 'value', { label: 'Debug' });
-		gui.addBinding(threshold, 'value', { label: 'Threshold', min: 0, max: 10, step: 0.01 });
+		gui.addBinding(threshold, 'value', {
+			label: 'Threshold',
+			min: 0,
+			max: 10,
+			step: 0.01,
+		});
 	}
 	/// #endif
 

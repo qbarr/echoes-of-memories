@@ -24,6 +24,8 @@ export function scenesPlugin(webgl) {
 		switch: set,
 		get,
 
+		getSceneByComponent,
+
 		update,
 		render,
 	};
@@ -43,8 +45,8 @@ export function scenesPlugin(webgl) {
 			needsRender: true,
 			component: Scene,
 
-			leave: Scene.leave.bind(Scene),
-			enter: Scene.enter.bind(Scene),
+			enter: Scene.triggerEnter.bind(Scene),
+			leave: Scene.triggerLeave.bind(Scene),
 			update: Scene.triggerUpdate.bind(Scene),
 			render: Scene.triggerRender.bind(Scene),
 		});
@@ -73,6 +75,7 @@ export function scenesPlugin(webgl) {
 
 		if (curScene) {
 			await curScene.leave();
+
 			curScene.isActive = false;
 			curScene.needsUpdate = false;
 			curScene.needsRender = false;
@@ -136,7 +139,13 @@ export function scenesPlugin(webgl) {
 		},
 		load: () => {
 			webgl.$hooks.beforeStart.watchOnce(() => {
-				if (!current.value) set(savedCurrentScene.value ?? api.list[0], true);
+				if (!current.value) {
+					/// #if __DEBUG__
+					set(savedCurrentScene.value ?? api.list[0], true);
+					/// #else
+					set(api.list[0], true);
+					/// #endif
+				}
 
 				init();
 

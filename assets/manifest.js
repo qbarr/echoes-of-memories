@@ -1,18 +1,52 @@
-const png = (path) => ({ url: `/assets/${path}.png` });
-const tp = (path) => ({ data: `/assets/${path}.json`, url: `/assets/${path}.png` });
-const msdf = (path) => ({ data: `/assets/${path}.json`, url: `/assets/${path}.png` });
-const glb = (path) => ({ url: `/assets/${path}.glb` });
-const mp3 = (path) => ({ url: `/assets/${path}.mp3` });
-const ogg = (path) => ({ url: `/assets/${path}.ogg` });
-const wav = (path) => ({ url: `/assets/${path}.wav` });
+const img = (path, arg = {}) => ({
+	url: path,
+	opts: arg,
+	type: 'img',
+});
+const msdf = (path, args = {}) => ({
+	url: `${path}/*.[ktx2|png|json]`,
+	type: 'msdf',
+	opts: args,
+});
+const glb = (path) => ({ url: `${path}.glb`, type: 'glb' });
+const ktx2 = (path, arg = {}) => ({
+	url: `${path}.ktx2`,
+	opts: arg,
+	type: 'texture',
+});
+const copy = (path) => ({ url: path });
+
+const positional = (path) => ({
+	url: `${path}/*.[mp3|wav|ogg]`,
+	opts: { type: 'positional' },
+	type: 'audio',
+});
+const vocal = (path) => ({
+	url: `${path}/*.[mp3|wav|ogg]`,
+	opts: { type: 'vocal' },
+	type: 'audio',
+});
+const ambiant = (path) => ({
+	url: `${path}/*.[mp3|wav|ogg]`,
+	opts: { type: 'ambiant' },
+	type: 'audio',
+});
+const subtitles = (path) => ({
+	url: `${path}/*.json`,
+	opts: { type: 'subtitles' },
+	type: 'json',
+});
 
 export default {
-	'msdf-font/VCR_OSD_MONO': msdf('fonts/msdf/VCR_OSD_MONO'),
+	'msdf-font/VCR_OSD_MONO': msdf('msdf/VCR_OSD_MONO'),
 	scene1: glb('models/scene1'),
+	chambre: glb('models/chambre'),
+	noises: img('canvas/*.png', { repeat: true }),
+	luts: img('luts/*.png'),
+	// 'blue-noise': png('canvas/blue-noise.png', { repeat: true }),
 
-	// positionals,
-	dsi: ogg('audios/positional/dsi'),
-	christianBale: wav('audios/vocals/christianBale'),
-	// vocals,
-	kaizen: wav('audios/vocals/kaizen'),
+	'sound/positions': positional('audios/positional/*'),
+	'sound/vocals': vocal('audios/vocals/*'),
+
+	subtitles: subtitles('subtitles/export/*'),
 };

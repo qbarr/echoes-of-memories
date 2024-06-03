@@ -2,10 +2,8 @@ import BaseScene from '#webgl/core/BaseScene';
 import { MainCamera } from '../Cameras/MainCamera';
 import { MSDFTextMesh } from '../Text';
 
-import { wait } from '#utils/async';
 import { Cube } from '../Objects/Cube';
 import { Sphere } from '../Objects/Sphere';
-import { Grid } from '../Objects/Grid';
 
 export default class MainScene extends BaseScene {
 	mixins = ['debugCamera'];
@@ -13,17 +11,12 @@ export default class MainScene extends BaseScene {
 	init() {
 		this.camera = this.add(MainCamera);
 
-		const t = this.add(MSDFTextMesh, {
-			font: 'VCR_OSD_MONO',
-			content: 'Home',
-			centerMesh: true,
-		});
-
-		t.edit('Main scene');
+		const chambre = this.webgl.$assets.objects['chambre'].scene;
+		chambre.scale.setScalar(3);
+		this.base.add(chambre);
 
 		this.add(Cube);
-		this.add(Sphere);
-		this.add(Grid);
+		// this.add(Sphere);
 	}
 
 	async enter() {
@@ -32,7 +25,6 @@ export default class MainScene extends BaseScene {
 
 	async leave() {
 		this.log('leave');
-		await wait(1000);
 	}
 
 	update() {}

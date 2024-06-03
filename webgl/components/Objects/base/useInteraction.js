@@ -46,7 +46,7 @@ export function useInteraction(Class) {
 
 		// Center the mesh
 		box.getCenter(vec3);
-		mesh.position.copy(vec3);
+		// mesh.position.copy(vec3);
 		vec3.release();
 
 		const baseScale = Class.base.scale;
@@ -66,6 +66,7 @@ export function useInteraction(Class) {
 			onEnter: onEnter,
 			onLeave: onLeave,
 			forceVisible: true,
+			forcedScene: Class.scene,
 		});
 
 		Class.base.add(mesh);

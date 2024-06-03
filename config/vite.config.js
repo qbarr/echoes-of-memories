@@ -1,18 +1,18 @@
-import { defineConfig, splitVendorChunkPlugin } from "vite";
+import { defineConfig, splitVendorChunkPlugin } from 'vite';
 
-import vue from "@vitejs/plugin-vue";
-import { ifdefRollupPlugin } from "./plugins/ifdef/ifdefRollupPlugin";
-import { manifestPlugin } from "./plugins/manifest/manifestPlugin";
-import { hotShadersRollupPlugin } from "./plugins/hotShaders/hotShadersRollupPlugin";
-import { timestampPlugin } from "./plugins/timestamp/timestampPlugin";
-import { subtitlesPlugin } from "./plugins/subtitles/subtitlesPlugin";
+import vue from '@vitejs/plugin-vue';
+import { ifdefRollupPlugin } from './plugins/ifdef/ifdefRollupPlugin';
+import { manifestPlugin } from './plugins/manifest/manifestPlugin';
+import { hotShadersRollupPlugin } from './plugins/hotShaders/hotShadersRollupPlugin';
+import { timestampPlugin } from './plugins/timestamp/timestampPlugin';
+import { subtitlesPlugin } from './plugins/subtitles/subtitlesPlugin';
 
-import { paths } from "./utils/paths";
+import { paths } from './utils/paths';
 
-export default ({ mode = "development" }) => {
-	const isDevelopment = mode === "development";
-	const isProduction = mode === "production";
-	const isStaging = mode === "staging";
+export default ({ mode = 'development' }) => {
+	const isDevelopment = mode === 'development';
+	const isProduction = mode === 'production';
+	const isStaging = mode === 'staging';
 
 	const MANDATORY_DEFINES = {
 		__ENVIRONMENT__: JSON.stringify(mode),
@@ -25,7 +25,7 @@ export default ({ mode = "development" }) => {
 	return defineConfig({
 		root: paths.appRoot,
 
-		base: "/",
+		base: '/',
 		publicDir: paths.public,
 		cacheDir: paths.cache,
 
@@ -44,34 +44,33 @@ export default ({ mode = "development" }) => {
 			splitVendorChunkPlugin(),
 			hotShadersRollupPlugin(isDevelopment),
 			timestampPlugin(),
-			subtitlesPlugin(),
 			manifestPlugin(),
+			subtitlesPlugin(),
 		],
 
 		define: MANDATORY_DEFINES,
 		assetsInclude: /\.(bin|gtlf|glb|ktx|m4a|mp3|aac|obj|draco)$/,
 		resolve: {
 			//   alias: pathsAliases,
-			extensions: [".cjs", ".mjs", ".js", ".ts", ".jsx", ".tsx", ".vue"],
+			extensions: ['.cjs', '.mjs', '.js', '.ts', '.jsx', '.tsx', '.vue'],
 		},
 
 		build: {
-			target: "esnext",
+			target: 'esnext',
 			outDir: paths.dist,
-			assetsDir: "assets",
+			assetsDir: 'assets',
 			emptyOutDir: true,
 			sourcemap: isDevelopment,
 			minify: isProduction,
 
 			rollupOptions: {
-				input: paths.appEntry,
 				output: {
-					entryFileNames: "[name].js",
-					chunkFileNames: "[name].js",
-					assetFileNames: "assets/[name].[ext]",
+					entryFileNames: '[name].js',
+					chunkFileNames: '[name].js',
+					assetFileNames: 'assets/[name].[ext]',
 					sourcemap: isDevelopment,
 
-					format: "es",
+					format: 'es',
 					dir: paths.dist,
 				},
 

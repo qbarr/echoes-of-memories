@@ -1,13 +1,12 @@
 import { storageSync, w } from '#utils/state';
 
-import _createBuffer from '../../utils/createBuffer';
-import createFilter from '../../utils/createFilter';
+import _createBuffer from '#webgl/utils/createBuffer';
+import createFilter from '#webgl/utils/createFilter';
 
 import { Vector2, Vector4 } from 'three';
 
-
 /// #if __DEBUG__
-const fs = /* glsl */`
+const fs = /* glsl */ `
 precision highp float;
 uniform mediump sampler2D frame;
 uniform float ratio;
@@ -23,7 +22,6 @@ void main() {
 `;
 /// #endif
 
-
 const noop = () => {};
 
 export function fboPlugin(webgl) {
@@ -37,16 +35,14 @@ export function fboPlugin(webgl) {
 	let gui, guiList, previewFilter;
 	const previewCoords = { previewPosition: new Vector2(), previewScale: 0.3 };
 	const currentBuffer = { name: '' };
-	const buffers = new Map([[ false, 'None' ]]);
-	const buffersByName = new Map([[ 'None', false ]]);
+	const buffers = new Map([[false, 'None']]);
+	const buffersByName = new Map([['None', false]]);
 	const tvec4a = new Vector4();
 	/// #endif
 
 	function createBuffer(opts) {
 		const buffer = _createBuffer(opts);
-		/// #if __DEBUG__
-		if (opts.name) registerBuffer(opts.name, buffer);
-		/// #endif
+		if (__DEBUG__ && opts.name) registerBuffer(opts.name, buffer);
 		return buffer;
 	}
 
@@ -59,51 +55,39 @@ export function fboPlugin(webgl) {
 			renderer: webgl.$threeRenderer,
 			fragmentShader: fs,
 			uniforms: { frame: { type: 't' }, ratio: { value: 1 } },
-			transparent: false
+			transparent: false,
 		});
 
 		gui = webgl.$gui.addFolder({
 			title: '🖼️ Framebuffers',
-			index: 1
+			index: 1,
 		});
-
 
 		const pos = previewCoords.previewPosition;
 		const scale = previewCoords.previewScale;
-		const transform = storageSync(
-			'gui-fbo-transform',
-			w([ pos.x, pos.y, scale ]),
-			{ storage: webgl.$debug.storage }
-		);
+		const transform = storageSync('gui-fbo-transform', w([pos.x, pos.y, scale]), {
+			storage: webgl.$debug.storage,
+		});
 
-		previewCoords.previewPosition.set(transform.value[ 0 ], transform.value[ 1 ]);
-		previewCoords.previewScale = transform.value[ 2 ];
+		previewCoords.previewPosition.set(transform.value[0], transform.value[1]);
+		previewCoords.previewScale = transform.value[2];
 
-		gui.addBinding(
-			previewCoords,
-			'previewPosition',
-			{ x: { step: 10 }, y: { step: 10 } }
-		)
-			.on('change', e => {
+		gui.addBinding(previewCoords, 'previewPosition', { x: { step: 10 }, y: { step: 10 } }).on(
+			'change',
+			(e) => {
 				if (Math.abs(e.value.x) > 100000) return;
 				if (Math.abs(e.value.y) > 100000) return;
-				transform.value[ 0 ] = e.value.x;
-				transform.value[ 1 ] = e.value.y;
+				transform.value[0] = e.value.x;
+				transform.value[1] = e.value.y;
 				transform.set(transform.value, true);
-			});
+			},
+		);
 
-
-		gui.addBinding(
-			previewCoords,
-			'previewScale',
-			{ min: 0.05, max: 2 }
-		)
-			.on('change', e => {
-				if (Math.abs(e.value) > 100000) return;
-				transform.value[ 2 ] = e.value;
-				transform.set(transform.value, true);
-			});
-
+		gui.addBinding(previewCoords, 'previewScale', { min: 0.05, max: 2 }).on('change', (e) => {
+			if (Math.abs(e.value) > 100000) return;
+			transform.value[2] = e.value;
+			transform.set(transform.value, true);
+		});
 
 		refreshGui();
 		webgl.$hooks.afterFrame.watch(update);
@@ -141,14 +125,12 @@ export function fboPlugin(webgl) {
 	function refreshGui() {
 		if (guiList) guiList.dispose();
 
-		const options = [ ...buffers.values() ]
-			.reverse()
-			.reduce((p, c) => (p[ c ] = c, p), {});
+		const options = [...buffers.values()].reverse().reduce((p, c) => ((p[c] = c), p), {});
 
 		guiList = gui.addBinding(currentBuffer, 'name', {
 			index: 0,
 			label: 'Preview',
-			options
+			options,
 		});
 
 		const current = storage.getItem('fbo_current');
@@ -157,7 +139,7 @@ export function fboPlugin(webgl) {
 			guiList.refresh();
 		}
 
-		guiList.on('change', v => toggleDebug(v.value));
+		guiList.on('change', (v) => toggleDebug(v.value));
 	}
 
 	function toggleDebug(v) {
@@ -190,6 +172,6 @@ export function fboPlugin(webgl) {
 		},
 		load: () => {
 			webgl.$hooks.afterSetup.watchOnce(init);
-		}
-	}
+		},
+	};
 }

@@ -1,17 +1,9 @@
-import { AudioListener } from 'three';
-
 import { raf } from '#utils/raf/raf.js';
-
-const _AUDIOS_ = import.meta.glob('/assets/audios/**/*.*', { eager: true });
-
-const audioListener = new AudioListener();
 
 export function audioPlugin(webgl, opts = {}) {
 	let NEED_UPDATE = false;
 
 	const api = {
-		audioListener,
-
 		current: null,
 		currentId: null,
 		masterVolume: 1,
@@ -32,7 +24,6 @@ export function audioPlugin(webgl, opts = {}) {
 		getMasterVolume,
 		setCurrent,
 
-		preload,
 		getSound,
 	};
 
@@ -51,7 +42,9 @@ export function audioPlugin(webgl, opts = {}) {
 				min: 0,
 				max: 1,
 			})
-			.on('change', () => audioListener.setMasterVolume(api.masterVolume));
+			.on('change', () =>
+				webgl.$audioListener.setMasterVolume(api.masterVolume),
+			);
 		let CELLS_PER_ROW = 2;
 		const cells = [
 			{
@@ -133,11 +126,12 @@ export function audioPlugin(webgl, opts = {}) {
 		const camera = scene.getCurrentCamera().base;
 
 		scene.$hooks.onCameraChange.watch((camera) => {
-			audioListener.parent && audioListener.parent.remove(audioListener);
-			camera.base.add(audioListener);
+			webgl.$audioListener.parent &&
+				webgl.$audioListener.parent.remove(webgl.$audioListener);
+			camera.base.add(webgl.$audioListener);
 		});
 
-		camera.add(audioListener);
+		camera.add(webgl.$audioListener);
 		raf.add(update);
 	}
 
@@ -163,8 +157,6 @@ export function audioPlugin(webgl, opts = {}) {
 		if (api.current.audio.isPlaying) {
 			stop({ id: api.currentId });
 		}
-
-		console.log('setCurrent', api.current);
 
 		if (api.current.subtitles) {
 			webgl.$subtitles.flush();
@@ -246,12 +238,12 @@ export function audioPlugin(webgl, opts = {}) {
 	}
 
 	function mute() {
-		audioListener.setMasterVolume(0);
+		webgl.$audioListener.setMasterVolume(0);
 		getMasterVolume();
 	}
 
 	function unmute() {
-		audioListener.setMasterVolume(1);
+		webgl.$audioListener.setMasterVolume(1);
 		getMasterVolume();
 	}
 
@@ -261,24 +253,7 @@ export function audioPlugin(webgl, opts = {}) {
 
 	function setMasterVolume(volume) {
 		api.masterVolume = volume;
-		audioListener.setMasterVolume(volume);
-	}
-
-	function preload() {
-		const { load } = webgl.$assets;
-
-		return Promise.all(
-			Object.entries(_AUDIOS_).map(async ([path, module]) => {
-				const [file, extension] = path.split('/').pop().split('.');
-				const directory = path.split('/').slice(0, -1).pop();
-
-				return await load(file, {
-					type: 'audio',
-					directory,
-					audioListener,
-				});
-			}),
-		);
+		webgl.$audioListener.setMasterVolume(volume);
 	}
 
 	function getSound({ id }) {
@@ -290,8 +265,9 @@ export function audioPlugin(webgl, opts = {}) {
 	}
 
 	function onCameraChange(camera) {
-		audioListener.parent && audioListener.parent.remove(audioListener);
-		camera.base.add(audioListener);
+		webgl.$audioListener.parent &&
+			webgl.$audioListener.parent.remove(webgl.$audioListener);
+		camera.base.add(webgl.$audioListener);
 	}
 
 	function isViewportVisible(visible) {
@@ -306,7 +282,8 @@ export function audioPlugin(webgl, opts = {}) {
 
 		const currentTime = current.audio.context.currentTime;
 		const startedAt = current.audio._startedAt;
-		const duration = (Math.floor(current.audio.buffer.duration * 100) / 100) * 1000;
+		const duration =
+			(Math.floor(current.audio.buffer.duration * 100) / 100) * 1000;
 
 		if (current.audio.isPlaying) {
 			const currentTime = performance.now() - api.startedAt;

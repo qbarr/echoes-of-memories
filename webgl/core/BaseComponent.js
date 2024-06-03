@@ -22,17 +22,18 @@ export default class BaseComponent {
 		this.isComponent = true;
 		this.props = props;
 
-		const m = this.usedMixins = [];
+		const m = (this.usedMixins = []);
 		m.dynamic = [];
 
 		this.static = false;
+		this.needBloom = false;
 
 		this.webgl = getWebGL();
 		this.scene = null;
 		this.parent = null;
 		this.base = null;
 
-		const c = this.children = [];
+		const c = (this.children = []);
 		c.dynamic = [];
 
 		this.isInit = false;
@@ -47,10 +48,10 @@ export default class BaseComponent {
 				this.name = this.props.id;
 			} else {
 				this.name = this.constructor.name;
-				if (!nameCounts[ this.name ]) nameCounts[ this.name ] = 1;
-				else ++nameCounts[ this.name ];
-				if (nameCounts[ this.name ] > 1) {
-					this.name += '_' + (nameCounts[ this.name ] - 1);
+				if (!nameCounts[this.name]) nameCounts[this.name] = 1;
+				else ++nameCounts[this.name];
+				if (nameCounts[this.name] > 1) {
+					this.name += '_' + (nameCounts[this.name] - 1);
 				}
 			}
 		}
@@ -86,11 +87,11 @@ export default class BaseComponent {
 			const mixins = this.mixins;
 			if (Array.isArray(mixins)) {
 				for (let i = 0; i < mixins.length; i++) {
-					let mixin = mixins[ i ];
+					let mixin = mixins[i];
 					let opts;
 					if (Array.isArray(mixin)) {
-						opts = mixin[ 1 ];
-						mixin = mixin[ 0 ];
+						opts = mixin[1];
+						mixin = mixin[0];
 					}
 					this.useMixin(mixin, opts);
 				}
@@ -102,7 +103,6 @@ export default class BaseComponent {
 		if (USE_DEBUG) this.devtools && this.devtools(this.parent?.gui);
 	}
 
-
 	/**
 	 * Easily bind a method to the current instance context
 	 * @param {string} method - Method name to bind to current instance
@@ -110,8 +110,8 @@ export default class BaseComponent {
 	 * @returns {function} Bound function
 	 */
 	bind(method, argCount = 0) {
-		this[ method ] = fastBind(method, this, argCount);
-		return this[ method ];
+		this[method] = fastBind(method, this, argCount);
+		return this[method];
 	}
 
 	/**
@@ -124,10 +124,10 @@ export default class BaseComponent {
 	 */
 	useMixin(mixin, opts) {
 		if (typeof mixin === StringType) {
-			mixin = this.webgl.mixins[ mixin ];
+			mixin = this.webgl.mixins[mixin];
 			if (Array.isArray(mixin)) {
-				opts = Object.assign({}, mixin[ 1 ], opts);
-				mixin = mixin[ 0 ];
+				opts = Object.assign({}, mixin[1], opts);
+				mixin = mixin[0];
 			}
 		}
 
@@ -194,6 +194,7 @@ export default class BaseComponent {
 		// Pass scene early on to access to scene easily during init
 		if (this.scene) child.scene = this.scene;
 		else if (this.isScene) child.scene = this;
+
 		// Do we need to remove scene after init to avoid leak?
 
 		// Init component AFTER instanciation
@@ -264,11 +265,14 @@ export default class BaseComponent {
 		// Update mixins
 		const mixins = this.usedMixins.dynamic;
 		for (let i = 0, l = mixins.length; i < l; i++) {
-			const mixin = mixins[ i ];
+			const mixin = mixins[i];
 			if (mixin) mixin.update();
 			if (this.isDestroyed) break;
 			// Dirty - adjust loop if the item is destroyed during update
-			if (mixin.isDestroyed) { l--; i-- }
+			if (mixin.isDestroyed) {
+				l--;
+				i--;
+			}
 		}
 
 		if (this.isDestroyed) return; // Needed in case a mixin destroys the component
@@ -278,11 +282,14 @@ export default class BaseComponent {
 		if (this.isDestroyed) return; // Needed in case update destroys the component
 		const children = this.children.dynamic;
 		for (let i = 0, l = children.length; i < l; i++) {
-			const child = children[ i ];
+			const child = children[i];
 			if (child) child.triggerUpdate();
 			if (!child) continue;
 			// Dirty - adjust loop if the item is destroyed during update
-			if (child.isDestroyed) { l--; i-- }
+			if (child.isDestroyed) {
+				l--;
+				i--;
+			}
 		}
 
 		// Needed in case children destroys the component
@@ -301,7 +308,7 @@ export default class BaseComponent {
 
 		// Destroy mixins
 		for (let i = this.usedMixins.length - 1; i >= 0; i--) {
-			this.usedMixins[ i ].destroy();
+			this.usedMixins[i].destroy();
 		}
 
 		// Remove from parent
@@ -309,13 +316,13 @@ export default class BaseComponent {
 
 		// Destroy each children components
 		for (let i = this.children.length - 1; i >= 0; i--) {
-			this.children[ i ].destroy();
+			this.children[i].destroy();
 		}
 
 		// Remove three object
 		if (this.base) {
 			for (let i = this.base.children.length - 1; i >= 0; i--) {
-				this.base.remove(this.base.children[ i ]);
+				this.base.remove(this.base.children[i]);
 			}
 			this.base.removeFromParent();
 		}
@@ -331,7 +338,7 @@ export default class BaseComponent {
 		this.isDestroyed = true;
 
 		if (USE_DEBUG && this.guiItems) {
-			this.guiItems.forEach(v => v.dispose && v.dispose());
+			this.guiItems.forEach((v) => v.dispose && v.dispose());
 			this.guiItems.clear();
 			this.guiItems = null;
 			window.debugWebglComponentCount--;
@@ -348,10 +355,10 @@ function triggerAttached(scene, component) {
 	component.scene = scene;
 	if (component.attached) component.attached();
 	for (let i = mixins.length - 1; i >= 0; i--) {
-		mixins[ i ].componentAttached(component);
+		mixins[i].componentAttached(component);
 	}
 	for (let i = children.length - 1; i >= 0; i--) {
-		triggerAttached(scene, children[ i ]);
+		triggerAttached(scene, children[i]);
 	}
 }
 
@@ -364,13 +371,12 @@ function triggerDetached(component) {
 		return;
 	}
 	for (let i = children.length - 1; i >= 0; i--) {
-		triggerDetached(children[ i ]);
+		triggerDetached(children[i]);
 	}
 	for (let i = mixins.length - 1; i >= 0; i--) {
-		mixins[ i ].componentDetached(component);
+		mixins[i].componentDetached(component);
 	}
 	component.isAttached = false;
 	if (component.detached) component.detached();
 	component.scene = null;
 }
-

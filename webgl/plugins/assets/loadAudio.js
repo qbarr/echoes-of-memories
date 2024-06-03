@@ -6,8 +6,10 @@ const audioLoader = new AudioLoader();
 
 export default function loadAudio(url, opts) {
 	return new Promise((resolve, reject) => {
+		const { onLoad, type, audioListener } = opts;
+
 		const sound =
-			opts.directory == 'positional'
+			type == 'positional'
 				? new PositionalAudio(opts.audioListener)
 				: new Audio(opts.audioListener);
 
@@ -15,7 +17,7 @@ export default function loadAudio(url, opts) {
 			url,
 			(buffer) => {
 				sound.setBuffer(buffer);
-				if (opts.onLoad) opts.onLoad(sound);
+				if (onLoad) onLoad(sound);
 				resolve(sound);
 			},
 			() => {},

@@ -12,7 +12,7 @@ export class BaseSoundObject extends BaseComponent {
 		const { threshold } = useProximity(this);
 		this.threshold = threshold;
 
-		this.attachSound();
+		// this.attachSound();
 	}
 
 	attachSound() {
@@ -24,15 +24,15 @@ export class BaseSoundObject extends BaseComponent {
 		// sound.play();
 	}
 
-	onEnterPerimeter() {
-		this.log('PERIMETER:enter');
-	}
-	onLeavePerimeter() {
-		this.log('PERIMETER:leave');
-	}
-	onInsidePerimeter(distance, normDistance) {
-		this.log('PERIMETER:inside', distance, normDistance);
-	}
+	// onEnterPerimeter() {
+	// 	this.log('PERIMETER:enter');
+	// }
+	// onLeavePerimeter() {
+	// 	this.log('PERIMETER:leave');
+	// }
+	// onInsidePerimeter(distance, normDistance) {
+	// 	this.log('PERIMETER:inside', distance, normDistance);
+	// }
 
 	update() {}
 
