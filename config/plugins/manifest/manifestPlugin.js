@@ -105,10 +105,12 @@ const Parser = {
 		const _filter = filter ?? Parser.getFilter(url);
 		return Parser.parseFiles(files, _filter);
 	},
-	parseSingle: ({ url }, filter) => {
+	parseSingle: ({ url }) => {
 		if (!fs.existsSync(path.join(paths.assets, url))) return null;
 
-		const [folder, file] = url.split('/');
+		const folder = url.split('/').slice(0, -1).join('/');
+		const file = url.split('/').pop();
+
 		const [id, ext] = file.split('.');
 		const _url = '/assets/' + url;
 		const filename = `${id}.${ext}`;

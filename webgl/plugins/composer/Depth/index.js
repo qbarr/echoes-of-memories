@@ -2,7 +2,7 @@ import { getWebGL } from '#webgl/core/index.js';
 import createFilter from '#webgl/utils/createFilter.js';
 import { MeshDepthMaterial, RGBADepthPacking, WebGLRenderTarget } from 'three';
 
-import DepthFragment from './DepthFragment.frag?hotshader';
+import DepthPass from './DepthPass.frag?hotshader';
 
 const DUMMY_RT = new WebGLRenderTarget(1, 1, { depthBuffer: false });
 
@@ -51,7 +51,7 @@ export const useDepthPass = (composer) => {
 			...defines,
 		},
 	});
-	DepthFragment.use(filter.material);
+	DepthPass.use(filter.material);
 
 	/* Render */
 	function render(scene, renderer) {

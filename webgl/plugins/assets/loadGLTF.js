@@ -8,13 +8,13 @@ export default async function loadGLTF(url, opts = {}) {
 	return new Promise((resolve, reject) => {
 		gltfLoader.load(
 			url,
-			data => {
+			(data) => {
 				cache.add(url, data);
 				if (opts.onLoad) opts.onLoad(data);
 				resolve(data);
 			},
 			() => {},
-			reject
+			reject,
 		);
 	});
 }
@@ -29,6 +29,6 @@ loadGLTF.initDRACOLoader = () => {
 
 loadGLTF.loader = {
 	name: 'gltf',
-	extensions: [ '.gltf', '.glb' ],
-	function: loadGLTF
+	extensions: ['.gltf', '.glb'],
+	function: loadGLTF,
 };

@@ -35,8 +35,10 @@ export default createWebgl({
 
 			load('noises'),
 			load('luts'),
-			load('scene1'),
-			load('chambre'),
+
+			// Chambre
+			load('chambre-model'),
+			load('chambre/textures'),
 		]);
 
 		console.log('LOADED', webgl);

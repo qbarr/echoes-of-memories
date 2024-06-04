@@ -36,14 +36,16 @@ export function composerPlugin(webgl) {
 		const { $assets, $threeRenderer, $renderer, $hooks, $fbo } = webgl;
 		const { textures } = $assets;
 
-		buffers.main = $fbo.createBuffer({ name: 'Main' });
+		buffers.composite = $fbo.createBuffer({ name: 'Composite' });
+		buffers.base = $fbo.createBuffer({ name: 'Base' });
 		buffers.mainBloom = $fbo.createBuffer({ name: 'Selective Bloom' });
 		// buffers.depth = $fbo.createBuffer({ name: 'Detph' });
 
 		Object.assign(uniforms, {
 			...webgl.uniforms,
-			tMap: { value: buffers.main.texture, type: 't' },
+			tMap: { value: buffers.base.texture, type: 't' },
 			tMapBloom: { value: buffers.mainBloom.texture, type: 't' },
+			tComposite: { value: buffers.composite.texture, type: 't' },
 
 			// Dither uniforms
 			// uBlueNoiseMap: { value: textures['blue-noise'], type: 't' },
@@ -92,14 +94,13 @@ export function composerPlugin(webgl) {
 	function resize({ width, height }) {
 		if (!width || !height) return;
 
-		buffers.main.setSize(width, height);
+		buffers.base.setSize(width, height);
 		api.$unrealBloom.resize(width, height);
 	}
 
 	function update() {
 		const { $scenes } = webgl;
 		$scenes.ui.component.triggerUpdate();
-
 		uniforms.uDitherOffset.value.set(rf(0, 128), rf(0, 128));
 	}
 
@@ -109,15 +110,15 @@ export function composerPlugin(webgl) {
 		const renderer = webgl.$threeRenderer;
 
 		// Render raw scene to main buffer
-		// renderer.setRenderTarget(buffers.main);
+		// renderer.setRenderTarget(buffers.base);
 		// renderer.clear();
 		// scene.toggleSelectedBloom(false);
 		// scene.triggerRender();
-		// uniforms.tMap.value = buffers.main.texture;
+		// uniforms.tMap.value = buffers.base.texture;
 
 		// // renderer.setRenderTarget(buffers.grayscale1);
 		// // renderer.clear();
-		// // filters.grayscale.setMap(buffers.main.texture);
+		// // filters.grayscale.setMap(buffers.base.texture);
 		// // filters.grayscale.render();
 
 		// // uniforms.tMap.value = buffers.grayscale1.texture;
@@ -140,21 +141,28 @@ export function composerPlugin(webgl) {
 
 		api.$depth.render(scene);
 
-		renderer.setRenderTarget(buffers.main);
+		renderer.setRenderTarget(buffers.base);
 		renderer.clear();
 		scene.toggleSelectedBloom(false);
 		scene.triggerRender();
 		renderer.clearDepth();
 		$scenes.ui.component.triggerRender();
-		uniforms.tMap.value = buffers.main.texture;
+		uniforms.tMap.value = buffers.base.texture;
 
 		// Render Unreal Bloom pass
 		api.$unrealBloom.render(scene);
-		api.$lut.render();
 
 		// Render composite pass
-		renderer.setRenderTarget(null);
+		renderer.setRenderTarget(buffers.composite);
+		renderer.clear();
 		filters.composite.render();
+		uniforms.tComposite.value = buffers.composite.texture;
+
+		renderer.setRenderTarget(null);
+		renderer.clear();
+		// filters.composite.render();
+		api.$lut.render();
+		// filters.composite.render();
 	}
 
 	/// #if __DEBUG__

@@ -5,9 +5,9 @@ import { storageSync, w } from '#utils/state';
 import createFilter from '#webgl/utils/createFilter.js';
 import createBuffer from '#webgl/utils/createBuffer.js';
 
-import LuminosityFragment from './LuminosityFragment.frag?hotshader';
-import UnrealBloomBlurFragment from './UnrealBloomBlurFragment.frag?hotshader';
-import UnrealBloomCompositeFragment from './UnrealBloomCompositeFragment.frag?hotshader';
+import LuminosityPass from './LuminosityPass.frag?hotshader';
+import UnrealBloomBlurPass from './UnrealBloomBlurPass.frag?hotshader';
+import UnrealBloomCompositePass from './UnrealBloomCompositePass.frag?hotshader';
 
 const BlurDirectionX = new Vector2(1, 0);
 const BlurDirectionY = new Vector2(0, 1);
@@ -92,7 +92,6 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 
 	// Luminosity high pass material
 	const lumFilter = (filters.luminosity = createFilter({
-		// fragmentShader: LuminosityFragment,
 		uniforms: {
 			...uniforms,
 			uThreshold: { value: threshold.value },
@@ -103,9 +102,8 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 		toneMapped: false,
 		depthTest: false,
 		depthWrite: false,
-		glslVersion: GLSL3,
 	}));
-	LuminosityFragment.use(lumFilter.material);
+	LuminosityPass.use(lumFilter.material);
 
 	threshold.watch((v) => (lumFilter.uniforms.uThreshold.value = v));
 	smoothing.watch((v) => (lumFilter.uniforms.uSmoothing.value = v));
@@ -117,7 +115,7 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 	for (let i = 0; i < nMips; i++) {
 		const kernelRadius = kernelSizeArray[i];
 		const filter = createFilter({
-			// fragmentShader: UnrealBloomBlurFragment,
+			// fragmentShader: UnrealBloomBlurPass,
 			uniforms: {
 				...uniforms,
 				uDirection: { value: new Vector2(0.5, 0.5) },
@@ -134,7 +132,7 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 			depthWrite: false,
 			glslVersion: GLSL3,
 		});
-		UnrealBloomBlurFragment.use(filter.material);
+		UnrealBloomBlurPass.use(filter.material);
 		blurFilters.push(filter);
 	}
 
@@ -149,7 +147,7 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 	];
 
 	const bloomFilter = (filters.bloom = createFilter({
-		// fragmentShader: UnrealBloomCompositeFragment,
+		// fragmentShader: UnrealBloomCompositePass,
 		defines: {
 			...defines,
 			NUM_MIPS: nMips,
@@ -171,7 +169,7 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 		depthWrite: false,
 		glslVersion: GLSL3,
 	}));
-	UnrealBloomCompositeFragment.use(bloomFilter.material);
+	UnrealBloomCompositePass.use(bloomFilter.material);
 
 	strength.watch((v) => (bloomFilter.uniforms.uBloomStrength.value = v));
 	radius.watch((v) => (bloomFilter.uniforms.uBloomRadius.value = v));

@@ -1,4 +1,4 @@
-import { DataTexture } from 'three';
+import { DataTexture, LinearFilter, RepeatWrapping } from 'three';
 
 import { files } from '#utils/files';
 import createTexture from '#webgl/utils/createTexture';
@@ -6,13 +6,13 @@ import createTexture from '#webgl/utils/createTexture';
 import loadJSON from '#utils/files/loadJSON';
 import loadOBJ from '#utils/files/loadOBJ';
 import loadAtlas from './loadAtlas';
+import loadAudio from './loadAudio';
 import loadGLTF from './loadGLTF';
 import loadImage from './loadImage';
-import loadAudio from './loadAudio';
+import loadKTX2 from './loadKTX2';
+import loadLUTTexture from './loadLUTTexture';
 
-// import manifest from '#assets/manifest';
-
-const NOOP = (v) => v;
+const NOOP = () => {};
 
 export function assetsPlugin(webgl) {
 	files.registerLoader(loadImage);
@@ -20,12 +20,16 @@ export function assetsPlugin(webgl) {
 	files.registerLoader(loadGLTF);
 	files.registerLoader(loadOBJ);
 	files.registerLoader(loadAudio);
+	files.registerLoader(loadKTX2);
+	// files.registerLoader(loadLUTCube);
+	files.registerLoader(loadLUTTexture);
 
 	let pgen = null;
 	const data = {};
 	const sounds = {};
 	const subtitles = {};
 	const fonts = {};
+	const luts = {};
 	const textures = {
 		black: new DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1),
 	};
@@ -47,6 +51,7 @@ export function assetsPlugin(webgl) {
 		spritesheets,
 		data,
 		fonts,
+		luts,
 		textures,
 		objects,
 		sounds,
@@ -59,7 +64,10 @@ export function assetsPlugin(webgl) {
 	};
 
 	const tasks = {
+		// cube: lutCubeTask,
+		lut: lutTextureTask,
 		tex: textureTask,
+		ktx2: ktx2Task,
 		obj: objTask,
 		gltf: gltfTask,
 		spritesheet: spritesheetTask,
@@ -68,7 +76,13 @@ export function assetsPlugin(webgl) {
 		audio: audioTask,
 	};
 
-	tasks.avif = tasks.webp = tasks.jpg = tasks.png = tasks.img = tasks.tex;
+	tasks.avif =
+		tasks.webp =
+		tasks.jpg =
+		tasks.png =
+		tasks.img =
+		tasks.texture =
+			tasks.tex;
 	tasks.glb = tasks.gltf;
 	tasks.msdf = tasks.font;
 
@@ -91,12 +105,16 @@ export function assetsPlugin(webgl) {
 			msdfFiles[id].push(f);
 		});
 
-		const v = Object.values(msdfFiles);
-		for (let i = 0; i < v.length; i++) {
-			const [font, img] = v[i];
+		const files = Object.values(msdfFiles);
+		for (let i = 0; i < files.length; i++) {
+			const [font, img] = files[i];
 
-			const subID = fileID.split('/')[0];
-			const id = font.origin.id;
+			let [subID, id] = fileID.split('/');
+			if (files.length > 1) id = font.origin.id;
+			if (id === undefined) {
+				id = subID;
+				subID = null;
+			}
 
 			p.push(
 				$preloader.task(
@@ -139,9 +157,15 @@ export function assetsPlugin(webgl) {
 			return parseMsdfFontFiles(fileID, { onLoad, opts });
 
 		const p = [];
-		for (const f of Object.values(file.files)) {
-			const subID = fileID.split('/').shift();
-			const id = f.origin.id;
+		const files = Object.values(file.files);
+		for (const f of files) {
+			let [subID, id] = fileID.split('/');
+			if (files.length > 1) id = f.origin.id ?? id;
+			if (id === undefined) {
+				id = subID;
+				subID = null;
+			}
+
 			const options = { ...opts, ...file.opts };
 			const url = f.url;
 
@@ -178,18 +202,102 @@ export function assetsPlugin(webgl) {
 		return _tex;
 	}
 
-	async function objTask({ id, url }) {
-		return files.load(url, {
-			onLoad: (obj) => {
-				objects[id] = obj;
+	// async function lutCubeTask({ subID, id, file, opts }) {
+	// 	let _tex = null;
+
+	// 	await files.load(file.url, {
+	// 		onLoad: (tex) => {
+	// 			_tex = tex;
+	// 			if (subID && subID !== id) {
+	// 				luts[subID] = luts[subID] ?? {};
+	// 				luts[subID][id] = _tex;
+	// 			} else {
+	// 				luts[id] = _tex;
+	// 			}
+	// 		},
+	// 	});
+
+	// 	return _tex;
+	// }
+
+	async function lutTextureTask({ subID, id, file, opts }) {
+		let _tex = null;
+
+		await loadLUTTexture(file.url, {
+			onLoad: (tex) => {
+				_tex = tex;
+				tex.texture3D.userData.id = id;
+				if (subID && subID !== id) {
+					textures[subID] = textures[subID] ?? {};
+					textures[subID][id] = _tex;
+				} else {
+					textures[id] = _tex;
+				}
+
+				luts[id] = _tex;
+
+				// _tex.wrapS = _tex.wrapT = RepeatWrapping;
+				// _tex.minFilter = _tex.magFilter = LinearFilter;
+				// _tex.needsUpdate = true;
+			},
+		});
+
+		return _tex;
+	}
+
+	async function ktx2Task({ id, subID, file, opts }) {
+		if (!file.url.endsWith('.ktx2')) return textureTask({ id, file, opts });
+
+		return files.load(file.url, {
+			onLoad: (texture) => {
+				let _tex = texture;
+
+				if (opts.repeat) _tex.wrapS = _tex.wrapT = RepeatWrapping;
+				if (opts.flipY !== undefined) _tex.flipY = opts.flipY;
+				if (opts.linear !== undefined)
+					_tex.minFilter = _tex.magFilter = LinearFilter;
+				if (opts.srgb !== undefined) {
+					_tex.colorSpace = opts.srgb ? 'srgb' : 'srgb-linear';
+				} else {
+					_tex.colorSpace = '';
+				}
+
+				_tex.needsUpdate = true;
+
+				if (subID) {
+					textures[subID] = textures[subID] ?? {};
+					textures[subID][id] = _tex;
+				} else {
+					textures[id] = _tex;
+				}
+
+				texture.userData.file = file;
 			},
 		});
 	}
 
-	async function gltfTask({ id, url }) {
+	async function objTask({ id, subID, url }) {
 		return files.load(url, {
 			onLoad: (obj) => {
-				objects[id] = obj;
+				if (subID) {
+					objects[subID] = objects[subID] ?? {};
+					objects[subID][id] = obj;
+				} else {
+					objects[id] = obj;
+				}
+			},
+		});
+	}
+
+	async function gltfTask({ id, subID, url }) {
+		return files.load(url, {
+			onLoad: (obj) => {
+				if (subID) {
+					objects[subID] = objects[subID] ?? {};
+					objects[subID][id] = obj;
+				} else {
+					objects[id] = obj;
+				}
 			},
 		});
 	}
@@ -284,6 +392,7 @@ export function assetsPlugin(webgl) {
 		load: () => {
 			webgl.$hooks.afterSetup.watchOnce(() => {
 				loadGLTF.initDRACOLoader();
+				loadKTX2.detectSupport(webgl.$threeRenderer);
 			});
 		},
 	};

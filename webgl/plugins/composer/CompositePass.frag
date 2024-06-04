@@ -70,7 +70,8 @@ void main() {
 	tex += texture2D(tBloom, uv);
 
 	// Tint - Bichromy
-	tex.rgb = mix(tex.rgb, vec3(dot(tex.rgb, vec3(0.299, 0.587, 0.114))), uBichromy);
+	// tex.rgb = mix(tex.rgb, vec3(dot(tex.rgb, vec3(0.299, 0.587, 0.114))), uBichromy);
+
 	// Tint - Saturation
 	// tex.rgb = mix(vec3(dot(tex.rgb, vec3(0.299, 0.587, 0.114))), tex.rgb, uSaturation);
 

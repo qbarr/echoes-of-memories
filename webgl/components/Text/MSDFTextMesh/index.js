@@ -23,7 +23,11 @@ const defaultOptions = {
 const SCALE = 0.1;
 
 export default class MSDFTextMesh extends BaseComponent {
-	constructor({ content = '', font = 'VCR_OSD_MONO', ...props } = {}) {
+	constructor({
+		content = '',
+		font = 'msdf-font/VCR_OSD_MONO',
+		...props
+	} = {}) {
 		props = Object.assign(defaultOptions, props);
 		super(props);
 

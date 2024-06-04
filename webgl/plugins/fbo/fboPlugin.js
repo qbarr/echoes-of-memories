@@ -65,27 +65,35 @@ export function fboPlugin(webgl) {
 
 		const pos = previewCoords.previewPosition;
 		const scale = previewCoords.previewScale;
-		const transform = storageSync('gui-fbo-transform', w([pos.x, pos.y, scale]), {
-			storage: webgl.$debug.storage,
-		});
-
-		previewCoords.previewPosition.set(transform.value[0], transform.value[1]);
-		previewCoords.previewScale = transform.value[2];
-
-		gui.addBinding(previewCoords, 'previewPosition', { x: { step: 10 }, y: { step: 10 } }).on(
-			'change',
-			(e) => {
-				if (Math.abs(e.value.x) > 100000) return;
-				if (Math.abs(e.value.y) > 100000) return;
-				transform.value[0] = e.value.x;
-				transform.value[1] = e.value.y;
-				transform.set(transform.value, true);
+		const transform = storageSync(
+			'gui-fbo-transform',
+			w([pos.x, pos.y, scale]),
+			{
+				storage: webgl.$debug.storage,
 			},
 		);
 
-		gui.addBinding(previewCoords, 'previewScale', { min: 0.05, max: 2 }).on('change', (e) => {
-			if (Math.abs(e.value) > 100000) return;
-			transform.value[2] = e.value;
+		previewCoords.previewPosition.set(
+			transform.value[0],
+			transform.value[1],
+		);
+		previewCoords.previewScale = transform.value[2];
+
+		gui.addBinding(previewCoords, 'previewPosition', {
+			x: { step: 10 },
+			y: { step: 10 },
+		}).on('change', ({ value }) => {
+			transform.value[0] = value.x;
+			transform.value[1] = value.y;
+			transform.set(transform.value, true);
+		});
+
+		gui.addBinding(previewCoords, 'previewScale', {
+			min: 0.05,
+			max: 2,
+			step: 0.001,
+		}).on('change', ({ value }) => {
+			transform.value[2] = value;
 			transform.set(transform.value, true);
 		});
 
@@ -125,7 +133,9 @@ export function fboPlugin(webgl) {
 	function refreshGui() {
 		if (guiList) guiList.dispose();
 
-		const options = [...buffers.values()].reverse().reduce((p, c) => ((p[c] = c), p), {});
+		const options = [...buffers.values()]
+			.reverse()
+			.reduce((p, c) => ((p[c] = c), p), {});
 
 		guiList = gui.addBinding(currentBuffer, 'name', {
 			index: 0,

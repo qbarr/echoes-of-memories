@@ -12,9 +12,9 @@ const glb = (path) => ({ url: `${path}.glb`, type: 'glb' });
 const ktx2 = (path, arg = {}) => ({
 	url: `${path}.ktx2`,
 	opts: arg,
-	type: 'texture',
+	type: 'ktx2',
 });
-const copy = (path) => ({ url: path });
+const copy = (path, arg = {}, type = null) => ({ url: path, opts: arg, type });
 
 const positional = (path) => ({
 	url: `${path}/*.[mp3|wav|ogg]`,
@@ -39,11 +39,24 @@ const subtitles = (path) => ({
 
 export default {
 	'msdf-font/VCR_OSD_MONO': msdf('msdf/VCR_OSD_MONO'),
+
 	scene1: glb('models/scene1'),
-	chambre: glb('models/chambre'),
 	noises: img('canvas/*.png', { repeat: true }),
-	luts: img('luts/*.png'),
-	// 'blue-noise': png('canvas/blue-noise.png', { repeat: true }),
+	luts: copy(
+		'luts/*.[png|jpg]',
+		{
+			repeat: false,
+			flipY: false,
+			wrapS: 1001,
+			wrapT: 1001,
+			nearest: true,
+		},
+		'lut',
+	),
+
+	// Chambre
+	'chambre-model': glb('scenes/chambre/model'),
+	'chambre/textures': ktx2('scenes/chambre/*', { flipY: false }),
 
 	'sound/positions': positional('audios/positional/*'),
 	'sound/vocals': vocal('audios/vocals/*'),
