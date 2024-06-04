@@ -174,14 +174,14 @@ export function composerPlugin(webgl) {
 		api.$unrealBloom.devtools(gui);
 		gui.addSeparator();
 		api.$lut.devtools(gui);
+		gui.addSeparator();
+		api.$depth.devtools(gui);
 
 		gui.addSeparator();
 		add(uniforms.uDitherStrength, { label: 'Dither Strength', max: 2 });
 		gui.addSeparator();
 		add(uniforms.uBichromy, { label: 'Bichromy' });
 		add(uniforms.uSaturation, { label: 'Saturation' });
-		// gui.addSeparator();
-		// add(uniforms.uGrayStrength, { label: 'Grayscale' });
 	}
 	/// #endif
 

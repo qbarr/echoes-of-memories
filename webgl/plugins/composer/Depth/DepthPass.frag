@@ -5,17 +5,15 @@ uniform vec4 resolution;
 
 uniform float zNear;
 uniform float zFar;
-uniform float uDistance;
+uniform vec2 uDistance;
 uniform sampler2D tMap;
 uniform sampler2D tDepth;
 
 varying vec2 vUv;
 
 float calc_depth(float z) {
-	// float near = zNear;
-	float near = .5;
-	// float far = zFar;
-	float far = 6.;
+	float near = uDistance.x;
+	float far = uDistance.y;
 	return (2.0 * near) / (far + near - z * (far - near));
 }
 

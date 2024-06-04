@@ -38,7 +38,7 @@ export default class MainScene extends BaseScene {
 		chambre.scale.setScalar(3);
 		this.base.add(chambre);
 
-		this.add(Cube);
+		// this.add(Cube);
 		// this.add(Sphere);
 	}
 
