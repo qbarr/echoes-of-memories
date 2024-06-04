@@ -5,7 +5,7 @@ import { fpsController } from '../utils/fpsController.js';
 
 const defaultTarget = {
 	object: new Object3D(),
-	offset: new Vector3(0, 0, 0)
+	offset: new Vector3(0, 0, 0),
 };
 
 export function defaultCamera() {
@@ -48,7 +48,8 @@ export default class FpsCamera {
 		this.controls = fpsController(this.cam, {
 			...props.orbitOptions,
 			target: defaultTarget,
-			fps: this.fps.value
+			fps: this.fps.value,
+			panSpeed: 0.01,
 		});
 
 		this.controls.enabled = this.enabled;
@@ -74,8 +75,8 @@ export default class FpsCamera {
 	}
 
 	restoreCamera(obj) {
-		this.controls.lat = (obj.lat);
-		this.controls.lon = (obj.lon);
+		this.controls.lat = obj.lat;
+		this.controls.lon = obj.lon;
 		this.controls.position.copy(obj.position);
 		// this.controls.updatePosition();
 	}
@@ -110,4 +111,3 @@ export default class FpsCamera {
 		super.beforeDestroy();
 	}
 }
-

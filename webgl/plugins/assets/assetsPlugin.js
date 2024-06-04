@@ -21,7 +21,6 @@ export function assetsPlugin(webgl) {
 	files.registerLoader(loadOBJ);
 	files.registerLoader(loadAudio);
 	files.registerLoader(loadKTX2);
-	// files.registerLoader(loadLUTCube);
 	files.registerLoader(loadLUTTexture);
 
 	let pgen = null;
@@ -64,7 +63,6 @@ export function assetsPlugin(webgl) {
 	};
 
 	const tasks = {
-		// cube: lutCubeTask,
 		lut: lutTextureTask,
 		tex: textureTask,
 		ktx2: ktx2Task,
@@ -227,6 +225,7 @@ export function assetsPlugin(webgl) {
 			onLoad: (tex) => {
 				_tex = tex;
 				tex.texture3D.userData.id = id;
+
 				if (subID && subID !== id) {
 					textures[subID] = textures[subID] ?? {};
 					textures[subID][id] = _tex;
@@ -235,10 +234,6 @@ export function assetsPlugin(webgl) {
 				}
 
 				luts[id] = _tex;
-
-				// _tex.wrapS = _tex.wrapT = RepeatWrapping;
-				// _tex.minFilter = _tex.magFilter = LinearFilter;
-				// _tex.needsUpdate = true;
 			},
 		});
 
@@ -251,6 +246,8 @@ export function assetsPlugin(webgl) {
 		return files.load(file.url, {
 			onLoad: (texture) => {
 				let _tex = texture;
+
+				_tex.userData.id = id;
 
 				if (opts.repeat) _tex.wrapS = _tex.wrapT = RepeatWrapping;
 				if (opts.flipY !== undefined) _tex.flipY = opts.flipY;
@@ -303,7 +300,6 @@ export function assetsPlugin(webgl) {
 	}
 
 	async function audioTask({ id, url, opts }) {
-		// console.log('audioTask', url, opts);
 		return files.load(url, {
 			type: opts.type,
 			audioListener: webgl.$audioListener,

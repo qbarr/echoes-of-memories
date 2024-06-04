@@ -15,11 +15,11 @@ const DUMMY_DIR = new Vector2();
 const DUMMY_RT = new WebGLRenderTarget(1, 1, { depthBuffer: false });
 
 const defaultParams = {
-	threshold: 0.13, // 0.57,
-	smoothing: 0.47, // 0.68,
-	strength: 1.08, // 1.6,
-	radius: 1.28, // 0.78,
-	spread: 0.65, // 0.65,
+	threshold: 0.75, // 0.13, // 0.57,
+	smoothing: 0.51, // 0.47, // 0.68,
+	strength: 0.68, // 1.08, // 1.6,
+	radius: 1.28, // 1.28, // 0.78,
+	spread: 1.24, // 0.65, // 0.65,
 };
 
 export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
