@@ -28,9 +28,9 @@ if (typeof __DEBUG__ !== 'undefined' && __DEBUG__) {
 		pre.push('\n');
 
 		return {
-			info: console.debug.bind(console, ...pre), // eslint-disable-line
-			debug: console.debug.bind(console, ...pre), // eslint-disable-line
-			log: console.log.bind(console, ...pre), // eslint-disable-line
+			info: console.debug.bind(console, ...pre),
+			debug: console.debug.bind(console, ...pre),
+			log: console.log.bind(console, ...pre),
 			warn: console.warn.bind(console, ...pre),
 			error: console.error.bind(console, ...pre)
 		};

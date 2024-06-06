@@ -26,6 +26,7 @@ void main() {
 		flowField = normalize(flowField);
 		particle.xyz += flowField * uDeltaTime * 0.0005;
 		particle.a += 0.01;
+
 	}
 
     gl_FragColor = particle;

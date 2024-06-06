@@ -121,7 +121,7 @@ export function composerPlugin(webgl) {
 		// Render selected bloom to selectiveBloom buffer
 		// renderer.setRenderTarget(buffers.selectiveBloom);
 		// renderer.clear();
-		// scene.toggleSelectedBloom(true);
+		// // scene.toggleSelectedBloom(true);
 		// scene.triggerRender();
 		// renderer.clearDepth();
 		// $scenes.ui.component.triggerRender();

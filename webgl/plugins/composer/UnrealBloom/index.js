@@ -14,7 +14,7 @@ const BlurDirectionY = new Vector2(0, 1);
 const DUMMY_DIR = new Vector2();
 const DUMMY_RT = new WebGLRenderTarget(1, 1, { depthBuffer: false });
 
-export const useUnrealBloom = (composer, { iterations = 5 } = {}) => {
+export const useUnrealBloom = (composer, { iterations = 3 } = {}) => {
 	/* Params */
 	const threshold = w(0.3);
 	const smoothing = w(0.7);

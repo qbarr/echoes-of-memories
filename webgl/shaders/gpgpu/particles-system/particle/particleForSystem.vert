@@ -7,6 +7,8 @@ attribute vec3 aColor;
 attribute float aSize;
 
 varying vec3 vColor;
+varying vec2 vUv;
+varying float vZpos;
 
 void main()
 {
@@ -23,9 +25,11 @@ void main()
     float sizeOut = 1.0 - smoothstep(0.7, 1.0, particle.a);
     float size = min(sizeIn, sizeOut);
 
-    gl_PointSize = size * aSize * uSize * uResolution.y;
+    gl_PointSize = 2. * size * aSize * uSize * uResolution.y;
     gl_PointSize *= (1.0 / - viewPosition.z);
 
     // Varyings
+	vUv = uv;
+	vZpos = projectedPosition.z / projectedPosition.w;
     vColor = aColor;
 }
