@@ -4,11 +4,11 @@ import { Vector2 } from 'three';
 import { prng } from '#utils/maths/prng.js';
 
 import CompositeFragment from './CompositePass.frag?hotshader';
-import { useUnrealBloomPass } from './UnrealBloom';
-import { useLutPass } from './LUT';
 import { useDepthPass } from './Depth';
+import { useLutPass } from './LUT';
+import { useRGBShiftPass } from './RGBShift';
+import { useUnrealBloomPass } from './UnrealBloom';
 import { useVHSPass } from './VHS';
-import { uniform } from '#webgl/utils/Uniform.js';
 
 const rf = prng.randomFloat;
 
@@ -62,6 +62,7 @@ export function composerPlugin(webgl) {
 		passes.push(useUnrealBloomPass(api, { iterations: 3 }));
 		passes.push(useLutPass(api));
 		passes.push(useVHSPass(api));
+		passes.push(useRGBShiftPass(api));
 
 		$renderer.drawingBufferSize.watchImmediate(resize);
 		$hooks.beforeUpdate.watch(update);
@@ -98,6 +99,9 @@ export function composerPlugin(webgl) {
 		renderer.clearDepth();
 		$scenes.ui.component.triggerRender();
 		uniforms.tMap.value = buffers.base.texture;
+
+		// Render RGB shift pass
+		api.$rgbShift.render();
 
 		// Render VHS pass
 		api.$vhs.render();

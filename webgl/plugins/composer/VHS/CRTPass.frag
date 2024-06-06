@@ -48,8 +48,8 @@ void main() {
 
 	vec2 adjustedUV = uv;
 	// adjustedUV.x -= aspectRatio;
-	adjustedUV = vec2(uv.x * aspectRatio, uv.y);
-	adjustedUV.x += (1.0 - aspectRatio) / 2.0;
+	// adjustedUV = vec2(uv.x * aspectRatio, uv.y);
+	// adjustedUV.x += (1.0 - aspectRatio) / 2.0;
 
 	// vec2 squareUv = uv;
 	// squareUv -= 0.5; // <-0.5,0.5>
@@ -68,9 +68,9 @@ void main() {
 	float vign = vignette(uv);
 	uv += 0.5;
 
-	adjustedUV -= 0.5;
-	adjustedUV = fisheye(adjustedUV);
-	adjustedUV += 0.5;
+	// adjustedUV -= 0.5;
+	// adjustedUV = fisheye(adjustedUV);
+	// adjustedUV += 0.5;
 
 	vec4 tex = texture2D(tMap, uv);
 	float mframe = (mod(tex, vec4(0.)).g + mod(tex, vec4(0.)).r + mod(tex, vec4(0.)).b) / 3.0;
