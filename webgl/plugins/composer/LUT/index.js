@@ -1,26 +1,12 @@
 import { storageSync, w } from '#utils/state/index.js';
-import { getWebGL } from '#webgl/core/index.js';
+import { webgl } from '#webgl/core';
 import createFilter from '#webgl/utils/createFilter.js';
-import {
-	AddEquation,
-	AdditiveBlending,
-	CustomBlending,
-	Data3DTexture,
-	FloatType,
-	GLSL3,
-	HalfFloatType,
-	LinearFilter,
-	MultiplyBlending,
-	NearestFilter,
-	SrcAlphaFactor,
-	Vector3,
-} from 'three';
+import { FloatType, GLSL3, HalfFloatType } from 'three';
 
 import LUTPass from './LUTPass.frag?hotshader';
 
 export const useLutPass = (composer) => {
 	const { filters, uniforms, defines } = composer;
-	const $webgl = getWebGL();
 
 	/* Params */
 	const enabled = w(true);
@@ -30,7 +16,7 @@ export const useLutPass = (composer) => {
 
 	const currentLut = storageSync('webgl:composer:lut:current', w('neutral'));
 
-	const lut = $webgl.$assets.luts[currentLut.value];
+	const lut = webgl.$assets.luts[currentLut.value];
 	const texture = lut.texture3D;
 	const { width, height } = texture.image;
 
@@ -41,11 +27,11 @@ export const useLutPass = (composer) => {
 
 		set lut(value) {
 			if (value === currentLut.value) return;
-			if (!$webgl.$assets.luts[value])
+			if (!webgl.$assets.luts[value])
 				return __DEBUG__ && console.warn(`LUT ${value} not found`);
 
 			currentLut.value = value;
-			set($webgl.$assets.luts[value]);
+			set(webgl.$assets.luts[value]);
 		},
 
 		set,
@@ -71,16 +57,14 @@ export const useLutPass = (composer) => {
 			LUT_TEXEL_HEIGHT: (1.0 / height).toFixed(16),
 			LUT_STRIP_HORIZONTAL: width > height ? 1 : 0,
 			LUT_PRECISION_HIGH:
-				texture.type === FloatType || texture.type === HalfFloatType
-					? 1
-					: 0,
+				texture.type === FloatType || texture.type === HalfFloatType ? 1 : 0,
 		},
 		glslVersion: GLSL3,
 	});
 	LUTPass.use(filter.material);
 
 	function set(lut) {
-		if (typeof lut === 'string') lut = $webgl.$assets.luts[lut];
+		if (typeof lut === 'string') lut = webgl.$assets.luts[lut];
 		if (!lut) return;
 
 		currentLut.set(lut.texture3D.userData.id);
@@ -97,9 +81,9 @@ export const useLutPass = (composer) => {
 
 	/// #if __DEBUG__
 	function devtools(_gui) {
-		const gui = _gui.addFolder({ title: 'LUT' });
+		const gui = _gui.addFolder({ title: '🎨 LUT' });
 
-		const lutList = Object.keys($webgl.$assets.luts);
+		const lutList = Object.keys(webgl.$assets.luts);
 
 		gui.addBlade({
 			label: 'Presets',

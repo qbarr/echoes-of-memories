@@ -65,21 +65,12 @@ export function subtitlesPlugin(webgl, opts = {}) {
 
 	return {
 		install: (app) => {
-			/// #if __DEBUG__
-			console.log('[Subtitles plugin] Install');
-			/// #endif
 			webgl.$subtitles = api;
 		},
 		load: () => {
-			/// #if __DEBUG__
-			console.log('[Subtitles plugin] Load');
-			/// #endif
-
 			__DEBUG__ && devTools();
 
-			const { $viewport, $hooks } = webgl;
-			const { afterStart } = $hooks;
-
+			const { afterStart } = webgl.$hooks;
 			afterStart.watchOnce(init);
 		},
 	};
