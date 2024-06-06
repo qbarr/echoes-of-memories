@@ -12,12 +12,13 @@
 	"javascript.preferences.quoteStyle": "single",
 	"typescript.preferences.quoteStyle": "single",
 	"workbench.colorCustomizations": {
-		"titleBar.activeBackground": "#78420c",
-		"activityBar.background": "#472707",
-		"titleBar.activeForeground": "#000",
-		"commandCenter.background": "#ffffff02",
-		"commandCenter.border": "#ffffff33",
-		"commandCenter.foreground": "#fff"
+		// "sideBar.background": "#1e1e1e"
+		// "titleBar.activeBackground": "#78420c",
+		// "activityBar.background": "#472707",
+		// "titleBar.activeForeground": "#000",
+		// "commandCenter.background": "#ffffff02",
+		// "commandCenter.border": "#ffffff33",
+		// "commandCenter.foreground": "#fff"
 	},
 	"editor.formatOnPaste": false,
 	"editor.formatOnSave": true,

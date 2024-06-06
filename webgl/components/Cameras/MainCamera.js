@@ -11,4 +11,6 @@ export class MainCamera extends BaseCamera {
 		this.base.fov = 43;
 		this.base.updateProjectionMatrix();
 	}
+
+	update() {}
 }

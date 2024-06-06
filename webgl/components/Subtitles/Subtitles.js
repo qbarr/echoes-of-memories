@@ -48,7 +48,7 @@ export class Subtitles extends BaseComponent {
 	}
 
 	hide() {
-		console.log('SUBTITLE HIDE');
+		// console.log('SUBTITLE HIDE');
 		this.t.base.visible = false;
 	}
 }

@@ -36,7 +36,7 @@ export function subtitlesPlugin(webgl, opts = {}) {
 		} catch (e) {
 			console.error('Error while updating current file', e);
 		}
-		console.log('[Subtitles plugin] setCurrent', api.tempSubtitles);
+		console.log('[Subtitles plugin] setCurrent');
 	}
 
 	function attachSubtitlesToSounds() {

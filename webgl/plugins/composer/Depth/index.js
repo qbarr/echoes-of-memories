@@ -20,7 +20,8 @@ export const useDepthPass = (composer) => {
 	const materials = {};
 
 	/* Params */
-	const distance = w({ min: 0.5, max: 6 });
+	// const distance = w({ min: 0.5, max: 6 });
+	const distance = w({ min: 3, max: 8 });
 
 	let depthTexture = DUMMY_RT.texture;
 

@@ -1,9 +1,8 @@
 import { raf } from '#utils/raf/raf.js';
 
 export function audioPlugin(webgl, opts = {}) {
-	let NEED_UPDATE = false;
-
 	const api = {
+		visible: true,
 		current: null,
 		currentId: null,
 		masterVolume: 1,
@@ -12,6 +11,7 @@ export function audioPlugin(webgl, opts = {}) {
 		startAt: 0,
 		pausedAt: 0,
 		totalElapsed: 0,
+		duration: 0,
 
 		play,
 		pause,
@@ -118,7 +118,7 @@ export function audioPlugin(webgl, opts = {}) {
 	/// #endif
 
 	function init() {
-		console.log('[Audio plugin] init', webgl);
+		console.log('[Audio plugin] init');
 
 		__DEBUG__ && devTools();
 
@@ -271,38 +271,60 @@ export function audioPlugin(webgl, opts = {}) {
 	}
 
 	function isViewportVisible(visible) {
-		if (visible) unmute();
-		else mute();
+		api.visible = visible;
+
+		if (visible) {
+			unmute();
+			if (api.current && api.progress > 0) {
+				play({ id: api.currentId });
+			}
+		} else {
+			mute();
+			if (api.current && api.progress > 0) {
+				pause({ id: api.currentId });
+			}
+		}
+	}
+
+	function reset() {
+		api.progress = 0;
+		api.startedAt = 0;
+		api.pausedAt = 0;
+		api.totalElapsed = 0;
+		api.duration = 0;
 	}
 
 	function update() {
+		if (!api.visible) return;
+
 		const { current } = api;
 
 		if (!current) return;
 
-		const currentTime = current.audio.context.currentTime;
-		const startedAt = current.audio._startedAt;
-		const duration =
-			(Math.floor(current.audio.buffer.duration * 100) / 100) * 1000;
-
 		if (current.audio.isPlaying) {
+			const startedAt = current.audio._startedAt;
+			api.duration =
+				(Math.floor(current.audio.buffer.duration * 100) / 100) * 1000;
+
 			const currentTime = performance.now() - api.startedAt;
 			const progress = api.totalElapsed + currentTime;
 
 			api.progress = Math.ceil(progress);
 			api.progress_debug.value = api.progress;
-		}
 
-		if (current.subtitles) {
-			webgl.$subtitles.getContentByTime({
-				id: api.current,
-				time: api.progress,
-			});
+			if (current.subtitles) {
+				webgl.$subtitles.getContentByTime({
+					id: api.current,
+					time: api.progress,
+				});
+			}
 		}
+		// console.log(api.progress, api.duration);
 
-		if (api.progress >= duration) {
-			api.progress = 0;
+		if (api.progress > 0 && api.progress >= api.duration) {
+			reset();
 			stop({ id: api.currentId });
+
 			webgl.$subtitles.flush();
 		}
 	}

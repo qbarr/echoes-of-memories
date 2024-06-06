@@ -1,5 +1,6 @@
 import BaseScene from '#webgl/core/BaseScene';
 import { MainCamera } from '../Cameras/MainCamera';
+import { POVCamera } from '../Cameras/POVCamera';
 
 import { MeshBasicMaterial } from 'three';
 import { Cube } from '../Objects/Cube';
@@ -8,7 +9,8 @@ export default class MainScene extends BaseScene {
 	mixins = ['debugCamera'];
 
 	init() {
-		this.camera = this.add(MainCamera);
+		// this.camera = this.add(MainCamera);
+		this.camera = this.add(POVCamera);
 
 		const { $assets } = this.webgl;
 
