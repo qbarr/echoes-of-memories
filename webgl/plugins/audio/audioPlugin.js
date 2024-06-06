@@ -31,7 +31,7 @@ export function audioPlugin(webgl, opts = {}) {
 	function devTools() {
 		const $gui = webgl.$app.$gui;
 		// const gui = webgl.$gui.addFolder({ title: '🔊 Audio' });
-		api.gui = webgl.$gui.addFolder({ title: '🔊 Audio' });
+		api.gui = webgl.$gui.addFolder({ title: '🔊 Audio', index: 6 });
 		const { sounds } = webgl.$assets;
 
 		api.current = Object.values(sounds)[0];
@@ -42,9 +42,7 @@ export function audioPlugin(webgl, opts = {}) {
 				min: 0,
 				max: 1,
 			})
-			.on('change', () =>
-				webgl.$audioListener.setMasterVolume(api.masterVolume),
-			);
+			.on('change', () => webgl.$audioListener.setMasterVolume(api.masterVolume));
 		let CELLS_PER_ROW = 2;
 		const cells = [
 			{
@@ -118,16 +116,13 @@ export function audioPlugin(webgl, opts = {}) {
 	/// #endif
 
 	function init() {
-		console.log('[Audio plugin] init');
-
 		__DEBUG__ && devTools();
 
 		const scene = webgl.$getCurrentScene();
 		const camera = scene.getCurrentCamera().base;
 
 		scene.$hooks.onCameraChange.watch((camera) => {
-			webgl.$audioListener.parent &&
-				webgl.$audioListener.parent.remove(webgl.$audioListener);
+			webgl.$audioListener?.parent?.remove(webgl.$audioListener);
 			camera.base.add(webgl.$audioListener);
 		});
 
@@ -301,10 +296,13 @@ export function audioPlugin(webgl, opts = {}) {
 
 		if (!current) return;
 
+		const currentTime = current.audio.context.currentTime;
+		const startedAt = current.audio._startedAt;
+		const duration = (Math.floor(current.audio.buffer.duration * 100) / 100) * 1000;
+
 		if (current.audio.isPlaying) {
 			const startedAt = current.audio._startedAt;
-			api.duration =
-				(Math.floor(current.audio.buffer.duration * 100) / 100) * 1000;
+			api.duration = (Math.floor(current.audio.buffer.duration * 100) / 100) * 1000;
 
 			const currentTime = performance.now() - api.startedAt;
 			const progress = api.totalElapsed + currentTime;
@@ -331,15 +329,9 @@ export function audioPlugin(webgl, opts = {}) {
 
 	return {
 		install: () => {
-			/// #if __DEBUG__
-			console.log('[Audio plugin] Install');
-			/// #endif
 			webgl.$sounds = api;
 		},
 		load: () => {
-			/// #if __DEBUG__
-			console.log('[Audio plugin] Load');
-			/// #endif
 			const { $viewport, $hooks } = webgl;
 			const { afterSetup, afterStart } = $hooks;
 

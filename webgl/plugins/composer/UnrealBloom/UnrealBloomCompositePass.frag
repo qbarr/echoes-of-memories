@@ -29,25 +29,11 @@ void main() {
 
 	vec4 bloom = vec4(0.0);
 
-	#if NUM_MIPS >= 1
 	bloom += lerpBloomFactor(uBloomFactors[ 0 ]) * vec4(uBloomTintColors[ 0 ], 1.0) * texture(tBlur1, vUv);
-	#endif
-
-	#if NUM_MIPS >= 2
 	bloom += lerpBloomFactor(uBloomFactors[ 1 ]) * vec4(uBloomTintColors[ 1 ], 1.0) * texture(tBlur2, vUv);
-	#endif
-
-	#if NUM_MIPS >= 3
 	bloom += lerpBloomFactor(uBloomFactors[ 2 ]) * vec4(uBloomTintColors[ 2 ], 1.0) * texture(tBlur3, vUv);
-	#endif
-
-	#if NUM_MIPS >= 4
 	bloom += lerpBloomFactor(uBloomFactors[ 3 ]) * vec4(uBloomTintColors[ 3 ], 1.0) * texture(tBlur4, vUv);
-	#endif
-
-	#if NUM_MIPS >= 5
 	bloom += lerpBloomFactor(uBloomFactors[ 4 ]) * vec4(uBloomTintColors[ 4 ], 1.0) * texture(tBlur5, vUv);
-	#endif
 
 	FragColor = uBloomStrength * bloom;
 	FragColor.a = length(FragColor.rgb);

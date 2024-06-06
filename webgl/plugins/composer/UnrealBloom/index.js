@@ -1,20 +1,21 @@
-import { webgl } from '#webgl/core/index.js';
+import { webgl } from '#webgl/core';
 import { GLSL3, NoBlending, Vector2, Vector3, WebGLRenderTarget } from 'three';
 
 import { storageSync, w } from '#utils/state';
-import createFilter from '#webgl/utils/createFilter.js';
 import createBuffer from '#webgl/utils/createBuffer.js';
+import createFilter from '#webgl/utils/createFilter.js';
 
 import LuminosityPass from './LuminosityPass.frag?hotshader';
 import UnrealBloomBlurPass from './UnrealBloomBlurPass.frag?hotshader';
 import UnrealBloomCompositePass from './UnrealBloomCompositePass.frag?hotshader';
+import { wUniform } from '#webgl/utils/Uniform.js';
 
 const BlurDirectionX = new Vector2(1, 0);
 const BlurDirectionY = new Vector2(0, 1);
 const DUMMY_DIR = new Vector2();
 const DUMMY_RT = new WebGLRenderTarget(1, 1, { depthBuffer: false });
 
-const defaultParams = {
+const DEFAULT_PARAMS = {
 	threshold: 0.75, // 0.13, // 0.57,
 	smoothing: 0.51, // 0.47, // 0.68,
 	strength: 0.68, // 1.08, // 1.6,
@@ -22,20 +23,22 @@ const defaultParams = {
 	spread: 1.24, // 0.65, // 0.65,
 };
 
-export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
+const MAX_ITERATIONS = 5;
+
+export const useUnrealBloomPass = (composer, { iterations = MAX_ITERATIONS } = {}) => {
 	/* Params */
 	const sk = 'webgl:composer:UnrealBloom:';
-	const threshold = storageSync(sk + 'threshold', w(defaultParams.threshold));
-	const smoothing = storageSync(sk + 'smoothing', w(defaultParams.smoothing));
-	const strength = storageSync(sk + 'strength', w(defaultParams.strength));
-	const radius = storageSync(sk + 'radius', w(defaultParams.radius));
-	const spread = storageSync(sk + 'spread', w(defaultParams.spread));
+	const threshold = storageSync(sk + 'threshold', w(DEFAULT_PARAMS.threshold));
+	const smoothing = storageSync(sk + 'smoothing', w(DEFAULT_PARAMS.smoothing));
+	const strength = storageSync(sk + 'strength', w(DEFAULT_PARAMS.strength));
+	const radius = storageSync(sk + 'radius', w(DEFAULT_PARAMS.radius));
+	const spread = storageSync(sk + 'spread', w(DEFAULT_PARAMS.spread));
 
 	const enabled = w(true);
 
 	const { buffers, filters, uniforms, defines } = composer;
 
-	let bloomTexture = DUMMY_RT.texture;
+	let texture = DUMMY_RT.texture;
 
 	const api = {
 		threshold,
@@ -43,8 +46,10 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 		strength,
 		radius,
 
+		iterations: w(iterations),
+
 		get texture() {
-			return bloomTexture;
+			return texture;
 		},
 
 		resize,
@@ -58,7 +63,6 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 	/* Private */
 	const blurBuffersHorizontal = [];
 	const blurBuffersVertical = [];
-	const nMips = iterations;
 
 	const { $threeRenderer, $fbo } = webgl;
 
@@ -72,7 +76,7 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 		alpha: false,
 	});
 
-	for (let i = 0, l = nMips; i < l; i++) {
+	for (let i = 0, l = MAX_ITERATIONS; i < l; i++) {
 		const rtHor = createBuffer({
 			name: `UnrealBloom:HorizontalBlur#${i}`,
 			alpha: true,
@@ -91,31 +95,27 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 	}
 
 	// Luminosity high pass material
-	const lumFilter = (filters.luminosity = createFilter({
+	filters.luminosity = createFilter({
 		uniforms: {
 			...uniforms,
-			uThreshold: { value: threshold.value },
-			uSmoothing: { value: smoothing.value },
+			...wUniform('uThreshold', threshold),
+			...wUniform('uSmoothing', smoothing),
 		},
-		defines,
+		defines: { ...defines },
 		blending: NoBlending,
 		toneMapped: false,
 		depthTest: false,
 		depthWrite: false,
-	}));
-	LuminosityPass.use(lumFilter.material);
-
-	threshold.watch((v) => (lumFilter.uniforms.uThreshold.value = v));
-	smoothing.watch((v) => (lumFilter.uniforms.uSmoothing.value = v));
+	});
+	LuminosityPass.use(filters.luminosity.material);
 
 	// Separable Gaussian blur materials
-	const blurFilters = (filters.blurs = []);
+	filters.blurs = [];
 	const kernelSizeArray = [3, 5, 7, 9, 11];
 
-	for (let i = 0; i < nMips; i++) {
+	for (let i = 0; i < MAX_ITERATIONS; i++) {
 		const kernelRadius = kernelSizeArray[i];
 		const filter = createFilter({
-			// fragmentShader: UnrealBloomBlurPass,
 			uniforms: {
 				...uniforms,
 				uDirection: { value: new Vector2(0.5, 0.5) },
@@ -133,7 +133,7 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 			glslVersion: GLSL3,
 		});
 		UnrealBloomBlurPass.use(filter.material);
-		blurFilters.push(filter);
+		filters.blurs.push(filter);
 	}
 
 	// Unreal bloom composite material
@@ -146,21 +146,20 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 		new Vector3(1, 1, 1),
 	];
 
-	const bloomFilter = (filters.bloom = createFilter({
-		// fragmentShader: UnrealBloomCompositePass,
+	filters.bloom = createFilter({
 		defines: {
 			...defines,
-			NUM_MIPS: nMips,
+			NUM_MIPS: MAX_ITERATIONS,
 		},
 		uniforms: {
 			...uniforms,
-			tBlur1: { value: (blurBuffersVertical[0] ?? DUMMY_RT).texture },
-			tBlur2: { value: (blurBuffersVertical[1] ?? DUMMY_RT).texture },
-			tBlur3: { value: (blurBuffersVertical[2] ?? DUMMY_RT).texture },
-			tBlur4: { value: (blurBuffersVertical[3] ?? DUMMY_RT).texture },
-			tBlur5: { value: (blurBuffersVertical[4] ?? DUMMY_RT).texture },
-			uBloomStrength: { value: strength.value },
-			uBloomRadius: { value: radius.value },
+			tBlur1: { value: blurBuffersVertical[0].texture },
+			tBlur2: { value: blurBuffersVertical[1].texture },
+			tBlur3: { value: blurBuffersVertical[2].texture },
+			tBlur4: { value: blurBuffersVertical[3].texture },
+			tBlur5: { value: blurBuffersVertical[4].texture },
+			...wUniform('uBloomStrength', strength),
+			...wUniform('uBloomRadius', radius),
 			uBloomFactors: { value: bloomFactors },
 			uBloomTintColors: { value: bloomTintColors },
 		},
@@ -168,14 +167,11 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 		depthTest: false,
 		depthWrite: false,
 		glslVersion: GLSL3,
-	}));
-	UnrealBloomCompositePass.use(bloomFilter.material);
-
-	strength.watch((v) => (bloomFilter.uniforms.uBloomStrength.value = v));
-	radius.watch((v) => (bloomFilter.uniforms.uBloomRadius.value = v));
+	});
+	UnrealBloomCompositePass.use(filters.bloom.material);
 
 	Object.assign(uniforms, {
-		tBloom: { value: buffers.bloom.texture, type: 't' },
+		tBloom: { value: texture, type: 't' },
 	});
 
 	function resize(width, height) {
@@ -184,10 +180,10 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 
 		let w = width;
 		let h = height;
-		for (let i = 0, l = nMips; i < l; i++) {
+		for (let i = 0, l = MAX_ITERATIONS; i < l; i++) {
 			blurBuffersHorizontal[i].setSize(w, h);
 			blurBuffersVertical[i].setSize(w, h);
-			blurFilters[i].uniforms.uResolution.value.set(w, h);
+			filters.blurs[i].uniforms.uResolution.value.set(w, h);
 
 			w = Math.floor(w * 0.5);
 			h = Math.floor(h * 0.5);
@@ -201,14 +197,25 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 
 		// Extract bright areas
 		renderer.setRenderTarget(buffers.luminosity);
-		scene?.triggerRender();
+		scene.triggerRender();
 		filters.luminosity.render();
 
 		// Blur all the mips progressively
 		let inputRT = buffers.luminosity;
 
-		for (let i = 0; i < nMips; i++) {
-			const filter = blurFilters[i];
+		// clean all buffers
+		for (let i = 0; i < MAX_ITERATIONS; i++) {
+			const bufferHor = blurBuffersHorizontal[i];
+			const bufferVer = blurBuffersVertical[i];
+
+			renderer.setRenderTarget(bufferHor);
+			renderer.clear();
+			renderer.setRenderTarget(bufferVer);
+			renderer.clear();
+		}
+
+		for (let i = 0; i < api.iterations.value; i++) {
+			const filter = filters.blurs[i];
 			const bufferHor = blurBuffersHorizontal[i];
 			const bufferVer = blurBuffersVertical[i];
 
@@ -217,7 +224,7 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 			filter.uniforms.tMap.value = inputRT.texture;
 			filter.uniforms.uDirection.value = DUMMY_DIR;
 			renderer.setRenderTarget(bufferHor);
-			scene?.triggerRender();
+			scene.triggerRender();
 			filter.render();
 
 			DUMMY_DIR.copy(BlurDirectionY).multiplyScalar(spread.value);
@@ -225,7 +232,7 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 			filter.uniforms.tMap.value = bufferHor.texture;
 			filter.uniforms.uDirection.value = DUMMY_DIR;
 			renderer.setRenderTarget(bufferVer);
-			scene?.triggerRender();
+			scene.triggerRender();
 			filter.render();
 
 			inputRT = bufferVer;
@@ -233,14 +240,14 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 
 		// Composite all the mips
 		renderer.setRenderTarget(buffers.bloom);
-		bloomFilter.render();
-		bloomTexture = buffers.bloom.texture;
-		uniforms.tBloom.value = bloomTexture;
+		filters.bloom.render();
+		texture = buffers.bloom.texture;
+		uniforms.tBloom.value = texture;
 	}
 
 	/// #if __DEBUG__
 	function devtools(_gui) {
-		const gui = _gui.addFolder({ title: 'UnrealBloom' });
+		const gui = _gui.addFolder({ title: '💥 UnrealBloom' });
 
 		gui.addBinding(threshold, 'value', {
 			label: 'Threshold',
@@ -274,11 +281,11 @@ export const useUnrealBloomPass = (composer, { iterations = 5 } = {}) => {
 		});
 
 		gui.addButton({ title: 'Reset' }).on('click', () => {
-			threshold.set(defaultParams.threshold, true);
-			smoothing.set(defaultParams.smoothing, true);
-			strength.set(defaultParams.strength, true);
-			radius.set(defaultParams.radius, true);
-			spread.set(defaultParams.spread, true);
+			threshold.set(DEFAULT_PARAMS.threshold, true);
+			smoothing.set(DEFAULT_PARAMS.smoothing, true);
+			strength.set(DEFAULT_PARAMS.strength, true);
+			radius.set(DEFAULT_PARAMS.radius, true);
+			spread.set(DEFAULT_PARAMS.spread, true);
 		});
 	}
 	/// #endif

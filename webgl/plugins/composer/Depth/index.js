@@ -1,15 +1,11 @@
 import { webgl } from '#webgl/core';
-import {
-	MeshDepthMaterial,
-	RGBADepthPacking,
-	Vector2,
-	WebGLRenderTarget,
-} from 'three';
+import { MeshDepthMaterial, RGBADepthPacking, Vector2, WebGLRenderTarget } from 'three';
 
 import { w } from '#utils/state/index.js';
 import createFilter from '#webgl/utils/createFilter.js';
 
 import DepthPass from './DepthPass.frag?hotshader';
+import { wUniform } from '#webgl/utils/Uniform.js';
 
 const DUMMY_RT = new WebGLRenderTarget(1, 1, { depthBuffer: false });
 
@@ -23,11 +19,11 @@ export const useDepthPass = (composer) => {
 	// const distance = w({ min: 0.5, max: 6 });
 	const distance = w({ min: 3, max: 8 });
 
-	let depthTexture = DUMMY_RT.texture;
+	let texture = DUMMY_RT.texture;
 
 	const api = {
 		get texture() {
-			return depthTexture;
+			return texture;
 		},
 
 		render,
@@ -45,27 +41,18 @@ export const useDepthPass = (composer) => {
 	});
 
 	Object.assign(uniforms, {
-		tDepth: { value: depthTexture, type: 't' },
+		tDepth: { value: texture, type: 't' },
 	});
 
 	const filter = createFilter({
 		uniforms: {
 			...uniforms,
 			tDepth: { value: DUMMY_RT.texture, type: 't' },
-			uDistance: {
-				value: new Vector2().set(
-					distance.value.min,
-					distance.value.max,
-				),
-			},
+			...wUniform('uDistance', distance),
 		},
-		defines,
+		defines: { ...defines },
 	});
 	DepthPass.use(filter.material);
-
-	distance.watch((v) => {
-		filter.uniforms.uDistance.value.set(v.min, v.max);
-	});
 
 	/* Render */
 	function render(scene, renderer) {
@@ -73,7 +60,7 @@ export const useDepthPass = (composer) => {
 
 		scene.base.traverse((o) => {
 			if (o.isMesh || o.isLine) {
-				if (o.uuid in materials) {
+				if (materials[o.uuid]) {
 					materials[o.uuid].visible = o.visible;
 					materials[o.uuid].material = o.material;
 				} else {
@@ -99,12 +86,13 @@ export const useDepthPass = (composer) => {
 		renderer.setRenderTarget(bufferSceneDepth);
 		renderer.clear();
 		filter.render();
-		depthTexture = bufferSceneDepth.texture;
-		uniforms.tDepth.value = depthTexture;
+		texture = bufferSceneDepth.texture;
+		uniforms.tDepth.value = texture;
 
 		scene.base.traverse((o) => {
 			if (o.isMesh || o.isLine) {
 				const m = materials[o.uuid];
+				if (!m) return; // In case the object was removed from the scene of added to
 
 				// if (o.renderToDepthPrepass) {
 				o.material = m.material;
@@ -117,11 +105,12 @@ export const useDepthPass = (composer) => {
 
 	/// #if __DEBUG__
 	function devtools(_gui) {
-		const gui = _gui.addFolder({ title: 'Depth' });
+		const gui = _gui.addFolder({ title: '🌑 Depth' });
 
 		gui.addBinding(distance, 'value', {
-			min: 0.05,
-			max: 15,
+			label: 'Distance',
+			min: 0,
+			max: 1,
 			step: 0.01,
 		});
 	}

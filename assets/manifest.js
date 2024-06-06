@@ -40,8 +40,8 @@ const subtitles = (path) => ({
 export default {
 	'msdf-font/VCR_OSD_MONO': msdf('msdf/VCR_OSD_MONO'),
 
-	scene1: glb('models/scene1'),
-	noises: img('canvas/*.png', { repeat: true }),
+	// scene1: glb('models/scene1'),
+	noises: img('data-textures/*.png', { repeat: true }),
 	luts: copy(
 		'luts/*.[png|jpg]',
 		{

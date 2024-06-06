@@ -4,8 +4,8 @@ export default function addBindingShortcuts(handler) {
 	handler.addSeparator = addSeparator.bind(handler);
 	handler.addOptions = addOptions.bind(handler);
 	handler.addMonitor = addMonitor.bind(handler);
-	handler.add = handler.addBinding;
-	handler.addInput = handler.addBinding;
+	handler.add = add.bind(handler);
+	handler.addInput = add.bind(handler);
 }
 
 function addGrid(maxPerRow, ...grid) {
@@ -46,4 +46,8 @@ function addOptions(ctx, key, options, opts = {}) {
 
 function addMonitor(ctx, key, opts = {}) {
 	this.addBinding(ctx, key, { ...opts, readonly: true });
+}
+
+function add(ctx, key, opts = {}) {
+	this.addBinding(ctx, key, { ...opts });
 }

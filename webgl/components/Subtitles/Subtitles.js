@@ -1,6 +1,6 @@
 import { watch } from 'vue';
 
-import { Object3D, Vector3 } from 'three';
+import { Color, Object3D, Vector3 } from 'three';
 
 import BaseComponent from '#webgl/core/BaseComponent';
 
@@ -20,9 +20,10 @@ export class Subtitles extends BaseComponent {
 		this.t = this.add(MSDFTextMesh, {
 			font: 'VCR_OSD_MONO',
 			content: 'lorem ipsum dolot sit amet',
-			width: width / 2,
+			width: width * 0.8,
 			centerMesh: true,
 			align: 'left',
+			color: new Color(0xffd700).offsetHSL(0, 0.3, 0.2),
 		});
 		this.hide();
 
