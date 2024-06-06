@@ -5,6 +5,7 @@ import { w } from '#utils/state/index.js';
 import createFilter from '#webgl/utils/createFilter.js';
 
 import DepthPass from './DepthPass.frag?hotshader';
+import { wUniform } from '#webgl/utils/Uniform.js';
 
 const DUMMY_RT = new WebGLRenderTarget(1, 1, { depthBuffer: false });
 
@@ -46,15 +47,11 @@ export const useDepthPass = (composer) => {
 		uniforms: {
 			...uniforms,
 			tDepth: { value: DUMMY_RT.texture, type: 't' },
-			uDistance: { value: distance.value },
+			...wUniform('uDistance', distance),
 		},
 		defines: { ...defines },
 	});
 	DepthPass.use(filter.material);
-
-	distance.watch((v) => {
-		filter.uniforms.uDistance.value = v;
-	});
 
 	/* Render */
 	function render(scene, renderer) {
@@ -112,7 +109,7 @@ export const useDepthPass = (composer) => {
 		gui.addBinding(distance, 'value', {
 			label: 'Distance',
 			min: 0,
-			max: 3,
+			max: 1,
 			step: 0.01,
 		});
 	}

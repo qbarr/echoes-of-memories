@@ -8,6 +8,7 @@ import createFilter from '#webgl/utils/createFilter.js';
 import LuminosityPass from './LuminosityPass.frag?hotshader';
 import UnrealBloomBlurPass from './UnrealBloomBlurPass.frag?hotshader';
 import UnrealBloomCompositePass from './UnrealBloomCompositePass.frag?hotshader';
+import { wUniform } from '#webgl/utils/Uniform.js';
 
 const BlurDirectionX = new Vector2(1, 0);
 const BlurDirectionY = new Vector2(0, 1);
@@ -97,8 +98,8 @@ export const useUnrealBloomPass = (composer, { iterations = MAX_ITERATIONS } = {
 	filters.luminosity = createFilter({
 		uniforms: {
 			...uniforms,
-			uThreshold: { value: threshold.value },
-			uSmoothing: { value: smoothing.value },
+			...wUniform('uThreshold', threshold),
+			...wUniform('uSmoothing', smoothing),
 		},
 		defines: { ...defines },
 		blending: NoBlending,
@@ -107,9 +108,6 @@ export const useUnrealBloomPass = (composer, { iterations = MAX_ITERATIONS } = {
 		depthWrite: false,
 	});
 	LuminosityPass.use(filters.luminosity.material);
-
-	threshold.watch((v) => (filters.luminosity.uniforms.uThreshold.value = v));
-	smoothing.watch((v) => (filters.luminosity.uniforms.uSmoothing.value = v));
 
 	// Separable Gaussian blur materials
 	filters.blurs = [];
@@ -160,8 +158,8 @@ export const useUnrealBloomPass = (composer, { iterations = MAX_ITERATIONS } = {
 			tBlur3: { value: blurBuffersVertical[2].texture },
 			tBlur4: { value: blurBuffersVertical[3].texture },
 			tBlur5: { value: blurBuffersVertical[4].texture },
-			uBloomStrength: { value: strength.value },
-			uBloomRadius: { value: radius.value },
+			...wUniform('uBloomStrength', strength),
+			...wUniform('uBloomRadius', radius),
 			uBloomFactors: { value: bloomFactors },
 			uBloomTintColors: { value: bloomTintColors },
 		},
@@ -171,9 +169,6 @@ export const useUnrealBloomPass = (composer, { iterations = MAX_ITERATIONS } = {
 		glslVersion: GLSL3,
 	});
 	UnrealBloomCompositePass.use(filters.bloom.material);
-
-	strength.watch((v) => (filters.bloom.uniforms.uBloomStrength.value = v));
-	radius.watch((v) => (filters.bloom.uniforms.uBloomRadius.value = v));
 
 	Object.assign(uniforms, {
 		tBloom: { value: texture, type: 't' },

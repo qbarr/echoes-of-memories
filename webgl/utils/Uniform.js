@@ -15,3 +15,11 @@ export const uniform = (value) => {
 
 	return { value, type };
 };
+
+export const wUniform = (key, writable) => {
+	const value = writable.value;
+	const u = { [key]: uniform(value) };
+	writable.watch((v) => (u[key].value = v));
+	writable.watch((v) => console.log('wUniform', key, v));
+	return u;
+};

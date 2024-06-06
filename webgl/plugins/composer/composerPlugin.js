@@ -87,41 +87,13 @@ export function composerPlugin(webgl) {
 		const scene = $scenes.current.component;
 		const renderer = webgl.$threeRenderer;
 
-		// Render raw scene to main buffer
-		// renderer.setRenderTarget(buffers.base);
-		// renderer.clear();
-		// scene.toggleSelectedBloom(false);
-		// scene.triggerRender();
-		// uniforms.tMap.value = buffers.base.texture;
-
-		// // renderer.setRenderTarget(buffers.grayscale1);
-		// // renderer.clear();
-		// // filters.grayscale.setMap(buffers.base.texture);
-		// // filters.grayscale.render();
-
-		// // uniforms.tMap.value = buffers.grayscale1.texture;
-
-		// // Render selected bloom to mainBloom buffer
-		// renderer.setRenderTarget(buffers.mainBloom);
-		// renderer.clear();
-		// scene.toggleSelectedBloom(true);
-		// scene.triggerRender();
-		// renderer.clearDepth();
-		// $scenes.ui.component.triggerRender();
-		// uniforms.tMapBloom.value = buffers.mainBloom.texture;
-
-		// renderer.setRenderTarget(buffers.grayscale2);
-		// renderer.clear();
-		// filters.grayscale.setMap(buffers.mainBloom.texture);
-		// filters.grayscale.render();
-
-		// uniforms.tMapBloom.value = buffers.grayscale2.texture;
-
+		// Render depth pass
 		api.$depth.render(scene);
 
+		// Render base pass
+		// with UI
 		renderer.setRenderTarget(buffers.base);
 		renderer.clear();
-		scene.toggleSelectedBloom(false);
 		scene.triggerRender();
 		renderer.clearDepth();
 		$scenes.ui.component.triggerRender();
@@ -139,6 +111,7 @@ export function composerPlugin(webgl) {
 		filters.composite.render();
 		uniforms.tComposite.value = buffers.composite.texture;
 
+		// Render LUT pass
 		renderer.setRenderTarget(null);
 		renderer.clear();
 		api.$lut.render();

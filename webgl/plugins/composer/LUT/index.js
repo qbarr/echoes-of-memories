@@ -4,6 +4,7 @@ import createFilter from '#webgl/utils/createFilter.js';
 import { FloatType, GLSL3, HalfFloatType } from 'three';
 
 import LUTPass from './LUTPass.frag?hotshader';
+import { wUniform } from '#webgl/utils/Uniform.js';
 
 export const useLutPass = (composer) => {
 	const { filters, uniforms, defines } = composer;
@@ -47,8 +48,8 @@ export const useLutPass = (composer) => {
 		uniforms: {
 			...uniforms,
 			tLutMap: { value: texture },
-			uSaturation: { value: saturation.value },
-			uMix: { value: mix.value },
+			...wUniform('uSaturation', saturation),
+			...wUniform('uMix', mix),
 		},
 		defines: {
 			...defines,
@@ -94,29 +95,12 @@ export const useLutPass = (composer) => {
 
 		gui.addSeparator();
 
+		const opts = { min: 0, max: 1, step: 0.01 };
+
 		gui.addBinding(enabled, 'value', { label: 'Enabled' });
-		gui.addBinding(saturation, 'value', {
-			label: 'Saturation',
-			min: 0,
-			max: 1,
-			step: 0.01,
-		}).on('change', () => {
-			filter.uniforms.uSaturation.value = saturation.value;
-		});
-		gui.addBinding(mix, 'value', {
-			label: 'Mix',
-			min: 0,
-			max: 1,
-			step: 0.01,
-		}).on('change', () => {
-			filter.uniforms.uMix.value = mix.value;
-		});
-		gui.addBinding(forcedMix, 'value', {
-			label: 'Forced Mix',
-			min: 0,
-			max: 1,
-			step: 0.01,
-		});
+		gui.addBinding(mix, 'value', { label: 'Mix', readonly: true });
+		gui.addBinding(forcedMix, 'value', { label: 'Forced Mix', ...opts });
+		gui.addBinding(saturation, 'value', { label: 'Saturation', ...opts });
 	}
 	/// #endif
 
