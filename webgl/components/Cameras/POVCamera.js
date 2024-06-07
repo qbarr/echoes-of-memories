@@ -54,14 +54,23 @@ export class POVCamera extends BaseCamera {
 		this.controls = POVController(this.cam, {
 			enabled: this.$pointerLocked,
 			target: defaultTarget,
-			panSpeed: 0.01,
 		});
 
-		const { $canvas, $raycast, $assets } = this.webgl;
+		const { $getCurrentScene, $canvas, $raycast, $assets } = this.webgl;
+		const chambre = $assets.objects['chambre-model'].scene;
+		const scene = $getCurrentScene();
+		const muretsol = chambre.getObjectByName('mursetsol');
+		console.log(muretsol);
 
 		this.wobble = new Wobble(this.base.position);
 
-		document.addEventListener('click', this.onClick);
+		$raycast.add(muretsol, {
+			onDown: this.onClick,
+			forceVisible: true,
+			forcedScene: scene,
+		});
+
+		// document.addEventListener('click', this.onClick);
 		document.addEventListener('pointerlockchange', this.onPointerLockChange);
 	}
 
@@ -69,7 +78,6 @@ export class POVCamera extends BaseCamera {
 		console.log('[POVCamera] onPointerLockChange', this.$pointerLocked);
 
 		if (!this.$pointerLocked) {
-			// console.log('[POVCamera] onPointerLockChange', this.$pointerLocked);
 			this.$pointerLocked = true;
 			this.controls.enabled = this.$pointerLocked;
 		} else {

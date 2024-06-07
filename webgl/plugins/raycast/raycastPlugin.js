@@ -56,12 +56,12 @@ export function raycastPlugin(webgl) {
 		const ev = shouldListen ? 'addEventListener' : 'removeEventListener';
 
 		$el[ev]('touchstart', onDown, opts);
-		// $el[ev]('touchmove', onMove, opts);
+		$el[ev]('touchmove', onMove, opts);
 		$el[ev]('touchend', onUp, opts);
 		$el[ev]('touchcancel', onUp, opts);
 
 		$el[ev]('mousedown', onDown, opts);
-		// $el[ev]('mousemove', onMove, opts);
+		$el[ev]('mousemove', onMove, opts);
 		$el[ev]('mouseup', onUp, opts);
 		$el[ev]('mouseleave', onUp, opts);
 	}

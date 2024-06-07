@@ -2,7 +2,7 @@
 	<main class="ui">
 		<RouterView />
 
-		<div class="cross-cursor"></div>
+		<!-- <div class="cross-cursor"></div> -->
 	</main>
 
 	<WebGL />
