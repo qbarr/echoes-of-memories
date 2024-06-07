@@ -23,8 +23,8 @@ export class Subtitles extends BaseComponent {
 			content: 'lorem ipsum dolot sit amet',
 			width: width * 0.8,
 			centerMesh: true,
-			align: 'left',
-			color: new Color(0xffd700).offsetHSL(0, 0.3, 0.2),
+			align: 'center',
+			color: new Color(0xffd700).offsetHSL(0, 0.3, 0.1),
 		});
 		this.hide();
 

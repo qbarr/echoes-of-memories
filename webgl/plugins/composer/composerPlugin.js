@@ -88,7 +88,7 @@ export function composerPlugin(webgl) {
 
 		// Render UI Scene
 		renderer.setRenderTarget(buffers.interface);
-		renderer.clear();
+		renderer.clearDepth();
 		$scenes.ui.component.triggerRender();
 		uniforms.tInterface.value = buffers.interface.texture;
 
@@ -99,6 +99,8 @@ export function composerPlugin(webgl) {
 		renderer.setRenderTarget(buffers.base);
 		renderer.clear();
 		scene.triggerRender();
+		renderer.clearDepth();
+		$scenes.ui.component.triggerRender();
 		uniforms.tMap.value = buffers.base.texture;
 
 		// Render Bokeh pass
