@@ -7,6 +7,7 @@ export const uniform = (value) => {
 		if (Number.isInteger(value)) type = 'i';
 		else type = 'f';
 	}
+	if (typeof value === 'boolean') type = 'b';
 	if (value instanceof Vector2) type = 'v2';
 	if (value instanceof Vector3) type = 'v3';
 	if (value instanceof Vector4) type = 'v4';
@@ -20,6 +21,5 @@ export const wUniform = (key, writable) => {
 	const value = writable.value;
 	const u = { [key]: uniform(value) };
 	writable.watch((v) => (u[key].value = v));
-	writable.watch((v) => console.log('wUniform', key, v));
 	return u;
 };

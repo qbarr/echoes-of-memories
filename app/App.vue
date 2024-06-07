@@ -1,6 +1,8 @@
 <template>
 	<main class="ui">
 		<RouterView />
+
+		<!-- <div class="cross-cursor"></div> -->
 	</main>
 
 	<WebGL />
@@ -9,6 +11,7 @@
 </template>
 
 <script setup>
+// import { CrossCursor } from './components/CrossCursor.vue';
 import { shallowRef } from 'vue';
 
 const isDebug = shallowRef(__DEBUG__ ?? false);
@@ -40,5 +43,36 @@ a {
 
 h1 {
 	padding: 20px;
+}
+
+.cross-cursor {
+	width: 50px;
+	height: 50px;
+	position: relative;
+	mix-blend-mode: difference;
+
+	&::before {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 2px;
+		height: 50%;
+		background-color: #000;
+		transform: translate(-50%, -50%);
+		mix-blend-mode: difference;
+	}
+
+	&::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 50%;
+		height: 2px;
+		background-color: #000;
+		transform: translate(-50%, -50%);
+		mix-blend-mode: difference;
+	}
 }
 </style>

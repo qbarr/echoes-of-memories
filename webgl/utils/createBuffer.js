@@ -1,5 +1,11 @@
 import { getWebGL } from '#webgl/core';
-import { LinearFilter, NoColorSpace, RGBAFormat, SRGBColorSpace, WebGLRenderTarget } from 'three';
+import {
+	LinearFilter,
+	NoColorSpace,
+	RGBAFormat,
+	SRGBColorSpace,
+	WebGLRenderTarget,
+} from 'three';
 
 // Small helper to easily create render buffers
 // They will be register to fbo debugger if available
@@ -20,6 +26,7 @@ export default function createBuffer({
 	srgb = false,
 	colorSpace = NoColorSpace,
 	generateMipmaps = false,
+	manualResize = false,
 	...opts
 } = {}) {
 	if (!webgl) webgl = getWebGL();
@@ -28,7 +35,8 @@ export default function createBuffer({
 	if (name == null) name = `RenderTarget.${defaultNameIndex++}`;
 
 	let isResizing = false;
-	let listeningDbs = false;
+	let isListeningDbs = false;
+	const needListenResize = !manualResize;
 	let rt;
 
 	if (width && height) setSize(width, height);
@@ -51,6 +59,7 @@ export default function createBuffer({
 	const ogSetSize = rt.setSize.bind(rt);
 	rt.setSize = setSize;
 	rt.setScale = setScale;
+	if (needListenResize) webgl.$hooks.afterSetup.watchOnce(listenResize);
 
 	// Modify dispose to unlisten to dbs changes and unregister from fbo debugger
 	const ogDispose = rt.dispose.bind(rt);
@@ -85,14 +94,15 @@ export default function createBuffer({
 	}
 
 	function listenResize() {
-		if (listeningDbs) return;
-		listeningDbs = true;
-		dbs.watch(onResize);
+		if (!needListenResize) return;
+		if (isListeningDbs) return;
+		isListeningDbs = true;
+		dbs.watchImmediate(onResize);
 	}
 
 	function unlistenResize() {
-		if (!listeningDbs) return;
-		listeningDbs = false;
+		if (!isListeningDbs) return;
+		isListeningDbs = false;
 		dbs.unwatch(onResize);
 	}
 

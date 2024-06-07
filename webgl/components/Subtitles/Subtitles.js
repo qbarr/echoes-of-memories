@@ -18,12 +18,13 @@ export class Subtitles extends BaseComponent {
 		const scale = 0.02;
 
 		this.t = this.add(MSDFTextMesh, {
+			name: 'Subtitles',
 			font: 'VCR_OSD_MONO',
 			content: 'lorem ipsum dolot sit amet',
 			width: width * 0.8,
 			centerMesh: true,
-			align: 'left',
-			color: new Color(0xffd700).offsetHSL(0, 0.3, 0.2),
+			align: 'center',
+			color: new Color(0xffd700).offsetHSL(0, 0.3, 0.1),
 		});
 		this.hide();
 
@@ -49,7 +50,7 @@ export class Subtitles extends BaseComponent {
 	}
 
 	hide() {
-		console.log('SUBTITLE HIDE');
+		// console.log('SUBTITLE HIDE');
 		this.t.base.visible = false;
 	}
 }

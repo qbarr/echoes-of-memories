@@ -8,9 +8,8 @@ const tVec3b = new Vector3();
 
 const defaultTarget = {
 	object: new Object3D(),
-	offset: new Vector3(0, 2, 2)
+	offset: new Vector3(0, 2, 2),
 };
-
 
 export function defaultCamera() {
 	const ratio = window.innerWidth / window.innerHeight;
@@ -19,7 +18,6 @@ export function defaultCamera() {
 	cam.lookAt(new Vector3(0, 0, 0));
 	return cam;
 }
-
 
 export default class OrbitCamera {
 	constructor(props = {}) {
@@ -53,7 +51,7 @@ export default class OrbitCamera {
 		this.controls = orbitController(this.base, {
 			...props.orbitOptions,
 			target: defaultTarget,
-			fps: this.fps.value
+			fps: this.fps.value,
 		});
 
 		this.controls.enabled = this.enabled;
@@ -61,10 +59,9 @@ export default class OrbitCamera {
 
 		// this.saveCamera();
 
-
-		this.cam.near = 1;
-		this.cam.far = 2000;
-		this.cam.updateProjectionMatrix();
+		// this.cam.near = 1;
+		// this.cam.far = 2000;
+		// this.cam.updateProjectionMatrix();
 
 		// this.saveCamera = throttle(this.saveCamera, 250, { bind: this });
 
@@ -76,7 +73,6 @@ export default class OrbitCamera {
 
 		this.static = false;
 	}
-
 
 	setTarget(target, force) {
 		this._target = target;
@@ -150,4 +146,3 @@ export default class OrbitCamera {
 		super.beforeDestroy();
 	}
 }
-

@@ -2,6 +2,8 @@ precision highp float;
 
 uniform sampler2D tMap;
 uniform sampler2D tDepth;
+// uniform sampler2D tBokeh;
+uniform sampler2D tInterface;
 uniform float uAmount;
 uniform float uAngle;
 
@@ -10,12 +12,21 @@ varying vec2 vUv;
 void main() {
 	float depth = texture2D(tDepth, vUv).r;
 
+	vec4 texel = texture2D(tMap, vUv);
+
 	vec2 offset = uAmount * vec2(cos(uAngle), sin(uAngle));
 	vec4 cr = texture2D(tMap, vUv + offset);
-	vec4 cga = texture2D(tMap, vUv);
 	vec4 cb = texture2D(tMap, vUv - offset);
 
-	// vec4 color = mix(cga, vec4(cga.r, cb.g, cga.b, cga.a), smoothstep(.5, 1.3, 1. - depth));
+	vec4 shiftColor = vec4(cr.r, cb.g, texel.b, texel.a);
+	vec4 color = mix(texel, shiftColor, smoothstep(0.3, 1., pow(1. - depth, .6)));
 
-	gl_FragColor = vec4(cga.r, cb.g, cga.b, cga.a);
+	// gl_FragColor = shiftColor;
+	gl_FragColor = color;
+
+	vec3 interfaceColor = texture2D(tInterface, vUv).rgb;
+	gl_FragColor.rgb += interfaceColor;
+
+	// debug
+	// gl_FragColor += vec4(smoothstep(0.3, 1., pow(1. - depth, .6)));
 }

@@ -10,19 +10,23 @@ const methodList = [
 	'addMonitor',
 	'addButton',
 	'addTab',
-	'addBlade'
+	'addBlade',
 ];
 
 function createGUI() {
 	let container;
 	let pane;
 
-	const api = singleton = {
+	const api = (singleton = {
 		install,
 		methods: methodList,
-		get pane() { return pane },
-		get container() { return container }
-	};
+		get pane() {
+			return pane;
+		},
+		get container() {
+			return container;
+		},
+	});
 
 	return api;
 
@@ -37,33 +41,34 @@ function createGUI() {
 
 		pane = createPane({
 			container,
-			coloredFolder: opts.coloredFolder ?? true
+			coloredFolder: opts.coloredFolder ?? true,
 		});
 
 		const tab = pane.addTab({
-			pages: [
-				{ title: 'MAIN' },
-				{ title: 'APP' },
-				{ title: 'WEBGL' },
-			],
+			pages: [{ title: 'MAIN' }, { title: 'APP' }, { title: 'WEBGL' }],
 		});
 
 		const pages = tab.pages;
 
 		api.tab = tab;
-		api.mainPage = api.main = pages[ 0 ];
-		api.appPage = api.app = pages[ 1 ];
-		api.webglPage = api.webgl = pages[ 2 ];
+		api.mainPage = api.main = pages[0];
+		api.appPage = api.app = pages[1];
+		api.webglPage = api.webgl = pages[2];
 
-		methodList.forEach(k => {
-			if (pages[ 0 ][ k ]) api[ k ] = pages[ 0 ][ k ].bind(pages[ 0 ]);
+		methodList.forEach((k) => {
+			if (pages[0][k]) api[k] = pages[0][k].bind(pages[0]);
 		});
 
-		app.$onBeforeMount(v => {
+		app.$onBeforeMount((v) => {
 			if (!app.config.globalProperties.$webgl) {
 				api.tab.removePage(2);
 			}
 		});
+
+		// api.appPage.addButton({
+		// 	title: 'Click',
+		// 	label: 'User Gesture',
+		// });
 
 		delete api.install;
 	}

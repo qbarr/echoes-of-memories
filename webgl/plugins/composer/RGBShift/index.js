@@ -13,8 +13,8 @@ export const useRGBShiftPass = (composer) => {
 	const { buffers, filters, uniforms, defines } = composer;
 
 	const enabled = w(true);
-	const amount = w(0.001);
-	const angle = w(0.0);
+	const amount = w(0.002);
+	const angle = w(0);
 
 	let texture = DUMMY_RT.texture;
 	const api = {

@@ -1,0 +1,129 @@
+import { Vector3, Object3D } from 'three';
+import BaseCamera from '#webgl/core/BaseCamera';
+import POVController from '#webgl/utils/POVController.js';
+
+import Wobble from './Wobble.js';
+
+const HEIGHT = 4;
+const DEFAULT_FOV = 35;
+
+const defaultTarget = {
+	object: new Object3D(),
+	offset: new Vector3(0, HEIGHT, 0),
+};
+
+export class POVCamera extends BaseCamera {
+	async init() {
+		console.log('[POVCamera] init');
+		this.$pointerLocked = false;
+
+		this.onClick = this.onClick.bind(this);
+		this.onPointerLockChange = this.onPointerLockChange.bind(this);
+
+		this.$idleAnimation = {
+			$duration: 3000, // in ms
+			$factor: 0.1, // how much the camera will move up and down
+		};
+		this.$startTime = null;
+		this.$progress = 0;
+		this.$forward = true;
+
+		// this.$wobbleIntensity = 0.001;
+		// this.$wobbleIntensity = 0.0001;
+		this.$wobbleIntensity = 0.0005;
+	}
+
+	/// #if __DEBUG__
+	devtools() {
+		const $gui = this.webgl.$app.$gui;
+
+		const gui = $gui.webgl.addFolder({ title: '👁️ POVCamera', index: 1 });
+
+		this.wobble.devtools(gui);
+	}
+	/// #endif
+
+	afterInit() {
+		super.afterInit();
+		console.log('[POVCamera] afterInit');
+
+		this.base.position.fromArray([2.9116, HEIGHT, 7.49768]);
+		this.base.quaternion.fromArray([-0.04, 0.5, 0.03, 0.8]);
+		this.base.fov = DEFAULT_FOV;
+
+		this.controls = POVController(this.cam, {
+			enabled: this.$pointerLocked,
+			target: defaultTarget,
+		});
+
+		const { $getCurrentScene, $canvas, $raycast, $assets } = this.webgl;
+		const chambre = $assets.objects['chambre-model'].scene;
+		const scene = $getCurrentScene();
+		const muretsol = chambre.getObjectByName('mursetsol');
+		console.log(muretsol);
+
+		this.wobble = new Wobble(this.base.position);
+
+		$raycast.add(muretsol, {
+			onDown: this.onClick,
+			forceVisible: true,
+			forcedScene: scene,
+		});
+
+		// document.addEventListener('click', this.onClick);
+		document.addEventListener('pointerlockchange', this.onPointerLockChange);
+	}
+
+	onPointerLockChange() {
+		console.log('[POVCamera] onPointerLockChange', this.$pointerLocked);
+
+		if (!this.$pointerLocked) {
+			this.$pointerLocked = true;
+			this.controls.enabled = this.$pointerLocked;
+		} else {
+			this.$pointerLocked = false;
+			this.controls.enabled = this.$pointerLocked;
+		}
+	}
+
+	onClick() {
+		const { $getCurrentScene, $canvas } = this.webgl;
+		const scene = $getCurrentScene();
+		const currentCam = scene.getCurrentCamera();
+
+		if (!this.$pointerLocked && currentCam.name !== 'Debug Camera') {
+			console.log('[POVCamera] onClick');
+			$canvas.requestPointerLock();
+		}
+	}
+
+	easeInOutQuad(x) {
+		return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+	}
+
+	idleBreathing() {
+		const { elapsed } = this.webgl.$time;
+		const { $duration, $factor } = this.$idleAnimation;
+
+		this.$startTime ??= elapsed;
+		this.$progress = Math.min((elapsed - this.$startTime) / $duration, 1);
+
+		const adjustedProgress = this.$forward ? this.$progress : 1 - this.$progress;
+		const ease = this.easeInOutQuad(adjustedProgress) * $factor;
+
+		this.base.position.y = HEIGHT + ease;
+
+		if (this.$progress >= 1) {
+			this.$startTime = null;
+			this.$forward = !this.$forward;
+		}
+	}
+
+	update() {
+		this.wobble.update(this.webgl.$time.elapsed * this.$wobbleIntensity);
+
+		if (this.controls) {
+			this.controls.update();
+		}
+	}
+}

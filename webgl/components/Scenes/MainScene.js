@@ -1,5 +1,6 @@
 import BaseScene from '#webgl/core/BaseScene';
 import { MainCamera } from '../Cameras/MainCamera';
+import { POVCamera } from '../Cameras/POVCamera';
 
 import { AdditiveBlending, Box3, MeshBasicMaterial } from 'three';
 import { Cube } from '../Objects/Cube';
@@ -15,10 +16,8 @@ export default class MainScene extends BaseScene {
 	mixins = ['debugCamera'];
 
 	init() {
-		this.camera = this.add(MainCamera);
-		const box = new BoxGeometry(7, 7, 7);
-		box.computeBoundingBox();
-		const mesh = new Mesh(box, new MeshBasicMaterial({ color: 'red', wireframe: true }));
+		// this.camera = this.add(MainCamera);
+		this.camera = this.add(POVCamera);
 
 		const { $assets, $gpgpu } = this.webgl;
 		// console.log($assets.objects, chambre)

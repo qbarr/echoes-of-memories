@@ -8,7 +8,8 @@ import { useDepthPass } from './Depth';
 import { useLutPass } from './LUT';
 import { useRGBShiftPass } from './RGBShift';
 import { useUnrealBloomPass } from './UnrealBloom';
-import { useVHSPass } from './VHS';
+import { useCRTPass } from './CRT';
+import { useBokehPass } from './Bokeh';
 
 const rf = prng.randomFloat;
 
@@ -29,7 +30,6 @@ export function composerPlugin(webgl) {
 		uniforms,
 		defines,
 
-		resize,
 		update,
 		render,
 	};
@@ -38,14 +38,14 @@ export function composerPlugin(webgl) {
 		const { $assets, $threeRenderer, $renderer, $hooks, $fbo } = webgl;
 		const { textures } = $assets;
 
-		buffers.composite = $fbo.createBuffer({ name: 'Composite' });
 		buffers.base = $fbo.createBuffer({ name: 'Base' });
-		buffers.mainBloom = $fbo.createBuffer({ name: 'Selective Bloom' });
+		buffers.interface = $fbo.createBuffer({ name: 'Interface' });
+		buffers.composite = $fbo.createBuffer({ name: 'Composite' });
 
 		Object.assign(uniforms, {
 			...webgl.uniforms,
 			tMap: { value: buffers.base.texture, type: 't' },
-			tMapBloom: { value: buffers.mainBloom.texture, type: 't' },
+			tInterface: { value: buffers.interface.texture, type: 't' },
 			tComposite: { value: buffers.composite.texture, type: 't' },
 
 			// Dither uniforms
@@ -59,23 +59,21 @@ export function composerPlugin(webgl) {
 		CompositeFragment.use(filters.composite.material);
 
 		passes.push(useDepthPass(api));
-		passes.push(useUnrealBloomPass(api, { iterations: 3 }));
-		passes.push(useLutPass(api));
-		passes.push(useVHSPass(api));
+		passes.push(useBokehPass(api));
 		passes.push(useRGBShiftPass(api));
+		passes.push(useCRTPass(api));
+		passes.push(useUnrealBloomPass(api));
+		passes.push(useLutPass(api));
 
-		$renderer.drawingBufferSize.watchImmediate(resize);
+		// $renderer.drawingBufferSize.watchImmediate(resize);
 		$hooks.beforeUpdate.watch(update);
 
 		__DEBUG__ && devtools();
 	}
 
-	function resize({ width, height }) {
-		if (!width || !height) return;
-
-		buffers.base.setSize(width, height);
-		api.$unrealBloom.resize(width, height);
-	}
+	// function resize({ width, height }) {
+	// 	if (!width || !height) return;
+	// }
 
 	function update() {
 		const { $scenes } = webgl;
@@ -88,11 +86,16 @@ export function composerPlugin(webgl) {
 		const scene = $scenes.current.component;
 		const renderer = webgl.$threeRenderer;
 
+		// Render UI Scene
+		renderer.setRenderTarget(buffers.interface);
+		renderer.clearDepth();
+		$scenes.ui.component.triggerRender();
+		uniforms.tInterface.value = buffers.interface.texture;
+
 		// Render depth pass
 		api.$depth.render(scene);
 
 		// Render base pass
-		// with UI
 		renderer.setRenderTarget(buffers.base);
 		renderer.clear();
 		scene.triggerRender();
@@ -100,14 +103,17 @@ export function composerPlugin(webgl) {
 		$scenes.ui.component.triggerRender();
 		uniforms.tMap.value = buffers.base.texture;
 
+		// Render Bokeh pass
+		api.$bokeh.render();
+
 		// Render RGB shift pass
 		api.$rgbShift.render();
 
 		// Render VHS pass
-		api.$vhs.render();
+		api.$crt.render();
 
 		// Render Unreal Bloom pass
-		// api.$unrealBloom.render(scene);
+		api.$unrealBloom.render();
 
 		// Render composite pass
 		renderer.setRenderTarget(buffers.composite);

@@ -20,7 +20,7 @@ uniform float zFar;
 
 // Passes
 uniform sampler2D tMap;
-uniform sampler2D tMapBloom;
+// uniform sampler2D tMapBloom;
 uniform sampler2D tBloom;
 uniform sampler2D tDepth;
 

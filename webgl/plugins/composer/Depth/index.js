@@ -16,7 +16,7 @@ export const useDepthPass = (composer) => {
 	const materials = {};
 
 	/* Params */
-	const distance = w(0.35);
+	const distance = w(1.5);
 
 	let texture = DUMMY_RT.texture;
 
@@ -109,7 +109,7 @@ export const useDepthPass = (composer) => {
 		gui.addBinding(distance, 'value', {
 			label: 'Distance',
 			min: 0,
-			max: 1,
+			max: 3,
 			step: 0.01,
 		});
 	}

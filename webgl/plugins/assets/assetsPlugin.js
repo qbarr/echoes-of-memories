@@ -137,10 +137,7 @@ export function assetsPlugin(webgl) {
 		return (loadPromises[fileID] = execLoad(fileID, opts));
 	}
 
-	function execLoad(
-		fileID,
-		{ onLoad, bypassManifest = false, ...opts } = {},
-	) {
+	function execLoad(fileID, { onLoad, bypassManifest = false, ...opts } = {}) {
 		// console.log('execLoad', fileID);
 		const { $preloader, $manifest } = webgl.$app;
 		const task = !$preloader.finished ? $preloader.task : NOOP;
@@ -151,8 +148,7 @@ export function assetsPlugin(webgl) {
 		if (!file.files) return;
 
 		const fileType = file.type ?? null;
-		if (fileType === 'msdf')
-			return parseMsdfFontFiles(fileID, { onLoad, opts });
+		if (fileType === 'msdf') return parseMsdfFontFiles(fileID, { onLoad, opts });
 
 		const p = [];
 		const files = Object.values(file.files);
@@ -167,11 +163,7 @@ export function assetsPlugin(webgl) {
 			const options = { ...opts, ...file.opts };
 			const url = f.url;
 
-			p.push(
-				task(
-					tasks[fileType]({ url, id, subID, file: f, opts: options }),
-				),
-			);
+			p.push(task(tasks[fileType]({ url, id, subID, file: f, opts: options })));
 		}
 
 		return Promise.all(p);
@@ -354,10 +346,7 @@ export function assetsPlugin(webgl) {
 		const fontData = { file: { url: data }, subID, id, opts };
 		const imgData = { file: { url }, subID, id, opts };
 
-		const [font, img] = await Promise.all([
-			jsonTask(fontData),
-			textureTask(imgData),
-		]);
+		const [font, img] = await Promise.all([jsonTask(fontData), textureTask(imgData)]);
 
 		fonts[id] = { data: font, texture: img };
 	}

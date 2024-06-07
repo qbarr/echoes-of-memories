@@ -4,7 +4,7 @@ import { s, w } from '#utils/state';
 
 const defaultTarget = {
 	object: new Object3D(),
-	offset: new Vector3(10, 10, 8)
+	offset: new Vector3(10, 10, 8),
 };
 
 export default function scene(props, webgl, cams) {
@@ -23,11 +23,11 @@ export default function scene(props, webgl, cams) {
 	const saved = storage.getItem(lsKey('backup'));
 	const state = saved ? JSON.parse(saved) : {};
 
-	state.Target = state.Target || Object.keys(props.targets)[ 0 ];
+	state.Target = state.Target || Object.keys(props.targets)[0];
 	state.Camera = state.Camera || 'Orbit';
 
 	for (const k in props.targets) {
-		addTarget(props.targets[ k ], { name: k });
+		addTarget(props.targets[k], { name: k });
 	}
 
 	setTarget(state.Target);
@@ -50,7 +50,7 @@ export default function scene(props, webgl, cams) {
 		state,
 	};
 
-	api.stateUpdate.watch(()=>{
+	api.stateUpdate.watch(() => {
 		if (webgl.$debugCamera) {
 			if (webgl.$debugCamera.enabled.value && api.used.value) {
 				props.scene.overrideCamera = webgl.$debugCamera.currentCamera;
@@ -84,6 +84,7 @@ export default function scene(props, webgl, cams) {
 		api.camera.set(state.Camera);
 		api.stateUpdate.emit();
 		lsBackup();
+		// console.log('[SCENE]', state.Camera, api.camera.value);
 	}
 
 	function lsKey(k) {
@@ -93,8 +94,10 @@ export default function scene(props, webgl, cams) {
 	function addTarget(obj, data) {
 		if (targets.has(obj)) return;
 		targets.set(data.name, obj);
-		targetsByName = [ ...targets.entries() ]
-			.reduce((p, v) => (p[ v[ 0 ] ] = v[ 1 ], p), {});
+		targetsByName = [...targets.entries()].reduce(
+			(p, v) => ((p[v[0]] = v[1]), p),
+			{},
+		);
 
 		if (data.use) setTarget(data.name);
 		refreshTargets();
@@ -105,25 +108,25 @@ export default function scene(props, webgl, cams) {
 	}
 
 	function getCurrentTarget() {
-		if (targetsByName[ state.Target ]) return targetsByName[ state.Target ];
-		else return targetsByName[ 'Origin' ];
+		if (targetsByName[state.Target]) return targetsByName[state.Target];
+		else return targetsByName['Origin'];
 	}
 
 	function refreshTargets() {
-		webgl.$debugCamera
-		&& webgl.$debugCamera.refreshGUI
-		&& webgl.$debugCamera.refreshGUI(false, false, true);
+		webgl.$debugCamera &&
+			webgl.$debugCamera.refreshGUI &&
+			webgl.$debugCamera.refreshGUI(false, false, true);
 	}
 
 	function setTarget(name, force) {
-		const target = targetsByName[ name ] || targetsByName.Origin;
+		const target = targetsByName[name] || targetsByName.Origin;
 		if (!target) return;
 		if (!force && _target === target) return;
 
 		state.Target = name;
-		webgl.$debugCamera.gui
-		&& webgl.$debugCamera.gui.targetsList
-		&& webgl.$debugCamera.gui.targetsList.refresh();
+		webgl.$debugCamera.gui &&
+			webgl.$debugCamera.gui.targetsList &&
+			webgl.$debugCamera.gui.targetsList.refresh();
 		_target = target;
 		lsBackup();
 
@@ -142,7 +145,6 @@ export default function scene(props, webgl, cams) {
 		// this.controls.updatePosition();
 	}
 
-
 	function lsBackup() {
 		storage.setItem(lsKey('backup'), JSON.stringify(state));
 	}
@@ -151,7 +153,7 @@ export default function scene(props, webgl, cams) {
 		const targetName = targets.get(name);
 		if (!targetName) return;
 		targets.delete(name);
-		delete targetsByName[ targetName ];
+		delete targetsByName[targetName];
 		refreshTargets();
 	}
 
@@ -163,9 +165,7 @@ export default function scene(props, webgl, cams) {
 	// 	return {}
 	// }
 
-	function reset() {
-
-	}
+	function reset() {}
 
 	function backupOrbitCamera(cam) {
 		const targetOffset = { ...cam.controls.targetOffset };
@@ -179,6 +179,12 @@ export default function scene(props, webgl, cams) {
 		const lat = cam.controls.lat;
 		const lon = cam.controls.lon;
 		return { position, lat, lon };
+	}
+
+	function backupPOVCamera(cam) {
+		const position = { ...cam.cam.position };
+		const lookAt = { ...cam.controls.lookAt };
+		return { position, lookAt };
 	}
 
 	function update(cam) {

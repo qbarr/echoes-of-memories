@@ -98,10 +98,8 @@ export default class MSDFTextMesh extends BaseComponent {
 		}
 
 		const { width, height } = this.geo._layout;
-		if (width !== null)
-			this.mesh.position.x = -width * 0.5 * this.mesh.scale.x;
-		if (height !== null)
-			this.mesh.position.y = height * 0.5 * this.mesh.scale.y;
+		if (width !== null) this.mesh.position.x = -width * 0.5 * this.mesh.scale.x;
+		if (height !== null) this.mesh.position.y = height * 0.5 * this.mesh.scale.y;
 	}
 
 	update() {
@@ -111,11 +109,12 @@ export default class MSDFTextMesh extends BaseComponent {
 
 	/// #if __DEBUG__
 	devtools(_gui) {
-		const gui = (_gui ?? this.webgl.$gui).addFolder({ title: this.name });
+		const gui = (_gui ?? this.scene?.gui ?? this.webgl.$gui).addFolder({
+			title: this.name,
+		});
 
-		gui.addBinding(this, 'content', { label: 'Content' }).on(
-			'change',
-			({ value }) => this.edit(value),
+		gui.addBinding(this, 'content', { label: 'Content' }).on('change', ({ value }) =>
+			this.edit(value),
 		);
 
 		const o = this.geo._layout._options;
@@ -185,9 +184,7 @@ export default class MSDFTextMesh extends BaseComponent {
 			label: 'Letter Spacing',
 			min: -10,
 			max: 20,
-		}).on('change', ({ value }) =>
-			this.geo.update({ letterSpacing: value }),
-		);
+		}).on('change', ({ value }) => this.geo.update({ letterSpacing: value }));
 		gui.addBinding(o, 'tabSize', {
 			label: 'Tab Size',
 			min: 0,

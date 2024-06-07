@@ -35,6 +35,10 @@ export const useLutPass = (composer) => {
 			set(webgl.$assets.luts[value]);
 		},
 
+		enabled,
+		saturation,
+		mix: forcedMix,
+
 		set,
 		render,
 		/// #if __DEBUG__
