@@ -18,6 +18,7 @@ export class Subtitles extends BaseComponent {
 		const scale = 0.02;
 
 		this.t = this.add(MSDFTextMesh, {
+			name: 'Subtitles',
 			font: 'VCR_OSD_MONO',
 			content: 'lorem ipsum dolot sit amet',
 			width: width * 0.8,

@@ -33,6 +33,7 @@ export default createWebgl({
 			// load subtitles
 			load('subtitles'),
 
+			load('interface'),
 			load('noises'),
 			load('luts'),
 

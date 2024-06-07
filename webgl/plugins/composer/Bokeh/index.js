@@ -1,27 +1,27 @@
 import { webgl } from '#webgl/core/index.js';
-import { WebGLRenderTarget } from 'three';
+import { GLSL3, NoBlending, WebGLRenderTarget } from 'three';
 
 import { w } from '#utils/state/index.js';
-import { wUniform } from '#webgl/utils/Uniform.js';
+import { uniform, wUniform } from '#webgl/utils/Uniform.js';
 import createFilter from '#webgl/utils/createFilter.js';
 
-import RGBShiftPass from './RGBShiftPass.frag?hotshader';
+import BokehPass from './BokehPass.frag?hotshader';
 
 const DUMMY_RT = new WebGLRenderTarget(1, 1, { depthBuffer: false });
 
-export const useRGBShiftPass = (composer) => {
+export const useBokehPass = (composer) => {
 	const { buffers, filters, uniforms, defines } = composer;
 
 	const enabled = w(true);
-	const amount = w(0.002);
-	const angle = w(0);
+	const amount = w(1.239);
+	const strength = w(0.85);
 
 	let texture = DUMMY_RT.texture;
 	const api = {
 		enabled,
 
 		amount,
-		angle,
+		strength,
 
 		get texture() {
 			return texture;
@@ -32,22 +32,30 @@ export const useRGBShiftPass = (composer) => {
 		devtools,
 		/// #endif
 	};
-	composer.$rgbShift = api;
+	composer.$bokeh = api;
 
 	/* Private */
 	const { $threeRenderer, $fbo } = webgl;
 
-	const buffer = (buffers.rgbShift = $fbo.createBuffer({ name: 'RGBShift' }));
+	const buffer = (buffers.bokeh = $fbo.createBuffer({ name: 'Bokeh' }));
 
-	const filter = (filters.rgbShift = createFilter({
+	const filter = (filters.bokeh = createFilter({
 		uniforms: {
 			...uniforms,
 			...wUniform('uAmount', amount),
-			...wUniform('uAngle', angle),
+			...wUniform('uStrength', strength),
 		},
 		defines: { ...defines },
+		glslVersion: GLSL3,
+		blending: NoBlending,
+		depthTest: false,
+		depthWrite: false,
 	}));
-	RGBShiftPass.use(filter.material);
+	BokehPass.use(filter.material);
+
+	Object.assign(uniforms, {
+		tBokeh: { value: texture, type: 't' },
+	});
 
 	function render(scene, renderer) {
 		if (!enabled.value) return;
@@ -59,27 +67,24 @@ export const useRGBShiftPass = (composer) => {
 		filter.render();
 		texture = buffer.texture;
 		uniforms.tMap.value = texture;
-		renderer.setRenderTarget(null);
-
-		return buffer.texture;
+		uniforms.tBokeh.value = texture;
 	}
 
 	/// #if __DEBUG__
 	function devtools(_gui) {
-		const gui = _gui.addFolder({ title: '🚦 RGBShift' });
+		const gui = _gui.addFolder({ title: '🫨 Bokeh' });
 
 		gui.addBinding(enabled, 'value', { label: 'Enabled' });
 		gui.addBinding(amount, 'value', {
 			label: 'Amount',
 			min: 0,
-			max: 0.01,
+			max: 3,
 			step: 0.001,
 		});
-		gui.addBinding(angle, 'value', {
-			label: 'Angle',
+		gui.addBinding(strength, 'value', {
+			label: 'Strength',
 			min: 0,
-			max: 2 * Math.PI,
-			step: 0.1,
+			max: 6,
 		});
 	}
 	/// #endif

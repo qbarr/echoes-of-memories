@@ -9,7 +9,7 @@ import CRTPass from './CRTPass.frag?hotshader';
 
 const DUMMY_RT = new WebGLRenderTarget(1, 1, { depthBuffer: false });
 
-export const useVHSPass = (composer) => {
+export const useCRTPass = (composer) => {
 	const { buffers, filters, uniforms, defines } = composer;
 
 	const enabled = w(true);
@@ -39,19 +39,19 @@ export const useVHSPass = (composer) => {
 		devtools,
 		/// #endif
 	};
-	composer.$vhs = api;
+	composer.$crt = api;
 
 	/* Private */
 	const { $threeRenderer, $fbo } = webgl;
 
-	const buffer = (buffers.vhs = $fbo.createBuffer({
-		name: 'VHS',
+	const buffer = (buffers.crt = $fbo.createBuffer({
+		name: 'CRT',
 		depth: false,
 		alpha: false,
 		scale: 0.5,
 	}));
 
-	const filter = (filters.vhs = createFilter({
+	const filter = (filters.crt = createFilter({
 		uniforms: {
 			...uniforms,
 			...wUniform('uScanLines', scanLines),
@@ -64,12 +64,15 @@ export const useVHSPass = (composer) => {
 	}));
 	CRTPass.use(filter.material);
 
-	Object.assign(uniforms, {
-		tVHS: { value: texture, type: 't' },
-	});
+	// Object.assign(uniforms, {
+	// 	tCRT: { value: texture, type: 't' },
+	// });
 
 	function render(scene, renderer) {
-		if (!enabled.value) return;
+		if (!enabled.value) {
+			// uniforms.tCRT.value = DUMMY_RT.texture;
+			return;
+		}
 
 		renderer = renderer ?? $threeRenderer;
 
@@ -78,12 +81,13 @@ export const useVHSPass = (composer) => {
 		filter.render();
 		texture = buffer.texture;
 		uniforms.tMap.value = texture;
+		// uniforms.tCRT.value = texture;
 		renderer.setRenderTarget(null);
 	}
 
 	/// #if __DEBUG__
 	function devtools(_gui) {
-		const gui = _gui.addFolder({ title: '📼 VHS' });
+		const gui = _gui.addFolder({ title: '📼 CRT' });
 		gui.add(enabled, 'value', { label: 'Enabled' });
 
 		const opts = { min: 0, max: 1, step: 0.01 };
