@@ -1,15 +1,20 @@
 import BaseComponent from '#webgl/core/BaseComponent';
 import { AdditiveBlending, AlwaysDepth, AmbientLight, BufferAttribute, BufferGeometry, Clock, Color, Float32BufferAttribute, InstancedBufferAttribute, InstancedBufferGeometry, InstancedMesh, Matrix4, Mesh, MeshBasicMaterial, MeshPhysicalMaterial, NeverDepth, PlaneGeometry, Points, PointsMaterial, ShaderMaterial, SphereGeometry, TorusKnotGeometry, Uniform, Vector2, Vector3 } from 'three';
-import vertexShader from '#webgl/shaders/gpgpu/particles-system/particle/particleForSystem.vert'
-import fragmentShader from '#webgl/shaders/gpgpu/particles-system/particle/particleForSystem.frag'
-
-import particlesShader from '#webgl/shaders/gpgpu/particles.glsl'
 import Gpgpu from '../Gpgpu/Gpgpu';
-
+import { presetsShader } from '#utils/presets/shaders.js';
 export class Particles extends BaseComponent {
 
+	init() {
+		const { vertex, fragment } = this.props
+
+		this.shader = {
+			vertex: vertex || presetsShader.particles.base.vertex,
+			fragment: fragment || presetsShader.particles.base.fragment
+		}
+	}
+
 	afterInit() {
-		const { instance, count, options, position, boundingBox } = this.props
+		const { instance, count, options, position , boundingBox, gpgpu } = this.props
 		this.instance = instance
 		this.boundingBox = boundingBox
 		const _count = this.instance ? this.instance.attributes.position.count : count
@@ -54,10 +59,13 @@ export class Particles extends BaseComponent {
 		particles.geometry.setAttribute('aSize', new BufferAttribute(sizesArray, 1))
 		if (this.instance) particles.geometry.setAttribute('aColor', this.instance.attributes.color)
 
+		const propsMaterial = this.props.material || {}
+		const propsUniforms = Object.assign({}, propsMaterial?.uniforms) || {}
+		delete propsMaterial?.uniforms
 		// Material
 		particles.material = new ShaderMaterial({
-			vertexShader,
-			fragmentShader,
+			vertexShader: this.shader.vertex,
+			fragmentShader: this.shader.fragment,
 			uniforms:
 			{
 				uSize: new Uniform(0.03),
@@ -68,19 +76,17 @@ export class Particles extends BaseComponent {
 					)
 				),
 				uParticlesTexture: new Uniform(),
-				uSprite: new Uniform($assets.textures.brush),
+				...propsUniforms
 			},
 			transparent: true,
-			// blending: AdditiveBlending,
-			// depthTest: false,
 			// depthWrite: false,
-			// depthFunc: AlwaysDepth
+			// depthTest: false,
+			...propsMaterial
 		})
 
 		particles.points = new Points(particles.geometry, particles.material)
 		this.particleMaterial = particles.material
 		this.base = particles.points
-		console.log(this.base)
 	}
 
 	update() {

@@ -1,8 +1,15 @@
 import BaseScene from '#webgl/core/BaseScene';
 import { MainCamera } from '../Cameras/MainCamera';
 
-import { MeshBasicMaterial } from 'three';
+import { AdditiveBlending, Box3, MeshBasicMaterial } from 'three';
 import { Cube } from '../Objects/Cube';
+import { BoxGeometry } from 'three';
+import { Mesh } from 'three';
+import { Particles } from '../Particles/Particles';
+import { Vector3 } from 'three';
+import { presetsShader } from '#utils/presets/shaders.js';
+import { uniforms } from '../Text';
+
 
 export default class MainScene extends BaseScene {
 	mixins = ['debugCamera'];
@@ -11,11 +18,11 @@ export default class MainScene extends BaseScene {
 		this.camera = this.add(MainCamera);
 		const box = new BoxGeometry(7, 7, 7);
 		box.computeBoundingBox();
-		const mesh = new Mesh(box, new MeshBasicMaterial({ color: 'red', wireframe: true}));
-		this.particles = this.add(ParticlesSystem, { instance: this.webgl.$assets.objects.scene1.scene.children[0].geometry.clone()})
+		const mesh = new Mesh(box, new MeshBasicMaterial({ color: 'red', wireframe: true }));
 
-		const { $assets } = this.webgl;
-
+		const { $assets, $gpgpu } = this.webgl;
+		// console.log($assets.objects, chambre)
+		const boat = $assets.objects['boat'].scene;
 		const chambre = $assets.objects['chambre-model'].scene;
 		const textures = $assets.textures['chambre'];
 
@@ -27,7 +34,27 @@ export default class MainScene extends BaseScene {
 			map: textures['objects_map'],
 		});
 
-		// console.log(textures['floor_wall_map']);
+		const boundingBox = {
+			min: new Vector3(-12, -12, -12),
+			max: new Vector3(12, 12, 12),
+		}
+
+		// const particles = this.add(Particles, { instance: boat.children[0].geometry.clone() })
+		// const particles = this.add(Particles, {
+		// 	count: 2000,
+		// 	boundingBox,
+		//  	...presetsShader.particles.emissive,
+		// 	material: {
+		// 		depthWrite: false,
+		// 		uniforms: {
+		// 			uSize: { value: 0.03 }
+		// 		},
+		// 		blending: AdditiveBlending
+		// 	}
+		// })
+
+
+		// const particlePooling = this.add(Particles, { gpgpu:   })
 
 		chambre.traverse((child) => {
 			if (!child.isMesh || !child.material) return;
@@ -39,9 +66,8 @@ export default class MainScene extends BaseScene {
 				child.material = objects_mat;
 			}
 		});
-		chambre.scale.setScalar(3);
-		this.base.add(chambre);
-
+		chambre.scale.setScalar(3)
+		this.base.add(chambre)
 		// this.add(Cube);
 		// this.add(Sphere);
 	}

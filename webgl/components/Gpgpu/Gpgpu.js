@@ -1,8 +1,7 @@
 import BaseComponent from '#webgl/core/BaseComponent.js';
-import particlesShader from '#webgl/shaders/gpgpu/particles.glsl'
-import emitShader from '#webgl/shaders/gpgpu/particles-system/emit.glsl'
-import cameraShader from '#webgl/shaders/gpgpu/particles-system/camera.glsl'
 import { Clock, Uniform, Vector2 } from 'three';
+import { presetsShader } from '#utils/presets/shaders.js';
+import { Vector3 } from 'three';
 
 export default class Gpgpu extends BaseComponent {
 
@@ -15,7 +14,7 @@ export default class Gpgpu extends BaseComponent {
 		this.previousTime = 0
 	}
 
-	setupFromBox(box, { velocity, color, size, life, delay, random }) {
+	setupFromBox(box, opts = {}) {
 		for(let i = 0; i < this.gpgpu.count; i++) {
 			const i3 = i * 3
 			const i4 = i * 4
@@ -24,22 +23,26 @@ export default class Gpgpu extends BaseComponent {
 			this.gpgpu.baseTexture.image.data[i4 + 2] = box.min.z + Math.random() * (box.max.z - box.min.z)
 			this.gpgpu.baseTexture.image.data[i4 + 3] = Math.random()
 		}
+
 		const cameraPosition =  this.webgl.$getCurrentScene().getCurrentCamera().base.position
 
 		const uniforms = {
 			uBoundingBoxX: new Uniform(new Vector2(box.min.x, box.max.x)),
 			uBoundingBoxY: new Uniform(new Vector2(box.min.y, box.max.y)),
 			uBoundingBoxZ: new Uniform(new Vector2(box.min.z, box.max.z)),
-			uCameraPosition: new Uniform(cameraPosition)
+			uCameraPosition: new Uniform(cameraPosition),
+			uFlowFieldStrength: new Uniform(1.2),
+			uFlowFieldInfluence: new Uniform(0.8),
 		}
 
-		this.setupBase(emitShader, { uniforms })
+
+		this.setupBase(presetsShader.gpgpu.base, { uniforms })
 
 		return this.gpgpu
 
 	}
 
-	setupFromEmitter(position, { velocity, color, size, life, delay, random }) {
+	setupFromEmitter(position = new Vector3(0), opts) {
 
 		for(let i = 0; i < this.gpgpu.count; i++)
 		{
@@ -52,7 +55,7 @@ export default class Gpgpu extends BaseComponent {
 			this.gpgpu.baseTexture.image.data[i4 + 3] = 0
 		}
 
-		this.setupBase(emitShader)
+		this.setupBase(presetsShader.gpgpu.base)
 
 		return this.gpgpu
 	}
@@ -74,7 +77,7 @@ export default class Gpgpu extends BaseComponent {
 		}
 
 
-		this.setupBase(emitShader)
+		this.setupBase(presetsShader.gpgpu.base)
 		return this.gpgpu
 	}
 
@@ -103,19 +106,23 @@ export default class Gpgpu extends BaseComponent {
 
 		}
 		this.gpgpu.computation.init()
-		this.debug()
+
+		/// #if __DEBUG__
+		this.devTools()
+		/// #endif
 	}
 
-	debug() {
+	/// #if __DEBUG__
+	devTools() {
 		const folder = this.webgl.$gui.addFolder({
 			title: '🔮 Uniforms gpgpu',
 			index: 1,
 		})
-
+		const uniforms = this.gpgpu.variables.particles.material.uniforms
 		const _debug = {
-			uFlowFieldFrequency: 0.5,
-			uFlowFieldStrength: 2,
-			uFlowFieldInfluence: 0.4,
+			uFlowFieldFrequency: uniforms.uFlowFieldFrequency.value,
+			uFlowFieldStrength: uniforms.uFlowFieldStrength.value,
+			uFlowFieldInfluence: uniforms.uFlowFieldInfluence.value,
 		}
 
 		folder.addBinding(
@@ -144,6 +151,7 @@ export default class Gpgpu extends BaseComponent {
 		})
 
 	}
+	/// #endif
 
 	update() {
 		const elapsedTime = this.clock.getElapsedTime()
@@ -155,6 +163,7 @@ export default class Gpgpu extends BaseComponent {
 			if(variable.material.uniforms.uTime) variable.material.uniforms.uTime.value = elapsedTime
 			if(variable.material.uniforms.uDeltaTime) variable.material.uniforms.uDeltaTime.value = deltaTime
 		})
+
 		this.gpgpu.computation.compute()
 
 	}

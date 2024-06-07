@@ -8,7 +8,7 @@ attribute float aSize;
 
 varying vec3 vColor;
 varying vec2 vUv;
-varying float vZpos;
+// varying float vZpos;
 
 void main()
 {
@@ -30,6 +30,6 @@ void main()
 
     // Varyings
 	vUv = uv;
-	vZpos = projectedPosition.z / projectedPosition.w;
+	// vZpos = projectedPosition.z / projectedPosition.w;
     vColor = aColor;
 }

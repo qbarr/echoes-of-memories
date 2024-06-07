@@ -54,12 +54,12 @@ export default {
 		'lut',
 	),
 
+	'boat': glb('scenes/boat'),
 	// Chambre
 	'chambre-model': glb('scenes/chambre/model'),
 	'chambre/textures': ktx2('scenes/chambre/*', { flipY: false }),
 
 	'sound/positions': positional('audios/positional/*'),
 	'sound/vocals': vocal('audios/vocals/*'),
-
 	subtitles: subtitles('subtitles/export/*'),
 };

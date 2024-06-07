@@ -119,6 +119,10 @@ export function composerPlugin(webgl) {
 		renderer.setRenderTarget(null);
 		renderer.clear();
 		api.$lut.render();
+
+		// renderer.setRenderTarget(null);
+		// renderer.clear();
+		// scene.triggerRender();
 	}
 
 	/// #if __DEBUG__
