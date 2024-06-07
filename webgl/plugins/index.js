@@ -14,6 +14,9 @@ import { viewportPlugin } from './viewport/viewportPlugin.js';
 import { raycastPlugin } from './raycast/raycastPlugin.js';
 import { gpgpuPlugin } from './gpgpu/gpgpuPlugin.js';
 
+import { subtitlesPlugin } from './subtitles/subtitlesPlugin.js';
+import { audioPlugin } from './audio/audioPlugin.js';
+
 export const plugins = [
 	/* CORE PLUGINS */
 	__DEBUG__ && debugPlugin,
@@ -24,6 +27,8 @@ export const plugins = [
 	composerPlugin,
 	timePlugin,
 	scenesPlugin,
+	subtitlesPlugin,
+	audioPlugin,
 	__DEBUG__ && debugCameraPlugin,
 	assetsPlugin,
 	gpgpuPlugin,

@@ -1,4 +1,4 @@
-import { DataTexture } from 'three';
+import { DataTexture, LinearFilter, RepeatWrapping } from 'three';
 
 import { files } from '#utils/files';
 import createTexture from '#webgl/utils/createTexture';
@@ -6,21 +6,29 @@ import createTexture from '#webgl/utils/createTexture';
 import loadJSON from '#utils/files/loadJSON';
 import loadOBJ from '#utils/files/loadOBJ';
 import loadAtlas from './loadAtlas';
+import loadAudio from './loadAudio';
 import loadGLTF from './loadGLTF';
 import loadImage from './loadImage';
+import loadKTX2 from './loadKTX2';
+import loadLUTTexture from './loadLUTTexture';
 
-import manifest from '#assets/manifest';
-
-const NOOP = (v) => v;
+const NOOP = () => {};
 
 export function assetsPlugin(webgl) {
 	files.registerLoader(loadImage);
 	files.registerLoader(loadJSON);
 	files.registerLoader(loadGLTF);
 	files.registerLoader(loadOBJ);
+	files.registerLoader(loadAudio);
+	files.registerLoader(loadKTX2);
+	files.registerLoader(loadLUTTexture);
 
 	let pgen = null;
 	const data = {};
+	const sounds = {};
+	const subtitles = {};
+	const fonts = {};
+	const luts = {};
 	const textures = {
 		black: new DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1),
 	};
@@ -41,8 +49,11 @@ export function assetsPlugin(webgl) {
 	const api = {
 		spritesheets,
 		data,
+		fonts,
+		luts,
 		textures,
 		objects,
+		sounds,
 		pgen,
 		materials,
 		geometries,
@@ -52,22 +63,71 @@ export function assetsPlugin(webgl) {
 	};
 
 	const tasks = {
+		lut: lutTextureTask,
 		tex: textureTask,
+		ktx2: ktx2Task,
 		obj: objTask,
 		gltf: gltfTask,
 		spritesheet: spritesheetTask,
 		json: jsonTask,
 		font: msdfFontTask,
+		audio: audioTask,
 	};
 
-	tasks.avif = tasks.webp = tasks.jpg = tasks.png = tasks.tex;
+	tasks.avif =
+		tasks.webp =
+		tasks.jpg =
+		tasks.png =
+		tasks.img =
+		tasks.texture =
+			tasks.tex;
 	tasks.glb = tasks.gltf;
+	tasks.msdf = tasks.font;
 
 	function getFont(id) {
-		const data = api.data[id];
-		const texture = api.textures[id];
+		const { data, texture } = api.fonts[id];
 		if (!data || !texture) return;
 		return { data, texture };
+	}
+
+	async function parseMsdfFontFiles(fileID, { onLoad, opts = {} }) {
+		const { $preloader, $manifest } = webgl.$app;
+		const file = $manifest.get(fileID);
+		const p = [];
+
+		// find corresponding files by original fileID
+		const msdfFiles = {};
+		Object.values(file.files).map((f) => {
+			const id = f.origin.id;
+			if (!msdfFiles[id]) msdfFiles[id] = [];
+			msdfFiles[id].push(f);
+		});
+
+		const files = Object.values(msdfFiles);
+		for (let i = 0; i < files.length; i++) {
+			const [font, img] = files[i];
+
+			let [subID, id] = fileID.split('/');
+			if (files.length > 1) id = font.origin.id;
+			if (id === undefined) {
+				id = subID;
+				subID = null;
+			}
+
+			p.push(
+				$preloader.task(
+					tasks.font({
+						id,
+						subID,
+						file: { data: font.url, url: img.url },
+						opts,
+						onLoad,
+					}),
+				),
+			);
+		}
+
+		return Promise.all(p);
 	}
 
 	const loadPromises = [];
@@ -79,35 +139,49 @@ export function assetsPlugin(webgl) {
 
 	function execLoad(
 		fileID,
-		{ onLoad, type, id, bypassManifest = false, ...opts } = {},
+		{ onLoad, bypassManifest = false, ...opts } = {},
 	) {
-		const preloader = webgl.$app.$preloader;
-		const task = !preloader.finished ? preloader.task : NOOP;
-		let file = manifest[fileID];
+		// console.log('execLoad', fileID);
+		const { $preloader, $manifest } = webgl.$app;
+		const task = !$preloader.finished ? $preloader.task : NOOP;
+
+		let file = $manifest.get(fileID);
+		// console.log('EXECUTE LOAD', file, file.type);
 		if (!file && !bypassManifest) return;
+		if (!file.files) return;
 
-		let url = typeof file === 'string' ? file : file.url;
+		const fileType = file.type ?? null;
+		if (fileType === 'msdf')
+			return parseMsdfFontFiles(fileID, { onLoad, opts });
 
-		Object.assign(opts, file.opts ?? {});
+		const p = [];
+		const files = Object.values(file.files);
+		for (const f of files) {
+			let [subID, id] = fileID.split('/');
+			if (files.length > 1) id = f.origin.id ?? id;
+			if (id === undefined) {
+				id = subID;
+				subID = null;
+			}
 
-		id = id || fileID.split('/').pop();
-		const subID = fileID.split('/').shift();
-		if (!type && fileID.includes('sprites')) type = 'spritesheet';
-		if (!type && (fileID.includes('msdf') || fileID.includes('font')))
-			type = 'font';
-		if (type) return task(tasks[type]({ id, file, onLoad, opts }));
+			const options = { ...opts, ...file.opts };
+			const url = f.url;
 
-		const ext = url.split('.').pop();
-		const cb = tasks[ext];
-		if (!cb) return;
+			p.push(
+				task(
+					tasks[fileType]({ url, id, subID, file: f, opts: options }),
+				),
+			);
+		}
 
-		return task(cb({ id, subID, file, url, onLoad, opts }));
+		return Promise.all(p);
 	}
 
 	async function textureTask({ subID, id, file, opts }) {
-		return files.load(file.url, {
+		let _tex = null;
+		await files.load(file.url, {
 			onLoad: ({ node }) => {
-				let _tex = createTexture({
+				_tex = createTexture({
 					id,
 					img: node,
 					flipY: true,
@@ -122,20 +196,117 @@ export function assetsPlugin(webgl) {
 				}
 			},
 		});
+
+		return _tex;
 	}
 
-	async function objTask({ id, url }) {
-		return files.load(url, {
-			onLoad: (obj) => {
-				objects[id] = obj;
+	// async function lutCubeTask({ subID, id, file, opts }) {
+	// 	let _tex = null;
+
+	// 	await files.load(file.url, {
+	// 		onLoad: (tex) => {
+	// 			_tex = tex;
+	// 			if (subID && subID !== id) {
+	// 				luts[subID] = luts[subID] ?? {};
+	// 				luts[subID][id] = _tex;
+	// 			} else {
+	// 				luts[id] = _tex;
+	// 			}
+	// 		},
+	// 	});
+
+	// 	return _tex;
+	// }
+
+	async function lutTextureTask({ subID, id, file, opts }) {
+		let _tex = null;
+
+		await loadLUTTexture(file.url, {
+			onLoad: (tex) => {
+				_tex = tex;
+				tex.texture3D.userData.id = id;
+
+				if (subID && subID !== id) {
+					textures[subID] = textures[subID] ?? {};
+					textures[subID][id] = _tex;
+				} else {
+					textures[id] = _tex;
+				}
+
+				luts[id] = _tex;
+			},
+		});
+
+		return _tex;
+	}
+
+	async function ktx2Task({ id, subID, file, opts }) {
+		if (!file.url.endsWith('.ktx2')) return textureTask({ id, file, opts });
+
+		return files.load(file.url, {
+			onLoad: (texture) => {
+				let _tex = texture;
+
+				_tex.userData.id = id;
+
+				if (opts.repeat) _tex.wrapS = _tex.wrapT = RepeatWrapping;
+				if (opts.flipY !== undefined) _tex.flipY = opts.flipY;
+				if (opts.linear !== undefined)
+					_tex.minFilter = _tex.magFilter = LinearFilter;
+				if (opts.srgb !== undefined) {
+					_tex.colorSpace = opts.srgb ? 'srgb' : 'srgb-linear';
+				} else {
+					_tex.colorSpace = '';
+				}
+
+				_tex.needsUpdate = true;
+
+				if (subID) {
+					textures[subID] = textures[subID] ?? {};
+					textures[subID][id] = _tex;
+				} else {
+					textures[id] = _tex;
+				}
+
+				texture.userData.file = file;
 			},
 		});
 	}
 
-	async function gltfTask({ id, url }) {
+	async function objTask({ id, subID, url }) {
 		return files.load(url, {
 			onLoad: (obj) => {
-				objects[id] = obj;
+				if (subID) {
+					objects[subID] = objects[subID] ?? {};
+					objects[subID][id] = obj;
+				} else {
+					objects[id] = obj;
+				}
+			},
+		});
+	}
+
+	async function gltfTask({ id, subID, url }) {
+		return files.load(url, {
+			onLoad: (obj) => {
+				if (subID) {
+					objects[subID] = objects[subID] ?? {};
+					objects[subID][id] = obj;
+				} else {
+					objects[id] = obj;
+				}
+			},
+		});
+	}
+
+	async function audioTask({ id, url, opts }) {
+		return files.load(url, {
+			type: opts.type,
+			audioListener: webgl.$audioListener,
+			onLoad: (audio) => {
+				sounds[id] = {
+					audio,
+				};
 			},
 		});
 	}
@@ -164,22 +335,31 @@ export function assetsPlugin(webgl) {
 		if (file.normal) atlas.normal = textures[textureID + '-normal'];
 	}
 
-	async function jsonTask({ id, file }) {
+	async function jsonTask({ id, file, subID }) {
 		return files.load(file, {
-			onLoad: (d) => (data[id] = d),
+			onLoad: (d) => {
+				if (subID) {
+					data[subID] = data[subID] ?? {};
+					data[subID][id] = d;
+				} else {
+					data[id] = d;
+				}
+			},
 		});
 	}
 
-	async function msdfFontTask({ id, file, opts, onLoad = NOOP }) {
+	async function msdfFontTask({ subID, id, file, opts, onLoad = NOOP }) {
 		const { data, url } = file;
 
-		const fontData = { file: { url: data }, id, opts };
-		const imgData = { file: { url }, id, opts };
+		const fontData = { file: { url: data }, subID, id, opts };
+		const imgData = { file: { url }, subID, id, opts };
 
 		const [font, img] = await Promise.all([
 			jsonTask(fontData),
 			textureTask(imgData),
 		]);
+
+		fonts[id] = { data: font, texture: img };
 	}
 
 	/* Pools
@@ -208,6 +388,7 @@ export function assetsPlugin(webgl) {
 		load: () => {
 			webgl.$hooks.afterSetup.watchOnce(() => {
 				loadGLTF.initDRACOLoader();
+				loadKTX2.detectSupport(webgl.$threeRenderer);
 			});
 		},
 	};

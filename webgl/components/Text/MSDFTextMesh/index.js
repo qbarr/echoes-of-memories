@@ -32,8 +32,6 @@ export default class MSDFTextMesh extends BaseComponent {
 		this.position = new Vector3();
 		this.scale = new Vector2(1, 1);
 
-		this.editInterval = null;
-
 		const { $assets } = this.webgl;
 		const { data, texture } = $assets.getFont(font);
 
@@ -81,47 +79,10 @@ export default class MSDFTextMesh extends BaseComponent {
 		this.base.add(text);
 	}
 
-	edit(
-		content,
-		{ wordByWord = false, letterByLetter = false, speed = 1 } = {},
-	) {
+	edit(content) {
+		this.geo.update({ text: content });
 		this.content = content;
-
-		clearInterval(this.editInterval);
-		this.editInterval = null;
-
-		if (letterByLetter) {
-			const letters = content.split('');
-			let i = 0;
-			this.editInterval = setInterval(() => {
-				const letter = letters[i];
-				if (letter === undefined) {
-					clearInterval(this.editInterval);
-					return;
-				}
-				const _content = letters.slice(0, i + 1).join('');
-				this.geo.update({ text: _content });
-				this.updateTextPosition();
-				i++;
-			}, 100 / speed);
-		} else if (wordByWord) {
-			const words = content.split(' ');
-			let i = 0;
-			this.editInterval = setInterval(() => {
-				const word = words[i];
-				if (word === undefined) {
-					clearInterval(this.editInterval);
-					return;
-				}
-				const _content = words.slice(0, i + 1).join(' ');
-				this.geo.update({ text: _content });
-				this.updateTextPosition();
-				i++;
-			}, 200 / speed);
-		} else {
-			this.geo.update({ text: content });
-			this.updateTextPosition();
-		}
+		this.updateTextPosition();
 	}
 
 	updateGeo(arg = {}) {

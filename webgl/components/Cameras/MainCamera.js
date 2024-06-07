@@ -4,7 +4,9 @@ export class MainCamera extends BaseCamera {
 	afterInit() {
 		super.afterInit();
 
-		this.base.position.set(0, 0.2, 5).multiplyScalar(3);
-		this.base.lookAt(0, 0, 0);
+		this.base.position.fromArray([10.9116, 4.16947, 7.49768]);
+		this.base.quaternion.fromArray([-0.047939, 0.53554, 0.030469, 0.842597]);
+		this.base.fov = 45;
+		this.base.updateProjectionMatrix();
 	}
 }

@@ -1,15 +1,18 @@
-// import manifestUrl from 'virtual:manifest/manifest.json';
+// import manifest from 'virtual:manifest/datas';
+
 export function manifestPlugin() {
 	let manifest = null;
+
 	const api = {
-		init,
-		list: () => manifest,
+		load,
+		get datas() {
+			return manifest;
+		},
 		get,
 	};
 
-	async function init() {
-		// console.log(manifestUrl);
-		manifest = await (await fetch('/assets/.gen/manifest.json')).json();
+	async function load() {
+		manifest = (await import(':virtual:/manifest')).default;
 		console.log('Manifest loaded', manifest);
 	}
 
@@ -24,10 +27,22 @@ export function manifestPlugin() {
 	}
 
 	function resolveAsset(_asset) {
-		const asset = Object.assign({}, { ..._asset });
+		const asset = {};
 
-		if (asset.url) asset.url = resolvePath(asset.url);
-		if (asset.data) asset.data = asset.data;
+		Object.assign(asset, {
+			opts: _asset.opts,
+			type: _asset.type,
+			files: [],
+		});
+
+		const filesValues = Object.values(_asset.files);
+		for (const { url, filename, origin } of filesValues) {
+			asset.files.push({
+				filename,
+				url: resolvePath(url),
+				origin,
+			});
+		}
 
 		return asset;
 	}

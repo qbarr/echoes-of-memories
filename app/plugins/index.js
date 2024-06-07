@@ -21,5 +21,5 @@ export const plugins = [
 	webglPlugin,
 
 	/* PROJECT PLUGINS */
-	// manifestPlugin,
+	manifestPlugin,
 ];

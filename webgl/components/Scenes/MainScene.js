@@ -1,12 +1,8 @@
 import BaseScene from '#webgl/core/BaseScene';
 import { MainCamera } from '../Cameras/MainCamera';
-import { MSDFTextMesh } from '../Text';
 
-import { wait } from '#utils/async';
+import { MeshBasicMaterial } from 'three';
 import { Cube } from '../Objects/Cube';
-import { BoxGeometry, Color, Mesh, MeshBasicMaterial, Sphere, SphereGeometry, Vector3 } from 'three';
-import { Particles } from '../Particles/Particles';
-import { ParticlesSystem } from '../Particles/ParticlesSystem';
 
 export default class MainScene extends BaseScene {
 	mixins = ['debugCamera'];
@@ -18,35 +14,45 @@ export default class MainScene extends BaseScene {
 		const mesh = new Mesh(box, new MeshBasicMaterial({ color: 'red', wireframe: true}));
 		this.particles = this.add(ParticlesSystem, { instance: this.webgl.$assets.objects.scene1.scene.children[0].geometry.clone()})
 
+		const { $assets } = this.webgl;
 
-		// this.particles = this.add(Particles, { count: 10000, position: new Vector3(0, 0, 0), options: {} })
-		// this.particles = this.add(ParticlesSystem, { count: 300, boundingBox: box.boundingBox, options: {} })
-		// mesh.scale.setScalar(0.2);
-		// mesh.position.z -= 7
-		// this.addObject3D(mesh);
-		// this.direction = new Vector3()
-		// this.mesh = mesh
+		const chambre = $assets.objects['chambre-model'].scene;
+		const textures = $assets.textures['chambre'];
 
-		// 	font: 'VCR_OSD_MONO',
-		// 	content: 'Home',
-		// 	centerMesh: true,
-		// 	color: new Color('blue'),
-		// });
-		// t.needBloom = true;
+		const floor_wall_mat = new MeshBasicMaterial({
+			map: textures['floor_wall_map'],
+		});
 
-		// const cube1 = this.addObject3D(new Mesh(
-		// 	new BoxGeometry(1, 1, 1),
-		// 	new MeshBasicMaterial({ color: 'red' })
-		// ));
-		// const cube2 = this.add(Cube, { color: 'blue' });
-		// cube2.base.position.x = 2;
-		// const cube3 = this.add(Cube, { color: 'green' });
-		// cube3.base.position.x = -2;
+		const objects_mat = new MeshBasicMaterial({
+			map: textures['objects_map'],
+		});
+
+		// console.log(textures['floor_wall_map']);
+
+		chambre.traverse((child) => {
+			if (!child.isMesh || !child.material) return;
+
+			// console.log(child.name, child);
+			if (child.name === 'mursetsol') {
+				child.material = floor_wall_mat;
+			} else {
+				child.material = objects_mat;
+			}
+		});
+		chambre.scale.setScalar(3);
+		this.base.add(chambre);
+
+		// this.add(Cube);
+		// this.add(Sphere);
 	}
 
-	update() {
-		// this.camera.base.getWorldDirection( this.direction )
-		// this.mesh.position.copy( this.camera.base.position ).add(this.direction.multiplyScalar(2))
-		// this.particles.particles.gpgpu.base.variables.particles.material.uniforms.uCameraPosition.value = this.camera.base.position
+	async enter() {
+		this.log('enter');
 	}
+
+	async leave() {
+		this.log('leave');
+	}
+
+	update() {}
 }
