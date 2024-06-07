@@ -56,12 +56,12 @@ export function raycastPlugin(webgl) {
 		const ev = shouldListen ? 'addEventListener' : 'removeEventListener';
 
 		$el[ev]('touchstart', onDown, opts);
-		$el[ev]('touchmove', onMove, opts);
+		// $el[ev]('touchmove', onMove, opts);
 		$el[ev]('touchend', onUp, opts);
 		$el[ev]('touchcancel', onUp, opts);
 
 		$el[ev]('mousedown', onDown, opts);
-		$el[ev]('mousemove', onMove, opts);
+		// $el[ev]('mousemove', onMove, opts);
 		$el[ev]('mouseup', onUp, opts);
 		$el[ev]('mouseleave', onUp, opts);
 	}
@@ -110,10 +110,7 @@ export function raycastPlugin(webgl) {
 			const obj = objects.get(rawList[i]);
 			if (!obj) continue;
 			if (!obj.isRaycasted.value) continue;
-			const raycastedObject = raycaster.intersectObject(
-				obj.object,
-				true,
-			)[0];
+			const raycastedObject = raycaster.intersectObject(obj.object, true)[0];
 			pointer.hasClicked && obj.onClick(raycastedObject);
 			obj.onUp(raycastedObject);
 		}
@@ -236,9 +233,7 @@ export function raycastPlugin(webgl) {
 			const { objects, rawList } = scenes.get(scene.id);
 
 			if (!objects.has(object))
-				return (
-					__DEBUG__ && console.warn(`Object ${object} not registered`)
-				);
+				return __DEBUG__ && console.warn(`Object ${object} not registered`);
 
 			// Remove from objects
 			rawList.splice(rawList.indexOf(object), 1);
@@ -323,8 +318,7 @@ export function raycastPlugin(webgl) {
 				onDown(intersect);
 			}
 
-			if (!shouldIntersect || (!object.visible && !forceVisible))
-				continue;
+			if (!shouldIntersect || (!object.visible && !forceVisible)) continue;
 
 			onHover(intersect);
 			onMove(intersect);
@@ -354,8 +348,7 @@ function preventDebug(ev) {
 /// #endif
 
 function intersectObject(object, raycaster, intersects, recursive) {
-	if (object.layers.test(raycaster.layers))
-		object.raycast(raycaster, intersects);
+	if (object.layers.test(raycaster.layers)) object.raycast(raycaster, intersects);
 
 	if (recursive === true) {
 		const children = object.children;

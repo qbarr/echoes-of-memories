@@ -2,7 +2,10 @@ import { Vector3, Object3D } from 'three';
 import BaseCamera from '#webgl/core/BaseCamera';
 import POVController from '#webgl/utils/POVController.js';
 
+import Wobble from './Wobble.js';
+
 const HEIGHT = 4;
+const DEFAULT_FOV = 35;
 
 const defaultTarget = {
 	object: new Object3D(),
@@ -24,13 +27,19 @@ export class POVCamera extends BaseCamera {
 		this.$startTime = null;
 		this.$progress = 0;
 		this.$forward = true;
+
+		// this.$wobbleIntensity = 0.001;
+		// this.$wobbleIntensity = 0.0001;
+		this.$wobbleIntensity = 0.0005;
 	}
 
 	/// #if __DEBUG__
 	devtools() {
 		const $gui = this.webgl.$app.$gui;
 
-		const gui = $gui.addFolder({ title: 'POVCamera' });
+		const gui = $gui.webgl.addFolder({ title: '👁️ POVCamera', index: 1 });
+
+		this.wobble.devtools(gui);
 	}
 	/// #endif
 
@@ -40,7 +49,7 @@ export class POVCamera extends BaseCamera {
 
 		this.base.position.fromArray([2.9116, HEIGHT, 7.49768]);
 		this.base.quaternion.fromArray([-0.04, 0.5, 0.03, 0.8]);
-		this.base.fov = 35;
+		this.base.fov = DEFAULT_FOV;
 
 		this.controls = POVController(this.cam, {
 			enabled: this.$pointerLocked,
@@ -50,11 +59,10 @@ export class POVCamera extends BaseCamera {
 
 		const { $canvas, $raycast, $assets } = this.webgl;
 
+		this.wobble = new Wobble(this.base.position);
+
 		document.addEventListener('click', this.onClick);
-		document.addEventListener(
-			'pointerlockchange',
-			this.onPointerLockChange,
-		);
+		document.addEventListener('pointerlockchange', this.onPointerLockChange);
 	}
 
 	onPointerLockChange() {
@@ -71,9 +79,11 @@ export class POVCamera extends BaseCamera {
 	}
 
 	onClick() {
-		const { $canvas } = this.webgl;
+		const { $getCurrentScene, $canvas } = this.webgl;
+		const scene = $getCurrentScene();
+		const currentCam = scene.getCurrentCamera();
 
-		if (!this.$pointerLocked) {
+		if (!this.$pointerLocked && currentCam.name !== 'Debug Camera') {
 			console.log('[POVCamera] onClick');
 			$canvas.requestPointerLock();
 		}
@@ -90,9 +100,7 @@ export class POVCamera extends BaseCamera {
 		this.$startTime ??= elapsed;
 		this.$progress = Math.min((elapsed - this.$startTime) / $duration, 1);
 
-		const adjustedProgress = this.$forward
-			? this.$progress
-			: 1 - this.$progress;
+		const adjustedProgress = this.$forward ? this.$progress : 1 - this.$progress;
 		const ease = this.easeInOutQuad(adjustedProgress) * $factor;
 
 		this.base.position.y = HEIGHT + ease;
@@ -104,12 +112,10 @@ export class POVCamera extends BaseCamera {
 	}
 
 	update() {
-		this.idleBreathing();
+		this.wobble.update(this.webgl.$time.elapsed * this.$wobbleIntensity);
 
 		if (this.controls) {
 			this.controls.update();
 		}
-
-		// console.log('[POVCamera] update');
 	}
 }

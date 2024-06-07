@@ -6,20 +6,19 @@ let webgl;
 const tempVec2a = new Vec2();
 const tempVec2b = new Vec2();
 
+const lerp = (x, y, a) => x * (1 - a) + y * a;
+
 function POVController(
 	object,
-	{
-		element = document,
-		enabled = false,
-		rotateSpeed = 0.1,
-		panSpeed = 0.1,
-	} = {},
+	{ element = document, enabled = false, speed = 0.05 } = {},
 ) {
 	if (!webgl) webgl = getWebGL();
 	const lookAt = new Vector3();
 	const position = new Vector3();
 	let lon = 0;
 	let lat = 0;
+	let lerpedLat = 0;
+	let lerpedLon = 0;
 
 	const rotateStart = new Vec2();
 	const panDelta = new Vec3();
@@ -37,12 +36,13 @@ function POVController(
 	}
 
 	function update() {
-		// if (!enabled) return;
-
 		updatePosition();
 
-		let phi = MathUtils.degToRad(90 - lat);
-		const theta = MathUtils.degToRad(lon);
+		lerpedLat = lerp(lerpedLat, lat, 0.2);
+		lerpedLon = lerp(lerpedLon, lon, 0.2);
+
+		let phi = MathUtils.degToRad(90 - lerpedLat);
+		const theta = MathUtils.degToRad(lerpedLon);
 
 		lookAt.setFromSphericalCoords(1, phi, theta).add(object.position);
 	}
@@ -52,11 +52,10 @@ function POVController(
 		tempVec2b
 			// .subVectors(tempVec2a, rotateStart)
 			.add(tempVec2a, rotateStart)
-			.multiplyScalar(rotateSpeed);
+			.multiplyScalar(speed);
 
 		const el = element === document ? document.body : element;
-		const height =
-			el === document.body ? window.innerHeight : el.clientHeight;
+		const height = el === document.body ? window.innerHeight : el.clientHeight;
 
 		let verticalLookRatio = 1;
 		verticalLookRatio = Math.PI / (verticalMax - verticalMin);
@@ -84,7 +83,7 @@ function POVController(
 		const x = e.movementX;
 		const y = e.movementY;
 
-		console.log('x', x);
+		// console.log('x', x);
 		// console.log('y', y);
 
 		handleMoveRotate(x, y);
