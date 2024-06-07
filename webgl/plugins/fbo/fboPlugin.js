@@ -65,18 +65,11 @@ export function fboPlugin(webgl) {
 
 		const pos = previewCoords.previewPosition;
 		const scale = previewCoords.previewScale;
-		const transform = storageSync(
-			'gui-fbo-transform',
-			w([pos.x, pos.y, scale]),
-			{
-				storage: webgl.$debug.storage,
-			},
-		);
+		const transform = storageSync('gui-fbo-transform', w([pos.x, pos.y, scale]), {
+			storage: webgl.$debug.storage,
+		});
 
-		previewCoords.previewPosition.set(
-			transform.value[0],
-			transform.value[1],
-		);
+		previewCoords.previewPosition.set(transform.value[0], transform.value[1]);
 		previewCoords.previewScale = transform.value[2];
 
 		gui.addBinding(previewCoords, 'previewPosition', {

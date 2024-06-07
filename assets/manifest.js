@@ -42,6 +42,7 @@ export default {
 
 	// scene1: glb('models/scene1'),
 	noises: img('data-textures/*.png', { repeat: true }),
+	interface: img('interface/*.*'),
 	luts: copy(
 		'luts/*.[png|jpg]',
 		{

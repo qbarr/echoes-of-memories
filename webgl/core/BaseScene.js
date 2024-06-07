@@ -53,39 +53,39 @@ export default class BaseScene extends BaseComponent {
 		/// #endif
 	}
 
-	toggleSelectedBloom(isBloom) {
-		const { $assets } = this.webgl;
-		const children = this.children.dynamic;
-		for (let i = 0, l = children.length; i < l; i++) {
-			const child = children[i];
-			if (!child || !child.base) continue;
+	// toggleSelectedBloom(isBloom) {
+	// 	const { $assets } = this.webgl;
+	// 	const children = this.children.dynamic;
+	// 	for (let i = 0, l = children.length; i < l; i++) {
+	// 		const child = children[i];
+	// 		if (!child || !child.base) continue;
 
-			// register base Material to backup
-			child.base.traverse((c) => {
-				if (c.baseMaterial) return;
-				if (!c.isMesh) return;
-				c.baseMaterial = c.baseMaterial ?? c.material;
-				c.darkMaterial = new MeshBasicMaterial({
-					color: 0x000000,
-					wireframe: !!c.material.wireframe,
-				});
-			});
+	// 		// register base Material to backup
+	// 		child.base.traverse((c) => {
+	// 			if (c.baseMaterial) return;
+	// 			if (!c.isMesh) return;
+	// 			c.baseMaterial = c.baseMaterial ?? c.material;
+	// 			c.darkMaterial = new MeshBasicMaterial({
+	// 				color: 0x000000,
+	// 				wireframe: !!c.material.wireframe,
+	// 			});
+	// 		});
 
-			if (isBloom) {
-				child.base.traverse((c) => {
-					if (!c.isMesh) return;
-					if (child.needBloom) c.material = c.baseMaterial;
-					else c.material = c.darkMaterial;
-				});
-			} else {
-				child.base.traverse((c) => {
-					if (!c.isMesh) return;
-					if (child.needBloom) c.material = c.darkMaterial;
-					else c.material = c.baseMaterial;
-				});
-			}
-		}
-	}
+	// 		if (isBloom) {
+	// 			child.base.traverse((c) => {
+	// 				if (!c.isMesh) return;
+	// 				if (child.needBloom) c.material = c.baseMaterial;
+	// 				else c.material = c.darkMaterial;
+	// 			});
+	// 		} else {
+	// 			child.base.traverse((c) => {
+	// 				if (!c.isMesh) return;
+	// 				if (child.needBloom) c.material = c.darkMaterial;
+	// 				else c.material = c.baseMaterial;
+	// 			});
+	// 		}
+	// 	}
+	// }
 
 	attach() {
 		BaseComponent.triggerAttached(this, this);

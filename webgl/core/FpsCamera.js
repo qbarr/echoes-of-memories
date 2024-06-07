@@ -56,9 +56,9 @@ export default class FpsCamera {
 
 		// this.saveCamera();
 
-		this.cam.near = 1;
-		this.cam.far = 2000;
-		this.cam.updateProjectionMatrix();
+		// this.cam.near = 1;
+		// this.cam.far = 2000;
+		// this.cam.updateProjectionMatrix();
 
 		// this.saveCamera = throttle(this.saveCamera, 250, { bind: this });
 
