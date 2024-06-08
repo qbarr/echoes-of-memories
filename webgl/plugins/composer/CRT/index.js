@@ -48,7 +48,7 @@ export const useCRTPass = (composer) => {
 		name: 'CRT',
 		depth: false,
 		alpha: false,
-		scale: 0.5,
+		scale: 0.75,
 	}));
 
 	const filter = (filters.crt = createFilter({

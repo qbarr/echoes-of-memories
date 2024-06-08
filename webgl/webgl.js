@@ -1,9 +1,17 @@
-import MainScene from './components/Scenes/MainScene';
+import { AudioListener } from 'three';
+
+import BedroomScene from './components/Scenes/BedroomScene';
 import UIScene from './components/Scenes/UIScene';
 
 import { createWebgl, webgl } from './core';
 
-import { AudioListener } from 'three';
+// import core from '@theatre/core';
+// import studio from '@theatre/studio';
+
+// studio.initialize({
+// 	persistenceKey: 'EOM:theatrejs',
+// 	usePersistentStorage: true,
+// });
 
 export default createWebgl({
 	async setup() {
@@ -12,7 +20,7 @@ export default createWebgl({
 		$renderer.setup({ alias: false, antialias: false });
 		$renderer.instance.setClearColor(0x000000, 0);
 
-		$scenes.create('main', MainScene);
+		$scenes.create('bedroom', BedroomScene);
 		$scenes.create('ui', UIScene);
 	},
 

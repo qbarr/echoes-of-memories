@@ -64,7 +64,7 @@ export function subtitlesPlugin(webgl, opts = {}) {
 	}
 
 	return {
-		install: (app) => {
+		install: () => {
 			webgl.$subtitles = api;
 		},
 		load: () => {

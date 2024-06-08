@@ -10,9 +10,10 @@ export class BaseInteractiveObject extends BaseComponent {
 
 	constructor(props = {}) {
 		super(props);
-
 		this.base = new Object3D();
+	}
 
+	afterInit() {
 		const { padding } = useInteraction(this);
 		this.padding = padding;
 

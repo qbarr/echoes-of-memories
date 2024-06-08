@@ -48,8 +48,6 @@ export default class Wobble {
 		this.target.multiplyScalar(this.scale);
 		this.target.add(this.origin);
 
-		if (this.position) {
-			this.position.lerp(this.target, this.lerpSpeed);
-		}
+		this.position?.lerp(this.target, this.lerpSpeed);
 	}
 }

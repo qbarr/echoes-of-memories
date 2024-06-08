@@ -13,7 +13,7 @@ export const useRGBShiftPass = (composer) => {
 	const { buffers, filters, uniforms, defines } = composer;
 
 	const enabled = w(true);
-	const amount = w(0.002);
+	const amount = w(0.0015);
 	const angle = w(0);
 
 	let texture = DUMMY_RT.texture;
@@ -73,7 +73,7 @@ export const useRGBShiftPass = (composer) => {
 			label: 'Amount',
 			min: 0,
 			max: 0.01,
-			step: 0.001,
+			step: 0.0001,
 		});
 		gui.addBinding(angle, 'value', {
 			label: 'Angle',

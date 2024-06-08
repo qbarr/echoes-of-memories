@@ -8,7 +8,7 @@ const qualityStr = {
 	2: 'MEDIUM',
 	3: 'HIGH',
 	4: 'VERYHIGH',
-	5: 'ULTRA'
+	5: 'ULTRA',
 };
 
 export default function createStatsOverlay() {
@@ -18,9 +18,8 @@ export default function createStatsOverlay() {
 	const parent = webgl?.$app?.$parent ?? document.body;
 
 	const $quality = webgl.$quality;
-	const version = typeof __PROJECT_TIMESTAMP__ !== 'undefined'
-		? __PROJECT_TIMESTAMP__
-		: '';
+	const version =
+		typeof __PROJECT_TIMESTAMP__ !== 'undefined' ? __PROJECT_TIMESTAMP__ : '';
 
 	const el = document.createElement('div');
 	el.classList.add('debug-quality-monitor');
@@ -30,7 +29,7 @@ export default function createStatsOverlay() {
 		font-size:9px;line-height:1em;
 		font-family:"Roboto Mono","Source Code Pro",Menlo,Consolas,Courier,monospace;
 		pointer-events:none;will-change:content;border-radius:4px;
-		white-space:pre;text-rendering:optimizeSpeed;
+		white-space:pre;text-rendering:optimizeSpeed;user-select:none;
 	`;
 
 	const debugStats = webgl.$gui.debugStats;
@@ -43,22 +42,21 @@ export default function createStatsOverlay() {
 	parent.appendChild(el);
 
 	computed(
-		[
-			$quality.fps,
-			$quality.current,
-			$quality.fpsAverage,
-			cpuTime,
-			gpuTime
-		],
+		[$quality.fps, $quality.current, $quality.fpsAverage, cpuTime, gpuTime],
 		(fps, q, average, cpu, gpu) => {
 			if (isHidden) return;
 			el.textContent =
-				qualityStr[ q ] + SEP
-				+ 'FPS ' + fps + SEP
-				+ 'CPU ' + cpu + SEP
-				+ (hasGpuTime ? 'GPU ' + gpu + SEP : '')
-				+ version.slice(4);
-		}
+				qualityStr[q] +
+				SEP +
+				'FPS ' +
+				fps +
+				SEP +
+				'CPU ' +
+				cpu +
+				SEP +
+				(hasGpuTime ? 'GPU ' + gpu + SEP : '') +
+				version.slice(4);
+		},
 	);
 
 	return {
@@ -69,6 +67,6 @@ export default function createStatsOverlay() {
 		hide: () => {
 			isHidden = true;
 			parent.removeChild(el);
-		}
+		},
 	};
 }

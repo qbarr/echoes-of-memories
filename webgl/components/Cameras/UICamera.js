@@ -2,26 +2,34 @@ import BaseCamera from '#webgl/core/BaseCamera';
 import { OrthographicCamera } from 'three';
 
 export class UICamera extends BaseCamera {
-	// init() {
-	// 	this.zoom = 100;
-	// 	this.cam = new OrthographicCamera(0, 0, 0, 0, 0.1, 100);
-	// 	this.cam.position.z = 1;
-	// 	this.cam.lookAt(0, 0, 0);
-	// 	this.cam.updateProjectionMatrix();
-	// }
+	init() {
+		this.viewSize = 50;
 
-	afterInit() {
-		super.afterInit();
-		this.cam.position.z = 100;
+		const dbs = this.webgl.$renderer.drawingBufferSize;
+		const { x: width, y: height } = dbs.value;
+		const aspect = width / height;
+
+		this.cam = new OrthographicCamera(
+			-aspect * this.viewSize * 0.5,
+			aspect * this.viewSize * 0.5,
+			this.viewSize * 0.5,
+			-this.viewSize * 0.5,
+			0.1,
+			100,
+		);
+		this.cam.position.z = 10;
+		this.cam.lookAt(0, 0, 0);
+		this.cam.updateProjectionMatrix();
 	}
 
-	// resize(s) {
-	// 	const { x: width, y: height } = s;
+	resize(s) {
+		const { x: width, y: height } = s;
+		const aspect = width / height;
 
-	// 	this.cam.left = (-width * 0.5) / this.zoom;
-	// 	this.cam.right = (width * 0.5) / this.zoom;
-	// 	this.cam.top = (height * 0.5) / this.zoom;
-	// 	this.cam.bottom = (-height * 0.5) / this.zoom;
-	// 	this.cam.updateProjectionMatrix();
-	// }
+		this.base.left = -aspect * this.viewSize * 0.5;
+		this.base.right = aspect * this.viewSize * 0.5;
+		this.base.top = this.viewSize * 0.5;
+		this.base.bottom = -this.viewSize * 0.5;
+		this.base.updateProjectionMatrix();
+	}
 }

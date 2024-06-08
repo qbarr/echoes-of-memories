@@ -26,8 +26,8 @@
     "@tweakpane/plugin-essentials": "^0.2.1",
     "@vitejs/plugin-vue": "^4.0.0",
     "generate-subtitles": "^1.0.6",
-    "minimist": "^1.2.8",
     "md5": "^2.3.0",
+    "minimist": "^1.2.8",
     "netlify-cli": "^16.9.3",
     "postprocessing": "^6.35.4",
     "quad-indices": "^2.0.1",
@@ -38,10 +38,12 @@
     "vtt-to-json": "^0.1.1",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6",
-    "yargs": "^17.7.2",
-    "word-wrapper": "^1.0.7"
+    "word-wrapper": "^1.0.7",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@theatre/core": "^0.7.2",
+    "@theatre/studio": "^0.7.2",
     "eslint": "^9.3.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-vue": "^9.26.0",

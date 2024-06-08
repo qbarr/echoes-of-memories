@@ -88,7 +88,7 @@ export function composerPlugin(webgl) {
 
 		// Render UI Scene
 		renderer.setRenderTarget(buffers.interface);
-		renderer.clearDepth();
+		renderer.clear();
 		$scenes.ui.component.triggerRender();
 		uniforms.tInterface.value = buffers.interface.texture;
 
