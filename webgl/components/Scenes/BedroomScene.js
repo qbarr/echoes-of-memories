@@ -3,11 +3,13 @@ import { POVCamera } from '../Cameras/POVCamera';
 
 import { MeshBasicMaterial } from 'three';
 import { Guitare } from '../Objects/Guitare';
+import { Guitare2 } from '../Objects/Guitare2';
+import { Guitare3 } from '../Objects/Guitare3';
 
 const objects = {
 	crucifix: { class: null },
-	platine: { class: null },
-	vinyles: { class: null },
+	platine: { class: Guitare2 },
+	vinyles: { class: Guitare3 },
 	photodefamille: { class: null },
 	testament: { class: null },
 	guitare: { class: Guitare },
@@ -53,7 +55,7 @@ export default class BedroomScene extends BaseScene {
 
 				const o = objects[child.name];
 				if (o && o?.class) {
-					const obj = new o.class({ mesh: child });
+					const obj = new o.class({ name: child.name, mesh: child });
 					_objects.push(obj);
 				}
 			}

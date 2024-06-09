@@ -1,6 +1,6 @@
 import { BaseInteractiveObject } from './base/BaseInteractiveObject';
 
-export class Guitare extends BaseInteractiveObject {
+export class Guitare3 extends BaseInteractiveObject {
 	init() {
 		this.isSimpleObject = true;
 

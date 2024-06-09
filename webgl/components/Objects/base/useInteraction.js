@@ -49,9 +49,10 @@ export function useInteraction(Class) {
 		const debugMat = new MeshBasicMaterial({ wireframe: true });
 		const mesh = (raycastableMesh = new Mesh(geo, debugMat));
 		mesh.rotation.copy(Class.base.rotation);
+		Object.assign(mesh.userData, { isDebug: true });
 
 		// Center the mesh
-		box.getCenter(vec3);
+		// box.getCenter(vec3);
 		// mesh.position.copy(vec3);
 		vec3.release();
 
@@ -66,6 +67,7 @@ export function useInteraction(Class) {
 		mesh.visible = false;
 		/// #endif
 
+		console.log(Class, mesh);
 		webgl.$raycast.add(mesh, {
 			onDown: onClick,
 			onHold: onHold,

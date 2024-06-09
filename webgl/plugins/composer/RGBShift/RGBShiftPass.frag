@@ -2,8 +2,8 @@ precision highp float;
 
 uniform sampler2D tMap;
 uniform sampler2D tDepth;
-// uniform sampler2D tBokeh;
 uniform sampler2D tInterface;
+uniform sampler2D tSketchLines;
 uniform float uAmount;
 uniform float uAngle;
 
@@ -26,6 +26,9 @@ void main() {
 
 	vec3 interfaceColor = texture2D(tInterface, vUv).rgb;
 	gl_FragColor.rgb += interfaceColor;
+
+	vec4 outlines = texture2D(tSketchLines, vUv);
+	gl_FragColor.rgb += outlines.rgb;
 
 	// debug
 	// gl_FragColor += vec4(smoothstep(0.3, 1., pow(1. - depth, .6)));

@@ -219,7 +219,7 @@ export function raycastPlugin(webgl) {
 
 		const { id } = webgl.$scenes.getSceneByComponent(scene);
 
-		if (!scenes.has(scene)) {
+		if (!scenes.has(id)) {
 			scenes.set(id, {
 				objects: new WeakMap(),
 				rawList: [],

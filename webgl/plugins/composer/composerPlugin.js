@@ -1,15 +1,17 @@
 import createFilter from '#webgl/utils/createFilter';
-import { Vector2 } from 'three';
+import { MeshNormalMaterial, Vector2 } from 'three';
 
 import { prng } from '#utils/maths/prng.js';
 
-import CompositeFragment from './CompositePass.frag?hotshader';
+import CompositePass from './CompositePass.frag?hotshader';
+import { useBokehPass } from './Bokeh';
+import { useCRTPass } from './CRT';
 import { useDepthPass } from './Depth';
 import { useLutPass } from './LUT';
 import { useRGBShiftPass } from './RGBShift';
+import { useSketchLinesPass } from './SketchLines';
 import { useUnrealBloomPass } from './UnrealBloom';
-import { useCRTPass } from './CRT';
-import { useBokehPass } from './Bokeh';
+import { useSelectiveNormalPass } from './SelectiveNormal';
 
 const rf = prng.randomFloat;
 
@@ -32,6 +34,9 @@ export function composerPlugin(webgl) {
 
 		update,
 		render,
+
+		addOutline: (obj) => api.$selectiveNormal.add(obj),
+		removeOutline: (obj) => api.$selectiveNormal.remove(obj),
 	};
 
 	function init() {
@@ -39,12 +44,14 @@ export function composerPlugin(webgl) {
 		const { textures } = $assets;
 
 		buffers.base = $fbo.createBuffer({ name: 'Base' });
+		// buffers.normal = $fbo.createBuffer({ name: 'Normal' });
 		buffers.interface = $fbo.createBuffer({ name: 'Interface' });
 		buffers.composite = $fbo.createBuffer({ name: 'Composite' });
 
 		Object.assign(uniforms, {
 			...webgl.uniforms,
 			tMap: { value: buffers.base.texture, type: 't' },
+			// tNormal: { value: buffers.normal.texture, type: 't' },
 			tInterface: { value: buffers.interface.texture, type: 't' },
 			tComposite: { value: buffers.composite.texture, type: 't' },
 
@@ -56,9 +63,12 @@ export function composerPlugin(webgl) {
 		Object.assign(defines, { ...webgl.defines });
 
 		filters.composite = createFilter({ uniforms, defines });
-		CompositeFragment.use(filters.composite.material);
+		CompositePass.use(filters.composite.material);
 
+		// !! Order matters here !!
 		passes.push(useDepthPass(api));
+		passes.push(useSelectiveNormalPass(api));
+		passes.push(useSketchLinesPass(api));
 		passes.push(useBokehPass(api));
 		passes.push(useRGBShiftPass(api));
 		passes.push(useCRTPass(api));
@@ -81,6 +91,8 @@ export function composerPlugin(webgl) {
 		uniforms.uDitherOffset.value.set(rf(0, 128), rf(0, 128));
 	}
 
+	const overrideMaterial = new MeshNormalMaterial();
+
 	function render() {
 		const { $scenes } = webgl;
 		const scene = $scenes.current.component;
@@ -95,6 +107,9 @@ export function composerPlugin(webgl) {
 		// Render depth pass
 		api.$depth.render(scene);
 
+		// Render selective pass
+		api.$selectiveNormal.render(scene);
+
 		// Render base pass
 		renderer.setRenderTarget(buffers.base);
 		renderer.clear();
@@ -102,6 +117,9 @@ export function composerPlugin(webgl) {
 		renderer.clearDepth();
 		$scenes.ui.component.triggerRender();
 		uniforms.tMap.value = buffers.base.texture;
+
+		// Render sketch lines pass
+		api.$sketchLines.render(scene);
 
 		// Render Bokeh pass
 		api.$bokeh.render();
@@ -136,7 +154,7 @@ export function composerPlugin(webgl) {
 		add(uniforms.uDitherStrength, { label: 'Dithering', max: 2 });
 		gui.addSeparator();
 
-		passes.forEach((pass) => pass.devtools(gui));
+		passes.forEach((pass) => pass.devtools?.(gui));
 	}
 	/// #endif
 

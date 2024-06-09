@@ -50,6 +50,7 @@ export function useProximity(Class) {
 		const geo = new IcosahedronGeometry(1, 1);
 		const mat = new MeshBasicMaterial({ color: 0xff0000, wireframe: true });
 		debugMesh = new Mesh(geo, mat);
+		Object.assign(debugMesh.userData, { isDebug: true });
 		Class.base.add(debugMesh);
 
 		const baseScale = Class.base.scale;
