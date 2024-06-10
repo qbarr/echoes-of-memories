@@ -4,7 +4,7 @@ import { webgl } from '#webgl/core';
 import { CameraHelper } from 'three';
 
 export const useCameraHelper = (Class) => {
-	const camera = Class.base;
+	const camera = Class.cam;
 
 	const enabled = storageSync(
 		'webgl:' + Class.name + ':cameraHelper:enabled',

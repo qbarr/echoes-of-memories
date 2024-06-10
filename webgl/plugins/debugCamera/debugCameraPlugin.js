@@ -30,13 +30,7 @@ export function debugCameraPlugin(webgl) {
 		refreshGUI,
 		currentCamera: null,
 		currentTarget: null,
-		fov: w(
-			clamp(
-				FOV_MIN,
-				FOV_MAX,
-				+storage.getItem(lsKey('fov')) || DEFAULT_FOV,
-			),
-		),
+		fov: w(clamp(FOV_MIN, FOV_MAX, +storage.getItem(lsKey('fov')) || DEFAULT_FOV)),
 		gui: {},
 	};
 
@@ -56,10 +50,10 @@ export function debugCameraPlugin(webgl) {
 
 	function updateFOV(v) {
 		v = clamp(FOV_MIN, FOV_MAX, v);
-		fpsCamera.base.fov = v;
-		orbitCamera.base.fov = v;
-		fpsCamera.base.updateProjectionMatrix();
-		orbitCamera.base.updateProjectionMatrix();
+		fpsCamera.cam.fov = v;
+		orbitCamera.cam.fov = v;
+		fpsCamera.cam.updateProjectionMatrix();
+		orbitCamera.cam.updateProjectionMatrix();
 		storage.setItem(lsKey('fov'), v);
 	}
 
@@ -137,11 +131,11 @@ export function debugCameraPlugin(webgl) {
 	function copyCoords() {
 		clearTimeout(copiedTimeout);
 		if (!api.currentCamera) return;
-		const posStr = api.currentCamera.base.position
+		const posStr = api.currentCamera.cam.position
 			.toArray()
 			.map((v) => v.toFixed(5))
 			.join(', ');
-		const qtStr = api.currentCamera.base.quaternion
+		const qtStr = api.currentCamera.cam.quaternion
 			.toArray()
 			.map((v) => v.toFixed(6))
 			.join(', ');
@@ -150,7 +144,7 @@ export function debugCameraPlugin(webgl) {
 			'{',
 			'	position: [ ' + posStr + ' ],',
 			'	quaternion: [ ' + qtStr + ' ],',
-			'   fov: ' + api.currentCamera.base.fov.toFixed(2) + '',
+			'   fov: ' + api.currentCamera.cam.fov.toFixed(2) + '',
 			'}',
 		].join('\n');
 
@@ -231,10 +225,7 @@ export function debugCameraPlugin(webgl) {
 		if (gui.scenesList) gui.scenesList.dispose();
 		if (![...scenes.keys()].length) return;
 
-		const options = [...scenes.keys()].reduce(
-			(p, c) => ((p[c] = c), p),
-			{},
-		);
+		const options = [...scenes.keys()].reduce((p, c) => ((p[c] = c), p), {});
 
 		gui.scenesList = gui.addBinding(currentScene, 'Scene', {
 			index: 3,

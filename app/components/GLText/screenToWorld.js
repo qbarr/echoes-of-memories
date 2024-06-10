@@ -1,7 +1,5 @@
-
 import { webgl } from '#webgl/core';
 import { Vector3 } from 'three';
-
 
 export function screenToWorld({
 	position,
@@ -9,25 +7,23 @@ export function screenToWorld({
 	zNeeded = 0,
 	out = new Vector3(),
 	forcedZ = null,
-	updateMatrix = true
+	updateMatrix = true,
 } = {}) {
 	if (!position) throw new Error('No position provided');
 
 	const { $scenes, $viewport } = webgl;
 
 	const scn = $scenes.current.component;
-	camera = camera ?? scn._cam.current.base;
+	camera = camera ?? scn._cam.current.cam;
 	updateMatrix && camera.updateMatrixWorld();
 	forcedZ = forcedZ ?? camera.position.z;
 
 	const size = $viewport.size.value;
-	const vector = Vector3
-		.get()
-		.set(
-			(position.x / size.x) * 2 - 1,
-			-(position.y / size.y) * 2 + 1,
-			0
-		);
+	const vector = Vector3.get().set(
+		(position.x / size.x) * 2 - 1,
+		-(position.y / size.y) * 2 + 1,
+		0,
+	);
 
 	vector.unproject(camera);
 
@@ -35,9 +31,7 @@ export function screenToWorld({
 	const distance = (zNeeded - forcedZ) / dir.z;
 	vector.release();
 
-	out
-		.copy(camera.position)
-		.add(dir.multiplyScalar(distance));
+	out.copy(camera.position).add(dir.multiplyScalar(distance));
 
 	return out;
 }

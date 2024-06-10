@@ -1,53 +1,61 @@
 import BaseScene from '#webgl/core/BaseScene';
-import { POVCamera } from '../Cameras/POVCamera';
 
 import { MeshBasicMaterial } from 'three';
-import { useTheatre } from './useTheatre';
+import { useTheatre } from '#webgl/utils/useTheatre.js';
+import { scenesDatas } from './datas';
 
 export default class CliniqueScene extends BaseScene {
 	mixins = ['debugCamera'];
 
 	init() {
-		// this.camera = this.add(MainCamera);
-		// this.camera = this.add(POVCamera);
-		// this.camera = this.add(this.webgl.$povCamera);
-
 		const { $assets } = this.webgl;
 
 		const scene = $assets.objects['clinique-model'].scene;
 		const textures = $assets.textures['clinique'];
 
-		const floor_wall_mat = new MeshBasicMaterial({
-			map: textures['floor_wall_map'],
-		});
+		const _textures = {
+			pipesacrak: new MeshBasicMaterial({
+				map: textures['bed_board_map'],
+			}),
+			murs: new MeshBasicMaterial({
+				map: textures['murs_map'],
+			}),
+			tableaux: new MeshBasicMaterial({
+				map: textures['door_tableaux_map'],
+			}),
+			computers: new MeshBasicMaterial({
+				map: textures['computers_map'],
+			}),
+			cassette: new MeshBasicMaterial({
+				map: textures['cassette_map'],
+			}),
+			contrat: new MeshBasicMaterial({
+				map: textures['contrat_map'],
+			}),
+		};
+		_textures.ecrans = _textures.computers;
+		_textures.porte = _textures.tableaux;
 
-		const objects_mat = new MeshBasicMaterial({
-			map: textures['objects_map'],
+		const datas = scenesDatas.clinique;
+		Object.keys(datas).forEach((k) => {
+			Object.assign(datas[k], { texture: _textures[k] });
 		});
-
-		const big_objects_mat = new MeshBasicMaterial({
-			map: textures['big_objects_map'],
-		});
-
-		// ! À scale dans Blender
-		scene.scale.setScalar(3);
 
 		const _objects = [];
 
 		scene.traverse((child) => {
 			if (!child.isMesh || !child.material) return;
-
-			console.log(child.name, child);
-			if (child.name === 'chambremurs') {
-				child.material = floor_wall_mat;
-			} else if (child.name === 'objetsnombreux') {
-				child.material = objects_mat;
-			} else if (child.name === 'objetsbases') {
-				child.material = big_objects_mat;
+			if (datas[child.name]) {
+				const { class: Class, texture } = datas[child.name];
+				child.material = texture;
+				if (Class) {
+					const obj = new Class({ name: child.name, mesh: child });
+					_objects.push(obj);
+				}
 			}
 		});
 
-		// _objects.forEach((o) => this.add(o));
+		_objects.forEach((o) => this.add(o));
 		this.base.add(scene);
 
 		useTheatre(this, { id: 'Clinique Scene' });
@@ -56,6 +64,7 @@ export default class CliniqueScene extends BaseScene {
 	async enter() {
 		this.log('enter');
 		this.camera = this.add(this.webgl.$povCamera);
+		this.camera.setPosition([-2.71175, 3.13109, 4.39142]);
 	}
 
 	async leave() {

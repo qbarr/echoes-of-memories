@@ -6,7 +6,6 @@ import { app } from '#app/core';
 import { map } from '#utils/maths';
 import { webgl } from '#webgl/core';
 
-
 const vec3a = new Vector3();
 const vec3b = new Vector3();
 const frustrum = new Frustum();
@@ -15,7 +14,7 @@ const dummy = new Object3D();
 const getNode = (root) => {
 	let node = unref(root);
 	return node.$el ?? node;
-}
+};
 
 export function useSyncDomWebGL($$ref, object) {
 	let node = null;
@@ -25,19 +24,19 @@ export function useSyncDomWebGL($$ref, object) {
 	const scale = ref(new Vector2(1, 1));
 
 	const renderer = webgl.$threeRenderer;
-	const scene = webgl.$scenes.get('ui')
-	const camera = scene._cam.current.base;
+	const scene = webgl.$scenes.get('ui');
+	const camera = scene._cam.current.cam;
 
 	const { bounding, update: updateBounding } = useBounding($$ref, {
 		updateOnResize: true,
-		updateOnScroll: false
+		updateOnScroll: false,
 	});
 
 	onMounted(async () => {
 		node = getNode($$ref);
 
 		if (object) {
-			scene.isReady ?? await scene.isReady;
+			scene.isReady ?? (await scene.isReady);
 			scene.add(object);
 		}
 
@@ -45,16 +44,15 @@ export function useSyncDomWebGL($$ref, object) {
 		resizeSignal = dbs.watchImmediate(resize, this);
 
 		setTimeout(update, 100);
-	})
+	});
 
-	onBeforeMount(destroy)
+	onBeforeMount(destroy);
 
 	return {
 		position,
 		scale,
 		update,
-	}
-
+	};
 
 	function resize() {
 		updateBounding();
@@ -94,8 +92,8 @@ export function useSyncDomWebGL($$ref, object) {
 		const { width: vpw, height: vph, viewportRatio } = app.$viewport;
 
 		scale.value.set(
-			bounding.width / vpw * 2 * viewportRatio,
-			bounding.height / vph * 2
+			(bounding.width / vpw) * 2 * viewportRatio,
+			(bounding.height / vph) * 2,
 		);
 
 		console.log('scale', scale.value);

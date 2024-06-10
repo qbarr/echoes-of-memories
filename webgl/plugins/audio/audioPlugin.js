@@ -131,7 +131,7 @@ export function audioPlugin(webgl, opts = {}) {
 
 		scene.$hooks.onCameraChange.watch((camera) => {
 			webgl.$audioListener?.parent?.remove(webgl.$audioListener);
-			camera.base.add(webgl.$audioListener);
+			camera.cam.add(webgl.$audioListener);
 		});
 
 		camera.add(webgl.$audioListener);
@@ -270,7 +270,7 @@ export function audioPlugin(webgl, opts = {}) {
 	function onCameraChange(camera) {
 		webgl.$audioListener.parent &&
 			webgl.$audioListener.parent.remove(webgl.$audioListener);
-		camera.base.add(webgl.$audioListener);
+		camera.cam.add(webgl.$audioListener);
 	}
 
 	function isViewportVisible(visible) {

@@ -10,19 +10,19 @@ const tempVec2b = new Vector2();
 const lerp = (x, y, a) => x * (1 - a) + y * a;
 
 function POVController(
-	object,
+	Class,
 	{ element = document, enabled = false, speed = 0.85 } = {},
 ) {
 	const lookAt = new Vector3();
 	const position = new Vector3();
 
-	let lon = 105;
+	let lon = 110;
 	let lat = -15;
 
-	// TODO: calculate initial lon and lat based on object's quaternion
+	// TODO: calculate initial lon and lat based on cam's quaternion
 	// j'ai give up ça ma saoulé
 
-	// const q = object.quaternion.clone().invert();
+	// const q = cam.quaternion.clone().invert();
 	// const rot = new Euler().setFromQuaternion(q, 'YXZ');
 	// console.log(MathUtils.radToDeg(rot.x));
 	// console.log(MathUtils.radToDeg(rot.y));
@@ -41,10 +41,13 @@ function POVController(
 	const horizontalMin = -Math.PI / 2;
 	const horizontalMax = Math.PI / 2;
 
+	const cam = Class.cam;
+	const base = Class.base;
+
 	updatePosition();
 
 	function updatePosition() {
-		object.lookAt(lookAt);
+		cam.lookAt(lookAt);
 	}
 
 	function update() {
@@ -57,7 +60,7 @@ function POVController(
 		const phi = MathUtils.degToRad(90 - lerpedLat);
 		const theta = MathUtils.degToRad(lerpedLon);
 
-		lookAt.setFromSphericalCoords(1, phi, theta).add(object.position);
+		lookAt.setFromSphericalCoords(1, phi, theta).add(cam.position);
 	}
 
 	function handleMoveRotate(x, y) {

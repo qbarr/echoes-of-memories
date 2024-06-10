@@ -7,7 +7,7 @@ export class MainCamera extends BaseCamera {
 		this.base.position.fromArray([10.9116, 4.16947, 7.49768]);
 		this.base.quaternion.fromArray([-0.047939, 0.53554, 0.030469, 0.842597]);
 		this.base.fov = 55;
-		this.base.updateProjectionMatrix();
+		this.cam.updateProjectionMatrix();
 	}
 
 	update() {}
