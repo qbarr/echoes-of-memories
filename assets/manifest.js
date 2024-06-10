@@ -55,7 +55,7 @@ export default {
 		'lut',
 	),
 
-	'boat': glb('scenes/boat'),
+	boat: glb('scenes/boat'),
 	// Chambre
 	'chambre-model': glb('scenes/chambre/model'),
 	'chambre/textures': ktx2('scenes/chambre/*', { flipY: false }),

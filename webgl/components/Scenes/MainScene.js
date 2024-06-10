@@ -10,6 +10,7 @@ import { Particles } from '../Particles/Particles';
 import { Vector3 } from 'three';
 import { presetsShader } from '#utils/presets/shaders.js';
 import { uniforms } from '../Text';
+import { raftween } from '#utils/anim/raftween.js';
 
 
 export default class MainScene extends BaseScene {
@@ -75,8 +76,9 @@ export default class MainScene extends BaseScene {
 		this.log('enter');
 	}
 
-	async leave() {
-		this.log('leave');
+	async beforeLeave() {
+		const { $composer } = this.webgl;
+		await $composer.passes[3]?.glitch()
 	}
 
 	update() {}

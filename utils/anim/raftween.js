@@ -68,7 +68,6 @@ class RafTween {
 
 	update(dt) {
 		if (this.paused || this.ended || this.destroyed) return;
-
 		if (this.delay > 0) {
 			this.delay -= dt;
 			if (this.delay <= 0) {

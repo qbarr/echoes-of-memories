@@ -56,19 +56,19 @@ export class POVCamera extends BaseCamera {
 			target: defaultTarget,
 		});
 
-		const { $getCurrentScene, $canvas, $raycast, $assets } = this.webgl;
-		const chambre = $assets.objects['chambre-model'].scene;
-		const scene = $getCurrentScene();
-		const muretsol = chambre.getObjectByName('mursetsol');
-		console.log(muretsol);
+		// const { $getCurrentScene, $canvas, $raycast, $assets } = this.webgl;
+		// const chambre = $assets.objects['chambre-model'].scene;
+		// const scene = $getCurrentScene();
+		// const muretsol = chambre.getObjectByName('mursetsol');
+		// console.log(muretsol);
 
 		this.wobble = new Wobble(this.base.position);
 
-		$raycast.add(muretsol, {
-			onDown: this.onClick,
-			forceVisible: true,
-			forcedScene: scene,
-		});
+		// $raycast.add(muretsol, {
+		// 	onDown: this.onClick,
+		// 	forceVisible: true,
+		// 	forcedScene: scene,
+		// });
 
 		// document.addEventListener('click', this.onClick);
 		document.addEventListener('pointerlockchange', this.onPointerLockChange);

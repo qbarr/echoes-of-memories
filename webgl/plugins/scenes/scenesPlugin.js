@@ -129,6 +129,7 @@ export function scenesPlugin(webgl) {
 			})),
 			value: current.value.name,
 		}).on('change', ({ value }) => set(value));
+
 	}
 	/// #endif
 

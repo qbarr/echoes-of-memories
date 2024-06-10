@@ -6,6 +6,7 @@ import { wUniform } from '#webgl/utils/Uniform.js';
 import createFilter from '#webgl/utils/createFilter.js';
 
 import CRTPass from './CRTPass.frag?hotshader';
+import { raftween } from '#utils/anim/raftween.js';
 
 const DUMMY_RT = new WebGLRenderTarget(1, 1, { depthBuffer: false });
 
@@ -18,8 +19,8 @@ export const useCRTPass = (composer) => {
 	const fishEye = w(new Vector2(0.1, 0.24)); // x, y
 	const vignette = w(new Vector2(130, 0.8)); // Threshold, Smoothness
 	const interferences = w(new Vector2(0.6, 0.002)); // Global Level, Big Flicker
-
 	let texture = DUMMY_RT.texture;
+	let glitchTween = null;
 
 	const api = {
 		enabled,
@@ -33,7 +34,8 @@ export const useCRTPass = (composer) => {
 		get texture() {
 			return texture;
 		},
-
+		unglitch,
+		glitch,
 		render,
 		/// #if __DEBUG__
 		devtools,
@@ -69,13 +71,14 @@ export const useCRTPass = (composer) => {
 	// });
 
 	function render(scene, renderer) {
+		const { dt } = webgl.$time;
 		if (!enabled.value) {
 			// uniforms.tCRT.value = DUMMY_RT.texture;
 			return;
 		}
 
 		renderer = renderer ?? $threeRenderer;
-
+		glitchTween?.update(dt / 1000)
 		renderer.setRenderTarget(buffer);
 		renderer.clear();
 		filter.render();
@@ -83,6 +86,23 @@ export const useCRTPass = (composer) => {
 		uniforms.tMap.value = texture;
 		// uniforms.tCRT.value = texture;
 		renderer.setRenderTarget(null);
+
+	}
+
+	function unglitch() {
+		// raftween.setFromTo(interferences.value.x, 0)
+		// raftween.play()
+	}
+
+	function glitch() {
+		glitchTween = raftween({
+			from: 0,
+			to: 10,
+			target: interferences.value,
+			property: 'x',
+			duration: 3
+		})
+		glitchTween.play()
 	}
 
 	/// #if __DEBUG__

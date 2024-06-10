@@ -1,4 +1,5 @@
 import MainScene from './components/Scenes/MainScene';
+import ParticleScene from './components/Scenes/ParticleScene';
 import UIScene from './components/Scenes/UIScene';
 
 import { createWebgl, webgl } from './core';
@@ -16,6 +17,7 @@ export default createWebgl({
 		// console.log($gpgpu)
 		$scenes.create('main', MainScene);
 		$scenes.create('ui', UIScene);
+		$scenes.create('particle', ParticleScene);
 	},
 
 	async preload() {
