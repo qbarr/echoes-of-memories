@@ -191,17 +191,17 @@ export default class BaseScene extends BaseComponent {
 		this.afterLeave && (await this.afterLeave());
 	}
 
-	render() {
+	render(forceCamera) {
 		const renderer = this.webgl.$threeRenderer;
-		const camera = this.getCurrentCamera();
+		const camera = forceCamera ?? this.getCurrentCamera();
 		if (!camera) return;
 		renderer.render(this.base, camera.cam);
 	}
 
-	triggerRender() {
-		if (this.beforeRender) this.beforeRender();
-		this.render();
-		if (this.afterRender) this.afterRender();
+	triggerRender(forceCamera = null) {
+		if (this.beforeRender) this.beforeRender(forceCamera);
+		this.render(forceCamera);
+		if (this.afterRender) this.afterRender(forceCamera);
 	}
 
 	destroy() {

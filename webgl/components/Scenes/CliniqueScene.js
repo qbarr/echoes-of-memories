@@ -2,6 +2,7 @@ import BaseScene from '#webgl/core/BaseScene';
 import { POVCamera } from '../Cameras/POVCamera';
 
 import { MeshBasicMaterial } from 'three';
+import { useTheatre } from './useTheatre';
 
 export default class CliniqueScene extends BaseScene {
 	mixins = ['debugCamera'];
@@ -48,6 +49,8 @@ export default class CliniqueScene extends BaseScene {
 
 		// _objects.forEach((o) => this.add(o));
 		this.base.add(scene);
+
+		useTheatre(this, { id: 'Clinique Scene' });
 	}
 
 	async enter() {
