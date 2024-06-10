@@ -5,6 +5,7 @@ import { MeshBasicMaterial } from 'three';
 import { Guitare } from '../Objects/Guitare';
 import { Guitare2 } from '../Objects/Guitare2';
 import { Guitare3 } from '../Objects/Guitare3';
+import { useTheatre } from './useTheatre';
 
 const objects = {
 	crucifix: { class: null },
@@ -64,6 +65,8 @@ export default class BedroomScene extends BaseScene {
 		_objects.forEach((o) => this.add(o));
 
 		this.base.add(scene);
+
+		useTheatre(this, { id: 'Bedroom Scene' });
 	}
 
 	async enter() {

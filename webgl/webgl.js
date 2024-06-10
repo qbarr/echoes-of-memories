@@ -1,19 +1,29 @@
 import { AudioListener } from 'three';
 
 import BedroomScene from './components/Scenes/BedroomScene';
+import CliniqueScene from './components/Scenes/CliniqueScene';
 import UIScene from './components/Scenes/UIScene';
 
-import { createWebgl, webgl } from './core';
-import CliniqueScene from './components/Scenes/CliniqueScene';
 import { POVCamera } from './components/Cameras/POVCamera';
+import { createWebgl, webgl } from './core';
 
-// import core from '@theatre/core';
-// import studio from '@theatre/studio';
+// const dummy = {
+// 	number: types.number(0, { range: [0, 100] }),
+// 	string: 'hello',
+// 	boolean: false,
+// 	position: { dum: { a: 0, b: 'sdhj' }, x: 0, y: 0, z: 0 },
+// };
+// const dummy2 = {
+// 	number: 17,
+// 	string: 'world',
+// 	boolean: true,
+// 	position: { x: 0, y: 0, z: 0 },
+// };
 
-// studio.initialize({
-// 	persistenceKey: 'EOM:theatrejs',
-// 	usePersistentStorage: true,
-// });
+// const project = getProject('Echoes Of Memories');
+// const sheet = project.sheet('dummy');
+// const dum = sheet.object('dummy', dummy);
+// const dum2 = sheet.object('dummy2', dummy2);
 
 export default createWebgl({
 	async setup() {

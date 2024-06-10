@@ -1,37 +1,42 @@
 <template>
-	<aside
-		class="debug-gui"
-	>
-		<div
-			ref="base"
-			class="debug-gui-scr"
-		></div>
+	<aside class="debug-gui" :style="{ '--offset': (isTheatreEnabled ? 400 : 0) + 'px' }">
+		<div ref="base" class="debug-gui-scr"></div>
 	</aside>
 </template>
 
 <script setup>
-	import { onMounted, ref, inject } from 'vue';
+import { webgl } from '#webgl/core/index.js';
+import { onMounted, ref, inject, shallowRef } from 'vue';
 
-	const base = ref();
-	const gui = inject('gui');
+const base = ref();
+const gui = inject('gui');
 
-	onMounted(() => {
-		if (gui) {
-			gui.container.classList.add('debug-gui-container');
-			base.value.appendChild(gui.container);
-		}
+const isTheatreEnabled = shallowRef(false);
+
+onMounted(() => {
+	if (gui) {
+		gui.container.classList.add('debug-gui-container');
+		base.value.appendChild(gui.container);
+	}
+
+	webgl.$hooks.beforeStart.watch(() => {
+		webgl.$theatre.studioActive.watchImmediate((v) => {
+			isTheatreEnabled.value = v;
+		});
 	});
+});
 </script>
 
 <style lang="scss">
 .debug-gui {
-	--tp-base-font-family: "Roboto Mono", "Source Code Pro", Menlo, Consolas, Courier, monospace;
+	--tp-base-font-family: 'Roboto Mono', 'Source Code Pro', Menlo, Consolas, Courier,
+		monospace;
 	position: fixed;
-	top: 8px;
+	top: calc(8px + var(--offset));
 	right: 8px;
 	width: calc(100% - 16px);
 	max-width: 300px;
-	height: calc(var(--inner-height) - 16px);
+	height: calc(var(--inner-height) - 16px - var(--offset));
 	font-family: var(--tp-base-font-family) !important;
 	pointer-events: none;
 	user-select: none;
@@ -63,7 +68,7 @@
 
 		// height: 150px;
 		pointer-events: none;
-		content: "";
+		content: '';
 	}
 }
 
@@ -104,12 +109,12 @@
 	border-left: 0 !important;
 }
 
-.tp-fldv_c>.tp-cntv,
-.tp-tabv_c .tp-brkv>.tp-cntv {
+.tp-fldv_c > .tp-cntv,
+.tp-tabv_c .tp-brkv > .tp-cntv {
 	margin-left: 0 !important;
 }
 
-.tp-tbpv_c>.tp-fldv {
+.tp-tbpv_c > .tp-fldv {
 	&:nth-child(odd) {
 		background: #05050b;
 	}
