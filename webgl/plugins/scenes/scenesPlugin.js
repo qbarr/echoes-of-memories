@@ -13,11 +13,11 @@ export function scenesPlugin(webgl) {
 
 	const api = {
 		list: [],
-		current,
 
 		get current() {
 			return current.value;
 		},
+		_current: current,
 
 		create,
 		set,
@@ -142,7 +142,8 @@ export function scenesPlugin(webgl) {
 			webgl.$hooks.beforeStart.watchOnce(() => {
 				if (!current.value) {
 					/// #if __DEBUG__
-					set(savedCurrentScene.value ?? api.list[0], true);
+					if (api[savedCurrentScene.value]) set(savedCurrentScene.value, true);
+					else set(api.list[0], true);
 					/// #else
 					set(api.list[0], true);
 					/// #endif

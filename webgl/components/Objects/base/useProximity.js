@@ -1,11 +1,6 @@
 import { storageSync, w } from '#utils/state/index.js';
 import { webgl } from '#webgl/core';
-import {
-	IcosahedronGeometry,
-	Mesh,
-	MeshBasicMaterial,
-	SphereGeometry,
-} from 'three';
+import { IcosahedronGeometry, Mesh, MeshBasicMaterial, SphereGeometry } from 'three';
 
 const NOOP = () => {};
 const surchargeMethod = (_class, id, cb, before) => {
@@ -33,7 +28,7 @@ export function useProximity(Class) {
 		outside: true,
 	};
 
-	const threshold = w(5);
+	const threshold = w(1);
 
 	/// #if __DEBUG__
 	let debugMesh = null;
@@ -55,6 +50,7 @@ export function useProximity(Class) {
 		const geo = new IcosahedronGeometry(1, 1);
 		const mat = new MeshBasicMaterial({ color: 0xff0000, wireframe: true });
 		debugMesh = new Mesh(geo, mat);
+		Object.assign(debugMesh.userData, { isDebug: true });
 		Class.base.add(debugMesh);
 
 		const baseScale = Class.base.scale;
@@ -84,17 +80,16 @@ export function useProximity(Class) {
 		}
 
 		/// #if __DEBUG__
-		if (forcedStates.inside || states.inside)
-			onInside(distance, normDistance);
+		if (forcedStates.inside || states.inside) onInside(distance, normDistance);
 		/// #else
 		if (states.inside) onInside(distance, normDistance);
 		/// #endif
 
-		// /// #if __DEBUG__
-		// if (forcedStates.inside || states.inside)
-		// 	debugMesh.material.color.setHex(0x00ff00);
-		// else debugMesh.material.color.setHex(0xff0000);
-		// /// #endif
+		/// #if __DEBUG__
+		if (forcedStates.inside || states.inside)
+			debugMesh.material.color.setHex(0x00ff00);
+		else debugMesh.material.color.setHex(0xff0000);
+		/// #endif
 	}
 
 	function destroy() {
@@ -120,7 +115,8 @@ export function useProximity(Class) {
 	}
 	/// #endif
 
-	surchargeMethod(Class, 'afterInit', init);
+	init(); // Init here because it's use directly from afterInit
+	// surchargeMethod(Class, 'afterInit', init);
 	surchargeMethod(Class, 'afterUpdate', update);
 	__DEBUG__ && surchargeMethod(Class, 'devtools', devtools);
 

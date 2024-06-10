@@ -1,10 +1,4 @@
-import {
-	BoxGeometry,
-	Color,
-	Mesh,
-	MeshBasicMaterial,
-	MeshNormalMaterial,
-} from 'three';
+import { BoxGeometry, Color, Mesh, MeshBasicMaterial, MeshNormalMaterial } from 'three';
 import { BaseInteractiveObject } from './base/BaseInteractiveObject';
 
 export class Cube extends BaseInteractiveObject {
@@ -18,12 +12,17 @@ export class Cube extends BaseInteractiveObject {
 		const mesh = new Mesh(geometry, material);
 
 		this.base.add(mesh);
+		this.base.position.set(
+			this.props.position.x,
+			this.props.position.y,
+			this.props.position.z,
+		);
 
 		this.padding.set(1);
 	}
 
 	update() {
-		this.base.rotation.y += 0.01;
-		this.base.position.y = Math.sin(this.base.rotation.y);
+		// this.base.rotation.y += 0.01;
+		// this.base.position.y = Math.sin(this.base.rotation.y);
 	}
 }

@@ -28,7 +28,18 @@ export default class MSDFTextMesh extends BaseComponent {
 
 		this.font = font;
 		this.content = content;
-		this.centerMesh = props.centerMesh ?? false;
+		if (props.centerMesh !== undefined) {
+			if (typeof props.centerMesh === 'boolean') {
+				this.centerMesh = { x: props.centerMesh, y: props.centerMesh };
+			} else if (Array.isArray(props.centerMesh)) {
+				this.centerMesh = { x: props.centerMesh[0], y: props.centerMesh[1] };
+			} else {
+				this.centerMesh = props.centerMesh;
+			}
+		} else {
+			this.centerMesh = { x: false, y: false };
+		}
+
 		this.position = new Vector3();
 		this.scale = new Vector2(1, 1);
 
@@ -92,14 +103,15 @@ export default class MSDFTextMesh extends BaseComponent {
 	}
 
 	updateTextPosition(force = false) {
-		if (!this.centerMesh) {
-			this.mesh.position.set(0, 0, 0);
-			return;
-		}
-
 		const { width, height } = this.geo._layout;
-		if (width !== null) this.mesh.position.x = -width * 0.5 * this.mesh.scale.x;
-		if (height !== null) this.mesh.position.y = height * 0.5 * this.mesh.scale.y;
+
+		if (this.centerMesh.x || force)
+			this.mesh.position.x = -width * 0.5 * this.mesh.scale.x;
+		else this.mesh.position.x = 0;
+
+		if (this.centerMesh.y || force)
+			this.mesh.position.y = height * 0.5 * this.mesh.scale.y;
+		else this.mesh.position.y = 0;
 	}
 
 	update() {
@@ -194,7 +206,11 @@ export default class MSDFTextMesh extends BaseComponent {
 
 		gui.addSeparator();
 
-		gui.addBinding(this, 'centerMesh', { label: 'Center Mesh' }).on(
+		gui.addBinding(this.centerMesh, 'x', { label: 'Center Text X' }).on(
+			'change',
+			({ value }) => this.updateTextPosition(),
+		);
+		gui.addBinding(this.centerMesh, 'y', { label: 'Center Text Y' }).on(
 			'change',
 			({ value }) => this.updateTextPosition(),
 		);

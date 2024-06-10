@@ -16,6 +16,7 @@ import { gpgpuPlugin } from './gpgpu/gpgpuPlugin.js';
 
 import { subtitlesPlugin } from './subtitles/subtitlesPlugin.js';
 import { audioPlugin } from './audio/audioPlugin.js';
+import { theatrePlugin } from './theatre/theatrePlugin.js';
 
 export const plugins = [
 	/* CORE PLUGINS */
@@ -35,4 +36,5 @@ export const plugins = [
 
 	/* PROJECT PLUGINS */
 	raycastPlugin,
+	theatrePlugin,
 ];

@@ -69,28 +69,17 @@ void main() {
 	vec4 tex = texture2D(tMap, uv);
 	tex += texture2D(tBloom, uv);
 
-	// Tint - Bichromy
-	// tex.rgb = mix(tex.rgb, vec3(dot(tex.rgb, vec3(0.299, 0.587, 0.114))), uBichromy);
-
-	// Tint - Saturation
-	// tex.rgb = mix(vec3(dot(tex.rgb, vec3(0.299, 0.587, 0.114))), tex.rgb, uSaturation);
-
-	// grayscale all the channels except the chosen one
-	// vec3 chosenChannel = vec3(1.0, 0.0, 0.0); // red
-	// float luminance = dot(tex.rgb, chosenChannel);
-	// tex.rgb = mix(vec3(dot(tex.rgb, vec3(0.299, 0.587, 0.114))), tex.rgb, luminance);
-
 	// TODO: replace by blue noise texture
 	tex.rgb = mix(tex.rgb, dither(tex.rgb), uDitherStrength);
 
 	gl_FragColor = tex;
+
+	// Black stripe
+	float stripes = 0.;
+	float size = .1;
+	stripes += step(size, uv.y); // top
+	stripes -= step(1. - size, uv.y); // bottom
+
+	// gl_FragColor.rgb *= stripes;
 	gl_FragColor.a = 1.0;
-
-	// vec4 depthColor = texture2D(tDepth, uv);
-	// float geometryZ = calc_depth(unpackRGBAToDepth(depthColor));
-	// float sceneZ = calc_depth(gl_FragCoord.z);
-	// float _distance = 0.4;
-	// float softAlpha = smoothstep(0., _distance, saturate(geometryZ - sceneZ));
-
-	// gl_FragColor.rgb = mix(tex.rgb, vec3(0.0), softAlpha);
 }

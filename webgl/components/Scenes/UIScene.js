@@ -38,8 +38,10 @@ export default class UIScene extends BaseScene {
 				void main() {
 					vec2 uv = vUv;
 					if (uType == 1) {
-						float d = max(abs(uv.x), abs(uv.y));
-						if (d > 0.2) discard;
+						// circle
+						vec2 p = uv - 0.5;
+						float d = length(p);
+						if (d > .07) discard;
 						gl_FragColor = vec4(1.0);
 					} else {
 						uv -= 0.5;
@@ -59,7 +61,8 @@ export default class UIScene extends BaseScene {
 			blending: AdditiveBlending,
 		});
 		this.crosshair = new Mesh(planeGeo, planeMat);
-		this.crosshair.scale.setScalar(4);
+		this.crosshair.scale.setScalar(2);
+		this.crosshair.position.set(0, 0, -0.5);
 		this.addObject3D(this.crosshair);
 	}
 

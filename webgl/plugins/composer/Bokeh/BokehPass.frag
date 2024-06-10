@@ -6,7 +6,7 @@ precision highp float;
 #define MAX_SAMPLES 10.0
 
 uniform sampler2D tMap;
-// uniform sampler2D tInterface;
+uniform sampler2D tSketchLines;
 uniform sampler2D tDepth;
 uniform float uStrength;
 uniform float uAmount;
@@ -62,8 +62,8 @@ void main() {
 
 	FragColor = vec4(colAcum, 1.0);
 
-	// vec4 interfaceColor = texture(tInterface, vUv);
-	// FragColor += interfaceColor;
+	// vec4 outlines = texture(tSketchLines, vUv);
+	// FragColor.rgb += outlines.rgb;
 
 	// FragColor.rgb = mix(FragColor.rgb, mix(FragColor.rgb, vec3(1), 0.5), amount);
 }

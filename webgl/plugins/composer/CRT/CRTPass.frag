@@ -46,7 +46,7 @@ void main() {
 	vec2 res = uResolution.xy * uResolution.z;
 	vec2 uv2 = gl_FragCoord.xy / res;
 
-	vec2 adjustedUV = uv;
+	// vec2 adjustedUV = uv;
 	// adjustedUV.x -= aspectRatio;
 	// adjustedUV = vec2(uv.x * aspectRatio, uv.y);
 	// adjustedUV.x += (1.0 - aspectRatio) / 2.0;
@@ -70,6 +70,7 @@ void main() {
 
 	// adjustedUV -= 0.5;
 	// adjustedUV = fisheye(adjustedUV);
+	// float vign = vignette(adjustedUV);
 	// adjustedUV += 0.5;
 
 	vec4 tex = texture2D(tMap, uv);

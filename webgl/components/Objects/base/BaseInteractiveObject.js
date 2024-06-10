@@ -6,13 +6,13 @@ import { useProximity } from './useProximity';
 import { w } from '#utils/state';
 
 export class BaseInteractiveObject extends BaseComponent {
-	static isInteractiveObject = true;
-
 	constructor(props = {}) {
 		super(props);
-
+		this.isInteractiveObject = true;
 		this.base = new Object3D();
+	}
 
+	afterInit() {
 		const { padding } = useInteraction(this);
 		this.padding = padding;
 
@@ -42,8 +42,6 @@ export class BaseInteractiveObject extends BaseComponent {
 	onInsidePerimeter(distance, normDistance) {
 		this.log('PERIMETER:inside', distance, normDistance);
 	}
-
-	update() {}
 
 	/// #if __DEBUG__
 	devtools(_gui) {

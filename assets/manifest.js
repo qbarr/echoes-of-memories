@@ -1,7 +1,21 @@
+const raw = (path, arg = {}, type = null) => ({ url: path, opts: arg, type });
+
 const img = (path, arg = {}) => ({
 	url: path,
 	opts: arg,
 	type: 'img',
+});
+const lut = (path, arg = {}) => ({
+	url: path,
+	opts: {
+		repeat: false,
+		flipY: false,
+		wrapS: 1001,
+		wrapT: 1001,
+		nearest: true,
+		...arg,
+	},
+	type: 'lut',
 });
 const msdf = (path, args = {}) => ({
 	url: `${path}/*.[ktx2|png|json]`,
@@ -14,26 +28,16 @@ const ktx2 = (path, arg = {}) => ({
 	opts: arg,
 	type: 'ktx2',
 });
-const copy = (path, arg = {}, type = null) => ({ url: path, opts: arg, type });
 
-const positional = (path) => ({
+const audio = (path, args = {}) => ({
 	url: `${path}/*.[mp3|wav|ogg]`,
-	opts: { type: 'positional' },
+	opts: args,
 	type: 'audio',
 });
-const vocal = (path) => ({
-	url: `${path}/*.[mp3|wav|ogg]`,
-	opts: { type: 'vocal' },
-	type: 'audio',
-});
-const ambiant = (path) => ({
-	url: `${path}/*.[mp3|wav|ogg]`,
-	opts: { type: 'ambiant' },
-	type: 'audio',
-});
-const subtitles = (path) => ({
+
+const json = (path, args = {}) => ({
 	url: `${path}/*.json`,
-	opts: { type: 'subtitles' },
+	opts: args,
 	type: 'json',
 });
 
@@ -43,24 +47,22 @@ export default {
 	// scene1: glb('models/scene1'),
 	noises: img('data-textures/*.png', { repeat: true }),
 	interface: img('interface/*.*'),
-	luts: copy(
-		'luts/*.[png|jpg]',
-		{
-			repeat: false,
-			flipY: false,
-			wrapS: 1001,
-			wrapT: 1001,
-			nearest: true,
-		},
-		'lut',
-	),
+	luts: lut('luts/*.[png|jpg]'),
 
 	boat: glb('scenes/boat'),
 	// Chambre
 	'chambre-model': glb('scenes/chambre/model'),
 	'chambre/textures': ktx2('scenes/chambre/*', { flipY: false }),
 
-	'sound/positions': positional('audios/positional/*'),
-	'sound/vocals': vocal('audios/vocals/*'),
-	subtitles: subtitles('subtitles/export/*'),
+	// Clinique
+	'clinique-model': glb('scenes/clinique/model'),
+	'clinique/textures': ktx2('scenes/clinique/*', { flipY: false }),
+
+	// Audios
+	'sound/positions': audio('audios/positional/*', { type: 'positional' }),
+	'sound/vocals': audio('audios/vocals/*', { type: 'vocal' }),
+	'sound/sfx': audio('audios/sfx/*', { type: 'sfx' }),
+
+	// Subtitles
+	subtitles: json('subtitles/export/*', { type: 'subtitles' }),
 };

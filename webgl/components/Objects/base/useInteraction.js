@@ -6,6 +6,7 @@
 import { w } from '#utils/state';
 import { webgl } from '#webgl/core';
 import { Box3, BoxGeometry, Mesh, MeshBasicMaterial, Vector3 } from 'three';
+import { OBB } from 'three/addons/math/OBB.js';
 
 const NOOP = () => {};
 const surchargeMethod = (_class, id, cb, before) => {
@@ -29,27 +30,34 @@ export function useInteraction(Class) {
 	const onEnter = (Class.onEnter ?? NOOP).bind(Class);
 	const onLeave = (Class.onLeave ?? NOOP).bind(Class);
 
-	const padding = w(0);
+	const padding = w(0.3);
 
 	/// #if __DEBUG__
-	const displayDebug = storageSync('webgl:' + Class.name + ':interaction:debug', w(false));
+	const displayDebug = storageSync(
+		'webgl:' + Class.name + ':interaction:debug',
+		w(false),
+	);
 	/// #endif
 
 	function init() {
 		// Scale the box to the object size
-		const box = new Box3().expandByObject(Class.base);
-		const vec3 = Vector3.get();
-		box.getSize(vec3);
-		const geo = new BoxGeometry(vec3.x, vec3.y, vec3.z);
+		// const box = new Box3().expandByObject(Class.base);
+		// const vec3 = Vector3.get();
+		// box.getSize(vec3);
+		// const geo = new BoxGeometry(vec3.x, vec3.y, vec3.z);
 		const debugMat = new MeshBasicMaterial({ wireframe: true });
-		const mesh = (raycastableMesh = new Mesh(geo, debugMat));
+		// const mesh = (raycastableMesh = new Mesh(geo, debugMat));
+		const mesh = (raycastableMesh = Class.mesh.clone());
+		mesh.material = debugMat;
+		// mesh.rotation.copy(Class.base.rotation);
+		Object.assign(mesh.userData, { isDebug: true });
 
 		// Center the mesh
-		box.getCenter(vec3);
+		// box.getCenter(vec3);
 		// mesh.position.copy(vec3);
-		vec3.release();
+		// vec3.release();
 
-		const baseScale = Class.base.scale;
+		const baseScale = mesh.scale.clone();
 		padding.watchImmediate((v) => {
 			mesh.scale.set(baseScale.x + v, baseScale.y + v, baseScale.z + v);
 		});
@@ -60,6 +68,7 @@ export function useInteraction(Class) {
 		mesh.visible = false;
 		/// #endif
 
+		// console.log(Class, mesh);
 		webgl.$raycast.add(mesh, {
 			onDown: onClick,
 			onHold: onHold,
@@ -82,18 +91,25 @@ export function useInteraction(Class) {
 		const gui = (Class.gui ?? webgl.$gui).addFolder({ title: 'Interaction' });
 
 		gui.addButton({ title: 'Click' }).on('click', onClick);
-		gui.addBinding({ hold: false }, 'hold', { label: 'Hold' }).on('change', ({ value }) =>
-			value ? raf.add(onHold) : raf.remove(onHold),
+		gui.addBinding({ hold: false }, 'hold', { label: 'Hold' }).on(
+			'change',
+			({ value }) => (value ? raf.add(onHold) : raf.remove(onHold)),
 		);
 		gui.addButton({ title: 'Enter' }).on('click', onEnter);
 		gui.addButton({ title: 'Leave' }).on('click', onLeave);
 		gui.addSeparator();
 		gui.addBinding(displayDebug, 'value', { label: 'Debug' });
-		gui.addBinding(padding, 'value', { label: 'Padding', min: 0, max: 10, step: 0.01 });
+		gui.addBinding(padding, 'value', {
+			label: 'Padding',
+			min: 0,
+			max: 10,
+			step: 0.01,
+		});
 	}
 	/// #endif
 
-	surchargeMethod(Class, 'afterInit', init);
+	init(); // Init here because it's use directly from afterInit
+	// surchargeMethod(Class, 'afterInit', init);
 	surchargeMethod(Class, 'beforeDestroy', destroy, true);
 	__DEBUG__ && surchargeMethod(Class, 'devtools', devtools);
 

@@ -3,18 +3,18 @@ import BaseCamera from '#webgl/core/BaseCamera';
 import POVController from '#webgl/utils/POVController.js';
 
 import Wobble from './Wobble.js';
+import { useCameraHelper } from './useDebugHelper.js';
 
-const HEIGHT = 4;
-const DEFAULT_FOV = 35;
+const HEIGHT = 2.75;
+const DEFAULT_FOV = 55;
 
-const defaultTarget = {
+const DEFAULT_TARGET = {
 	object: new Object3D(),
 	offset: new Vector3(0, HEIGHT, 0),
 };
 
 export class POVCamera extends BaseCamera {
-	async init() {
-		console.log('[POVCamera] init');
+	init() {
 		this.$pointerLocked = false;
 
 		this.onClick = this.onClick.bind(this);
@@ -35,47 +35,34 @@ export class POVCamera extends BaseCamera {
 
 	/// #if __DEBUG__
 	devtools() {
-		const $gui = this.webgl.$app.$gui;
+		this.gui = this.webgl.$gui.addFolder({ title: '👁️ POVCamera' });
 
-		const gui = $gui.webgl.addFolder({ title: '👁️ POVCamera', index: 1 });
+		this.wobble.devtools(this.gui);
 
-		this.wobble.devtools(gui);
+		useCameraHelper(this);
 	}
 	/// #endif
 
 	afterInit() {
 		super.afterInit();
-		console.log('[POVCamera] afterInit');
 
-		this.base.position.fromArray([2.9116, HEIGHT, 7.49768]);
-		this.base.quaternion.fromArray([-0.04, 0.5, 0.03, 0.8]);
+		this.base.position.fromArray([-8.67082, HEIGHT, 4.88725]);
+		this.base.quaternion.fromArray([-0.095825, -0.464204, -0.050601, 0.879074]);
 		this.base.fov = DEFAULT_FOV;
+		this.base.updateProjectionMatrix();
 
-		this.controls = POVController(this.cam, {
+		this.controls = POVController(this.base, {
 			enabled: this.$pointerLocked,
-			target: defaultTarget,
 		});
-
-		// const { $getCurrentScene, $canvas, $raycast, $assets } = this.webgl;
-		// const chambre = $assets.objects['chambre-model'].scene;
-		// const scene = $getCurrentScene();
-		// const muretsol = chambre.getObjectByName('mursetsol');
-		// console.log(muretsol);
 
 		this.wobble = new Wobble(this.base.position);
 
-		// $raycast.add(muretsol, {
-		// 	onDown: this.onClick,
-		// 	forceVisible: true,
-		// 	forcedScene: scene,
-		// });
-
-		// document.addEventListener('click', this.onClick);
+		document.addEventListener('click', this.onClick); // temp
 		document.addEventListener('pointerlockchange', this.onPointerLockChange);
 	}
 
-	onPointerLockChange() {
-		console.log('[POVCamera] onPointerLockChange', this.$pointerLocked);
+	onPointerLockChange(ev) {
+		this.log('onPointerLockChange', this.$pointerLocked);
 
 		if (!this.$pointerLocked) {
 			this.$pointerLocked = true;
@@ -86,13 +73,17 @@ export class POVCamera extends BaseCamera {
 		}
 	}
 
-	onClick() {
+	onClick(ev) {
+		/// #if __DEBUG__
+		if (preventDebug(ev)) return;
+		/// #endif
+
 		const { $getCurrentScene, $canvas } = this.webgl;
 		const scene = $getCurrentScene();
 		const currentCam = scene.getCurrentCamera();
 
 		if (!this.$pointerLocked && currentCam.name !== 'Debug Camera') {
-			console.log('[POVCamera] onClick');
+			this.log('onClick');
 			$canvas.requestPointerLock();
 		}
 	}
@@ -121,9 +112,13 @@ export class POVCamera extends BaseCamera {
 
 	update() {
 		this.wobble.update(this.webgl.$time.elapsed * this.$wobbleIntensity);
-
-		if (this.controls) {
-			this.controls.update();
-		}
+		this.controls?.update?.();
+		this.base.updateProjectionMatrix();
 	}
 }
+
+/// #if __DEBUG__
+function preventDebug(ev) {
+	return ev.target.closest('.debug');
+}
+/// #endif

@@ -1,12 +1,21 @@
+/// #if __DEBUG__
+import { BufferGeometry, Line, LineBasicMaterial, Vector3 } from 'three';
+/// #endif
 import { Raycaster, Vector2 } from 'three';
 
 import { clampedMap } from '#utils/maths';
-import { w } from '#utils/state';
+import { storageSync, w } from '#utils/state';
 
 const NOOP = (v) => v;
 const opts = { passive: false };
 
 export function raycastPlugin(webgl) {
+	/// #if __DEBUG__
+	const geometry = new BufferGeometry();
+	const material = new LineBasicMaterial({ color: 0xff0000 });
+	const debugLine = new Line(geometry, material);
+	/// #endif
+
 	const scenes = new WeakMap();
 	let currentScene = null;
 
@@ -52,18 +61,26 @@ export function raycastPlugin(webgl) {
 		update,
 	};
 
+	function init() {
+		listen();
+		__DEBUG__ && devtools();
+	}
+
 	function toggle(shouldListen, { $el = document } = {}) {
 		const ev = shouldListen ? 'addEventListener' : 'removeEventListener';
 
 		$el[ev]('touchstart', onDown, opts);
-		$el[ev]('touchmove', onMove, opts);
+		// $el[ev]('touchmove', onMove, opts);
 		$el[ev]('touchend', onUp, opts);
 		$el[ev]('touchcancel', onUp, opts);
 
 		$el[ev]('mousedown', onDown, opts);
-		$el[ev]('mousemove', onMove, opts);
+		// $el[ev]('mousemove', onMove, opts);
 		$el[ev]('mouseup', onUp, opts);
 		$el[ev]('mouseleave', onUp, opts);
+
+		if (shouldListen) pointer.position.set(0, 0);
+		else pointer.position.set(-Infinity, -Infinity);
 	}
 
 	function listen() {
@@ -202,7 +219,7 @@ export function raycastPlugin(webgl) {
 
 		const { id } = webgl.$scenes.getSceneByComponent(scene);
 
-		if (!scenes.has(scene)) {
+		if (!scenes.has(id)) {
 			scenes.set(id, {
 				objects: new WeakMap(),
 				rawList: [],
@@ -253,7 +270,10 @@ export function raycastPlugin(webgl) {
 
 		if (!rawList.length) return;
 
-		const cam = scene.component.getCurrentCamera().base;
+		// const cam = scene.component.getCurrentCamera().base;
+		const cam = scene.component._cam.current.base;
+
+		pointer.position.set(0, 0);
 
 		// Update raycaster globally
 		if (!cameraNeedsUpdate) {
@@ -264,6 +284,17 @@ export function raycastPlugin(webgl) {
 			}
 
 			raycaster.setFromCamera(pointer.position, cam);
+
+			/// #if __DEBUG__
+			if (debugLine.parent !== scene.component.base) {
+				scene.component.base.add(debugLine);
+			}
+
+			const vec3 = Vector3.get();
+			raycaster.ray.at(20, vec3),
+				debugLine.geometry.setFromPoints([raycaster.ray.origin, vec3]);
+			vec3.release();
+			/// #endif
 
 			for (let i = 0; i < rawList.length; i++) {
 				const obj = objects.get(rawList[i]);
@@ -330,12 +361,24 @@ export function raycastPlugin(webgl) {
 		intersects.length = 0;
 	}
 
+	/// #if __DEBUG__
+	function devtools() {
+		const gui = webgl.$gui.addFolder({ title: '📌 Raycast', index: 1 });
+
+		const enabledDebugLigne = storageSync('webgl:raycast:debugLine', w(false));
+		gui.addBinding(enabledDebugLigne, 'value', { label: 'Debug Line' }).on(
+			'change',
+			({ value }) => (debugLine.visible = value),
+		);
+	}
+	/// #endif
+
 	return {
 		install: () => {
 			webgl.$raycast = api;
 		},
 		load: () => {
-			webgl.$hooks.afterSetup.watchOnce(listen);
+			webgl.$hooks.afterSetup.watchOnce(init);
 			webgl.$hooks.beforeUpdate.watch(update);
 		},
 	};
