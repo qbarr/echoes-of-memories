@@ -11,7 +11,7 @@ uniform sampler2D tCloudNoiseMap;
 
 uniform float uCameraNear;
 uniform float uCameraFar;
-uniform vec2 uDitherOffset;
+uniform vec2 uSketchOffset;
 
 in vec2 vUv;
 out vec4 FragColor;
@@ -62,7 +62,7 @@ float diffuseValue(int x, int y) {
 	float offset = 0.5 / cutoff;
 	float noiseValue = clamp(texture(tCloudNoiseMap, vUv).r, 0.0, cutoff) / cutoff - offset;
 
-	return valueAtPoint(tSelectiveNormal, vUv + noiseValue, vec2(1.0 / uResolution.x, 1.0 / uResolution.y), vec2(x, y)) * 0.6;
+	return valueAtPoint(tSelectiveNormal, vUv + noiseValue * uSketchOffset * .5, vec2(1.0 / uResolution.x, 1.0 / uResolution.y), vec2(x, y)) * 0.6;
 }
 
 float normalValue(int x, int y) {
@@ -70,7 +70,7 @@ float normalValue(int x, int y) {
 	float offset = 0.5 / cutoff;
 	float noiseValue = clamp(texture(tCloudNoiseMap, vUv).r, 0.0, cutoff) / cutoff - offset;
 
-	return valueAtPoint(tSelectiveNormal, vUv + noiseValue, vec2(1.0 / uResolution.x, 1.0 / uResolution.y), vec2(x, y)) * 0.3;
+	return valueAtPoint(tSelectiveNormal, vUv + noiseValue * uSketchOffset * .5, vec2(1. / uResolution.x, 1. / uResolution.y), vec2(x, y)) * 0.3;
 }
 
 float getValue(int x, int y) {
@@ -79,7 +79,6 @@ float getValue(int x, int y) {
 	noiseValue *= 10.0;
 
 	return diffuseValue(x, y) + normalValue(x, y) * noiseValue;
-//	return diffuseValue(x, y) + normalValue(x, y);
 }
 
 float getPixelDepth(int x, int y) {

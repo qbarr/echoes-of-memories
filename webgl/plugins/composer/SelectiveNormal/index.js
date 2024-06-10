@@ -42,7 +42,10 @@ export const useSelectiveNormalPass = (composer) => {
 	});
 
 	function render(scene, renderer) {
-		if (!enabled.value) return;
+		if (!enabled.value || !objectsToRender.length) {
+			uniforms.tSelectiveNormal.value = DUMMY_RT.texture;
+			return;
+		}
 
 		renderer = renderer ?? $threeRenderer;
 

@@ -26,11 +26,11 @@ export default class BedroomScene extends BaseScene {
 
 	init() {
 		// this.camera = this.add(MainCamera);
-		this.camera = this.add(POVCamera);
+		// this.camera = this.add(this.webgl.$povCamera);
 
 		const { $assets } = this.webgl;
 
-		const chambre = $assets.objects['chambre-model'].scene;
+		const scene = $assets.objects['chambre-model'].scene;
 		const textures = $assets.textures['chambre'];
 
 		const floor_wall_mat = new MeshBasicMaterial({
@@ -41,11 +41,11 @@ export default class BedroomScene extends BaseScene {
 			map: textures['objects_map'],
 		});
 
-		// chambre.scale.setScalar(3);
+		// scene.scale.setScalar(3);
 
 		const _objects = [];
 
-		chambre.traverse((child) => {
+		scene.traverse((child) => {
 			if (!child.isMesh || !child.material) return;
 
 			if (child.name === 'mursetsol') {
@@ -63,11 +63,13 @@ export default class BedroomScene extends BaseScene {
 
 		_objects.forEach((o) => this.add(o));
 
-		this.base.add(chambre);
+		this.base.add(scene);
 	}
 
 	async enter() {
 		this.log('enter');
+		this.camera = this.add(this.webgl.$povCamera);
+		this.log('>>>>>', this.camera);
 	}
 
 	async leave() {

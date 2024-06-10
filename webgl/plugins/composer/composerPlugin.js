@@ -2,6 +2,7 @@ import createFilter from '#webgl/utils/createFilter';
 import { MeshNormalMaterial, Vector2 } from 'three';
 
 import { prng } from '#utils/maths/prng.js';
+import { w } from '#utils/state';
 
 import CompositePass from './CompositePass.frag?hotshader';
 import { useBokehPass } from './Bokeh';
@@ -16,13 +17,16 @@ import { useSelectiveNormalPass } from './SelectiveNormal';
 const rf = prng.randomFloat;
 
 export function composerPlugin(webgl) {
+	const passes = [];
 	const buffers = {};
 	const filters = {};
 
 	const uniforms = {};
 	const defines = {};
 
-	const passes = [];
+	const enabled = w(true);
+
+	let currentScene = null;
 
 	const api = {
 		buffers,
@@ -75,10 +79,23 @@ export function composerPlugin(webgl) {
 		passes.push(useUnrealBloomPass(api));
 		passes.push(useLutPass(api));
 
+		webgl.$scenes._current.watchImmediate(onSceneSwitch);
+
 		// $renderer.drawingBufferSize.watchImmediate(resize);
-		$hooks.beforeUpdate.watch(update);
+		// $hooks.beforeUpdate.watch(update);
 
 		__DEBUG__ && devtools();
+	}
+
+	// Update parameters when scene changes
+	function onSceneSwitch(scene) {
+		currentScene = scene;
+		const { name } = scene;
+		if (name === 'bedroom') {
+			api.$crt.enabled.set(true);
+		} else if (name === 'clinique') {
+			api.$crt.enabled.set(false);
+		}
 	}
 
 	// function resize({ width, height }) {
@@ -91,12 +108,12 @@ export function composerPlugin(webgl) {
 		uniforms.uDitherOffset.value.set(rf(0, 128), rf(0, 128));
 	}
 
-	const overrideMaterial = new MeshNormalMaterial();
-
 	function render() {
 		const { $scenes } = webgl;
 		const scene = $scenes.current.component;
 		const renderer = webgl.$threeRenderer;
+
+		if (!enabled.value) return scene.triggerRender();
 
 		// Render UI Scene
 		renderer.setRenderTarget(buffers.interface);
@@ -150,6 +167,8 @@ export function composerPlugin(webgl) {
 		const gui = webgl.$gui.addFolder({ title: '✨ Composer', index: 5 });
 		const add = (obj, { label, min = 0, max = 1, step = 0.01 } = {}) =>
 			gui.addBinding(obj, 'value', { label, min, max, step });
+
+		gui.addBinding(enabled, 'value', { label: 'Enabled' });
 
 		add(uniforms.uDitherStrength, { label: 'Dithering', max: 2 });
 		gui.addSeparator();

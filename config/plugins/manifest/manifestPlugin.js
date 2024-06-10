@@ -17,8 +17,7 @@ const getFolder = (folder) => {
 
 const createFolder = (folder, force = false) => {
 	const _folder = path.join(paths.assets, folder);
-	if (fs.existsSync(_folder) && force)
-		fs.rmSync(_folder, { recursive: true });
+	if (fs.existsSync(_folder) && force) fs.rmSync(_folder, { recursive: true });
 	if (!fs.existsSync(_folder)) fs.mkdirSync(_folder);
 	return _folder;
 };
@@ -72,10 +71,7 @@ const Parser = {
 					const subFolder = folders[i];
 					const url =
 						'/assets/' +
-						path
-							.join(folder, subFolder, file)
-							.split('assets/')
-							.pop();
+						path.join(folder, subFolder, file).split('assets/').pop();
 					const filename = `${id}.${ext}`;
 					return { filename, id, ext, subFolder, url };
 				});
@@ -93,8 +89,7 @@ const Parser = {
 			.readdirSync(folder)
 			.map((file) => {
 				const [id, ext] = file.split('.');
-				const url =
-					'/assets/' + path.join(folder, file).split('assets/').pop();
+				const url = '/assets/' + path.join(folder, file).split('assets/').pop();
 				const filename = `${id}.${ext}`;
 
 				return { filename, id, ext, url };
@@ -115,7 +110,7 @@ const Parser = {
 		const _url = '/assets/' + url;
 		const filename = `${id}.${ext}`;
 
-		const hashedId = createHash(id, Parser.needCache);
+		const hashedId = createHash(_url, Parser.needCache);
 		const hashedFile = {
 			id: hashedId,
 			ext,
@@ -135,10 +130,10 @@ const Parser = {
 
 		return files
 			.map((file) => {
-				const { id, ext, subFolder } = file;
+				const { url, id, ext, subFolder } = file;
 				if (!noFilter && !filter.includes(ext)) return;
 
-				const hashedId = createHash(id, Parser.needCache);
+				const hashedId = createHash(url, Parser.needCache);
 				const hashedFile = {
 					id: hashedId,
 					ext,

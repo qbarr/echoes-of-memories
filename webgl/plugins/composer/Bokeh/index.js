@@ -53,9 +53,9 @@ export const useBokehPass = (composer) => {
 	}));
 	BokehPass.use(filter.material);
 
-	Object.assign(uniforms, {
-		tBokeh: { value: texture, type: 't' },
-	});
+	// Object.assign(uniforms, {
+	// 	tBokeh: { value: texture, type: 't' },
+	// });
 
 	function render(scene, renderer) {
 		if (!enabled.value) return;
@@ -67,7 +67,7 @@ export const useBokehPass = (composer) => {
 		filter.render();
 		texture = buffer.texture;
 		uniforms.tMap.value = texture;
-		uniforms.tBokeh.value = texture;
+		// uniforms.tBokeh.value = texture;
 	}
 
 	/// #if __DEBUG__

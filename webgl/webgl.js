@@ -4,6 +4,8 @@ import BedroomScene from './components/Scenes/BedroomScene';
 import UIScene from './components/Scenes/UIScene';
 
 import { createWebgl, webgl } from './core';
+import CliniqueScene from './components/Scenes/CliniqueScene';
+import { POVCamera } from './components/Cameras/POVCamera';
 
 // import core from '@theatre/core';
 // import studio from '@theatre/studio';
@@ -20,7 +22,10 @@ export default createWebgl({
 		$renderer.setup({ alias: false, antialias: false });
 		$renderer.instance.setClearColor(0x000000, 0);
 
+		webgl.$povCamera = new POVCamera();
+
 		$scenes.create('bedroom', BedroomScene);
+		$scenes.create('clinique', CliniqueScene);
 		$scenes.create('ui', UIScene);
 	},
 
@@ -48,6 +53,10 @@ export default createWebgl({
 			// Chambre
 			load('chambre-model'),
 			load('chambre/textures'),
+
+			// Clinique
+			load('clinique-model'),
+			load('clinique/textures'),
 		]);
 
 		console.log('LOADED', webgl);
@@ -59,7 +68,8 @@ export default createWebgl({
 	},
 
 	update() {
-		const { $scenes } = webgl;
+		const { $scenes, $composer } = webgl;
+		$composer.update();
 		$scenes.update();
 	},
 

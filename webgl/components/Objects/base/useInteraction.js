@@ -30,7 +30,7 @@ export function useInteraction(Class) {
 	const onEnter = (Class.onEnter ?? NOOP).bind(Class);
 	const onLeave = (Class.onLeave ?? NOOP).bind(Class);
 
-	const padding = w(0);
+	const padding = w(0.3);
 
 	/// #if __DEBUG__
 	const displayDebug = storageSync(
@@ -41,22 +41,23 @@ export function useInteraction(Class) {
 
 	function init() {
 		// Scale the box to the object size
-
-		const box = new Box3().expandByObject(Class.base);
-		const vec3 = Vector3.get();
-		box.getSize(vec3);
-		const geo = new BoxGeometry(vec3.x, vec3.y, vec3.z);
+		// const box = new Box3().expandByObject(Class.base);
+		// const vec3 = Vector3.get();
+		// box.getSize(vec3);
+		// const geo = new BoxGeometry(vec3.x, vec3.y, vec3.z);
 		const debugMat = new MeshBasicMaterial({ wireframe: true });
-		const mesh = (raycastableMesh = new Mesh(geo, debugMat));
-		mesh.rotation.copy(Class.base.rotation);
+		// const mesh = (raycastableMesh = new Mesh(geo, debugMat));
+		const mesh = (raycastableMesh = Class.mesh.clone());
+		mesh.material = debugMat;
+		// mesh.rotation.copy(Class.base.rotation);
 		Object.assign(mesh.userData, { isDebug: true });
 
 		// Center the mesh
 		// box.getCenter(vec3);
 		// mesh.position.copy(vec3);
-		vec3.release();
+		// vec3.release();
 
-		const baseScale = Class.base.scale;
+		const baseScale = mesh.scale.clone();
 		padding.watchImmediate((v) => {
 			mesh.scale.set(baseScale.x + v, baseScale.y + v, baseScale.z + v);
 		});
@@ -67,7 +68,7 @@ export function useInteraction(Class) {
 		mesh.visible = false;
 		/// #endif
 
-		console.log(Class, mesh);
+		// console.log(Class, mesh);
 		webgl.$raycast.add(mesh, {
 			onDown: onClick,
 			onHold: onHold,
