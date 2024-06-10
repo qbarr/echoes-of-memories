@@ -35,7 +35,7 @@ export default createWebgl({
 		webgl.$povCamera = new POVCamera();
 
 		$scenes.create('bedroom', BedroomScene);
-		$scenes.create('clinique', CliniqueScene);
+		$scenes.create('clinique', CliniqueScene, { default: true });
 		$scenes.create('ui', UIScene);
 	},
 
