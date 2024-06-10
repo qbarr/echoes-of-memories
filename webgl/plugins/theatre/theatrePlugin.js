@@ -13,7 +13,7 @@ const studioActive = storageSync('webgl:theatre:studioActive', w(false));
 /// #endif
 
 export function theatrePlugin(webgl) {
-	const projects = new WeakMap();
+	const projects = new Map();
 	const symbols = {};
 
 	const api = {

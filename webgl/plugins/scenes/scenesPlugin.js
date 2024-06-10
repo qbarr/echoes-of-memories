@@ -34,10 +34,12 @@ export function scenesPlugin(webgl) {
 		api.list.forEach((scene) => scene.component.triggerInit());
 	}
 
-	function create(name, Class) {
+	function create(name, Class, opts = {}) {
 		const Scene = new Class();
 
 		const s = (api[name] = {
+			...opts,
+
 			name,
 			id: Symbol(name),
 			isActive: true,
@@ -50,6 +52,8 @@ export function scenesPlugin(webgl) {
 			update: Scene.triggerUpdate.bind(Scene),
 			render: Scene.triggerRender.bind(Scene),
 		});
+
+		console.log(s);
 
 		api.list.push(s);
 
@@ -145,7 +149,9 @@ export function scenesPlugin(webgl) {
 					if (api[savedCurrentScene.value]) set(savedCurrentScene.value, true);
 					else set(api.list[0], true);
 					/// #else
-					set(api.list[0], true);
+					let scene = api.list.find((s) => s.default === true);
+					scene = scene || api.list[0];
+					set(scene, true);
 					/// #endif
 				}
 

@@ -16,7 +16,7 @@ export function raycastPlugin(webgl) {
 	const debugLine = new Line(geometry, material);
 	/// #endif
 
-	const scenes = new WeakMap();
+	const scenes = new Map();
 	let currentScene = null;
 
 	const intersects = [];
@@ -221,7 +221,7 @@ export function raycastPlugin(webgl) {
 
 		if (!scenes.has(id)) {
 			scenes.set(id, {
-				objects: new WeakMap(),
+				objects: new Map(),
 				rawList: [],
 			});
 		}
