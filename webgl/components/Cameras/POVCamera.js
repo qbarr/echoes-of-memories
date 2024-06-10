@@ -20,14 +20,6 @@ export class POVCamera extends BaseCamera {
 		this.onClick = this.onClick.bind(this);
 		this.onPointerLockChange = this.onPointerLockChange.bind(this);
 
-		this.$idleAnimation = {
-			$duration: 3000, // in ms
-			$factor: 0.1, // how much the camera will move up and down
-		};
-		this.$startTime = null;
-		this.$progress = 0;
-		this.$forward = true;
-
 		// this.$wobbleIntensity = 0.001;
 		// this.$wobbleIntensity = 0.0001;
 		this.$wobbleIntensity = 0.0005;
@@ -85,28 +77,6 @@ export class POVCamera extends BaseCamera {
 		if (!this.$pointerLocked && currentCam.name !== 'Debug Camera') {
 			this.log('onClick');
 			$canvas.requestPointerLock();
-		}
-	}
-
-	easeInOutQuad(x) {
-		return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
-	}
-
-	idleBreathing() {
-		const { elapsed } = this.webgl.$time;
-		const { $duration, $factor } = this.$idleAnimation;
-
-		this.$startTime ??= elapsed;
-		this.$progress = Math.min((elapsed - this.$startTime) / $duration, 1);
-
-		const adjustedProgress = this.$forward ? this.$progress : 1 - this.$progress;
-		const ease = this.easeInOutQuad(adjustedProgress) * $factor;
-
-		this.base.position.y = HEIGHT + ease;
-
-		if (this.$progress >= 1) {
-			this.$startTime = null;
-			this.$forward = !this.$forward;
 		}
 	}
 
