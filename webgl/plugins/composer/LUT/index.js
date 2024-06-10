@@ -5,10 +5,12 @@ import { FloatType, GLSL3, HalfFloatType } from 'three';
 
 import LUTPass from './LUTPass.frag?hotshader';
 import { wUniform } from '#webgl/utils/Uniform.js';
+import { raftween } from '#utils/anim/raftween.js';
 
 export const useLutPass = (composer) => {
 	const { filters, uniforms, defines } = composer;
 
+	let saturationTween = null;
 	/* Params */
 	const enabled = w(true);
 	const saturation = w(1);
@@ -37,6 +39,7 @@ export const useLutPass = (composer) => {
 
 		enabled,
 		saturation,
+		animateSaturation,
 		mix: forcedMix,
 
 		set,
@@ -81,7 +84,25 @@ export const useLutPass = (composer) => {
 		if (!enabled.value) mix.set(0);
 		else mix.set(forcedMix.value ?? 1);
 
+		saturationTween?.update(webgl.$time.dt / 1000);
+
 		filter.render();
+	}
+
+	function animateSaturation(to) {
+		return new Promise((resolve) => {
+			saturationTween = raftween({
+				from: saturation.value,
+				to,
+				target: saturation,
+				property: 'value',
+				duration: 2,
+				onComplete: resolve,
+				onProgress: (progress, current) => {
+					saturation.emit()
+				}
+			})
+		})
 	}
 
 	/// #if __DEBUG__

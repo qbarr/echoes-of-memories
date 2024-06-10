@@ -5,10 +5,11 @@ import { Vector3 } from 'three';
 
 export default class Gpgpu extends BaseComponent {
 
-	constructor(count) {
+	constructor(count, options) {
 		super()
 		this.isUpdating = false
 		this.gpgpu = this.webgl.$gpgpu.create(count)
+		this.options = options
 		this.base = this.gpgpu
 		this.clock = new Clock()
 		this.previousTime = 0
@@ -102,7 +103,8 @@ export default class Gpgpu extends BaseComponent {
 					$viewport.size.get().y * $viewport.pixelRatio.get()
 				)
 			),
-			...options.uniforms
+			...options.uniforms,
+			// ...this.options.uniforms
 
 		}
 		this.gpgpu.computation.init()

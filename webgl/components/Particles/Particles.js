@@ -14,11 +14,11 @@ export class Particles extends BaseComponent {
 	}
 
 	afterInit() {
-		const { instance, count, options, position , boundingBox, gpgpu } = this.props
+		const { instance, count, options, position, boundingBox, gpgpu } = this.props
 		this.instance = instance
 		this.boundingBox = boundingBox
 		const _count = this.instance ? this.instance.attributes.position.count : count
-		this.gpgpu = this.add(Gpgpu, _count)
+		this.gpgpu = this.add(Gpgpu, _count, gpgpu)
 		if (this.instance) this.gpgpu.setupFromInstance(this.instance)
 		else if (this.boundingBox) this.gpgpu.setupFromBox(this.boundingBox, options)
 		else this.gpgpu.setupFromEmitter(position, options)

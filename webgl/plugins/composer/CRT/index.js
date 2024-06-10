@@ -71,14 +71,13 @@ export const useCRTPass = (composer) => {
 	// });
 
 	function render(scene, renderer) {
-		const { dt } = webgl.$time;
 		if (!enabled.value) {
 			// uniforms.tCRT.value = DUMMY_RT.texture;
 			return;
 		}
 
 		renderer = renderer ?? $threeRenderer;
-		glitchTween?.update(dt / 1000)
+		glitchTween?.update(webgl.$time.dt / 1000)
 		renderer.setRenderTarget(buffer);
 		renderer.clear();
 		filter.render();
@@ -89,20 +88,26 @@ export const useCRTPass = (composer) => {
 
 	}
 
-	function unglitch() {
-		// raftween.setFromTo(interferences.value.x, 0)
-		// raftween.play()
+	function glitch() {
+		return glitchFromTo(0, 70)
 	}
 
-	function glitch() {
-		glitchTween = raftween({
-			from: 0,
-			to: 10,
-			target: interferences.value,
-			property: 'x',
-			duration: 3
+	function unglitch() {
+		return glitchFromTo(70, 0)
+	}
+ 	function glitchFromTo(from, to) {
+		return new Promise((resolve) => {
+			glitchTween = raftween({
+				from,
+				to,
+				target: interferences.value,
+				property: 'x',
+				duration: 3,
+				onComplete: resolve
+			})
+			glitchTween.play()
 		})
-		glitchTween.play()
+
 	}
 
 	/// #if __DEBUG__

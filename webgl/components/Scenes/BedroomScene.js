@@ -1,11 +1,13 @@
 import BaseScene from '#webgl/core/BaseScene';
 import { POVCamera } from '../Cameras/POVCamera';
 
-import { MeshBasicMaterial } from 'three';
+import { Mesh, MeshBasicMaterial, PlaneGeometry, Sprite, SpriteMaterial, Vector3 } from 'three';
 import { Guitare } from '../Objects/Guitare';
 import { Guitare2 } from '../Objects/Guitare2';
 import { Guitare3 } from '../Objects/Guitare3';
 import { useTheatre } from './useTheatre';
+import { raftween } from '#utils/anim/raftween.js';
+import { easings } from '#utils/anim/easings.js';
 
 const objects = {
 	crucifix: { class: null },
@@ -42,6 +44,7 @@ export default class BedroomScene extends BaseScene {
 			map: textures['objects_map'],
 		});
 
+
 		// scene.scale.setScalar(3);
 
 		const _objects = [];
@@ -61,9 +64,20 @@ export default class BedroomScene extends BaseScene {
 				}
 			}
 		});
-
 		_objects.forEach((o) => this.add(o));
 
+		const materialSprite = new SpriteMaterial({
+			color: 0x000000,
+			transparent: true,
+			opacity: 0
+		})
+
+		this.sprite = new Sprite(materialSprite)
+		this.sprite.scale.setScalar(2)
+
+		// uncomment the following two lines to see the effect of the code
+
+		this.base.add(this.sprite)
 		this.base.add(scene);
 
 		useTheatre(this, { id: 'Bedroom Scene' });
@@ -72,11 +86,39 @@ export default class BedroomScene extends BaseScene {
 	async enter() {
 		this.log('enter');
 		this.camera = this.add(this.webgl.$povCamera);
+
 	}
 
 	async leave() {
-		this.log('leave');
+		const { $composer, $scenes } = this.webgl;
+
+		const animations = await Promise.all([
+			$composer.$crt.glitch(),
+			$composer.$lut.animateSaturation(0),
+			this.animateOpacity(1),
+		])
 	}
 
-	update() {}
+	async animateOpacity(to) {
+
+
+		return new Promise((resolve) => {
+			this.opacityTween = raftween({
+				from: this.sprite.material.opacity,
+				to,
+				target: this.sprite.material,
+				property: 'opacity',
+				duration: 3,
+				onComplete: resolve,
+				easing: easings.inOutQuad
+			})
+		})
+	}
+
+	update() {
+		const direction = new Vector3()
+		this.camera.base.getWorldDirection( direction );
+		this.sprite.position.copy( this.camera.base.position ).add( direction.multiplyScalar( 1.1 ))
+		this.opacityTween?.update(this.webgl.$time.dt / 1000);
+	}
 }
