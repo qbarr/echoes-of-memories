@@ -2,10 +2,12 @@ import { raf } from '#utils/raf/raf.js';
 
 export function audioPlugin(webgl, opts = {}) {
 	const api = {
+		force_pause: false,
+
 		visible: true,
 		current: null,
 		currentId: null,
-		masterVolume: 1,
+		masterVolume: 0.2,
 
 		progress: 0,
 		startAt: 0,
@@ -55,11 +57,17 @@ export function audioPlugin(webgl, opts = {}) {
 			},
 			{
 				title: 'Play',
-				action: () => play({ id: api.currentId }),
+				action: () => {
+					api.force_pause = false;
+					play({ id: api.currentId });
+				},
 			},
 			{
 				title: 'Pause',
-				action: () => pause({ id: api.currentId }),
+				action: () => {
+					api.force_pause = true;
+					pause({ id: api.currentId });
+				},
 			},
 		];
 		const rows = Math.ceil(cells.length / CELLS_PER_ROW);
@@ -233,13 +241,13 @@ export function audioPlugin(webgl, opts = {}) {
 	}
 
 	function mute() {
-		webgl.$audioListener.setMasterVolume(0);
-		getMasterVolume();
+		const v = getMasterVolume();
+		webgl.$audioListener.setMasterVolume(v ? v : 0);
 	}
 
 	function unmute() {
-		webgl.$audioListener.setMasterVolume(1);
-		getMasterVolume();
+		const v = getMasterVolume();
+		webgl.$audioListener.setMasterVolume(v ? v : 1);
 	}
 
 	function getMasterVolume() {
@@ -270,7 +278,7 @@ export function audioPlugin(webgl, opts = {}) {
 
 		if (visible) {
 			unmute();
-			if (api.current && api.progress > 0) {
+			if (api.current && api.progress > 0 && !api.force_pause) {
 				play({ id: api.currentId });
 			}
 		} else {
