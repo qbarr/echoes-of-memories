@@ -199,6 +199,14 @@ export class POVCamera extends BaseCamera {
 		}
 	}
 
+	onInteractiveEnter() {
+		this.wobble.onInteractiveEnter();
+	}
+
+	onInteractiveLeave() {
+		this.wobble.onInteractiveLeave();
+	}
+
 	update() {
 		this.wobble.update(this.webgl.$time.elapsed * this.$wobbleIntensity);
 		this.controls?.update?.();

@@ -62,12 +62,14 @@ export class BaseInteractiveObject extends BaseComponent {
 			this.webgl.$composer.addOutline(this.mesh);
 			// TODO: Change crosshair icon
 			this.webgl.$scenes.ui.component.crosshair.toggleHover(true);
+			this.webgl.$povCamera.onInteractiveEnter();
 		});
 	}
 	onLeave() {
 		this.log('INTERACTION:leave');
 		this.webgl.$composer.removeOutline(this.mesh);
 		this.webgl.$scenes.ui.component.crosshair.toggleHover(false);
+		this.webgl.$povCamera.onInteractiveLeave();
 	}
 
 	onEnterPerimeter() {
