@@ -23,14 +23,14 @@ const surchargeMethod = (_class, id, cb, before) => {
 };
 
 export function useInteraction(Class) {
-	let raycastableMesh = null;
+	let mesh = null;
 
 	const onClick = (Class.onClick ?? NOOP).bind(Class);
 	const onHold = (Class.onHold ?? NOOP).bind(Class);
 	const onEnter = (Class.onEnter ?? NOOP).bind(Class);
 	const onLeave = (Class.onLeave ?? NOOP).bind(Class);
 
-	const padding = w(0.3);
+	const padding = w(0);
 
 	/// #if __DEBUG__
 	const displayDebug = storageSync(
@@ -40,22 +40,10 @@ export function useInteraction(Class) {
 	/// #endif
 
 	function init() {
-		// Scale the box to the object size
-		// const box = new Box3().expandByObject(Class.base);
-		// const vec3 = Vector3.get();
-		// box.getSize(vec3);
-		// const geo = new BoxGeometry(vec3.x, vec3.y, vec3.z);
 		const debugMat = new MeshBasicMaterial({ wireframe: true });
-		// const mesh = (raycastableMesh = new Mesh(geo, debugMat));
-		const mesh = (raycastableMesh = Class.mesh.clone());
+		mesh = Class.raycastMesh;
 		mesh.material = debugMat;
-		// mesh.rotation.copy(Class.base.rotation);
 		Object.assign(mesh.userData, { isDebug: true });
-
-		// Center the mesh
-		// box.getCenter(vec3);
-		// mesh.position.copy(vec3);
-		// vec3.release();
 
 		const baseScale = mesh.scale.clone();
 		padding.watchImmediate((v) => {
@@ -68,7 +56,6 @@ export function useInteraction(Class) {
 		mesh.visible = false;
 		/// #endif
 
-		// console.log(Class, mesh);
 		webgl.$raycast.add(mesh, {
 			onDown: onClick,
 			onHold: onHold,
@@ -78,12 +65,13 @@ export function useInteraction(Class) {
 			forcedScene: Class.scene,
 		});
 
-		Class.base.add(mesh);
+		Class.scene.base.add(mesh);
 	}
 
 	function destroy() {
-		webgl.$raycast.remove(raycastableMesh);
-		Class.base?.remove?.(raycastableMesh);
+		if (!mesh) return;
+		webgl.$raycast.remove(mesh);
+		mesh.parent?.remove(mesh);
 	}
 
 	/// #if __DEBUG__

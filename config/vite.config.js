@@ -6,6 +6,7 @@ import { manifestPlugin } from './plugins/manifest/manifestPlugin';
 import { hotShadersRollupPlugin } from './plugins/hotShaders/hotShadersRollupPlugin';
 import { timestampPlugin } from './plugins/timestamp/timestampPlugin';
 import { subtitlesPlugin } from './plugins/subtitles/subtitlesPlugin';
+import ViteRestart from 'vite-plugin-restart';
 
 import { paths } from './utils/paths';
 
@@ -46,6 +47,10 @@ export default ({ mode = 'development' }) => {
 			timestampPlugin(),
 			manifestPlugin(),
 			subtitlesPlugin(),
+			ViteRestart({
+				restart: ['./assets/**/*'],
+				reload: ['./public/**/*'],
+			}),
 		],
 
 		define: MANDATORY_DEFINES,

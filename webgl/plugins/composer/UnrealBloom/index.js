@@ -4,11 +4,11 @@ import { GLSL3, NoBlending, Vector2, Vector3, WebGLRenderTarget } from 'three';
 import { storageSync, w } from '#utils/state';
 import createBuffer from '#webgl/utils/createBuffer.js';
 import createFilter from '#webgl/utils/createFilter.js';
+import { wUniform } from '#webgl/utils/Uniform.js';
 
 import LuminosityPass from './LuminosityPass.frag?hotshader';
 import UnrealBloomBlurPass from './UnrealBloomBlurPass.frag?hotshader';
 import UnrealBloomCompositePass from './UnrealBloomCompositePass.frag?hotshader';
-import { wUniform } from '#webgl/utils/Uniform.js';
 
 const BlurDirectionX = new Vector2(1, 0);
 const BlurDirectionY = new Vector2(0, 1);

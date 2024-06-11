@@ -10,6 +10,7 @@ const tempVec2b = new Vector2();
 const lerp = (x, y, a) => x * (1 - a) + y * a;
 
 function vec3ToSphericalPos(v, cam) {
+	console.log('vec3ToSphericalPos', v, cam);
 	const position1 = cam.position;
 	const position2 = v;
 
@@ -37,7 +38,7 @@ function vec3ToSphericalPos(v, cam) {
 }
 
 function POVController(
-	object,
+	Class,
 	{
 		element = document,
 		enabled = false,
@@ -46,7 +47,10 @@ function POVController(
 		debug = false,
 	} = {},
 ) {
-	let { lat, lon } = vec3ToSphericalPos(target, object);
+	const cam = Class.cam;
+	const base = Class.base;
+
+	let { lat, lon } = vec3ToSphericalPos(target, cam);
 
 	console.log('lat', lat);
 	console.log('lon', lon);
@@ -65,11 +69,7 @@ function POVController(
 	updateLookAt();
 
 	function updateLookAt() {
-		object.lookAt(target);
-	}
-
-	function devtools() {
-		console.log('[POVController] devtools');
+		cam.lookAt(target);
 	}
 
 	function update() {
@@ -79,13 +79,11 @@ function POVController(
 
 		const phi = MathUtils.degToRad(90 - lerpedLat);
 		const theta = MathUtils.degToRad(lerpedLon);
-		target.setFromSphericalCoords(1, phi, theta).add(object.position);
+		target.setFromSphericalCoords(1, phi, theta).add(cam.position);
 
 		updateLookAt();
 
-		// console.log(debug);
-
-		if (debug) devtools();
+		// if (debug) devtools();
 	}
 
 	function handleMoveRotate(x, y) {

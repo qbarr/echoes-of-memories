@@ -5,7 +5,7 @@ import { s, w } from '#utils/state';
 import { bezier, easings } from '#utils/anim';
 
 export default function cinematicTool(webgl, debugApi) {
-	const api = webgl.$cinematicTool = {
+	const api = (webgl.$cinematicTool = {
 		init,
 		'Cinematic mode': false,
 		enabled: w(),
@@ -32,24 +32,27 @@ export default function cinematicTool(webgl, debugApi) {
 		current: {
 			position: new Vector3(),
 			rotation: new Quaternion(),
-		}
-	};
+		},
+	});
 
 	let ease = bezier('linear');
 	let playing = api.playing;
 	let copiedTimeout, gui, cam, isInit, progressTween;
 
-
 	function init() {
 		api.setTo.watch(onSetTo);
 		api.setFrom.watch(onSetFrom);
-		webgl.$hooks.beforeRender.watch(()=>{ update() });
+		webgl.$hooks.beforeRender.watch(() => {
+			update();
+		});
 	}
 
 	function initGui(gui) {
 		const folder = gui.addFolder({ title: '  ↳ Cinematic Camera', expanded: false });
 
-		let enabled = gui.enabled = folder.addBinding(api, 'Cinematic mode', { index: 5 });
+		let enabled = (gui.enabled = folder.addBinding(api, 'Cinematic mode', {
+			index: 5,
+		}));
 		enabled.on('change', (v) => {
 			if (!v.value) {
 				togglePlay(false);
@@ -58,50 +61,49 @@ export default function cinematicTool(webgl, debugApi) {
 			api.enabled.set(v.value);
 		});
 
-		let btn = gui.setFromButton = folder.addButton({ title: `Set from `, index: 6 });
+		let btn = (gui.setFromButton = folder.addButton({
+			title: `Set from `,
+			index: 6,
+		}));
 		btn.on('click', (v) => {
 			api.setFrom.emit(v);
 		});
 
-		let btn2 = gui.setToButton = folder.addButton({ title: `Set to`, index: 7 });
+		let btn2 = (gui.setToButton = folder.addButton({ title: `Set to`, index: 7 }));
 		btn2.on('click', (v) => {
 			api.setTo.emit(v);
 		});
 
-		let play = gui.play = folder.addButton({ title: `‣ Play` });
+		let play = (gui.play = folder.addButton({ title: `‣ Play` }));
 		play.on('click', (v) => {
 			togglePlay();
 		});
 
-		let progress = gui.progress = folder.addBinding(api, 'progress', {
+		let progress = (gui.progress = folder.addBinding(api, 'progress', {
 			min: 0,
 			max: 1,
-		});
+		}));
 
-		progress.on('change', (v)=>{
+		progress.on('change', (v) => {
 			// api.progress.set(v);
 		});
 
-		let easingsList = gui.easingsList = folder.addBinding(api, 'easing', {
-			options: { ...easings }
-		});
+		let easingsList = (gui.easingsList = folder.addBinding(api, 'easing', {
+			options: { ...easings },
+		}));
 
-		easingsList.on('change', v => easingChange(v));
+		easingsList.on('change', (v) => easingChange(v));
 
-		let duration = gui.duration = folder.addBinding(api, 'duration', {
+		let duration = (gui.duration = folder.addBinding(api, 'duration', {
 			min: 500,
 			max: 15000,
-		});
+		}));
 	}
 
 	function easingChange(v) {
 		api.ease.set(v.value);
 		const easing = api.ease.value;
-		ease = bezier(
-			easing[ 0 ],
-			easing[ 1 ],
-			easing[ 2 ],
-			easing[ 3 ]);
+		ease = bezier(easing[0], easing[1], easing[2], easing[3]);
 	}
 
 	function togglePlay(forcedValue) {
@@ -123,8 +125,8 @@ export default function cinematicTool(webgl, debugApi) {
 		const camera = debugApi.currentCamera;
 		if (!camera) return;
 
-		const posStr = camera.base.position;
-		const qtStr = camera.base.quaternion;
+		const posStr = camera.cam.position;
+		const qtStr = camera.cam.quaternion;
 
 		if (title === 'Set to') {
 			api.to.position.copy(posStr);
@@ -152,7 +154,7 @@ export default function cinematicTool(webgl, debugApi) {
 			api.progress.value += webgl.$time.dt / api.duration.value;
 		}
 
-		api.progress.value = mod(api.progress.value, 1.);
+		api.progress.value = mod(api.progress.value, 1);
 		api.current.position
 			.copy(api.from.position)
 			.lerp(api.to.position, ease(api.progress.value));
@@ -160,7 +162,7 @@ export default function cinematicTool(webgl, debugApi) {
 			.copy(api.from.rotation)
 			.slerp(api.to.rotation, ease(api.progress.value));
 
-		const cameraBase = camera.base;
+		const cameraBase = camera.cam;
 		cameraBase.position.copy(api.current.position);
 		cameraBase.quaternion.copy(api.current.rotation);
 	}

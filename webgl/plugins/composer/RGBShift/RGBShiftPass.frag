@@ -24,11 +24,12 @@ void main() {
 	// gl_FragColor = shiftColor;
 	gl_FragColor = color;
 
-	vec3 interfaceColor = texture2D(tInterface, vUv).rgb;
-	gl_FragColor.rgb += interfaceColor;
-
 	vec4 outlines = texture2D(tSketchLines, vUv);
 	gl_FragColor.rgb += outlines.rgb;
+
+	vec4 interfaceColor = texture2D(tInterface, vUv);
+	interfaceColor.rgb *= 1.2;
+	gl_FragColor.rgb = mix(gl_FragColor.rgb, interfaceColor.rgb, interfaceColor.a);
 
 	// debug
 	// gl_FragColor += vec4(smoothstep(0.3, 1., pow(1. - depth, .6)));

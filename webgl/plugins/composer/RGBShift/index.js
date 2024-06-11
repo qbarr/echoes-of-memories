@@ -1,5 +1,5 @@
 import { webgl } from '#webgl/core/index.js';
-import { WebGLRenderTarget } from 'three';
+import { NoBlending, WebGLRenderTarget } from 'three';
 
 import { w } from '#utils/state/index.js';
 import { wUniform } from '#webgl/utils/Uniform.js';
@@ -46,6 +46,7 @@ export const useRGBShiftPass = (composer) => {
 			...wUniform('uAngle', angle),
 		},
 		defines: { ...defines },
+		blending: NoBlending,
 	}));
 	RGBShiftPass.use(filter.material);
 

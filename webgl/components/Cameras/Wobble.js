@@ -1,18 +1,10 @@
-/**
- * @author pschroen / https://ufo.ai/
- */
-
-import { Vector3 } from 'three';
-
-import { ImprovedNoise } from 'three/addons/math/ImprovedNoise.js';
-
 import { getWebGL } from '#webgl/core/index.js';
-
-let webgl;
+import { Vector3 } from 'three';
+import { ImprovedNoise } from 'three/addons/math/ImprovedNoise.js';
 
 export default class Wobble {
 	constructor(position) {
-		if (!webgl) webgl = getWebGL();
+		this.webgl = getWebGL();
 
 		this.position = position;
 		this.origin = new Vector3();
@@ -23,11 +15,12 @@ export default class Wobble {
 		this.scale = 1;
 		this.lerpSpeed = 0.02;
 
-		if (this.position) {
-			this.origin.copy(this.position);
-		}
+		this.forcedY = this.position.clone().y;
+
+		// if (this.position) this.origin.copy(this.position);
 	}
 
+	/// #if __DEBUG__
 	devtools(gui) {
 		const $gui = gui.addFolder({ title: 'Wobble' });
 
@@ -36,6 +29,7 @@ export default class Wobble {
 		$gui.addInput(this, 'scale', { min: 0, max: 10, step: 0.1 });
 		$gui.addInput(this, 'lerpSpeed', { min: 0, max: 1, step: 0.01 });
 	}
+	/// #endif
 
 	update(time) {
 		this.target.x =
@@ -46,8 +40,10 @@ export default class Wobble {
 			this.perlin.noise(1, 1, time * this.frequency.z) * this.amplitude.z;
 
 		this.target.multiplyScalar(this.scale);
-		this.target.add(this.origin);
+		this.target.add(this.position);
+		// this.target.add(this.origin);
 
-		this.position?.lerp(this.target, this.lerpSpeed);
+		const { stableDt: dt } = this.webgl.$time;
+		this.position?.damp(this.target, this.lerpSpeed, dt);
 	}
 }
