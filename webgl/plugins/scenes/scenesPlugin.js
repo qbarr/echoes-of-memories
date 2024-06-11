@@ -143,6 +143,8 @@ export function scenesPlugin(webgl) {
 		},
 		load: () => {
 			webgl.$hooks.beforeStart.watchOnce(() => {
+				init();
+
 				if (!current.value) {
 					/// #if __DEBUG__
 					if (api[savedCurrentScene.value]) set(savedCurrentScene.value, true);
@@ -153,8 +155,6 @@ export function scenesPlugin(webgl) {
 					set(scene, true);
 					/// #endif
 				}
-
-				init();
 
 				for (let i = 0; i < api.list.length; i++) {
 					const scene = api.list[i];

@@ -9,31 +9,52 @@ const tempVec2b = new Vector2();
 
 const lerp = (x, y, a) => x * (1 - a) + y * a;
 
+function vec3ToSphericalPos(v, cam) {
+	const position1 = cam.position;
+	const position2 = v;
+
+	// Step 1: Compute the direction vector
+	const direction = new Vector3();
+	direction.subVectors(position2, position1);
+
+	// Step 2: Normalize the direction vector
+	direction.normalize();
+
+	// Step 3: Compute the phi (azimuthal angle)
+	// Phi is the angle in the XY plane from the positive X-axis
+	const phi = Math.atan2(direction.y, direction.x);
+
+	// Step 4: Compute the theta (polar angle)
+	// Theta is the angle from the positive Z-axis
+	const theta = Math.acos(direction.z);
+
+	// Convert angles to degrees if needed
+	const phiDegrees = MathUtils.radToDeg(phi);
+	const thetaDegrees = MathUtils.radToDeg(theta);
+
+	return { lat: phiDegrees, lon: thetaDegrees };
+	// return { lat: 90, lon: 90 };
+}
+
 function POVController(
 	object,
-	{ element = document, enabled = false, speed = 0.85 } = {},
+	{
+		element = document,
+		enabled = false,
+		speed = 1,
+		target = new Vector3(),
+		debug = false,
+	} = {},
 ) {
-	const lookAt = new Vector3();
-	const position = new Vector3();
+	let { lat, lon } = vec3ToSphericalPos(target, object);
 
-	let lon = 105;
-	let lat = -15;
-
-	// TODO: calculate initial lon and lat based on object's quaternion
-	// j'ai give up ça ma saoulé
-
-	// const q = object.quaternion.clone().invert();
-	// const rot = new Euler().setFromQuaternion(q, 'YXZ');
-	// console.log(MathUtils.radToDeg(rot.x));
-	// console.log(MathUtils.radToDeg(rot.y));
-	// lat = MathUtils.radToDeg(rot.x);
-	// lon = MathUtils.radToDeg(rot.y);
+	console.log('lat', lat);
+	console.log('lon', lon);
 
 	let lerpedLat = lat;
 	let lerpedLon = lon;
 
 	const rotateStart = new Vector2();
-	const panDelta = new Vector3();
 
 	const verticalMin = 0;
 	const verticalMax = Math.PI;
@@ -41,23 +62,30 @@ function POVController(
 	const horizontalMin = -Math.PI / 2;
 	const horizontalMax = Math.PI / 2;
 
-	updatePosition();
+	updateLookAt();
 
-	function updatePosition() {
-		object.lookAt(lookAt);
+	function updateLookAt() {
+		object.lookAt(target);
+	}
+
+	function devtools() {
+		console.log('[POVController] devtools');
 	}
 
 	function update() {
-		updatePosition();
-
 		const dt = webgl.$time.dt;
 		lerpedLat = damp(lerpedLat, lat, 0.4, dt);
 		lerpedLon = damp(lerpedLon, lon, 0.4, dt);
 
 		const phi = MathUtils.degToRad(90 - lerpedLat);
 		const theta = MathUtils.degToRad(lerpedLon);
+		target.setFromSphericalCoords(1, phi, theta).add(object.position);
 
-		lookAt.setFromSphericalCoords(1, phi, theta).add(object.position);
+		updateLookAt();
+
+		// console.log(debug);
+
+		if (debug) devtools();
 	}
 
 	function handleMoveRotate(x, y) {
@@ -128,7 +156,7 @@ function POVController(
 		onLockEnter,
 		onLockExit,
 
-		lookAt,
+		target,
 
 		set enabled(v) {
 			console.log('[POVController] enabled', v);
