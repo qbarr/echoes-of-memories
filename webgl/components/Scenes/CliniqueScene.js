@@ -45,6 +45,8 @@ export default class CliniqueScene extends BaseScene {
 
 		scene.traverse((child) => {
 			if (!child.isMesh || !child.material) return;
+			this.log(child.name);
+			this.log(datas[child.name]);
 			if (datas[child.name]) {
 				const { class: Class, texture } = datas[child.name];
 				child.material = texture;
