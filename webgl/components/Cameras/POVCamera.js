@@ -15,13 +15,10 @@ import { useCameraHelper } from './useDebugHelper.js';
 const HEIGHT = 1.95;
 const DEFAULT_CAM = {
 	position: new Vector3(-8.67, HEIGHT, 4.88),
-	// position: new Vector3(-2, HEIGHT, -3.88),
-	rotation: new Vector3(0, 0, 0),
 	fov: 55,
 };
 const DEFAULT_TARGET = {
 	position: new Vector3(4, 1.4, 0),
-	// position: new Vector3(-7, 0, 3),
 };
 
 export class POVCamera extends BaseCamera {
