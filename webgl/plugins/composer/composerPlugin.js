@@ -132,7 +132,7 @@ export function composerPlugin(webgl) {
 		renderer.clear();
 		scene.triggerRender();
 		renderer.clearDepth();
-		$scenes.ui.component.triggerRender();
+		// $scenes.ui.component.triggerRender();
 		uniforms.tMap.value = buffers.base.texture;
 
 		// Render sketch lines pass

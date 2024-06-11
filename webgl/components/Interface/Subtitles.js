@@ -30,7 +30,8 @@ export class Subtitles extends BaseComponent {
 
 		const backgroundGeo = new PlaneGeometry(1, 3, 16, 16);
 		const backgroundMat = new MeshBasicMaterial({
-			color: 0x525252,
+			color: 0x000000,
+			// color: 0x525252,
 			transparent: true,
 			opacity: 0.5,
 		});
@@ -54,7 +55,7 @@ export class Subtitles extends BaseComponent {
 		const { x: vw, y: vh } = $viewport.size.value;
 		const line_count = this.text.geo._layout._linesTotal;
 
-		const scaleX = line_count > 1 ? 70 : part.length * 1.25;
+		const scaleX = line_count > 1 ? 70 : part.length * 1.5;
 
 		const { x, y, z } = this.text.position;
 		this.background.position.set(x, y, z - 1);
