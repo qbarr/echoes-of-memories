@@ -10,7 +10,6 @@ const tempVec2b = new Vector2();
 const lerp = (x, y, a) => x * (1 - a) + y * a;
 
 function vec3ToSphericalPos(v, cam) {
-	console.log('vec3ToSphericalPos', v, cam);
 	const position1 = cam.position;
 	const position2 = v;
 
@@ -52,8 +51,8 @@ function POVController(
 
 	let { lat, lon } = vec3ToSphericalPos(target, cam);
 
-	console.log('lat', lat);
-	console.log('lon', lon);
+	// console.log('lat', lat);
+	// console.log('lon', lon);
 
 	let lerpedLat = lat;
 	let lerpedLon = lon;
