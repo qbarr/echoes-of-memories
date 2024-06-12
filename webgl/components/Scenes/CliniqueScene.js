@@ -71,6 +71,7 @@ export default class CliniqueScene extends BaseScene {
 
 	async enter() {
 		this.log('enter');
+		this.webgl.$povCamera.onSceneSwitch(this);
 		this.camera = this.add(this.webgl.$povCamera);
 		// this.camera.setPosition([-2.71175, 3.13109, 4.39142]);
 	}

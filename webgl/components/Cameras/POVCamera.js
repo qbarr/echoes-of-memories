@@ -1,18 +1,29 @@
-import { Vector3, Object3D, PerspectiveCamera, Vector2 } from 'three';
 import BaseCamera from '#webgl/core/BaseCamera';
 import POVController from '#webgl/utils/POVController.js';
+import {
+	BoxGeometry,
+	Mesh,
+	MeshBasicMaterial,
+	Object3D,
+	PerspectiveCamera,
+	Vector3,
+} from 'three';
 
+import { useTheatre } from '#webgl/utils/useTheatre.js';
 import Wobble from './Wobble.js';
 import { useCameraHelper } from './useDebugHelper.js';
-import { useTheatre } from '#webgl/utils/useTheatre.js';
 
-import { scenesDatas } from '../Scenes/datas.js';
-import { types } from '@theatre/core';
 import { TheatreSheet } from '#webgl/plugins/theatre/utils/index.js';
-import { w } from '#utils/state/index.js';
+import { scenesDatas } from '../Scenes/datas.js';
 
-const HEIGHT = 3;
-const DEFAULT_FOV = 55;
+const HEIGHT = 1.95;
+const DEFAULT_CAM = {
+	position: new Vector3(-8.67, HEIGHT, 4.88),
+	fov: 55,
+};
+const DEFAULT_TARGET = {
+	position: new Vector3(4, 1.4, 0),
+};
 
 export class POVCamera extends BaseCamera {
 	init() {
@@ -27,23 +38,55 @@ export class POVCamera extends BaseCamera {
 		this.target = new Object3D();
 	}
 
+	/// #if __DEBUG__
+	devtools() {
+		this.gui = this.webgl.$gui.addFolder({ title: '👁️ POVCamera' });
+
+		this.wobble.devtools(this.gui);
+		useCameraHelper(this);
+
+		const { $getCurrentScene } = this.webgl;
+		const scene = $getCurrentScene();
+
+		const cubeGeo = new BoxGeometry(1, 1, 1);
+		const cubeMaterial = new MeshBasicMaterial({ color: 0x00ff00 });
+
+		this.debugTarget = new Mesh(cubeGeo, cubeMaterial);
+		// const sub = DEFAULT_CAM.position.clone().divideScalar(1);
+		this.debugTarget.position.copy(DEFAULT_TARGET.position);
+		// this.debugTarget.position.add(sub);
+
+		// this.webgl.$scenes._current.watchImmediate((scene) => {
+		// 	if (!scene) return;
+		// 	scene.component.base.add(this.debugTarget);
+		// });
+	}
+	/// #endif
+
+	onSceneSwitch(scene) {
+		scene.camera = scene.add(this);
+	}
+
 	afterInit() {
 		const ratio = window.innerWidth / window.innerHeight;
-		this.cam = this.base = new PerspectiveCamera(DEFAULT_FOV, ratio, 0.1, 100);
 
-		// this.base.position.fromArray([-8.67082, 0, 4.88725]);
-		// this.cam.position.fromArray([0, HEIGHT, 0]);
-		this.cam.quaternion.fromArray([-0.095825, -0.464204, -0.050601, 0.879074]);
-		this.cam.fov = DEFAULT_FOV;
+		// Create POV Camera
+		this.cam = this.base = new PerspectiveCamera(DEFAULT_CAM.fov, ratio, 0.1, 100);
+		this.cam.position.copy(DEFAULT_CAM.position);
+		this.cam.fov = DEFAULT_CAM.fov;
 		this.cam.updateProjectionMatrix();
 
-		// this.base.add(this.cam);
-
+		// Create POV Controller
 		this.controls = POVController(this, {
 			enabled: this.$pointerLocked,
+			target: DEFAULT_TARGET.position,
+			/// #if __DEBUG__
+			debug: true,
+			/// #endif
 		});
 
-		this.wobble = new Wobble(this.base.position);
+		// Create Wobble (idle) effect
+		this.wobble = new Wobble(this.cam.position);
 
 		document.addEventListener('click', this.onClick); // TODO: temp
 		document.addEventListener('pointerlockchange', this.onPointerLockChange);
@@ -109,6 +152,14 @@ export class POVCamera extends BaseCamera {
 			this.log('onClick');
 			$canvas.requestPointerLock();
 		}
+	}
+
+	onInteractiveEnter() {
+		this.wobble.onInteractiveEnter();
+	}
+
+	onInteractiveLeave() {
+		this.wobble.onInteractiveLeave();
 	}
 
 	update() {
