@@ -120,6 +120,12 @@ export class POVCamera extends BaseCamera {
 
 		introSheet.$target('camera', this.target, { nudgeMultiplier: 0.01 });
 		introSheet.$composer(['global', 'vignette', 'bokeh', 'lut', 'bloom', 'crt']);
+		introSheet.$compound('wobble', {
+			intensity: { value: this.$wobbleIntensity },
+			frequency: { value: this.wobble.frequency },
+			amplitude: { value: this.wobble.amplitude },
+			scale: { value: this.wobble.scale },
+		});
 		// introSheet.$subtitles('subtitles', clinique.subtitles);
 	}
 

@@ -1,6 +1,7 @@
 import { clamp } from '#utils/maths/map.js';
 import { TheatreBool } from './TheatreBool';
 import { TheatreComposer } from './TheatreComposer';
+import { TheatreCompound } from './TheatreCompound';
 import { TheatreFloat } from './TheatreFloat';
 import { TheatreGroup } from './TheatreGroup';
 import { TheatreObject } from './TheatreObject';
@@ -38,7 +39,8 @@ export class TheatreSheet {
 		this.$object = (name, value, opts = {}) => new TheatreObject(name, value, opts, this); // prettier-ignore
 		this.$target = (name, value, opts = {}) => new TheatreTarget(name, value, opts, this); // prettier-ignore
 		this.$group = (name, value, opts = {}) => new TheatreGroup(name, value, opts, this); // prettier-ignore
-		this.$composer = (value, opts = {}) => new TheatreComposer('composer', value, opts, this); // prettier-ignore
+		this.$composer = (values, opts = {}) => new TheatreComposer('composer', values, opts, this); // prettier-ignore
+		this.$compound = (name, values, opts = {}) => new TheatreCompound(name, values, opts, this); // prettier-ignore
 
 		// Just to make it easier to use
 		this.object = this._instance.object.bind(this._instance);
