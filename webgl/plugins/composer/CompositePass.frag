@@ -1,26 +1,24 @@
 precision highp float;
 
-// #define PI2 6.283185307179586476925286766559
+#include <props>
+#include <packing>
+#include <common>
 
 uniform float time;
 uniform vec4 resolution;
-// uniform sampler2D uBlueNoiseMap;
 
 // Dither
 uniform vec2 uDitherOffset;
 uniform float uDitherStrength;
 
-// Tint
-uniform float uBichromy;
-uniform float uSaturation;
+// Black stripes
+uniform float uStripesScale;
 
-// Depth
-uniform float zNear;
-uniform float zFar;
+// Vignette
+uniform vec2 uVignette;
 
 // Passes
 uniform sampler2D tMap;
-// uniform sampler2D tMapBloom;
 uniform sampler2D tBloom;
 uniform sampler2D tDepth;
 
@@ -51,17 +49,6 @@ vec3 dither(vec3 color) {
 	return color + dither_shift_RGB;
 }
 
-float calc_depth(float z) {
-	// float near = zNear;
-	float near = 1.;
-	// float far = zFar;
-	float far = 5.;
-	return (2.0 * near) / (far + near - z * (far - near));
-}
-
-#include <packing>
-#include <common>
-
 void main() {
 	vec2 uv = vUv;
 
@@ -76,10 +63,19 @@ void main() {
 
 	// Black stripe
 	float stripes = 0.;
-	float size = .1;
+	float size = uStripesScale * 0.5;
 	stripes += step(size, uv.y); // top
 	stripes -= step(1. - size, uv.y); // bottom
 
-	// gl_FragColor.rgb *= stripes;
+	// Vignette
+	vec2 position = uv - 0.5;
+	float len = length(position);
+	float vignetteProgress = 1. - uVignette.x;
+	float vignette = smoothstep(vignetteProgress, vignetteProgress - 0.5, len);
+	vignette = smoothstep(0.0, uVignette.y, vignette);
+	vignette = pow(vignette, uVignette.y);
+	gl_FragColor.rgb *= vignette;
+
+	gl_FragColor.rgb *= stripes;
 	gl_FragColor.a = 1.0;
 }

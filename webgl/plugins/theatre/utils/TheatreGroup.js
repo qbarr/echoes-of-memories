@@ -1,4 +1,5 @@
 import { types } from '@theatre/core';
+import { Vector2, Vector3, Vector4 } from 'three';
 
 const NOOP = () => {};
 
@@ -92,6 +93,7 @@ export class TheatreGroup {
 	}
 
 	update(values) {
+		console.log(values);
 		for (let i = 0; i < this.childsChildsKeys.length; i++) {
 			const keys = this.childsChildsKeys[i];
 			const parent = this.childsKeys[i];
@@ -109,16 +111,75 @@ export class TheatreGroup {
 	}
 }
 
+const simpleObjectVec2 = (id, value, opts = {}) => {
+	return types.compound({
+		x: types.number(value.x, opts),
+		y: types.number(value.y, opts),
+	});
+};
+const simpleObjectVec3 = (id, value, opts = {}) => {
+	return types.compound({
+		x: types.number(value.x, opts),
+		y: types.number(value.y, opts),
+		z: types.number(value.z, opts),
+	});
+};
+const simpleObjectVec4 = (id, value, opts = {}) => {
+	return types.compound({
+		x: types.number(value.x, opts),
+		y: types.number(value.y, opts),
+		z: types.number(value.z, opts),
+		w: types.number(value.w, opts),
+	});
+};
+
+const simpleObjectVec = (id, value, opts = {}) => {
+	if (value instanceof Vector2) {
+		return simpleObjectVec2(id, value, opts);
+	}
+	if (value instanceof Vector3) {
+		return simpleObjectVec3(id, value, opts);
+	}
+	if (value instanceof Vector4) {
+		return simpleObjectVec4(id, value, opts);
+	}
+	return null;
+};
+
+const isInstanceOfVector = (v) =>
+	v instanceof Vector2 || v instanceof Vector3 || v instanceof Vector4;
+
 const createValue = (value, type, opts, id, object) => {
 	const v = value.value;
+
+	if (isInstanceOfVector(v)) {
+		const o = simpleObjectVec(id, v, opts);
+		object[id] = value;
+		return o;
+	}
+
 	if (typeof type === 'function') {
 		const o = type(v, opts);
 		object[id] = value;
 		return o;
 	} else if (typeof type === 'string') {
-		const o = types[type](v, opts);
-		object[id] = value;
-		return o;
+		let o = null;
+		if (type === 'compound') {
+			if (v instanceof Vector2) {
+				o = simpleObjectVec2(id, v, opts);
+			} else if (v instanceof Vector3) {
+				o = simpleObjectVec3(id, v, opts);
+			} else if (v instanceof Vector4) {
+				o = simpleObjectVec4(id, v, opts);
+			} else return null;
+
+			object[id] = v;
+			return o;
+		} else {
+			o = types[type](v, opts);
+			object[id] = value;
+			return o;
+		}
 	} else {
 		// Number by default
 		const o = types.number(v, opts);

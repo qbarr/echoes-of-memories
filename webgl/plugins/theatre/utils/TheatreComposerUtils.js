@@ -4,17 +4,29 @@ export const convertComposerDatasForTheatre = (values) => {
 	const webgl = getWebGL();
 	const { $composer } = webgl;
 
-	const { $bokeh, $lut, $unrealBloom, uniforms } = $composer;
+	const { $bokeh, $lut, $unrealBloom, $crt, uniforms } = $composer;
 	console.log($composer);
 
 	const api = {
 		global: {
 			id: 'global',
 			child: {
-				dither: {
-					value: uniforms.uDitherStrength,
-					range: [0, 2],
+				dither: { value: uniforms.uDitherStrength, range: [0, 1] },
+				stripes: { value: uniforms.uStripesScale, range: [0, 1] },
+				vignette: { value: uniforms.uVignette, range: [0, 1] },
+			},
+		},
+		crt: {
+			id: 'crt',
+			child: {
+				scanLines: {
+					value: $crt.scanLines,
+					range: [0, 1],
+					nudgeMultiplier: 0.001,
 				},
+				padding: { value: $crt.padding, range: [0, 1] },
+				fishEye: { value: $crt.fishEye, range: [0, 1] },
+				interferences: { value: $crt.interferences, range: [0, 1] },
 			},
 		},
 		bokeh: {
