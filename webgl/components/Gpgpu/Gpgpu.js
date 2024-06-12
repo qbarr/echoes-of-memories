@@ -2,20 +2,27 @@ import BaseComponent from '#webgl/core/BaseComponent.js';
 import { Clock, Uniform, Vector2 } from 'three';
 import { presetsShader } from '#utils/presets/shaders.js';
 import { Vector3 } from 'three';
+import { raftween } from '#utils/anim/raftween.js';
+import { bezier } from '#utils/anim/bezier.js';
+import { easings } from '#utils/anim/easings.js';
 
 export default class Gpgpu extends BaseComponent {
 
-	constructor(count, options) {
+	constructor({ count, options }) {
 		super()
 		this.isUpdating = false
 		this.gpgpu = this.webgl.$gpgpu.create(count)
 		this.options = options
 		this.base = this.gpgpu
+
 		this.clock = new Clock()
 		this.previousTime = 0
+		this.tweens = []
+		this.index = 0
 	}
 
 	setupFromBox(box, opts = {}) {
+		const optsUniforms = opts.uniforms || {}
 		for(let i = 0; i < this.gpgpu.count; i++) {
 			const i3 = i * 3
 			const i4 = i * 4
@@ -34,6 +41,7 @@ export default class Gpgpu extends BaseComponent {
 			uCameraPosition: new Uniform(cameraPosition),
 			uFlowFieldStrength: new Uniform(1.2),
 			uFlowFieldInfluence: new Uniform(0.8),
+			// ...optsUniforms
 		}
 
 
@@ -44,6 +52,7 @@ export default class Gpgpu extends BaseComponent {
 	}
 
 	setupFromEmitter(position = new Vector3(0), opts) {
+		const uniforms = opts.uniforms || {}
 
 		for(let i = 0; i < this.gpgpu.count; i++)
 		{
@@ -56,35 +65,62 @@ export default class Gpgpu extends BaseComponent {
 			this.gpgpu.baseTexture.image.data[i4 + 3] = 0
 		}
 
-		this.setupBase(presetsShader.gpgpu.base)
+		this.setupBase(presetsShader.gpgpu.base, { uniforms, ...opts })
 
 		return this.gpgpu
 	}
 
-	setupFromInstance(instance) {
+	setupFromInstance(instance, opts) {
+		const uniforms = opts.uniforms || {}
 		const baseGeometry = {}
 		baseGeometry.instance = instance
 		baseGeometry.count = baseGeometry.instance.attributes.position.count
+
+		this.gpgpu.attributesTexture = this.gpgpu.computation.createTexture();
+		this.gpgpu.baseModelTexture = this.gpgpu.computation.createTexture();
+
+
+		const additiveDustParticles = 100
 
 		for(let i = 0; i < this.gpgpu.count; i++)
 		{
 			const i3 = i * 3
 			const i4 = i * 4
 
+			const range = this.gpgpu.count / 10
+
+			// const ease = bezier(easings.outSwift)
+			const indexRange = i / range
+
+			const friction = Math.random() * 0.035 + 0.96
+
 			this.gpgpu.baseTexture.image.data[i4 + 0] = baseGeometry.instance.attributes.position.array[i3 + 0]
 			this.gpgpu.baseTexture.image.data[i4 + 1] = baseGeometry.instance.attributes.position.array[i3 + 1]
 			this.gpgpu.baseTexture.image.data[i4 + 2] = baseGeometry.instance.attributes.position.array[i3 + 2]
 			this.gpgpu.baseTexture.image.data[i4 + 3] = Math.random()
+
+			let distance =  10 + Math.random() * 4
+			if (Math.random() < .1) distance += 2 + Math.random() * 10
+			// this.gpgpu.baseTexture.image.data[i4 + 0] = Math.random() * distance - distance / 2
+			// this.gpgpu.baseTexture.image.data[i4 + 1] = Math.random() * distance - distance / 2
+			// this.gpgpu.baseTexture.image.data[i4 + 2] = Math.random() * distance - distance / 2
+			// this.gpgpu.baseTexture.image.data[i4 + 3] = Math.random()
+
+
+			this.gpgpu.attributesTexture.image.data[i4 + 0] = indexRange // assign a range to each particle
+			this.gpgpu.attributesTexture.image.data[i4 + 1] = friction
+			this.gpgpu.attributesTexture.image.data[i4 + 2] = 0
+			this.gpgpu.attributesTexture.image.data[i4 + 3] = 0
+
+
 		}
-
-
-		this.setupBase(presetsShader.gpgpu.base)
+		this.setupBase(presetsShader.gpgpu.base, { uniforms, ...opts })
 		return this.gpgpu
 	}
 
-	setupBase(shader, options = {}) {
+	setupBase(shader, opts = {}) {
 		const { $viewport, $assets } = this.webgl
-		if(!options.uniforms) options.uniforms = {}
+		const uniforms = opts.uniforms || {}
 
 		this.gpgpu.variables.particles = this.gpgpu.computation.addVariable('uParticles', shader, this.gpgpu.baseTexture)
 		this.gpgpu.computation.setVariableDependencies(this.gpgpu.variables.particles, [ this.gpgpu.variables.particles ])
@@ -93,9 +129,13 @@ export default class Gpgpu extends BaseComponent {
 			uTime: new Uniform(0),
 			uDeltaTime: new Uniform(0),
 			uBase: new Uniform(this.gpgpu.baseTexture),
+			uAttributes: new Uniform(this.gpgpu.attributesTexture),
+			uBaseModel: new Uniform(this.gpgpu.baseModelTexture),
+			uFlowFieldFrequency: new Uniform(0.5),
 			uFlowFieldInfluence: new Uniform(0.4),
 			uFlowFieldStrength: new Uniform(2),
-			uFlowFieldFrequency: new Uniform(0.5),
+			uIsMorphing: new Uniform(false),
+			uPercentRange: new Uniform(0),
 		//  uPaint = new Uniform(paintTexture),
 			uResolution: new Uniform(
 				new Vector2(
@@ -103,10 +143,10 @@ export default class Gpgpu extends BaseComponent {
 					$viewport.size.get().y * $viewport.pixelRatio.get()
 				)
 			),
-			...options.uniforms,
-			// ...this.options.uniforms
+			...uniforms
 
 		}
+
 		this.gpgpu.computation.init()
 
 		/// #if __DEBUG__
@@ -117,7 +157,7 @@ export default class Gpgpu extends BaseComponent {
 	/// #if __DEBUG__
 	devTools() {
 		const folder = this.webgl.$gui.addFolder({
-			title: '🔮 Uniforms gpgpu',
+			title: '🎉 Particles',
 			index: 1,
 		})
 		const uniforms = this.gpgpu.variables.particles.material.uniforms
@@ -125,6 +165,7 @@ export default class Gpgpu extends BaseComponent {
 			uFlowFieldFrequency: uniforms.uFlowFieldFrequency.value,
 			uFlowFieldStrength: uniforms.uFlowFieldStrength.value,
 			uFlowFieldInfluence: uniforms.uFlowFieldInfluence.value,
+			uIsMorphing: uniforms.uIsMorphing.value,
 		}
 
 		folder.addBinding(
@@ -152,21 +193,44 @@ export default class Gpgpu extends BaseComponent {
 			this.gpgpu.variables.particles.material.uniforms.uFlowFieldInfluence.value = e.value
 		})
 
+		folder.addBinding(
+			_debug,
+			'uIsMorphing'
+		).on('change', (e) => {
+			this.gpgpu.variables.particles.material.uniforms.uIsMorphing.value = e.value
+
+		})
+
 	}
 	/// #endif
 
-	update() {
-		const elapsedTime = this.clock.getElapsedTime()
-		const deltaTime = elapsedTime - this.previousTime
-		this.previousTime = elapsedTime
-
-
-		Object.values(this.gpgpu.variables).forEach(variable => {
-			if(variable.material.uniforms.uTime) variable.material.uniforms.uTime.value = elapsedTime
-			if(variable.material.uniforms.uDeltaTime) variable.material.uniforms.uDeltaTime.value = deltaTime
+	uniformsTo(uniforms) {
+		Object.keys(uniforms).forEach((uniformKey, i) => {
+			const tween = raftween({
+				from: this.gpgpu.variables.particles.material.uniforms[uniformKey].value,
+				to: uniforms[uniformKey].value,
+				duration: 5,
+				onProgress: (progress, value) => {
+					this.gpgpu.variables.particles.material.uniforms[uniformKey].value = value
+				}
+			})
+			this.tweens.push(tween)
+			tween.play()
 		})
 
-		this.gpgpu.computation.compute()
+	}
 
+	update() {
+		console.log(this.index)
+		this.index++
+
+		Object.values(this.gpgpu.variables).forEach(variable => {
+			if(variable.material.uniforms.uTime) variable.material.uniforms.uTime.value = this.webgl.$time.elapsed / 1000
+			if(variable.material.uniforms.uDeltaTime) variable.material.uniforms.uDeltaTime.value = this.webgl.$time.dt / 1000
+			if(variable.material.uniforms.uPercentRange && this.index > 1000) variable.material.uniforms.uPercentRange.value += 0.04
+		})
+
+		this.tweens.forEach(tween => tween.update(this.webgl.$time.dt / 1000))
+		this.gpgpu.computation.compute()
 	}
 }

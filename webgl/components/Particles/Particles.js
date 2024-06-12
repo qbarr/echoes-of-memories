@@ -5,7 +5,7 @@ import { presetsShader } from '#utils/presets/shaders.js';
 export class Particles extends BaseComponent {
 
 	init() {
-		const { vertex, fragment } = this.props
+		const { vertex, fragment } = this.props.options
 
 		this.shader = {
 			vertex: vertex || presetsShader.particles.base.vertex,
@@ -14,14 +14,16 @@ export class Particles extends BaseComponent {
 	}
 
 	afterInit() {
-		const { instance, count, options, position, boundingBox, gpgpu } = this.props
+		// const { type, instance, count, options, position, boundingBox, gpgpu } = this.props
+		const { type, instance, count, options } = this.props
 		this.instance = instance
-		this.boundingBox = boundingBox
 		const _count = this.instance ? this.instance.attributes.position.count : count
-		this.gpgpu = this.add(Gpgpu, _count, gpgpu)
-		if (this.instance) this.gpgpu.setupFromInstance(this.instance)
-		else if (this.boundingBox) this.gpgpu.setupFromBox(this.boundingBox, options)
-		else this.gpgpu.setupFromEmitter(position, options)
+		const optionsGpgpu = options.gpgpu || {}
+		// console.log('optionsGpgpu', optionsGpgpu)
+		this.gpgpu = this.add(Gpgpu, { count: _count, options: optionsGpgpu})
+		if (type === 'instance') this.gpgpu.setupFromInstance(this.instance, options.gpgpu)
+		else if (type === 'box') this.gpgpu.setupFromBox(options.boundingBox, options)
+		else if (type === 'emitter') this.gpgpu.setupFromEmitter(options.position, options)
 		this.createParticles(this.gpgpu.base)
 	}
 

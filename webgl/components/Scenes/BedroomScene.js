@@ -74,6 +74,7 @@ export default class BedroomScene extends BaseScene {
 
 		this.sprite = new Sprite(materialSprite)
 		this.sprite.scale.setScalar(2)
+		this.cameraDirection = new Vector3()
 
 		// uncomment the following two lines to see the effect of the code
 
@@ -116,9 +117,8 @@ export default class BedroomScene extends BaseScene {
 	}
 
 	update() {
-		const direction = new Vector3()
-		this.camera.base.getWorldDirection( direction );
-		this.sprite.position.copy( this.camera.base.position ).add( direction.multiplyScalar( 1.1 ))
+		this.camera.base.getWorldDirection( this.cameraDirection );
+		this.sprite.position.copy( this.camera.base.position ).add( this.cameraDirection.multiplyScalar( 1.1 ))
 		this.opacityTween?.update(this.webgl.$time.dt / 1000);
 	}
 }
