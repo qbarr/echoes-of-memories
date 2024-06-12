@@ -1,4 +1,4 @@
-import { Vector3, Object3D, PerspectiveCamera } from 'three';
+import { Vector3, Object3D, PerspectiveCamera, Vector2 } from 'three';
 import BaseCamera from '#webgl/core/BaseCamera';
 import POVController from '#webgl/utils/POVController.js';
 
@@ -8,8 +8,10 @@ import { useTheatre } from '#webgl/utils/useTheatre.js';
 
 import { scenesDatas } from '../Scenes/datas.js';
 import { types } from '@theatre/core';
+import { TheatreSheet } from '#webgl/plugins/theatre/utils/index.js';
+import { w } from '#utils/state/index.js';
 
-const HEIGHT = 2.75;
+const HEIGHT = 3;
 const DEFAULT_FOV = 55;
 
 export class POVCamera extends BaseCamera {
@@ -23,10 +25,6 @@ export class POVCamera extends BaseCamera {
 
 		this.base = new Object3D();
 		this.target = new Object3D();
-
-		useTheatre(this, { id: 'POVCamera' });
-
-		this.createSheets();
 	}
 
 	afterInit() {
@@ -52,78 +50,38 @@ export class POVCamera extends BaseCamera {
 
 		const dbs = this.webgl.$renderer.drawingBufferSize;
 		this.resizeSignal = dbs.watchImmediate(this.resize, this);
+
+		// Create Theatre Projects
+		useTheatre(this, 'Bedroom:Camera');
+		useTheatre(this, 'Clinique:Camera');
+
+		this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 	}
 
-	createSheets() {
+	async createSheets() {
 		const { clinique, bedroom } = scenesDatas;
 
-		// Clinique
-		// const cliniqueKeys = Object.keys(clinique);
-		// cliniqueKeys.forEach((k) => {
-		// 	const obj = clinique[k];
-		// 	if (obj.class) {
-		// 		cliniqueKeys.forEach((l) => {
-		// 			if (l === k) return;
-		// 			if (!clinique[l].class) return;
-		// 			this.log('Creating sheet', `${l}_to_${k}`);
-		// 			obj.tl = this.$createTimeline(`clinique_${l}_to_${k}`);
-		// 			obj.tl.add('position', {
-		// 				position: types.compound({
-		// 					x: types.number(this.target.position.x),
-		// 					y: types.number(this.target.position.y),
-		// 					z: types.number(this.target.position.z),
-		// 				}),
-		// 			});
-		// 			obj.tl.add('rotation', {
-		// 				rotation: types.compound({
-		// 					x: types.number(this.target.rotation.x),
-		// 					y: types.number(this.target.rotation.y),
-		// 					z: types.number(this.target.rotation.z),
-		// 				}),
-		// 			});
-		// 		});
-		// 	}
-		// });
-		// this.log('Clinique sheets created', clinique);
+		const cliniqueProject = this.$theatre['Clinique:Camera'];
+		const bedroomProject = this.$theatre['Bedroom:Camera'];
 
-		// // Bedroom
-		// const bedroomKeys = Object.keys(bedroom);
-		// bedroomKeys.forEach((k) => {
-		// 	const obj = bedroom[k];
-		// 	if (obj.class) {
-		// 		bedroomKeys.forEach((l) => {
-		// 			if (l === k) return;
-		// 			if (!bedroom[l].class) return;
-		// 			this.log('Creating sheet', `${l}_to_${k}`);
-		// 			obj.tl = this.$createTimeline(`bedroom_${l}_to_${k}`);
-		// 		});
-		// 	}
-		// });
-	}
+		/// #if __DEBUG__
+		// Need an await only if we use @theatre/studio
+		await cliniqueProject.ready;
+		await bedroomProject.ready;
+		/// #endif
 
-	setPosition(x, y, z) {
-		if (Array.isArray(x)) {
-			this.base.position.fromArray(x);
-			this.base.position.setY(HEIGHT);
-			return;
-		}
-		if (typeof x === 'object') {
-			!isNaN(x.x) && this.base.position.setX(x.x);
-			// !isNaN(x.y) && this.base.position.setY(x.y);
-			!isNaN(x.z) && this.base.position.setZ(x.z);
-			return;
-		}
-
-		!isNaN(x) && this.base.position.setX(x);
-		// !isNaN(y) && this.base.position.setY(y);
-		!isNaN(z) && this.base.position.setZ(z);
-
-		return this;
+		const introSheet = new TheatreSheet('intro', { project: cliniqueProject });
+		/// #if __DEBUG__
+		const audio = (await import('/assets/audios/clinique/intro.wav')).default;
+		console.log(audio);
+		await introSheet.attachAudio(audio, 1);
+		/// #endif
+		introSheet.$target('camera', this.target, { nudgeMultiplier: 0.01 });
+		introSheet.$composer(['bokeh', 'lut', 'bloom']);
 	}
 
 	goTo({ x, y, z }) {
-		this.log('goTo', x, y, z);
-		this.base.position.set(x, HEIGHT - y, z);
+		this.target.position.set(x, HEIGHT - y, z);
 	}
 
 	onPointerLockChange(ev) {
@@ -154,8 +112,16 @@ export class POVCamera extends BaseCamera {
 	}
 
 	update() {
-		this.wobble.update(this.webgl.$time.elapsed * this.$wobbleIntensity);
-		this.controls?.update?.();
+		// this.wobble.update(this.webgl.$time.elapsed * this.$wobbleIntensity);
+		// this.controls?.update?.();
+
+		const { dt } = this.webgl.$time;
+
+		this.base.position.damp(this.target.position, 0.1, dt);
+		this.base.rotation.damp(this.target.rotation, 0.1, dt);
+		// this.base.position.copy(this.target.position);
+		// this.base.rotation.copy(this.target.rotation);
+
 		this.cam.updateProjectionMatrix();
 	}
 
@@ -169,7 +135,13 @@ export class POVCamera extends BaseCamera {
 }
 
 /// #if __DEBUG__
+/// #code import { webgl } from '#webgl/core';
 function preventDebug(ev) {
-	return ev.target.closest('.debug') || ev.target.closest('#theatrejs-studio-root');
+	const isStudioActive = webgl.$theatre.studioActive.value;
+	return (
+		ev.target.closest('.debug') ||
+		ev.target.closest('#theatrejs-studio-root') ||
+		isStudioActive
+	);
 }
 /// #endif

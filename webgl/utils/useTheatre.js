@@ -1,28 +1,10 @@
 import { webgl } from '#webgl/core';
 
-export const useTheatre = (Class, datas) => {
-	if (typeof datas === 'string') {
-		datas = { id: datas };
-	}
+export const useTheatre = (Class, id) => {
+	const $project = webgl.$theatre.createProject(id);
 
-	const $project = webgl.$theatre.createProject(datas);
-	const $tl = (id) => {
-		const sheet = $project.sheet(id);
-		Object.defineProperty(sheet, 'add', {
-			value: sheet.object,
-			writable: false,
-			configurable: false,
-			enumerable: false,
-		});
-		return sheet;
-	};
+	Class.$theatre = Class.$theatre ?? {};
+	Class.$theatre[id] = $project;
 
-	Object.assign(Class, {
-		$project,
-
-		$tl,
-		$createTimeline: $tl,
-	});
-
-	return { $project, $tl };
+	return $project;
 };

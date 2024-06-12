@@ -139,11 +139,19 @@ export function debugCameraPlugin(webgl) {
 			.toArray()
 			.map((v) => v.toFixed(6))
 			.join(', ');
+		console.log(api.currentCamera.cam.rotation);
+		console.log(api.currentCamera.cam.rotation.toArray());
+		const eulerStr = api.currentCamera.cam.rotation
+			.toArray()
+			.filter((v) => typeof v !== 'string')
+			.map((v) => v.toFixed(4))
+			.join(', ');
 
 		const str = [
 			'{',
 			'	position: [ ' + posStr + ' ],',
 			'	quaternion: [ ' + qtStr + ' ],',
+			'	euler: [ ' + eulerStr + ' ],',
 			'   fov: ' + api.currentCamera.cam.fov.toFixed(2) + '',
 			'}',
 		].join('\n');

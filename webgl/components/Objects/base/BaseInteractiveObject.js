@@ -15,7 +15,6 @@ export class BaseInteractiveObject extends BaseComponent {
 	beforeInit() {
 		const m = (this.mesh = this.props.mesh);
 		this.raycastMesh = this.props?.data?.raycastMesh ?? m.clone();
-		this.log(this.raycastMesh, this.raycastMesh.position, this.raycastMesh.rotation);
 
 		this.base.position.copy(m.position.clone());
 		this.base.rotation.copy(m.rotation.clone());
@@ -60,7 +59,6 @@ export class BaseInteractiveObject extends BaseComponent {
 		this.webgl.$hooks.afterFrame.watchOnce(() => {
 			this.log('INTERACTION:enter');
 			this.webgl.$composer.addOutline(this.mesh);
-			// TODO: Change crosshair icon
 			this.webgl.$scenes.ui.component.crosshair.toggleHover(true);
 		});
 	}

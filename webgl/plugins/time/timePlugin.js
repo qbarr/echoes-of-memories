@@ -6,17 +6,17 @@ import { raf } from '#utils/raf';
 
 const MAXFRAME = Number.MAX_SAFE_INTEGER;
 
-const stableIntervals = [ 30, 60, 120, 144, 240 ]
-	.map(target => {
-		const delta = 0.75;
-		target = 1000 / target;
-		return [ target + delta, target, target - delta ];
-	});
+const stableIntervals = [30, 60, 120, 144, 240].map((target) => {
+	const delta = 0.75;
+	target = 1000 / target;
+	return [target + delta, target, target - delta];
+});
 
 export function timePlugin(webgl) {
 	const averageDt = createMovingAverage(20);
 	const averageStableDt = createMovingAverage(6);
-	let needsReset = false; 16;
+	let needsReset = false;
+	16;
 	let now = performance.now();
 	let isInitialized = false;
 
@@ -28,7 +28,6 @@ export function timePlugin(webgl) {
 
 	// Used by the quality plugin
 	const qualityDt = createMovingAverage(6);
-
 
 	const api = {
 		dt: 0, // Raw, pure delta time
@@ -46,14 +45,16 @@ export function timePlugin(webgl) {
 		isStarted: true,
 
 		clampFps: 0, // Limit to X fps
-		set clampTo60Fps(v) { api.clampFps = v ? 60 : 0 },
+		set clampTo60Fps(v) {
+			api.clampFps = v ? 60 : 0;
+		},
 
 		start,
 		stop,
 		resume,
 		pause,
 
-		customLoop: null // Plug a custom tick method instead of RAF
+		customLoop: null, // Plug a custom tick method instead of RAF
 	};
 
 	function resume() {
@@ -131,9 +132,9 @@ export function timePlugin(webgl) {
 
 		let tsdt = api.averageDt;
 		for (let i = 0, l = stableIntervals.length; i < l; i++) {
-			const interval = stableIntervals[ i ];
-			if (tsdt >= interval[ 2 ]) {
-				if (tsdt <= interval[ 0 ]) tsdt = interval[ 1 ];
+			const interval = stableIntervals[i];
+			if (tsdt >= interval[2]) {
+				if (tsdt <= interval[0]) tsdt = interval[1];
 				break;
 			}
 		}
@@ -149,6 +150,7 @@ export function timePlugin(webgl) {
 
 		if (!api.isStarted) return;
 		if (!api.isPaused) api.playingElapsed += dt;
+
 		webgl.$hooks.frame();
 	}
 
@@ -161,14 +163,12 @@ export function timePlugin(webgl) {
 			const { afterSetup, afterStart, afterFrame } = $hooks;
 
 			afterSetup.watchOnce(() => {
-				$viewport && $viewport.visible.watch(() => needsReset = true);
+				$viewport && $viewport.visible.watch(() => (needsReset = true));
 			});
 
-			afterStart.watchOnce(() => {
-				start();
-			});
+			afterStart.watchOnce(start);
 
-			afterFrame.watchOnce(() => needsReset = true);
-		}
-	}
+			afterFrame.watchOnce(() => (needsReset = true));
+		},
+	};
 }

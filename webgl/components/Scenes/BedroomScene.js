@@ -77,13 +77,14 @@ export default class BedroomScene extends BaseScene {
 
 		this.base.add(scene);
 
-		useTheatre(this, { id: 'Bedroom Scene' });
+		// Override $theatre
+		this.$theatre = useTheatre(this, 'Bedroom:Scene');
 	}
 
 	async enter() {
 		this.log('enter');
 		this.camera = this.add(this.webgl.$povCamera);
-		this.camera.setPosition([-8.67082, 0, 4.88725]);
+		// this.camera.setPosition([-8.67082, 0, 4.88725]);
 	}
 
 	async leave() {

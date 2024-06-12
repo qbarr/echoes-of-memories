@@ -30,7 +30,6 @@ export const useCameraHelper = (Class) => {
 		webgl.$hooks.afterUpdate.remove(update);
 	}
 
-	console.log(webgl.$scenes);
 	webgl.$scenes._current.watchImmediate((scene) => {
 		if (!scene) return;
 		if (!scene.component.base) return;

@@ -344,13 +344,13 @@ export function raycastPlugin(webgl) {
 			intersectObject(object, raycaster, intersects, false);
 
 			// Only keep the first intersected object by distance
-			if (RAYCAST_ONLY_FIRST && intersects.length > 1) {
-				// find the closest object
-				// intersects.sort((a, b) => a.distance - b.distance);
-				// console.log(intersects);
-				// intersects.length = 1;
-				// debugger;
-			}
+			// if (RAYCAST_ONLY_FIRST && intersects.length > 1) {
+			// find the closest object
+			// intersects.sort((a, b) => a.distance - b.distance);
+			// console.log(intersects);
+			// intersects.length = 1;
+			// debugger;
+			// }
 
 			onAfterRaycast(raycaster);
 

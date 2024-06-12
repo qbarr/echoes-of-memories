@@ -15,8 +15,8 @@ const datas = {
 		livres: { class: BaseInteractiveObject },
 		peinture: { class: BaseInteractiveObject },
 		couverture: { class: BaseInteractiveObject },
-		posters: { class: BaseInteractiveObject },
-		drowninggirl: { class: BaseInteractiveObject },
+		posters: { class: null },
+		drowninggirl: { class: null },
 	},
 	clinique: {
 		pipesacrak: {},
