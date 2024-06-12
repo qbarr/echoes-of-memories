@@ -13,15 +13,14 @@ export class Subtitles extends BaseComponent {
 		super(props);
 		this.base = new Object3D();
 		this.baseScale = 0.5;
+		this.default_part = 'LOREM IPSUM DOLOR SIT AMET. ';
 	}
 
 	init() {
-		const default_part = 'LOREM IPSUM DOLOR SIT AMET. ';
-
 		this.text = this.add(MSDFTextMesh, {
 			name: 'Subtitles',
 			font: 'VCR_OSD_MONO',
-			content: default_part,
+			content: this.default_part,
 			centerMesh: { x: true, y: false },
 			align: 'center',
 			color: new Color(0xffd700).offsetHSL(0, 0.3, 0.1),
@@ -31,31 +30,44 @@ export class Subtitles extends BaseComponent {
 		const backgroundGeo = new PlaneGeometry(1, 3, 16, 16);
 		const backgroundMat = new MeshBasicMaterial({
 			color: 0x000000,
-			// color: 0x525252,
 			transparent: true,
 			opacity: 0.5,
 		});
 		this.background = new Mesh(backgroundGeo, backgroundMat);
 		this.base.add(this.background);
+	}
 
-		this.matchPartWidthToBackgroundSize({
-			part: default_part,
-			width: this.text.geo._layout.width,
-			height: this.text.geo._layout.height,
+	afterInit() {
+		const { $viewport, $subtitles } = this.webgl;
+
+		$viewport.size.watchImmediate(() => {
+			this.responsiveTextScale($viewport.size.value);
+			this.matchPartWidthToBackgroundSize({
+				part: this.default_part,
+				width: this.text.geo._layout.width,
+				height: this.text.geo._layout.height,
+			});
 		});
 		this.hide();
 
-		const { $viewport, $subtitles } = this.webgl;
-		$viewport.size.watchImmediate(this.responsiveTextScale.bind(this));
 		watch($subtitles.currentPart, this.onPartChange.bind(this));
 	}
 
+	// Pas super propre, à revoir aussi lol
 	matchPartWidthToBackgroundSize({ part, width, height }) {
-		const { $viewport } = this.webgl;
+		const { $viewport, $getCurrentScene } = this.webgl;
 		const { x: vw, y: vh } = $viewport.size.value;
 		const line_count = this.text.geo._layout._linesTotal;
 
-		const scaleX = line_count > 1 ? 70 : part.length * 1.5;
+		const scene = this.scene ?? this.webgl.$getCurrentScene();
+		const camera = scene.getCurrentCamera();
+		const { width: camWidth } = camera.base;
+
+		const scale = clampedMap(vw, 375, 1680, 0.6, 1) * this.baseScale;
+
+		const mappedScaleX = camWidth * scale + (camWidth / 1.5) * scale;
+
+		const scaleX = line_count > 1 ? mappedScaleX : part.length * 1.235;
 
 		const { x, y, z } = this.text.position;
 		this.background.position.set(x, y, z - 1);
@@ -72,6 +84,8 @@ export class Subtitles extends BaseComponent {
 		const dprWidth = size.x * $viewport.pixelRatio.value;
 		const mult = clampedMap(size.x, 375, 1680, 0.8, 0.4);
 		this.text.updateGeo({ width: dprWidth * mult });
+
+		console.log('RESPONSIVE TEXT', dprWidth * mult, dprWidth, mult);
 	}
 
 	onPartChange(part) {
@@ -79,7 +93,6 @@ export class Subtitles extends BaseComponent {
 
 		if (part.length) {
 			this.text.edit(part);
-			// console.log(this.text.geo._layout);
 			this.matchPartWidthToBackgroundSize({
 				part,
 				width: this.text.geo._layout.width,
