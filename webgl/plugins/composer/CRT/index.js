@@ -1,5 +1,5 @@
 import { webgl } from '#webgl/core';
-import { Vector2, WebGLRenderTarget } from 'three';
+import { NoBlending, Vector2, WebGLRenderTarget } from 'three';
 
 import { w } from '#utils/state';
 import { wUniform } from '#webgl/utils/Uniform.js';
@@ -63,6 +63,7 @@ export const useCRTPass = (composer) => {
 			...wUniform('uInterferences', interferences),
 		},
 		defines: { ...defines },
+		blending: NoBlending,
 	}));
 	CRTPass.use(filter.material);
 

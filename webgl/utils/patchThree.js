@@ -7,7 +7,7 @@ import {
 	Vector4,
 	Matrix4,
 	Euler,
-	MathUtils
+	MathUtils,
 } from 'three';
 
 export function patchThree() {
@@ -18,12 +18,12 @@ export function patchThree() {
 }
 
 function poolifyThreeClasses() {
-	poolify(Quaternion, quaternion => quaternion.set(0, 0, 0, 0));
-	poolify(Color, color => color.setRGB(0, 0, 0));
-	poolify(Vector2, vector => vector.setScalar(0));
-	poolify(Vector3, vector => vector.setScalar(0));
-	poolify(Vector4, vector => vector.setScalar(0));
-	poolify(Euler, euler => euler.set(0, 0, 0, 'XYZ'));
+	poolify(Quaternion, (quaternion) => quaternion.set(0, 0, 0, 0));
+	poolify(Color, (color) => color.setRGB(0, 0, 0));
+	poolify(Vector2, (vector) => vector.setScalar(0));
+	poolify(Vector3, (vector) => vector.setScalar(0));
+	poolify(Vector4, (vector) => vector.setScalar(0));
+	poolify(Euler, (euler) => euler.set(0, 0, 0, 'XYZ'));
 	poolify(Matrix4);
 }
 
@@ -57,7 +57,7 @@ function addDamp() {
 
 	Vector4.prototype.damp = function damp(v, lambda, dt) {
 		return this.lerp(v, 1 - Math.exp(-lambda * 0.05 * dt));
-	}
+	};
 
 	Vector4.prototype.dampVectors = function dampVectors(v1, v2, lambda, dt) {
 		this.x = MathUtils.lerp(v1.x, v2.x, 1 - Math.exp(-lambda * 0.05 * dt));
@@ -65,9 +65,20 @@ function addDamp() {
 		this.z = MathUtils.lerp(v1.z, v2.z, 1 - Math.exp(-lambda * 0.05 * dt));
 		this.w = MathUtils.lerp(v1.w, v2.w, 1 - Math.exp(-lambda * 0.05 * dt));
 		return this;
-	}
+	};
 
 	Quaternion.prototype.sdamp = function sdamp(q, lambda, dt) {
 		return this.slerp(q, 1 - Math.exp(-lambda * 0.05 * dt));
+	};
+
+	Euler.prototype.lerp = function lerp(e, alpha) {
+		this.x += (e.x - this.x) * alpha;
+		this.y += (e.y - this.y) * alpha;
+		this.z += (e.z - this.z) * alpha;
+		return this;
+	};
+
+	Euler.prototype.damp = function damp(e, lambda, dt) {
+		return this.lerp(e, 1 - Math.exp(-lambda * 0.05 * dt));
 	};
 }

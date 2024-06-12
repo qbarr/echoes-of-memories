@@ -30,6 +30,8 @@ export class UICamera extends BaseCamera {
 		this.base.right = aspect * this.viewSize * 0.5;
 		this.base.top = this.viewSize * 0.5;
 		this.base.bottom = -this.viewSize * 0.5;
-		this.base.updateProjectionMatrix();
+		this.cam.updateProjectionMatrix();
+
+		this.base.width = this.base.right * 2;
 	}
 }

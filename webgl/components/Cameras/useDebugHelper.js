@@ -4,7 +4,7 @@ import { webgl } from '#webgl/core';
 import { CameraHelper } from 'three';
 
 export const useCameraHelper = (Class) => {
-	const camera = Class.base;
+	const camera = Class.cam;
 
 	const enabled = storageSync(
 		'webgl:' + Class.name + ':cameraHelper:enabled',
@@ -30,7 +30,6 @@ export const useCameraHelper = (Class) => {
 		webgl.$hooks.afterUpdate.remove(update);
 	}
 
-	console.log(webgl.$scenes);
 	webgl.$scenes._current.watchImmediate((scene) => {
 		if (!scene) return;
 		if (!scene.component.base) return;

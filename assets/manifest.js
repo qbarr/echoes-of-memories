@@ -65,4 +65,7 @@ export default {
 
 	// Subtitles
 	subtitles: json('subtitles/export/*', { type: 'subtitles' }),
+
+	// Theatre projects' state
+	theatre: json('theatre/*'),
 };

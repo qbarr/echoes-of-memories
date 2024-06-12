@@ -8,6 +8,7 @@ import { storageSync, w } from '#utils/state';
 
 const NOOP = (v) => v;
 const opts = { passive: false };
+const RAYCAST_ONLY_FIRST = true;
 
 export function raycastPlugin(webgl) {
 	/// #if __DEBUG__
@@ -271,7 +272,15 @@ export function raycastPlugin(webgl) {
 		if (!rawList.length) return;
 
 		// const cam = scene.component.getCurrentCamera().base;
-		const cam = scene.component._cam.current.base;
+		const cameraComponent = scene.component._cam.current;
+		const cam = cameraComponent.cam;
+		if (!cam) return;
+		if (!cameraComponent.$pointerLocked) return;
+
+		/// #if __DEBUG__
+		const idDebugCamera = !!scene.component._cam.forced;
+		if (idDebugCamera) return;
+		/// #endif
 
 		pointer.position.set(0, 0);
 
@@ -332,7 +341,16 @@ export function raycastPlugin(webgl) {
 
 			onBeforeRaycast(raycaster);
 
-			intersectObject(object, raycaster, intersects, true);
+			intersectObject(object, raycaster, intersects, false);
+
+			// Only keep the first intersected object by distance
+			// if (RAYCAST_ONLY_FIRST && intersects.length > 1) {
+			// find the closest object
+			// intersects.sort((a, b) => a.distance - b.distance);
+			// console.log(intersects);
+			// intersects.length = 1;
+			// debugger;
+			// }
 
 			onAfterRaycast(raycaster);
 
@@ -366,10 +384,8 @@ export function raycastPlugin(webgl) {
 		const gui = webgl.$gui.addFolder({ title: '📌 Raycast', index: 1 });
 
 		const enabledDebugLigne = storageSync('webgl:raycast:debugLine', w(false));
-		gui.addBinding(enabledDebugLigne, 'value', { label: 'Debug Line' }).on(
-			'change',
-			({ value }) => (debugLine.visible = value),
-		);
+		enabledDebugLigne.watchImmediate((v) => (debugLine.visible = v));
+		gui.addBinding(enabledDebugLigne, 'value', { label: 'Debug Line' });
 	}
 	/// #endif
 

@@ -4,11 +4,11 @@ import { GLSL3, NoBlending, Vector2, Vector3, WebGLRenderTarget } from 'three';
 import { storageSync, w } from '#utils/state';
 import createBuffer from '#webgl/utils/createBuffer.js';
 import createFilter from '#webgl/utils/createFilter.js';
+import { wUniform } from '#webgl/utils/Uniform.js';
 
 import LuminosityPass from './LuminosityPass.frag?hotshader';
 import UnrealBloomBlurPass from './UnrealBloomBlurPass.frag?hotshader';
 import UnrealBloomCompositePass from './UnrealBloomCompositePass.frag?hotshader';
-import { wUniform } from '#webgl/utils/Uniform.js';
 
 const BlurDirectionX = new Vector2(1, 0);
 const BlurDirectionY = new Vector2(0, 1);
@@ -27,12 +27,17 @@ const MAX_ITERATIONS = 3;
 
 export const useUnrealBloomPass = (composer, { iterations = MAX_ITERATIONS } = {}) => {
 	/* Params */
-	const sk = 'webgl:composer:UnrealBloom:';
-	const threshold = storageSync(sk + 'threshold', w(DEFAULT_PARAMS.threshold));
-	const smoothing = storageSync(sk + 'smoothing', w(DEFAULT_PARAMS.smoothing));
-	const strength = storageSync(sk + 'strength', w(DEFAULT_PARAMS.strength));
-	const radius = storageSync(sk + 'radius', w(DEFAULT_PARAMS.radius));
-	const spread = storageSync(sk + 'spread', w(DEFAULT_PARAMS.spread));
+	// const sk = 'webgl:composer:UnrealBloom:';
+	// const threshold = storageSync(sk + 'threshold', w(DEFAULT_PARAMS.threshold));
+	// const smoothing = storageSync(sk + 'smoothing', w(DEFAULT_PARAMS.smoothing));
+	// const strength = storageSync(sk + 'strength', w(DEFAULT_PARAMS.strength));
+	// const radius = storageSync(sk + 'radius', w(DEFAULT_PARAMS.radius));
+	// const spread = storageSync(sk + 'spread', w(DEFAULT_PARAMS.spread));
+	const threshold = w(DEFAULT_PARAMS.threshold);
+	const smoothing = w(DEFAULT_PARAMS.smoothing);
+	const strength = w(DEFAULT_PARAMS.strength);
+	const radius = w(DEFAULT_PARAMS.radius);
+	const spread = w(DEFAULT_PARAMS.spread);
 
 	const enabled = w(true);
 
@@ -45,6 +50,7 @@ export const useUnrealBloomPass = (composer, { iterations = MAX_ITERATIONS } = {
 		smoothing,
 		strength,
 		radius,
+		spread,
 
 		iterations: w(iterations),
 

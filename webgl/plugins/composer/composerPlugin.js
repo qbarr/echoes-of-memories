@@ -48,14 +48,12 @@ export function composerPlugin(webgl) {
 		const { textures } = $assets;
 
 		buffers.base = $fbo.createBuffer({ name: 'Base' });
-		// buffers.normal = $fbo.createBuffer({ name: 'Normal' });
 		buffers.interface = $fbo.createBuffer({ name: 'Interface' });
 		buffers.composite = $fbo.createBuffer({ name: 'Composite' });
 
 		Object.assign(uniforms, {
 			...webgl.uniforms,
 			tMap: { value: buffers.base.texture, type: 't' },
-			// tNormal: { value: buffers.normal.texture, type: 't' },
 			tInterface: { value: buffers.interface.texture, type: 't' },
 			tComposite: { value: buffers.composite.texture, type: 't' },
 
@@ -82,7 +80,6 @@ export function composerPlugin(webgl) {
 		webgl.$scenes._current.watchImmediate(onSceneSwitch);
 
 		// $renderer.drawingBufferSize.watchImmediate(resize);
-		// $hooks.beforeUpdate.watch(update);
 
 		__DEBUG__ && devtools();
 	}
@@ -97,10 +94,6 @@ export function composerPlugin(webgl) {
 			api.$crt.enabled.set(false);
 		}
 	}
-
-	// function resize({ width, height }) {
-	// 	if (!width || !height) return;
-	// }
 
 	function update() {
 		const { $scenes } = webgl;
@@ -132,7 +125,7 @@ export function composerPlugin(webgl) {
 		renderer.clear();
 		scene.triggerRender();
 		renderer.clearDepth();
-		$scenes.ui.component.triggerRender();
+		// $scenes.ui.component.triggerRender();
 		uniforms.tMap.value = buffers.base.texture;
 
 		// Render sketch lines pass
