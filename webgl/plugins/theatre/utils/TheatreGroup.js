@@ -1,7 +1,37 @@
 import { types } from '@theatre/core';
-import { Object3D, Vector3 } from 'three';
 
 const NOOP = () => {};
+
+/*
+
+const dummy = { value: 0 };
+const dummy2 = { value: 0 };
+
+introSheet
+	.$group('group', [
+		{
+			id: 'test',
+			child: {
+				dummy: {
+					value: dummy,
+					range: [0, 2],
+				},
+			},
+		},
+		{
+			id: 'test2',
+			child: {
+				dummy: {
+					value: dummy2,
+					range: [0, 2],
+				},
+			},
+		},
+	])
+	.onChange((v) => {
+		console.log(v);
+	});
+*/
 
 export class TheatreGroup {
 	constructor(name, values = [], opts = {}, sheet) {
@@ -54,6 +84,11 @@ export class TheatreGroup {
 	dispose() {
 		this._unwatch?.();
 		this._sheet.detach(this);
+	}
+
+	onChange(callback) {
+		this._callback = callback;
+		return this;
 	}
 
 	update(values) {

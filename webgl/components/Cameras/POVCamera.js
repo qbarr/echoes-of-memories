@@ -71,13 +71,13 @@ export class POVCamera extends BaseCamera {
 		/// #endif
 
 		const introSheet = new TheatreSheet('intro', { project: cliniqueProject });
-		/// #if __DEBUG__
+
 		const audio = (await import('/assets/audios/clinique/intro.wav')).default;
-		console.log(audio);
 		await introSheet.attachAudio(audio, 1);
-		/// #endif
+
 		introSheet.$target('camera', this.target, { nudgeMultiplier: 0.01 });
 		introSheet.$composer(['bokeh', 'lut', 'bloom']);
+		// introSheet.$subtitles('subtitles', clinique.subtitles);
 	}
 
 	goTo({ x, y, z }) {
