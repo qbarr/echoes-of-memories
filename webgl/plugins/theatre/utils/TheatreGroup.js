@@ -93,18 +93,40 @@ export class TheatreGroup {
 	}
 
 	update(values) {
-		for (let i = 0; i < this.childsChildsKeys.length; i++) {
-			const keys = this.childsChildsKeys[i];
+		// for (let i = 0; i < this.childsChildsKeys.length; i++) {
+		// 	const keys = this.childsChildsKeys[i];
+		// 	const parent = this.childsKeys[i];
+		// 	for (let j = 0; j < keys.length; j++) {
+		// 		const key = keys[j];
+		// 		const child = this.childs[parent][key];
+		// 		console.log(this._values);
+		// 		console.log(this.childs);
+		// 		console.log(this._values[parent][key]);
+		// 		const v = this._values[parent][key];
+		// 		if (child.isWritableSignal) {
+		// 			if (child.isVector) v.set(v.get().copy(values[parent][key]));
+		// 			else v.set(values[parent][key]);
+		// 		} else {
+		// 			if (child.isVector) v.value.copy(values[parent][key]);
+		// 			else v.value = values[parent][key];
+		// 		}
+		// 	}
+		// }
+		for (let i = 0; i < this._values.length; i++) {
+			const { id, child } = this._values[i];
+			const keys = Object.keys(child);
 			const parent = this.childsKeys[i];
 			for (let j = 0; j < keys.length; j++) {
 				const key = keys[j];
 				const child = this.childs[parent][key];
+				let v = this._values[i].child[key];
+				if (v.value.value && !child.isWritableSignal) v = v.value;
 				if (child.isWritableSignal) {
-					if (child.isVector) child.set(child.get().copy(values[parent][key]));
-					else child.set(values[parent][key]);
+					if (child.isVector) v.value.set(v.value.copy(values[parent][key]));
+					else v.value.set(values[parent][key]);
 				} else {
-					if (child.isVector) child.value.copy(values[parent][key]);
-					else child.value = values[parent][key];
+					if (child.isVector) v.value.copy(values[parent][key]);
+					else v.value = values[parent][key];
 				}
 			}
 		}
@@ -151,12 +173,11 @@ const isInstanceOfVector = (v) =>
 	v instanceof Vector2 || v instanceof Vector3 || v instanceof Vector4;
 
 const createValue = (value, type, opts, id, object) => {
-	console.log(id, value);
 	const v = value.value;
 
 	if (isInstanceOfVector(v)) {
 		const o = simpleObjectVec(id, v, opts);
-		object[id] = value;
+		object[id] = v;
 		object[id].isVector = true;
 		return o;
 	}

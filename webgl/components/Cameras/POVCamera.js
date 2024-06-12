@@ -32,7 +32,7 @@ export class POVCamera extends BaseCamera {
 		this.onClick = this.onClick.bind(this);
 		this.onPointerLockChange = this.onPointerLockChange.bind(this);
 
-		this.$wobbleIntensity = 0.0004;
+		this.$wobbleIntensity = { value: 0.0004 };
 
 		this.base = new Object3D();
 		this.target = new Object3D();
@@ -122,8 +122,12 @@ export class POVCamera extends BaseCamera {
 		introSheet.$composer(['global', 'bokeh', 'lut', 'bloom']);
 		// introSheet.$subtitles('subtitles', clinique.subtitles);
 
-		const testSheet = new TheatreSheet('intro test', { project: cliniqueProject });
-		testSheet.$composer(['global', 'bokeh', 'lut', 'bloom']);
+		introSheet.$compound('wobble', {
+			intensity: this.$wobbleIntensity,
+		});
+
+		// const testSheet = new TheatreSheet('intro test', { project: cliniqueProject });
+		// testSheet.$composer(['global', 'bokeh', 'lut', 'bloom']);
 	}
 
 	goTo({ x, y, z }) {
@@ -168,7 +172,6 @@ export class POVCamera extends BaseCamera {
 	update() {
 		// this.wobble.update(this.webgl.$time.elapsed * this.$wobbleIntensity);
 		// this.controls?.update?.();
-
 		const { dt } = this.webgl.$time;
 
 		this.base.position.damp(this.target.position, 0.1, dt);
