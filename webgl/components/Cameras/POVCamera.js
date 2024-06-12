@@ -119,7 +119,7 @@ export class POVCamera extends BaseCamera {
 		await introSheet.attachAudio(audio, 1);
 
 		introSheet.$target('camera', this.target, { nudgeMultiplier: 0.01 });
-		introSheet.$composer(['bokeh', 'lut', 'bloom']);
+		introSheet.$composer(['global', 'vignette', 'bokeh', 'lut', 'bloom', 'crt']);
 		// introSheet.$subtitles('subtitles', clinique.subtitles);
 	}
 

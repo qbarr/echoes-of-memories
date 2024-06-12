@@ -60,6 +60,12 @@ export function composerPlugin(webgl) {
 			// Dither uniforms
 			uDitherOffset: { value: new Vector2() },
 			uDitherStrength: { value: 1 },
+
+			// Black stripes
+			uStripesScale: { value: 0 },
+
+			// Vignette
+			uVignette: { value: new Vector2() },
 		});
 
 		Object.assign(defines, { ...webgl.defines });
@@ -158,13 +164,25 @@ export function composerPlugin(webgl) {
 	/// #if __DEBUG__
 	function devtools() {
 		const gui = webgl.$gui.addFolder({ title: '✨ Composer', index: 5 });
-		const add = (obj, { label, min = 0, max = 1, step = 0.01 } = {}) =>
-			gui.addBinding(obj, 'value', { label, min, max, step });
+		const add = (
+			obj,
+			{ value = 'value', label, min = 0, max = 1, step = 0.01 } = {},
+			_gui = gui,
+		) => {
+			console.log(_gui);
+			_gui.addBinding(obj, value, { label, min, max, step });
+		};
 
 		gui.addBinding(enabled, 'value', { label: 'Enabled' });
 
 		add(uniforms.uDitherStrength, { label: 'Dithering', max: 2 });
+		add(uniforms.uStripesScale, { label: 'Stripes', max: 1 });
+
 		gui.addSeparator();
+
+		const vGui = gui.addFolder({ title: '👁️ Vignette' });
+		add(uniforms.uVignette.value, { value: 'x', label: 'Vignette Progress', max: 1 }, vGui); // prettier-ignore
+		add(uniforms.uVignette.value, { value: 'y', label: 'Vignette Smoothness', max: 1 }, vGui); // prettier-ignore
 
 		passes.forEach((pass) => pass.devtools?.(gui));
 	}

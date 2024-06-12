@@ -14,7 +14,7 @@ export const useCRTPass = (composer) => {
 
 	const enabled = w(true);
 	const scanLines = w(new Vector2(0.25, 0.23)); // Opacity, Flicker
-	const padding = w(new Vector2().set(0.2, 0)); // x, y
+	const padding = w(new Vector2(0.2, 0)); // x, y
 	const fishEye = w(new Vector2(0.1, 0.24)); // x, y
 	const vignette = w(new Vector2(130, 0.8)); // Threshold, Smoothness
 	const interferences = w(new Vector2(0.6, 0.002)); // Global Level, Big Flicker
