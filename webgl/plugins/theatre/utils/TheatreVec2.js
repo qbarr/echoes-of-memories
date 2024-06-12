@@ -48,6 +48,11 @@ export class TheatreVec2 {
 		this._sheet.detach(this);
 	}
 
+	onChange(callback) {
+		this._callback = callback;
+		return this;
+	}
+
 	update({ value }) {
 		if (this._isWritable) {
 			this._value.set(value);

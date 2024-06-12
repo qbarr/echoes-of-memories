@@ -37,6 +37,11 @@ export class TheatreBool {
 		return this._object;
 	}
 
+	onChange(callback) {
+		this._callback = callback;
+		return this;
+	}
+
 	dispose() {
 		this._unwatch?.();
 		this._sheet.detach(this);

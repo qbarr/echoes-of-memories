@@ -57,6 +57,7 @@ export class TheatreTarget {
 
 	onChange(callback) {
 		this._callback = callback;
+		return this;
 	}
 
 	update({ position, rotation }) {

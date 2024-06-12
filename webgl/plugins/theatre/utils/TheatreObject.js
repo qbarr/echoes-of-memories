@@ -60,6 +60,11 @@ export class TheatreObject {
 		this._sheet.detach(this);
 	}
 
+	onChange(callback) {
+		this._callback = callback;
+		return this;
+	}
+
 	update({ rotation, position, scale }) {
 		const { x: rx, y: ry, z: rz } = rotation;
 		const { x: px, y: py, z: pz } = position;

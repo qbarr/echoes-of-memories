@@ -40,6 +40,7 @@ export class TheatreFloat {
 
 	onChange(callback) {
 		this._callback = callback;
+		return this;
 	}
 
 	update({ value }) {
