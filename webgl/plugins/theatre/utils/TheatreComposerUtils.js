@@ -3,9 +3,7 @@ import { getWebGL } from '#webgl/core/index.js';
 export const convertComposerDatasForTheatre = (values) => {
 	const webgl = getWebGL();
 	const { $composer } = webgl;
-
 	const { $bokeh, $lut, $unrealBloom, $crt, uniforms } = $composer;
-	console.log($composer);
 
 	const api = {
 		global: {

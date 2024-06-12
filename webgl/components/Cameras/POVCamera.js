@@ -119,14 +119,11 @@ export class POVCamera extends BaseCamera {
 		await introSheet.attachAudio(audio, 1);
 
 		introSheet.$target('camera', this.target, { nudgeMultiplier: 0.01 });
-		introSheet.$composer(['global', 'vignette', 'bokeh', 'lut', 'bloom', 'crt']);
-		introSheet.$compound('wobble', {
-			intensity: { value: this.$wobbleIntensity },
-			frequency: { value: this.wobble.frequency },
-			amplitude: { value: this.wobble.amplitude },
-			scale: { value: this.wobble.scale },
-		});
+		introSheet.$composer(['global', 'bokeh', 'lut', 'bloom']);
 		// introSheet.$subtitles('subtitles', clinique.subtitles);
+
+		const testSheet = new TheatreSheet('intro test', { project: cliniqueProject });
+		testSheet.$composer(['global', 'bokeh', 'lut', 'bloom']);
 	}
 
 	goTo({ x, y, z }) {

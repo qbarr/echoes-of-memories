@@ -26,7 +26,6 @@ export class TheatreCompound {
 					{ ...opts, ...(values[key].opts ?? {}) },
 					this.childs[key],
 				);
-				console.log('acc', acc);
 				return acc;
 			}, {}),
 		});
@@ -65,14 +64,15 @@ export class TheatreCompound {
 	}
 
 	update(values) {
-		console.log(values);
 		for (let i = 0; i < this.childsKeys.length; i++) {
 			const key = this.childsKeys[i];
 			const child = this.childs[key];
 			if (child.isWritableSignal) {
-				child.set(values[key]);
+				if (child.isVector) child.set(child.get().copy(values[parent][key]));
+				else child.set(values[parent][key]);
 			} else {
-				child.value = values[key];
+				if (child.isVector) child.value.copy(values[parent][key]);
+				else child.value = values[parent][key];
 			}
 		}
 		this._onUpdate(values);
@@ -144,6 +144,7 @@ const createValue = (id, value, opts, object) => {
 	if (isInstanceOfVector(v)) {
 		const o = simpleObjectVec(id, v, opts);
 		object[id] = value;
+		object[id].isVector = true;
 		return o;
 	}
 
@@ -156,6 +157,7 @@ const createValue = (id, value, opts, object) => {
 		if (type === 'vec') {
 			o = simpleObjectVec(id, v, opts);
 			object[id] = v;
+			object[id].isVector = true;
 			return o;
 		} else if (types[type]) {
 			o = types[type](v, opts);

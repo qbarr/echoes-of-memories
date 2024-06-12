@@ -93,7 +93,6 @@ export class TheatreGroup {
 	}
 
 	update(values) {
-		console.log(values);
 		for (let i = 0; i < this.childsChildsKeys.length; i++) {
 			const keys = this.childsChildsKeys[i];
 			const parent = this.childsKeys[i];
@@ -101,9 +100,11 @@ export class TheatreGroup {
 				const key = keys[j];
 				const child = this.childs[parent][key];
 				if (child.isWritableSignal) {
-					child.set(values[parent][key]);
+					if (child.isVector) child.set(child.get().copy(values[parent][key]));
+					else child.set(values[parent][key]);
 				} else {
-					child.value = values[parent][key];
+					if (child.isVector) child.value.copy(values[parent][key]);
+					else child.value = values[parent][key];
 				}
 			}
 		}
@@ -150,11 +151,13 @@ const isInstanceOfVector = (v) =>
 	v instanceof Vector2 || v instanceof Vector3 || v instanceof Vector4;
 
 const createValue = (value, type, opts, id, object) => {
+	console.log(id, value);
 	const v = value.value;
 
 	if (isInstanceOfVector(v)) {
 		const o = simpleObjectVec(id, v, opts);
 		object[id] = value;
+		object[id].isVector = true;
 		return o;
 	}
 
@@ -165,15 +168,9 @@ const createValue = (value, type, opts, id, object) => {
 	} else if (typeof type === 'string') {
 		let o = null;
 		if (type === 'compound') {
-			if (v instanceof Vector2) {
-				o = simpleObjectVec2(id, v, opts);
-			} else if (v instanceof Vector3) {
-				o = simpleObjectVec3(id, v, opts);
-			} else if (v instanceof Vector4) {
-				o = simpleObjectVec4(id, v, opts);
-			} else return null;
-
+			o = simpleObjectVec(id, v, opts);
 			object[id] = v;
+			object[id].isVector = true;
 			return o;
 		} else {
 			o = types[type](v, opts);
