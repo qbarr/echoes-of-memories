@@ -169,7 +169,6 @@ export function composerPlugin(webgl) {
 			{ value = 'value', label, min = 0, max = 1, step = 0.01 } = {},
 			_gui = gui,
 		) => {
-			console.log(_gui);
 			_gui.addBinding(obj, value, { label, min, max, step });
 		};
 
