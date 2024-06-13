@@ -1,5 +1,5 @@
 import createFilter from '#webgl/utils/createFilter';
-import { MeshNormalMaterial, Vector2 } from 'three';
+import { MeshNormalMaterial, Vector2, Vector4 } from 'three';
 
 import { prng } from '#utils/maths/prng.js';
 import { w } from '#utils/state';
@@ -66,7 +66,7 @@ export function composerPlugin(webgl) {
 			uStripesScale: { value: 0 },
 
 			// Vignette
-			uVignette: { value: new Vector2() },
+			uVignette: { value: new Vector4(0, 0.5, 0, 0) },
 			// uDitherStrength: { value: 1 },
 			uDitherStrength: { value: 0.2 },
 		});

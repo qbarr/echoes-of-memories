@@ -70,7 +70,6 @@ export default class BedroomScene extends BaseScene {
 		});
 		_objects.forEach((o) => this.add(o));
 
-
 		this.base.add(scene);
 
 		this.createSheets();
@@ -82,7 +81,7 @@ export default class BedroomScene extends BaseScene {
 
 		sheet.$target('camera', this.webgl.$povCamera.target, {
 			nudgeMultiplier: 0.01,
-		})
+		});
 	}
 
 	async enter() {
@@ -90,7 +89,6 @@ export default class BedroomScene extends BaseScene {
 		// this.camera = this.add(this.webgl.$povCamera);
 		this.webgl.$povCamera.onSceneSwitch(this);
 		this.camera = this.add(this.webgl.$povCamera);
-
 
 		// position: [ -8.34592, 2.24563, 7.35179 ],
 		// quaternion: [  ],
@@ -123,7 +121,5 @@ export default class BedroomScene extends BaseScene {
 	// 	})
 	// }
 
-	update() {
-
-	}
+	update() {}
 }
