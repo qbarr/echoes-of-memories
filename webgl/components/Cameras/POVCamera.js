@@ -35,7 +35,7 @@ export class POVCamera extends BaseCamera {
 		this.onPointerLockChange = this.onPointerLockChange.bind(this);
 
 		this.base = new Object3D();
-		this.target = new Object3D();
+		this.target = new Vector3();
 
 		this.wobble_intentisty = { value: 0.0004 };
 		this.wobble_frequency = { value: new Vector3(0.6, 0.6, 0.6) };
@@ -108,7 +108,7 @@ export class POVCamera extends BaseCamera {
 	}
 
 	goTo({ x, y, z }) {
-		this.target.position.set(x, HEIGHT - y, z);
+		this.target.set(x, HEIGHT - y, z);
 	}
 
 	onPointerLockChange(ev) {
@@ -148,7 +148,7 @@ export class POVCamera extends BaseCamera {
 
 		const { dt } = this.webgl.$time;
 
-		this.base.position.damp(this.target.position, 0.2, dt);
+		this.base.position.damp(this.target, 0.2, dt);
 		// this.base.rotation.damp(this.target.rotation, 0.1, dt);
 
 		if (this.controls) {

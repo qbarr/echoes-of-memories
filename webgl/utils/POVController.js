@@ -74,16 +74,9 @@ function POVController(
 	});
 
 	updateLookAt();
-	attachAnimationToSheet();
 
 	function updateLookAt() {
 		cam.lookAt(target);
-	}
-
-	function attachAnimationToSheet() {
-		if (!introSheet) return;
-
-		introSheet.$compound('POVController', { lat, lon });
 	}
 
 	function update() {
