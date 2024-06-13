@@ -21,6 +21,9 @@ export default class Gpgpu extends BaseComponent {
 		this.index = 0
 	}
 
+
+
+
 	setupFromBox(box, opts = {}) {
 		const optsUniforms = opts.uniforms || {}
 		for(let i = 0; i < this.gpgpu.count; i++) {
@@ -173,10 +176,10 @@ export default class Gpgpu extends BaseComponent {
 			'uFlowFieldFrequency',
 			{ min: 0, max: 1 }
 		).on('change', (e) => {
-			console.log(this.gpgpu.variables.particles.material.uniforms.uFlowFieldFrequency.value)
+
 			this.gpgpu.variables.particles.material.uniforms.uFlowFieldFrequency.value = e.value
 		})
-		console.log(this.gpgpu.variables.particles.material.uniforms)
+
 		folder.addBinding(
 			_debug,
 			'uFlowFieldStrength',
@@ -204,30 +207,30 @@ export default class Gpgpu extends BaseComponent {
 	}
 	/// #endif
 
-	uniformsTo(uniforms) {
-		Object.keys(uniforms).forEach((uniformKey, i) => {
-			const tween = raftween({
-				from: this.gpgpu.variables.particles.material.uniforms[uniformKey].value,
-				to: uniforms[uniformKey].value,
-				duration: 5,
-				onProgress: (progress, value) => {
-					this.gpgpu.variables.particles.material.uniforms[uniformKey].value = value
-				}
-			})
-			this.tweens.push(tween)
-			tween.play()
-		})
+	// uniformsTo(uniforms) {
+	// 	Object.keys(uniforms).forEach((uniformKey, i) => {
+	// 		const tween = raftween({
+	// 			from: this.gpgpu.variables.particles.material.uniforms[uniformKey].value,
+	// 			to: uniforms[uniformKey].value,
+	// 			duration: 5,
+	// 			onProgress: (progress, value) => {
+	// 				this.gpgpu.variables.particles.material.uniforms[uniformKey].value = value
+	// 			}
+	// 		})
+	// 		this.tweens.push(tween)
+	// 		tween.play()
+	// 	})
 
-	}
+	// }
 
 	update() {
-		console.log(this.index)
+		// console.log(this.index)
 		this.index++
 
 		Object.values(this.gpgpu.variables).forEach(variable => {
 			if(variable.material.uniforms.uTime) variable.material.uniforms.uTime.value = this.webgl.$time.elapsed / 1000
 			if(variable.material.uniforms.uDeltaTime) variable.material.uniforms.uDeltaTime.value = this.webgl.$time.dt / 1000
-			if(variable.material.uniforms.uPercentRange && this.index > 1000) variable.material.uniforms.uPercentRange.value += 0.04
+			// if(variable.material.uniforms.uPercentRange) variable.material.uniforms.uPercentRange.value += 0.04
 		})
 
 		this.tweens.forEach(tween => tween.update(this.webgl.$time.dt / 1000))

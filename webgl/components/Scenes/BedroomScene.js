@@ -1,7 +1,7 @@
 import BaseScene from '#webgl/core/BaseScene';
 import { POVCamera } from '../Cameras/POVCamera';
 
-import { MeshBasicMaterial, Object3D } from 'three';
+import { MeshBasicMaterial, Object3D, Sprite, SpriteMaterial, Vector3 } from 'three';
 import { Guitare } from '../Objects/Guitare';
 import { useTheatre } from '#webgl/utils/useTheatre.js';
 import { BaseInteractiveObject } from '../Objects/base/BaseInteractiveObject';
@@ -90,7 +90,7 @@ export default class BedroomScene extends BaseScene {
 		this.base.add(scene);
 
 		// Override $theatre
-		this.$theatre = useTheatre(this, 'Bedroom:Scene');
+		// this.$theatre = useTheatre(this, 'Bedroom:Scene');
 	}
 
 	async enter() {
@@ -101,31 +101,29 @@ export default class BedroomScene extends BaseScene {
 		// this.camera.setPosition([-8.67082, 0, 4.88725]);
 	}
 
-	async leave() {
-		const { $composer, $scenes } = this.webgl;
+	// async leave() {
+	// 	const { $composer, $scenes } = this.webgl;
 
-		const animations = await Promise.all([
-			$composer.$crt.glitch(),
-			$composer.$lut.animateSaturation(0),
-			this.animateOpacity(1),
-		])
-	}
+	// 	const animations = await Promise.all([
+	// 		$composer.$crt.glitch(),
+	// 		$composer.$lut.animateSaturation(0),
+	// 		this.animateOpacity(1),
+	// 	])
+	// }
 
-	async animateOpacity(to) {
-
-
-		return new Promise((resolve) => {
-			this.opacityTween = raftween({
-				from: this.sprite.material.opacity,
-				to,
-				target: this.sprite.material,
-				property: 'opacity',
-				duration: 3,
-				onComplete: resolve,
-				easing: easings.inOutQuad
-			})
-		})
-	}
+	// async animateOpacity(to) {
+	// 	return new Promise((resolve) => {
+	// 		this.opacityTween = raftween({
+	// 			from: this.sprite.material.opacity,
+	// 			to,
+	// 			target: this.sprite.material,
+	// 			property: 'opacity',
+	// 			duration: 3,
+	// 			onComplete: resolve,
+	// 			easing: easings.inOutQuad
+	// 		})
+	// 	})
+	// }
 
 	update() {
 		this.camera.base.getWorldDirection( this.cameraDirection );

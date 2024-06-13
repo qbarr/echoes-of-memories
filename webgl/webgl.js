@@ -1,4 +1,3 @@
-import MainScene from './components/Scenes/MainScene';
 import { AudioListener } from 'three';
 
 import ParticleScene from './components/Scenes/ParticleScene';
@@ -14,7 +13,7 @@ export default createWebgl({
 		const { $renderer, $scenes, $assets, $gpgpu } = webgl;
 
 		$renderer.setup({ alias: false, antialias: false });
-		$renderer.instance.setClearColor(0x000000, 1);
+		$renderer.instance.setClearColor(0x000000, 0);
 
 		webgl.$povCamera = new POVCamera();
 

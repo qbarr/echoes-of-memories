@@ -24,7 +24,7 @@ export const convertComposerDatasForTheatre = (values) => {
 				},
 				padding: { value: $crt.padding, range: [0, 1] },
 				fishEye: { value: $crt.fishEye, range: [0, 1] },
-				interferences: { value: $crt.interferences, range: [0, 1] },
+				interferences: { value: $crt.interferences, range: [0, 100] },
 			},
 		},
 		bokeh: {

@@ -48,23 +48,25 @@ export default class ParticleScene extends BaseScene {
 	}
 
 	async enter() {
-		this.introAnimate();
+		// this.introAnimate();
+		this.webgl.$povCamera.onSceneSwitch(this);
+		this.camera = this.add(this.webgl.$povCamera);
 	}
 
-	introAnimate() {
-		const { $composer } = this.webgl;
-		$composer.$crt.unglitch()
-		$composer.$lut.animateSaturation(1)
+	// introAnimate() {
+	// 	const { $composer } = this.webgl;
+	// 	$composer.$crt.unglitch()
+	// 	$composer.$lut.animateSaturation(1)
 
-		setTimeout(() => {
-			this.particles.gpgpu.uniformsTo({
-				uFlowFieldFrequency: new Uniform(0.5),
-				uFlowFieldInfluence: new Uniform(0.4),
-				uFlowFieldStrength: new Uniform(2),
-			})
-		}, 3000);
+	// 	setTimeout(() => {
+	// 		this.particles.gpgpu.uniformsTo({
+	// 			uFlowFieldFrequency: new Uniform(0.5),
+	// 			uFlowFieldInfluence: new Uniform(0.4),
+	// 			uFlowFieldStrength: new Uniform(2),
+	// 		})
+	// 	}, 3000);
 
-	}
+	// }
 
 
 	rotateAroundPoint (obj, point, axis, theta, pointIsWorld = false) {

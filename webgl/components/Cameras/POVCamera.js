@@ -114,16 +114,26 @@ export class POVCamera extends BaseCamera {
 		/// #endif
 
 		const introSheet = new TheatreSheet('intro', { project: cliniqueProject });
+		const transitionBedroomSheet = new TheatreSheet('Transition bedroom-memories', { project: bedroomProject });
 
 		const audio = (await import('/assets/audios/clinique/intro.wav')).default;
 		await introSheet.attachAudio(audio, 1);
 
 		introSheet.$target('camera', this.target, { nudgeMultiplier: 0.01 });
-		introSheet.$composer(['global', 'bokeh', 'lut', 'bloom']);
+		// introSheet.$composer(['global', 'bokeh', 'lut', 'bloom']);
+
+
+		transitionBedroomSheet.$composer(['lut', 'crt'])
+		transitionBedroomSheet.$bool('switchScene', { value: false }, {
+			onUpdate: (bool) => {
+				if (bool) this.webgl.$scenes.switch('particle')
+				else this.webgl.$scenes.switch('bedroom')
+			}
+		})
 		// introSheet.$subtitles('subtitles', clinique.subtitles);
 
-		const testSheet = new TheatreSheet('intro test', { project: cliniqueProject });
-		testSheet.$composer(['global', 'bokeh', 'lut', 'bloom']);
+		// const testSheet = new TheatreSheet('intro test', { project: cliniqueProject });
+		// testSheet.$composer(['global', 'bokeh', 'lut', 'bloom']);
 	}
 
 	goTo({ x, y, z }) {

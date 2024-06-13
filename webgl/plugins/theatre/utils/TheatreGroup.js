@@ -151,7 +151,7 @@ const isInstanceOfVector = (v) =>
 	v instanceof Vector2 || v instanceof Vector3 || v instanceof Vector4;
 
 const createValue = (value, type, opts, id, object) => {
-	console.log(id, value);
+
 	const v = value.value;
 
 	if (isInstanceOfVector(v)) {
