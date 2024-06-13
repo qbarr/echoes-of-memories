@@ -1,7 +1,10 @@
-import { clamp } from '#utils/maths/map.js';
+import { w } from '#utils/state/index.js';
+import { onChange } from '@theatre/core';
+
 import { TheatreBool } from './TheatreBool';
 import { TheatreComposer } from './TheatreComposer';
 import { TheatreCompound } from './TheatreCompound';
+import { TheatreEvents } from './TheatreEvents';
 import { TheatreFloat } from './TheatreFloat';
 import { TheatreGroup } from './TheatreGroup';
 import { TheatreObject } from './TheatreObject';
@@ -30,6 +33,8 @@ export class TheatreSheet {
 		this._objects = new Map();
 		this._instance = project.sheet(id, hash(`id-${uid++}`));
 
+		this._duration = 0;
+
 		console.log(this._instance);
 
 		this.$float = (name, value, opts = {}) => new TheatreFloat(name, value, opts, this); // prettier-ignore
@@ -39,15 +44,32 @@ export class TheatreSheet {
 		this.$object = (name, value, opts = {}) => new TheatreObject(name, value, opts, this); // prettier-ignore
 		this.$target = (name, value, opts = {}) => new TheatreTarget(name, value, opts, this); // prettier-ignore
 		this.$group = (name, value, opts = {}) => new TheatreGroup(name, value, opts, this); // prettier-ignore
-		this.$composer = (values, opts = {}) => new TheatreComposer('composer', values, opts, this); // prettier-ignore
+		this.$composer = (values, opts = {}) => new TheatreComposer('Composer', values, opts, this); // prettier-ignore
 		this.$compound = (name, values, opts = {}) => new TheatreCompound(name, values, opts, this); // prettier-ignore
+		this.$events = (events) => new TheatreEvents('Events', events, this); // prettier-ignore
+
+		onChange(this.sequence.pointer.length, (len) => {
+			this._duration = len * 1000;
+		});
 
 		// Just to make it easier to use
 		this.object = this._instance.object.bind(this._instance);
 
 		__DEBUG__ && this.devtools();
 
+		/// #if __DEBUG__
+		project.ready.then(() => this.createProgress());
+		/// #else
+		this.createProgress();
+		/// #endif
+
 		return this;
+	}
+
+	// Used to get the duration of the sequence (c'est une magouille)
+	createProgress() {
+		this.progress = w(0);
+		const obj = this.$float('progress', this.progress, { range: [0, 1] });
 	}
 
 	get id() {
@@ -67,6 +89,12 @@ export class TheatreSheet {
 	}
 	get sequence() {
 		return this._instance.sequence;
+	}
+	get position() {
+		return this.sequence.position;
+	}
+	get duration() {
+		return this._duration;
 	}
 
 	async _attachAudioSource(source, volume = 1) {
@@ -132,18 +160,17 @@ export class TheatreSheet {
 		return this._objects.get(id);
 	}
 
-	detach(Object) {
-		const { name } = Object;
+	detach({ name }) {
 		this.instance.detachObject(name);
-		this._objects.delete(name);
+		// this._objects.delete(name);
 	}
 
-	dispose(Object) {
+	disposeObject(Object) {
 		Object.dispose();
 	}
 
 	disposeAll() {
-		this._objects.forEach((Object) => Object.dispose());
+		this._objects.forEach(this.disposeObject);
 		this._objects.clear();
 	}
 

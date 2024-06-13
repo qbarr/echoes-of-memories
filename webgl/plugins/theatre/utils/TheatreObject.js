@@ -61,7 +61,7 @@ export class TheatreObject {
 	}
 
 	onChange(callback) {
-		this._callback = callback;
+		this._onUpdate = callback;
 		return this;
 	}
 

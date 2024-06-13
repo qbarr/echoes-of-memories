@@ -15,6 +15,7 @@ import { useCameraHelper } from './useDebugHelper.js';
 
 import { TheatreSheet } from '#webgl/plugins/theatre/utils/index.js';
 import { scenesDatas } from '../Scenes/datas.js';
+import { types } from '@theatre/core';
 
 const HEIGHT = 1.95;
 const DEFAULT_CAM = {
@@ -95,17 +96,17 @@ export class POVCamera extends BaseCamera {
 		this.resizeSignal = dbs.watchImmediate(this.resize, this);
 
 		// Create Theatre Projects
-		useTheatre(this, 'Bedroom:Camera');
-		useTheatre(this, 'Clinique:Camera');
+		// useTheatre(this, 'Bedroom-Camera');
+		// useTheatre(this, 'Clinique-Camera');
 
-		this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
+		// this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 	}
 
 	async createSheets() {
 		const { clinique, bedroom } = scenesDatas;
 
-		const cliniqueProject = this.$theatre['Clinique:Camera'];
-		const bedroomProject = this.$theatre['Bedroom:Camera'];
+		const cliniqueProject = this.$theatre['Clinique-Camera'];
+		const bedroomProject = this.$theatre['Bedroom-Camera'];
 
 		/// #if __DEBUG__
 		// Need an await only if we use @theatre/studio
@@ -119,15 +120,7 @@ export class POVCamera extends BaseCamera {
 		await introSheet.attachAudio(audio, 1);
 
 		introSheet.$target('camera', this.target, { nudgeMultiplier: 0.01 });
-		introSheet.$composer(['global', 'bokeh', 'lut', 'bloom']);
-		// introSheet.$subtitles('subtitles', clinique.subtitles);
-
-		introSheet.$compound('wobble', {
-			intensity: this.$wobbleIntensity,
-		});
-
-		// const testSheet = new TheatreSheet('intro test', { project: cliniqueProject });
-		// testSheet.$composer(['global', 'bokeh', 'lut', 'bloom']);
+		introSheet.$composer(['global', 'bokeh', 'lut', 'bloom', 'rgbShift']);
 	}
 
 	goTo({ x, y, z }) {
@@ -135,8 +128,6 @@ export class POVCamera extends BaseCamera {
 	}
 
 	onPointerLockChange(ev) {
-		this.log('onPointerLockChange', this.$pointerLocked);
-
 		if (!this.$pointerLocked) {
 			this.$pointerLocked = true;
 			this.controls.enabled = this.$pointerLocked;
@@ -174,10 +165,8 @@ export class POVCamera extends BaseCamera {
 		// this.controls?.update?.();
 		const { dt } = this.webgl.$time;
 
-		this.base.position.damp(this.target.position, 0.1, dt);
-		this.base.rotation.damp(this.target.rotation, 0.1, dt);
-		// this.base.position.copy(this.target.position);
-		// this.base.rotation.copy(this.target.rotation);
+		this.base.position.damp(this.target.position, 0.2, dt);
+		this.base.rotation.damp(this.target.rotation, 0.2, dt);
 
 		this.cam.updateProjectionMatrix();
 	}

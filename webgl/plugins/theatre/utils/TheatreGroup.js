@@ -88,7 +88,7 @@ export class TheatreGroup {
 	}
 
 	onChange(callback) {
-		this._callback = callback;
+		this._onUpdate = callback;
 		return this;
 	}
 

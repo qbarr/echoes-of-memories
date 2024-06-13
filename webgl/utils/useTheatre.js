@@ -5,6 +5,8 @@ export const useTheatre = (Class, id) => {
 
 	Class.$theatre = Class.$theatre ?? {};
 	Class.$theatre[id] = $project;
+	Class.$sheets = Class.$sheets ?? {};
+	Class.$sheets[id] = {};
 
 	return $project;
 };

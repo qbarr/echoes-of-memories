@@ -3,7 +3,7 @@ import { getWebGL } from '#webgl/core/index.js';
 export const convertComposerDatasForTheatre = (values) => {
 	const webgl = getWebGL();
 	const { $composer } = webgl;
-	const { $bokeh, $lut, $unrealBloom, $crt, uniforms } = $composer;
+	const { $bokeh, $lut, $unrealBloom, $crt, $rgbShift, uniforms } = $composer;
 
 	const api = {
 		global: {
@@ -48,6 +48,13 @@ export const convertComposerDatasForTheatre = (values) => {
 				strength: { value: $unrealBloom.strength, range: [0, 3] },
 				radius: { value: $unrealBloom.radius, range: [0, 2] },
 				spread: { value: $unrealBloom.spread, range: [0, 2] },
+			},
+		},
+		rgbShift: {
+			id: 'rgbShift',
+			child: {
+				amount: { value: $rgbShift.amount, range: [0, 0.05], nudgeMultiplier: 0.0001 }, // prettier-ignore
+				angle: { value: $rgbShift.angle, range: [0, Math.PI] },
 			},
 		},
 	};

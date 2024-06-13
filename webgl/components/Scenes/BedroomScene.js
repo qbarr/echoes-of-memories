@@ -78,7 +78,7 @@ export default class BedroomScene extends BaseScene {
 		this.base.add(scene);
 
 		// Override $theatre
-		this.$theatre = useTheatre(this, 'Bedroom:Scene');
+		this.$theatre = useTheatre(this, 'Bedroom-Scene');
 	}
 
 	async enter() {
