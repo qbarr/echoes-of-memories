@@ -32,7 +32,7 @@ export default class Gpgpu extends BaseComponent {
 		// new TheatreSheet('transition', { project });
 		const uniforms = this.gpgpu.variables.particles.material.uniforms;
 
-		sheet.$float('uPercentRange', uniforms.uPercentRange, { range: [0, 10] });
+		// sheet.$float('uPercentRange', uniforms.uPercentRange, { range: [0, 10] });
 
 		sheet.$group('Particles', [
 			{
@@ -50,24 +50,15 @@ export default class Gpgpu extends BaseComponent {
 						value: uniforms.uFlowFieldInfluence,
 						range: [0, 1],
 					},
+					uPercentRange: {
+						value: uniforms.uPercentRange,
+						range: [0, 10],
+					},
 				},
-			},
-			{
-				id: 'uniformstimes',
-				child: {
-					// uPercentRange: {
-					// 	value: uniforms.uPercentRange,
-					// 	range: [0, 20],
-					// },
-					// uTime: {
-					// 	value: uniforms.uTime,
-					// 	range: [0, 1000]
-					// }
-				},
-			},
+			}
 		]);
 
-		sheet.$composer(['lut', 'crt']);
+		sheet.$composer(['global', 'lut', 'crt']);
 		sheet.$bool(
 			'switchScene',
 			{ value: false },
@@ -198,8 +189,8 @@ export default class Gpgpu extends BaseComponent {
 			uFlowFieldFrequency: new Uniform(0.5),
 			uFlowFieldInfluence: new Uniform(0.4),
 			uFlowFieldStrength: new Uniform(2),
+			uPercentRange: new Uniform(0.5),
 			uIsMorphing: new Uniform(false),
-			uPercentRange: new Uniform(0),
 			//  uPaint = new Uniform(paintTexture),
 			uResolution: new Uniform(
 				new Vector2(

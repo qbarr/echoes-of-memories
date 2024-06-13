@@ -6,7 +6,7 @@ uniform sampler2D tInterface;
 uniform sampler2D tSketchLines;
 uniform float uAmount;
 uniform float uAngle;
-
+uniform float uDarkness;
 varying vec2 vUv;
 
 void main() {
@@ -30,6 +30,7 @@ void main() {
 	vec4 interfaceColor = texture2D(tInterface, vUv);
 	interfaceColor.rgb *= 1.2;
 	gl_FragColor.rgb = mix(gl_FragColor.rgb, interfaceColor.rgb, interfaceColor.a);
+	gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.), uDarkness);
 
 	// debug
 	// gl_FragColor += vec4(smoothstep(0.3, 1., pow(1. - depth, .6)));

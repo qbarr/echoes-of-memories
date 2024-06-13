@@ -60,6 +60,7 @@ export function composerPlugin(webgl) {
 			// Dither uniforms
 			uDitherOffset: { value: new Vector2() },
 			uDitherStrength: { value: 1 },
+			uDarkness: { value: 0 },
 
 			// Black stripes
 			uStripesScale: { value: 0 },

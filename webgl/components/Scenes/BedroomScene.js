@@ -70,19 +70,7 @@ export default class BedroomScene extends BaseScene {
 		});
 		_objects.forEach((o) => this.add(o));
 
-		const materialSprite = new SpriteMaterial({
-			color: 0x000000,
-			transparent: true,
-			opacity: 0,
-		});
 
-		this.sprite = new Sprite(materialSprite);
-		this.sprite.scale.setScalar(2);
-		this.cameraDirection = new Vector3();
-
-		// uncomment the following two lines to see the effect of the code
-
-		this.base.add(this.sprite);
 		this.base.add(scene);
 
 		this.createSheets();
@@ -92,19 +80,10 @@ export default class BedroomScene extends BaseScene {
 		const project = this.webgl.$theatre.get('Transition-Memories');
 		const sheet = project.getSheet('transition');
 
-		sheet
-			.$float(
-				'Bedroom transparency',
-				{ value: this.sprite.material.opacity },
-				{ range: [0, 1] },
-			)
-			.onChange((v) => {
-				this.sprite.material.opacity = v;
-			});
-
 		sheet.$target('camera', this.webgl.$povCamera.target, {
 			nudgeMultiplier: 0.01,
 		});
+		console.log(this.webgl.$povCamera)
 	}
 
 	async enter() {
@@ -145,10 +124,6 @@ export default class BedroomScene extends BaseScene {
 	// }
 
 	update() {
-		this.camera.base.getWorldDirection(this.cameraDirection);
-		this.sprite.position
-			.copy(this.camera.base.position)
-			.add(this.cameraDirection.multiplyScalar(1));
-		// this.opacityTween?.update(this.webgl.$time.dt / 1000);
+
 	}
 }
