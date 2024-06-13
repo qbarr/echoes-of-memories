@@ -15,7 +15,7 @@ uniform float uDitherStrength;
 uniform float uStripesScale;
 
 // Vignette
-uniform vec2 uVignette;
+uniform vec4 uVignette;
 
 // Passes
 uniform sampler2D tMap;
@@ -68,8 +68,17 @@ void main() {
 	stripes -= step(1. - size, uv.y); // bottom
 
 	// Vignette
-	vec2 position = uv - 0.5;
-	float len = length(position);
+	vec2 uvVignette = uv;
+	uvVignette -= 0.5;
+	uvVignette *= 4.;
+	uvVignette += 0.5;
+
+	vec2 position = uvVignette - 0.5;
+	position *= 1. + uVignette.zw * 4.;
+	position.y *= pow(abs(position.y), uVignette.w);
+	// float len = length(position);
+
+	float len = sin(uvVignette.y) * (0.5 + smoothstep(0.5, 1., uVignette.w));
 	float vignetteProgress = 1. - uVignette.x;
 	float vignette = smoothstep(vignetteProgress, vignetteProgress - 0.5, len);
 	vignette = smoothstep(0.0, uVignette.y, vignette);

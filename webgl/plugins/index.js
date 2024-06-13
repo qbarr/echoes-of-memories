@@ -4,18 +4,19 @@
 /// #endif
 
 import { assetsPlugin } from './assets/assetsPlugin.js';
-import { fboPlugin } from './fbo/fboPlugin.js';
-import { qualityPlugin } from './quality/qualityPlugin.js';
-import { rendererPlugin } from './renderer/rendererPlugin.js';
 import { composerPlugin } from './composer/composerPlugin.js';
+import { fboPlugin } from './fbo/fboPlugin.js';
+import { gpgpuPlugin } from './gpgpu/gpgpuPlugin.js';
+import { qualityPlugin } from './quality/qualityPlugin.js';
+import { raycastPlugin } from './raycast/raycastPlugin.js';
+import { rendererPlugin } from './renderer/rendererPlugin.js';
 import { scenesPlugin } from './scenes/scenesPlugin.js';
 import { timePlugin } from './time/timePlugin.js';
 import { viewportPlugin } from './viewport/viewportPlugin.js';
-import { raycastPlugin } from './raycast/raycastPlugin.js';
-import { gpgpuPlugin } from './gpgpu/gpgpuPlugin.js';
 
-import { subtitlesPlugin } from './subtitles/subtitlesPlugin.js';
 import { audioPlugin } from './audio/audioPlugin.js';
+import { statesMachinePlugin } from './states/statesMachinePlugin.js';
+import { subtitlesPlugin } from './subtitles/subtitlesPlugin.js';
 import { theatrePlugin } from './theatre/theatrePlugin.js';
 
 export const plugins = [
@@ -37,4 +38,5 @@ export const plugins = [
 	/* PROJECT PLUGINS */
 	raycastPlugin,
 	theatrePlugin,
+	statesMachinePlugin,
 ];

@@ -2,7 +2,7 @@ import { createLogger } from '#utils/debug';
 import { w } from '#utils/state';
 
 import { getApp } from '#app/core';
-import { getWebgl } from '#webgl/core';
+import { getWebGL } from '#webgl/core';
 
 let elapsedTime = 0;
 const NOOP = (v) => v;
@@ -14,65 +14,63 @@ export const createState = (id, state = {}) => ({
 	update: NOOP,
 	...state,
 	id,
+	symbol: Symbol(id),
 	...createLogger(`State • ${id}`, '#000', '#cbb3ff'),
-	$webgl: getWebgl(),
+	$webgl: getWebGL(),
 	$app: getApp(),
 	_needsUpdate: false,
 });
 
 export class StatesMachine {
-	constructor(name = 'null') {
-		this.$webgl = getWebgl();
+	constructor(id, { states = [] } = {}) {
+		this.$webgl = getWebGL();
 		this.$app = getApp();
 
-		Object.assign(
-			this,
-			createLogger(`States • ${name}`, '#000', '#a880ff'),
-		);
+		Object.assign(this, createLogger(`States • ${id}`, '#000', '#a880ff'));
 
-		this.states = new WeakMap();
-		this.currentState = w(null);
-		this.currentState.watch(this.handleStateChange.bind(this));
+		this._symbols = {};
+		this._states = new Map();
+		this._currentState = w(null);
+		this._currentState.watch(this.handleStateChange.bind(this));
+
+		states.forEach((state) => this.registerState(state));
 	}
 
-	getStates() {
-		return this.states;
+	get currentState() {
+		return this._currentState.get();
 	}
 
-	getState(state) {
-		return this.states.get(state);
+	get states() {
+		return this._states;
 	}
 
-	getCurrentState() {
-		return this.currentState.get();
+	getState(id) {
+		return this.states.get(this._symbols[id]);
 	}
 
-	get current() {
-		return this.getCurrentState();
+	is(state) {
+		if (typeof state === 'string') return this.currentState.id === state;
+		return this.currentState === state;
 	}
 
-	set current(state) {
-		this.setState(state);
-	}
-
-	addState(state, forceId = null) {
-		const id = forceId ?? state.id;
+	registerState(state) {
+		const id = state.forceId ?? state.id;
 		const s = createState(id, state);
-		this.states.set(id, s);
+		this.states.set(s.symbol, s);
+		this._symbols[id] = s.symbol;
 		return s;
 	}
 
 	setState(stateId, force = false) {
 		const state = this.getState(stateId);
 		if (!state) return;
-		if (!this.checkValidChange(this.getCurrentState(), state) && !force)
-			return;
+		if (!this.checkValidChange(this.currentState, state) && !force) return;
 
-		this.currentState.set(state, force);
+		this._currentState.set(state, force);
 	}
 
 	update() {
-		const state = this.getCurrentState();
+		const state = this.currentState;
 		if (!state) return;
 		if (!state._needsUpdate) return;
 
