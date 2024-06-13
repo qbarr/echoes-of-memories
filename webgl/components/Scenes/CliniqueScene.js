@@ -4,6 +4,7 @@ import { MeshBasicMaterial } from 'three';
 import { useTheatre } from '#webgl/utils/useTheatre.js';
 import { scenesDatas } from './datas';
 import { types } from '@theatre/core';
+import { TheatreSheet } from '#webgl/plugins/theatre/utils/TheatreSheet.js';
 
 export default class CliniqueScene extends BaseScene {
 	mixins = ['debugCamera'];
@@ -62,18 +63,50 @@ export default class CliniqueScene extends BaseScene {
 		this.base.add(scene);
 
 		// Override $theatre
-		this.$theatre = useTheatre(this, 'Clinique:Scene');
+		useTheatre(this, 'Clinique-Scene');
+		useTheatre(this, 'Clinique-Camera');
 
-		this.createSheets();
+		this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 	}
 
-	createSheets() {}
+	async createSheets() {
+		const { clinique, bedroom } = scenesDatas;
+
+		const cameraProject = this.$theatre['Clinique-Camera'];
+
+		/// #if __DEBUG__
+		// Need an await only if we use @theatre/studio
+		await cameraProject.ready;
+		/// #endif
+
+		const introSheet = new TheatreSheet('intro', { project: cameraProject });
+		this.$sheets['Clinique-Camera'].intro = introSheet;
+
+		const audio = (await import('/assets/audios/clinique/intro.wav')).default;
+		await introSheet.attachAudio(audio, 1);
+		introSheet.$target('camera', this.webgl.$povCamera.target, {
+			nudgeMultiplier: 0.01,
+		});
+		introSheet.$composer(['global', 'bokeh', 'lut', 'bloom', 'rgbShift']);
+	}
+
+	async launch() {
+		await this.$sheets['Clinique-Camera'].intro.play();
+		console.log('intro played');
+
+		this.log('TUTO INTERACTION');
+		// interactions enabled
+	}
 
 	async enter() {
 		this.log('enter');
 		this.webgl.$povCamera.onSceneSwitch(this);
 		this.camera = this.add(this.webgl.$povCamera);
 		// this.camera.setPosition([-2.71175, 3.13109, 4.39142]);
+
+		setTimeout(() => {
+			this.launch();
+		}, 1000);
 	}
 
 	async leave() {

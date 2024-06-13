@@ -1,7 +1,7 @@
 import { w } from '#utils/state/index.js';
 import { storageSync } from '#utils/state/signalExtStorageSync.js';
 
-import core, { createRafDriver, getProject, types } from '@theatre/core';
+import core, { createRafDriver, getProject, onChange, types, val } from '@theatre/core';
 
 /// #if __DEBUG__
 /// #code import studio from '@theatre/studio';

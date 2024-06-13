@@ -59,7 +59,7 @@ export class TheatreCompound {
 	}
 
 	onChange(callback) {
-		this._callback = callback;
+		this._onUpdate = callback;
 		return this;
 	}
 
@@ -67,12 +67,13 @@ export class TheatreCompound {
 		for (let i = 0; i < this.childsKeys.length; i++) {
 			const key = this.childsKeys[i];
 			const child = this.childs[key];
+			const v = this._values[key];
 			if (child.isWritableSignal) {
-				if (child.isVector) child.set(child.get().copy(values[parent][key]));
-				else child.set(values[parent][key]);
+				if (child.isVector) v.value.set(v.value.copy(values[key]));
+				else v.value.set(values[key]);
 			} else {
-				if (child.isVector) child.value.copy(values[parent][key]);
-				else child.value = values[parent][key];
+				if (child.isVector) v.value.copy(values[key]);
+				else v.value = values[key];
 			}
 		}
 		this._onUpdate(values);
@@ -143,7 +144,7 @@ const createValue = (id, value, opts, object) => {
 
 	if (isInstanceOfVector(v)) {
 		const o = simpleObjectVec(id, v, opts);
-		object[id] = value;
+		object[id] = v;
 		object[id].isVector = true;
 		return o;
 	}

@@ -15,6 +15,7 @@ import { useCameraHelper } from './useDebugHelper.js';
 
 import { TheatreSheet } from '#webgl/plugins/theatre/utils/index.js';
 import { scenesDatas } from '../Scenes/datas.js';
+import { types } from '@theatre/core';
 
 const HEIGHT = 1.95;
 const DEFAULT_CAM = {
@@ -32,7 +33,7 @@ export class POVCamera extends BaseCamera {
 		this.onClick = this.onClick.bind(this);
 		this.onPointerLockChange = this.onPointerLockChange.bind(this);
 
-		this.$wobbleIntensity = 0.0004;
+		this.$wobbleIntensity = { value: 0.0004 };
 
 		this.base = new Object3D();
 		this.target = new Object3D();
@@ -95,54 +96,38 @@ export class POVCamera extends BaseCamera {
 		this.resizeSignal = dbs.watchImmediate(this.resize, this);
 
 		// Create Theatre Projects
-		useTheatre(this, 'Bedroom:Camera');
-		useTheatre(this, 'Clinique:Camera');
+		// useTheatre(this, 'Bedroom-Camera');
+		// useTheatre(this, 'Clinique-Camera');
 
-		this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
+		// this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 	}
 
-	async createSheets() {
-		const { clinique, bedroom } = scenesDatas;
+	// async createSheets() {
+	// 	const { clinique, bedroom } = scenesDatas;
 
-		const cliniqueProject = this.$theatre['Clinique:Camera'];
-		const bedroomProject = this.$theatre['Bedroom:Camera'];
+	// 	const cliniqueProject = this.$theatre['Clinique-Camera'];
+	// 	const bedroomProject = this.$theatre['Bedroom-Camera'];
 
-		/// #if __DEBUG__
-		// Need an await only if we use @theatre/studio
-		await cliniqueProject.ready;
-		await bedroomProject.ready;
-		/// #endif
+	// 	/// #if __DEBUG__
+	// 	// Need an await only if we use @theatre/studio
+	// 	await cliniqueProject.ready;
+	// 	await bedroomProject.ready;
+	// 	/// #endif
 
-		const introSheet = new TheatreSheet('intro', { project: cliniqueProject });
-		const transitionBedroomSheet = new TheatreSheet('Transition bedroom-memories', { project: bedroomProject });
+	// 	const introSheet = new TheatreSheet('intro', { project: cliniqueProject });
 
-		const audio = (await import('/assets/audios/clinique/intro.wav')).default;
-		await introSheet.attachAudio(audio, 1);
+	// 	const audio = (await import('/assets/audios/clinique/intro.wav')).default;
+	// 	await introSheet.attachAudio(audio, 1);
 
-		introSheet.$target('camera', this.target, { nudgeMultiplier: 0.01 });
-		// introSheet.$composer(['global', 'bokeh', 'lut', 'bloom']);
-
-
-		transitionBedroomSheet.$composer(['lut', 'crt'])
-		transitionBedroomSheet.$bool('switchScene', { value: false }, {
-			onUpdate: (bool) => {
-				if (bool) this.webgl.$scenes.switch('particle')
-				else this.webgl.$scenes.switch('bedroom')
-			}
-		})
-		// introSheet.$subtitles('subtitles', clinique.subtitles);
-
-		// const testSheet = new TheatreSheet('intro test', { project: cliniqueProject });
-		// testSheet.$composer(['global', 'bokeh', 'lut', 'bloom']);
-	}
+	// 	introSheet.$target('camera', this.target, { nudgeMultiplier: 0.01 });
+	// 	introSheet.$composer(['global', 'bokeh', 'lut', 'bloom', 'rgbShift']);
+	// }
 
 	goTo({ x, y, z }) {
 		this.target.position.set(x, HEIGHT - y, z);
 	}
 
 	onPointerLockChange(ev) {
-		this.log('onPointerLockChange', this.$pointerLocked);
-
 		if (!this.$pointerLocked) {
 			this.$pointerLocked = true;
 			this.controls.enabled = this.$pointerLocked;
@@ -178,13 +163,10 @@ export class POVCamera extends BaseCamera {
 	update() {
 		// this.wobble.update(this.webgl.$time.elapsed * this.$wobbleIntensity);
 		// this.controls?.update?.();
-
 		const { dt } = this.webgl.$time;
 
-		this.base.position.damp(this.target.position, 0.1, dt);
-		this.base.rotation.damp(this.target.rotation, 0.1, dt);
-		// this.base.position.copy(this.target.position);
-		// this.base.rotation.copy(this.target.rotation);
+		this.base.position.damp(this.target.position, 0.2, dt);
+		this.base.rotation.damp(this.target.rotation, 0.2, dt);
 
 		this.cam.updateProjectionMatrix();
 	}

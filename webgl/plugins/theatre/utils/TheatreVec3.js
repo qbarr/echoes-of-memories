@@ -49,7 +49,7 @@ export class TheatreVec3 {
 	}
 
 	onChange(callback) {
-		this._callback = callback;
+		this._onUpdate = callback;
 		return this;
 	}
 

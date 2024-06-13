@@ -15,6 +15,7 @@ export class TheatreFloat {
 		const obj = sheet.instance.object(name, {
 			value: types.number(value.value, opts),
 		});
+		this._object = obj;
 
 		this._unwatch = obj.onValuesChange(this.update.bind(this));
 
@@ -32,6 +33,9 @@ export class TheatreFloat {
 	get sheet() {
 		return this._sheet;
 	}
+	get object() {
+		return this._object;
+	}
 
 	dispose() {
 		this._unwatch?.();
@@ -39,7 +43,7 @@ export class TheatreFloat {
 	}
 
 	onChange(callback) {
-		this._callback = callback;
+		this._onUpdate = callback;
 		return this;
 	}
 

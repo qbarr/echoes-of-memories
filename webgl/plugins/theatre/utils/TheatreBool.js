@@ -38,7 +38,7 @@ export class TheatreBool {
 	}
 
 	onChange(callback) {
-		this._callback = callback;
+		this._onUpdate = callback;
 		return this;
 	}
 
