@@ -33,7 +33,7 @@ export class TheatreCompound {
 
 		this.childsKeys = Object.keys(this.childs);
 
-		this._unwatch = obj.onValuesChange(this.update.bind(this));
+		// this._unwatch = obj.onValuesChange(this.update.bind(this));
 
 		sheet.register(this);
 

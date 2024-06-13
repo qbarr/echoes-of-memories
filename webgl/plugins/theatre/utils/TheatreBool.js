@@ -1,9 +1,12 @@
 import { types } from '@theatre/core';
+import { TheatreBaseObject } from './TheatreBaseObject';
 
 const NOOP = () => {};
 
-export class TheatreBool {
+export class TheatreBool extends TheatreBaseObject {
 	constructor(name, value = { value: false }, opts = {}, sheet) {
+		super();
+
 		this._name = name;
 		this._value = value;
 		this._sheet = sheet;
@@ -17,7 +20,7 @@ export class TheatreBool {
 		});
 		this._object = obj;
 
-		this._unwatch = obj.onValuesChange(this.update.bind(this));
+		// // this._unwatch = obj.onValuesChange(this.update.bind(this));
 
 		sheet.register(this);
 
@@ -36,6 +39,8 @@ export class TheatreBool {
 	get object() {
 		return this._object;
 	}
+
+	init() {}
 
 	onChange(callback) {
 		this._onUpdate = callback;

@@ -32,10 +32,11 @@ export class TheatreSheet {
 		this._project = project;
 		this._objects = new Map();
 		this._instance = project.sheet(id, hash(`id-${uid++}`));
+		this._symbol = Symbol(id);
+		this._progress = w(0);
+		this._active = false;
 
 		this._duration = 0;
-
-		console.log(this._instance);
 
 		this.$float = (name, value, opts = {}) => new TheatreFloat(name, value, opts, this); // prettier-ignore
 		this.$bool = (name, value, opts = {}) => new TheatreBool(name, value, opts, this);
@@ -51,31 +52,27 @@ export class TheatreSheet {
 		onChange(this.sequence.pointer.length, (len) => {
 			this._duration = len * 1000;
 		});
+		onChange(this.sequence.pointer.position, (pos) => {
+			this._progress.set((pos * 1000) / this._duration);
+		});
 
 		// Just to make it easier to use
 		this.object = this._instance.object.bind(this._instance);
 
 		__DEBUG__ && this.devtools();
 
-		/// #if __DEBUG__
-		project.ready.then(() => this.createProgress());
-		/// #else
-		this.createProgress();
-		/// #endif
+		project.registerSheet(this);
 
 		return this;
 	}
 
-	// Used to get the duration of the sequence (c'est une magouille)
-	createProgress() {
-		this.progress = w(0);
-		const obj = this.$float('progress', this.progress, { range: [0, 1] });
+	get progress() {
+		return this._progress.value;
 	}
-
 	get id() {
 		return this._id;
 	}
-	get project() {
+	get $project() {
 		return this._project;
 	}
 	get objects() {
@@ -95,6 +92,9 @@ export class TheatreSheet {
 	}
 	get duration() {
 		return this._duration;
+	}
+	get isActive() {
+		return this._active;
 	}
 
 	async _attachAudioSource(source, volume = 1) {
@@ -127,8 +127,29 @@ export class TheatreSheet {
 		}
 	}
 
+	setActive(bool) {
+		console.log('setActive', bool);
+		this._active = bool;
+		bool ? this.listen() : this.unlisten();
+	}
+
+	listen() {
+		this.objects.forEach((Object) => {
+			Object.listen();
+		});
+	}
+
+	unlisten() {
+		this.objects.forEach((Object) => {
+			Object.unlisten();
+		});
+	}
+
 	play(args = {}) {
-		return this.sequence.play(args);
+		const done = this.sequence.play(args);
+		done.then(() => this.unlisten());
+		this.listen();
+		return done;
 	}
 
 	pause() {
@@ -138,6 +159,7 @@ export class TheatreSheet {
 	stop() {
 		this.pause();
 		this.seek(0);
+		this.unlisten();
 	}
 
 	seek(time) {
@@ -176,7 +198,7 @@ export class TheatreSheet {
 
 	/// #if __DEBUG__
 	devtools() {
-		const projectGui = this.project.$gui;
+		const projectGui = this.$project.$gui;
 		const sheetGui = projectGui.addFolder({ title: this.id });
 		sheetGui.addGrid(2, [
 			['Play', this.play.bind(this)],

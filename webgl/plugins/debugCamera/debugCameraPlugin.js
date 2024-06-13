@@ -139,8 +139,6 @@ export function debugCameraPlugin(webgl) {
 			.toArray()
 			.map((v) => v.toFixed(6))
 			.join(', ');
-		console.log(api.currentCamera.cam.rotation);
-		console.log(api.currentCamera.cam.rotation.toArray());
 		const eulerStr = api.currentCamera.cam.rotation
 			.toArray()
 			.filter((v) => typeof v !== 'string')

@@ -1,11 +1,14 @@
 import { types } from '@theatre/core';
 import { Object3D } from 'three';
+import { TheatreBaseObject } from './TheatreBaseObject';
 
 const NOOP = () => {};
 
 // Essentially used for the camera
-export class TheatreTarget {
+export class TheatreTarget extends TheatreBaseObject {
 	constructor(name, value = new Object3D(), opts = {}, sheet) {
+		super();
+
 		this._name = name;
 		this._value = value;
 		this._sheet = sheet;
@@ -30,34 +33,15 @@ export class TheatreTarget {
 		});
 		this._object = obj;
 
-		this._unwatch = obj.onValuesChange(this.update.bind(this));
+		// this._unwatch = obj.onValuesChange(this.update.bind(this));
 
 		sheet.register(this);
 
 		return this;
 	}
 
-	get name() {
-		return this._name;
-	}
 	get value() {
 		return this._value;
-	}
-	get sheet() {
-		return this._sheet;
-	}
-	get object() {
-		return this._object;
-	}
-
-	dispose() {
-		this._unwatch?.();
-		this._sheet.detach(this);
-	}
-
-	onChange(callback) {
-		this._onUpdate = callback;
-		return this;
 	}
 
 	update({ position, rotation }) {

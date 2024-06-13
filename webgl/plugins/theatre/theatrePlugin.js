@@ -1,8 +1,8 @@
-import { events, w } from '#utils/state/index.js';
+import { w } from '#utils/state/index.js';
 import { storageSync } from '#utils/state/signalExtStorageSync.js';
+import { getWebGL } from '#webgl/core/index.js';
 
-import core, { createRafDriver, getProject, onChange, types, val } from '@theatre/core';
-import { TheatreSheet } from './utils';
+import { TheatreProject } from './utils/TheatreProject';
 
 /// #if __DEBUG__
 /// #code import studio from '@theatre/studio';
@@ -11,20 +11,64 @@ studio.initialize({
 	usePersistentStorage: true,
 });
 const studioActive = storageSync('webgl:theatre:studioActive', w(false));
+
+let studioSelectedSheet = null;
+studio.onSelectionChange(([selection]) => {
+	if (selection === null || selection === undefined) {
+		studioSelectedSheet?.setActive(false);
+		studioSelectedSheet = null;
+		return;
+	}
+
+	if (
+		['Theatre_SheetObject_PublicAPI', 'Theatre_Sheet_PublicAPI'].includes(
+			selection.type,
+		)
+	) {
+		const { projectId, sheetId } = selection.address;
+		if (studioSelectedSheet?.id === sheetId) return;
+		const project = getProject(projectId);
+		const sheet = project.getSheet(sheetId);
+		sheet.setActive(true);
+	}
+});
 /// #endif
+
+const PROJECTS_LIST = [
+	'Clinique-Scene',
+	'Clinique-Camera',
+	'Bedroom-Scene',
+	'Bedroom-Camera',
+	'Transition-Memories',
+];
+
+function getProject(id) {
+	const gl = getWebGL();
+	let p = null;
+	if (!gl.$theatre) gl.$hooks.afterPreload.watchOnce(() => (p = getProject(id)));
+	else p = gl.$theatre.get(id);
+	return p;
+}
 
 export function theatrePlugin(webgl) {
 	const projects = new Map();
 	const symbols = {};
 	const states = {};
-	const sheets = w(null);
+	const sheets = new Map();
+
+	const projectsPromises = [];
 
 	const api = {
 		projects,
 		states,
 		sheets,
-		createProject,
+
+		registerProject,
+		register: registerProject,
 		get,
+		getProject: get,
+		getSheet,
+		getProjectBySheet,
 
 		/// #if __DEBUG__
 		toggleStudio: (v) => studioActive.set(v),
@@ -37,59 +81,37 @@ export function theatrePlugin(webgl) {
 
 	function init() {
 		const datas = webgl.$assets.data.theatre;
+		// Register all projects' state
 		Object.assign(states, datas);
-
-		__DEBUG__ && devtools();
 	}
 
-	function createProject(id) {
+	function registerProject(ClassProject) {
+		const { id, symbol } = ClassProject;
 		if (projects.has(id))
-			return __DEBUG__ && console.warn(`Project '${id}' already created`);
+			return __DEBUG__ && console.warn(`Project '${id}' already registered`);
 
-		// Get project state
-		let state = null;
-		if (states[id]) state = states[id];
-
-		const project = state ? getProject(id, { state }) : getProject(id);
-		const symbol = Symbol(id);
-		projects.set(symbol, project);
+		projects.set(symbol, ClassProject);
 		symbols[id] = symbol;
 
-		__DEBUG__ && addProjectToGui(project);
+		__DEBUG__ && addProjectToGui(ClassProject);
 
-		return project;
-	}
-
-	async function createSheets() {
-		/// #if __DEBUG__
-		const transitionProject = createProject('Transition-Memories')
-		await Promise.all([
-			transitionProject.ready,
-		]);
-		/// #endif
-
-		const transitionSheet = new TheatreSheet('transition', { project: transitionProject });
-		transitionSheet.$composer(['lut', 'crt']);
-		transitionSheet.$bool('switchScene', { value: false }, {
-			onUpdate: (bool) => {
-				if (bool) webgl.$scenes.switch('particle');
-				else webgl.$scenes.switch('bedroom');
- 			}
-		})
-		transitionProject.$sheets = {
-			transition : transitionSheet
-		}
-
-		const _sheets = {
-			...transitionProject.$sheets
-		}
-
-		sheets.set(_sheets);
-
+		return ClassProject;
 	}
 
 	function get(id) {
 		return projects.get(symbols[id]);
+	}
+
+	function getSheet(ClassProject, id) {
+		if (typeof ClassProject === 'string') ClassProject = get(ClassProject);
+		if (!ClassProject) return console.warn(`Project '${ClassProject}' not found`);
+		return ClassProject.$sheets.get(id);
+	}
+
+	function getProjectBySheet(SheetClass) {
+		if (typeof SheetClass === 'string') SheetClass = getSheet(SheetClass);
+		if (!SheetClass) return console.warn(`Sheet '${SheetClass}' not found`);
+		return SheetClass.$project;
 	}
 
 	/// #if __DEBUG__
@@ -120,24 +142,36 @@ export function theatrePlugin(webgl) {
 		projectsGui = gui.addFolder({ title: 'Projects' });
 	}
 
-	let t = 0;
-	function addProjectToGui(project) {
+	let folderUid = 0;
+	function addProjectToGui(ClassProject) {
 		const projectGui = projectsGui.addFolder({
-			title: '📽️ ' + project.address.projectId,
-			bg: t % 2 ? '#202020' : '#101010',
+			title: '📽️ ' + ClassProject.id,
+			bg: folderUid % 2 ? '#202020' : '#101010',
 		});
-		Object.assign(project, { $gui: projectGui });
-		t++;
+		Object.assign(ClassProject, { $gui: projectGui });
+		ClassProject.devtools?.();
+		folderUid++;
 	}
 	/// #endif
 
 	return {
 		install: () => {
 			webgl.$theatre = api;
+
+			__DEBUG__ && devtools();
+
+			PROJECTS_LIST.forEach((id) => {
+				const project = new TheatreProject(id);
+				projects.set(project.symbol, project);
+				projectsPromises.push(project.instance.isReady);
+			});
+
+			const { $preloader } = webgl.$app;
+			projectsPromises.forEach((promise) => $preloader.task(promise));
 		},
 		load: () => {
 			webgl.$hooks.afterPreload.watchOnce(init);
-			webgl.$hooks.beforeStart.watchOnce(createSheets);
+			// webgl.$hooks.beforeStart.watchOnce(createSheets);
 			// webgl.$hooks.afterPreload.watchOnce(init);
 		},
 	};

@@ -65,7 +65,7 @@ export class TheatreEvents {
 		});
 		this._object = obj;
 
-		this._unwatch = obj.onValuesChange(this.update.bind(this));
+		// this._unwatch = obj.onValuesChange(this.update.bind(this));
 
 		sheet.register(this);
 

@@ -9,13 +9,11 @@ import {
 	Vector3,
 } from 'three';
 
-import { useTheatre } from '#webgl/utils/useTheatre.js';
 import Wobble from './Wobble.js';
 import { useCameraHelper } from './useDebugHelper.js';
 
 import { TheatreSheet } from '#webgl/plugins/theatre/utils/index.js';
 import { scenesDatas } from '../Scenes/datas.js';
-import { types } from '@theatre/core';
 
 const HEIGHT = 1.95;
 const DEFAULT_CAM = {
@@ -95,10 +93,6 @@ export class POVCamera extends BaseCamera {
 		const dbs = this.webgl.$renderer.drawingBufferSize;
 		this.resizeSignal = dbs.watchImmediate(this.resize, this);
 
-		// Create Theatre Projects
-		// useTheatre(this, 'Bedroom-Camera');
-		// useTheatre(this, 'Transition-Memories');
-
 		// this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 	}
 
@@ -112,22 +106,24 @@ export class POVCamera extends BaseCamera {
 		await transitionProject.ready;
 		/// #endif
 
-
-		const transitionSheet = new TheatreSheet('transition', { project: transitionProject });
+		const transitionSheet = new TheatreSheet('transition', {
+			project: transitionProject,
+		});
 		this.$sheets['Transition-Memories'].transition = transitionSheet;
 
 		transitionSheet.$composer(['lut', 'crt']);
-		transitionSheet.$bool('switchScene', { value: false }, {
-			onUpdate: (bool) => {
-				if (bool) this.webgl.$scenes.switch('particle');
-				else this.webgl.$scenes.switch('bedroom');
- 			}
-		})
+		transitionSheet.$bool(
+			'switchScene',
+			{ value: false },
+			{
+				onUpdate: (bool) => {
+					if (bool) this.webgl.$scenes.switch('particle');
+					else this.webgl.$scenes.switch('bedroom');
+				},
+			},
+		);
 
 		// console.log(this.webgl.$scenes['particle'])
-
-
-
 	}
 
 	goTo({ x, y, z }) {

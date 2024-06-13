@@ -1,10 +1,13 @@
 import { types } from '@theatre/core';
 import { Vector2 } from 'three';
+import { TheatreBaseObject } from './TheatreBaseObject';
 
 const NOOP = () => {};
 
-export class TheatreVec2 {
+export class TheatreVec2 extends TheatreBaseObject {
 	constructor(name, value = new Vector2(), opts = {}, sheet) {
+		super();
+
 		this._name = name;
 		this._value = value;
 		this._sheet = sheet;
@@ -23,34 +26,15 @@ export class TheatreVec2 {
 		});
 		this._object = obj;
 
-		this._unwatch = obj.onValuesChange(this.update.bind(this));
+		// this._unwatch = obj.onValuesChange(this.update.bind(this));
 
 		sheet.register(this);
 
 		return this;
 	}
 
-	get name() {
-		return this._name;
-	}
 	get value() {
 		return this._value;
-	}
-	get sheet() {
-		return this._sheet;
-	}
-	get object() {
-		return this._object;
-	}
-
-	dispose() {
-		this._unwatch?.();
-		this._sheet.detach(this);
-	}
-
-	onChange(callback) {
-		this._onUpdate = callback;
-		return this;
 	}
 
 	update({ value }) {

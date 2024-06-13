@@ -1,5 +1,6 @@
 import { types } from '@theatre/core';
 import { Vector2, Vector3, Vector4 } from 'three';
+import { TheatreBaseObject } from './TheatreBaseObject';
 
 const NOOP = () => {};
 
@@ -34,8 +35,10 @@ introSheet
 	});
 */
 
-export class TheatreGroup {
+export class TheatreGroup extends TheatreBaseObject {
 	constructor(name, values = [], opts = {}, sheet) {
+		super();
+
 		this._name = name;
 		this._values = values;
 		this._sheet = sheet;
@@ -62,34 +65,15 @@ export class TheatreGroup {
 			Object.keys(this.childs[key]),
 		);
 
-		this._unwatch = obj.onValuesChange(this.update.bind(this));
+		// this._unwatch = obj.onValuesChange(this.update.bind(this));
 
 		sheet.register(this);
 
 		return this;
 	}
 
-	get name() {
-		return this._name;
-	}
 	get values() {
 		return this._values;
-	}
-	get sheet() {
-		return this._sheet;
-	}
-	get object() {
-		return this._object;
-	}
-
-	dispose() {
-		this._unwatch?.();
-		this._sheet.detach(this);
-	}
-
-	onChange(callback) {
-		this._onUpdate = callback;
-		return this;
 	}
 
 	update(values) {

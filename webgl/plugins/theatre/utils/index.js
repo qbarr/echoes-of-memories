@@ -1,3 +1,4 @@
+import { TheatreBaseObject } from './TheatreBaseObject.js';
 import { TheatreBool } from './TheatreBool.js';
 import { TheatreComposer } from './TheatreComposer.js';
 import { TheatreFloat } from './TheatreFloat.js';
@@ -18,4 +19,5 @@ export {
 	TheatreTarget,
 	TheatreVec2,
 	TheatreVec3,
+	TheatreBaseObject,
 };

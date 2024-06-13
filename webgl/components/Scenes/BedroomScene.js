@@ -1,10 +1,6 @@
 import BaseScene from '#webgl/core/BaseScene';
-import { POVCamera } from '../Cameras/POVCamera';
 
-import { MeshBasicMaterial, Object3D, Sprite, SpriteMaterial, Vector3 } from 'three';
-import { Guitare } from '../Objects/Guitare';
-import { useTheatre } from '#webgl/utils/useTheatre.js';
-import { BaseInteractiveObject } from '../Objects/base/BaseInteractiveObject';
+import { MeshBasicMaterial, Sprite, SpriteMaterial, Vector3 } from 'three';
 import { scenesDatas } from './datas';
 
 export default class BedroomScene extends BaseScene {
@@ -77,45 +73,49 @@ export default class BedroomScene extends BaseScene {
 		const materialSprite = new SpriteMaterial({
 			color: 0x000000,
 			transparent: true,
-			opacity: 0
-		})
+			opacity: 0,
+		});
 
-		this.sprite = new Sprite(materialSprite)
-		this.sprite.scale.setScalar(2)
-		this.cameraDirection = new Vector3()
+		this.sprite = new Sprite(materialSprite);
+		this.sprite.scale.setScalar(2);
+		this.cameraDirection = new Vector3();
 
 		// uncomment the following two lines to see the effect of the code
 
-		this.base.add(this.sprite)
+		this.base.add(this.sprite);
 		this.base.add(scene);
 
-		// Override $theatre
-		this.$theatre = useTheatre(this, 'Bedroom-Scene');
-		this.webgl.$theatre.sheets.watchImmediate(this.plugToSheets.bind(this))
+		this.createSheets();
 	}
 
-	async plugToSheets() {
-		const project = this.webgl.$theatre.get('Transition-Memories')
-		if(!project) return
-		const sheet = project.$sheets.transition
+	async createSheets() {
+		const project = this.webgl.$theatre.get('Transition-Memories');
+		const sheet = project.getSheet('transition');
 
-		sheet.$float('Bedroom transparency', { value: this.sprite.material.opacity }, { range: [0, 1]  }).onChange((v)=> {
-			this.sprite.material.opacity = v
-		})
+		sheet
+			.$float(
+				'Bedroom transparency',
+				{ value: this.sprite.material.opacity },
+				{ range: [0, 1] },
+			)
+			.onChange((v) => {
+				this.sprite.material.opacity = v;
+			});
 
 		sheet.$target('camera', this.webgl.$povCamera.target, {
 			nudgeMultiplier: 0.01,
 		});
 	}
+
 	async enter() {
 		this.log('enter');
 		// this.camera = this.add(this.webgl.$povCamera);
 		this.webgl.$povCamera.onSceneSwitch(this);
 		this.camera = this.add(this.webgl.$povCamera);
 
-			// position: [ -8.34592, 2.24563, 7.35179 ],
-			// quaternion: [  ],
-			// euler: [ -0.2965, -0.8265, -0.2210 ],
+		// position: [ -8.34592, 2.24563, 7.35179 ],
+		// quaternion: [  ],
+		// euler: [ -0.2965, -0.8265, -0.2210 ],
 
 		// this.camera.setPosition([-8.67082, 0, 4.88725]);
 	}
@@ -145,8 +145,10 @@ export default class BedroomScene extends BaseScene {
 	// }
 
 	update() {
-		this.camera.base.getWorldDirection( this.cameraDirection );
-		this.sprite.position.copy( this.camera.base.position ).add( this.cameraDirection.multiplyScalar( 1 ))
+		this.camera.base.getWorldDirection(this.cameraDirection);
+		this.sprite.position
+			.copy(this.camera.base.position)
+			.add(this.cameraDirection.multiplyScalar(1));
 		// this.opacityTween?.update(this.webgl.$time.dt / 1000);
 	}
 }
