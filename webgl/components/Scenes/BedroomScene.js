@@ -79,6 +79,10 @@ export default class BedroomScene extends BaseScene {
 	async createSheets() {
 		const project = this.webgl.$theatre.get('Transition-Memories');
 		const sheet = project.getSheet('transition');
+
+		sheet.$target('camera', this.webgl.$povCamera.target, {
+			nudgeMultiplier: 0.01,
+		})
 	}
 
 	async enter() {

@@ -39,7 +39,6 @@ export const useLutPass = (composer) => {
 
 		enabled,
 		saturation,
-		animateSaturation,
 		mix: forcedMix,
 
 		set,

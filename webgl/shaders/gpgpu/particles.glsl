@@ -2,9 +2,11 @@ uniform float uTime;
 uniform float uDeltaTime;
 uniform sampler2D uBase;
 uniform sampler2D uAttributes;
+
 uniform float uFlowFieldInfluence;
 uniform float uFlowFieldStrength;
 uniform float uFlowFieldFrequency;
+
 uniform float uPercentRange;
 
 uniform bool uIsMorphing;
@@ -60,10 +62,24 @@ void main()
         flowField = normalize(flowField);
 
         bool isMorphing = (range < uPercentRange);
-        if (isMorphing) particle.xyz = base.xyz + (particle.xyz - base.xyz) * friction;
-        else particle.xyz += flowField * uDeltaTime * strength * uFlowFieldStrength ;
 
-        if(isMorphing) particle.a += uDeltaTime * 0.3;
+        if (isMorphing) {
+//             vec3 baseFriction = base.xyz + (particle.xyz - base.xyz) * friction;
+//             bool endedAnimation = baseFriction.x > base.x - 0.01;
+// //
+//             if (endedAnimation) {
+//                 particle.xyz += flowField * uDeltaTime * strength * uFlowFieldStrength;
+//                 particle.a += uDeltaTime * 0.3;
+//             } else {
+//                 particle.xyz = baseFriction;
+//             }
+
+            particle.xyz = base.xyz + (particle.xyz - base.xyz) * friction;
+        } else {
+            particle.xyz += flowField * uDeltaTime * strength * uFlowFieldStrength;
+        }
+
+
     }
 
     gl_FragColor = particle;

@@ -1,7 +1,7 @@
 import BaseScene from '#webgl/core/BaseScene';
 
 import { TheatreSheet } from '#webgl/plugins/theatre/utils/TheatreSheet.js';
-import { MeshBasicMaterial } from 'three';
+import { MeshBasicMaterial, Object3D } from 'three';
 import { scenesDatas } from './datas';
 
 export default class CliniqueScene extends BaseScene {
@@ -73,9 +73,13 @@ export default class CliniqueScene extends BaseScene {
 
 		const audio = (await import('/assets/audios/clinique/intro.wav')).default;
 		await introSheet.attachAudio(audio, 1);
-		// introSheet.$target('camera', this.webgl.$povCamera.target, {
-		// 	nudgeMultiplier: 0.01,
-		// });
+		const d = new Object3D();
+		introSheet.$target('camera', d, { nudgeMultiplier: 0.01 });
+		introSheet.$compound('Camera', {
+			position: { value: this.webgl.$povCamera.target },
+			lat: this.webgl.$povCamera.controls.lat,
+			lon: this.webgl.$povCamera.controls.lon,
+		});
 		introSheet.$composer(['global', 'bokeh', 'lut', 'bloom', 'rgbShift']);
 	}
 

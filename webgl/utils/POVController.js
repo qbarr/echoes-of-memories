@@ -74,16 +74,9 @@ function POVController(
 	});
 
 	updateLookAt();
-	attachAnimationToSheet();
 
 	function updateLookAt() {
 		cam.lookAt(target);
-	}
-
-	function attachAnimationToSheet() {
-		if (!introSheet) return;
-
-		introSheet.$compound('POVController', { lat, lon });
 	}
 
 	function update() {
@@ -131,9 +124,9 @@ function POVController(
 		const verticalLookRatio = Math.PI / (verticalMax - verticalMin);
 		const horizontalLookRatio = Math.PI / (horizontalMax - horizontalMin);
 
-		lon -= tempVec2b.x * horizontalLookRatio;
-		lat -= tempVec2b.y * verticalLookRatio;
-		lat = clamp(lat, -70, 50);
+		lon.value -= tempVec2b.x * horizontalLookRatio;
+		lat.value -= tempVec2b.y * verticalLookRatio;
+		lat.value = clamp(lat.value, -70, 50);
 
 		rotateStart.copy(tempVec2a);
 	}

@@ -120,7 +120,7 @@ const getTypeFromValue = (value) => {
 };
 
 const createValue = (id, value, opts, object) => {
-	const v = value.value;
+	const v = value.value ?? value;
 	const type = getTypeFromValue(v);
 
 	if (isInstanceOfVector(v)) {
@@ -152,7 +152,7 @@ const createValue = (id, value, opts, object) => {
 		}
 	} else {
 		// Number by default
-		const o = types.number(v, opts);
+		const o = types.number(v ?? value, opts);
 		object[id] = value;
 		return o;
 	}

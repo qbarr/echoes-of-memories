@@ -84,13 +84,14 @@ export class TheatreGroup extends TheatreBaseObject {
 				const key = keys[j];
 				const child = this.childs[parent][key];
 				let v = this._values[i].child[key];
-				if (v.value.value && !child.isWritableSignal) v = v.value;
+				if (v.value.value !== null && !child.isWritableSignal) v = v.value;
 				if (child.isWritableSignal) {
 					if (child.isVector) v.value.set(v.value.copy(values[parent][key]));
 					else v.value.set(values[parent][key]);
 				} else {
 					if (child.isVector) v.value.copy(values[parent][key]);
 					else v.value = values[parent][key];
+					console.log('update', v.value)
 				}
 			}
 		}

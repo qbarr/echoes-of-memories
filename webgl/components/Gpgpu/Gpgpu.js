@@ -189,7 +189,7 @@ export default class Gpgpu extends BaseComponent {
 			uFlowFieldFrequency: new Uniform(0.5),
 			uFlowFieldInfluence: new Uniform(0.4),
 			uFlowFieldStrength: new Uniform(2),
-			uPercentRange: new Uniform(.001),
+			uPercentRange: new Uniform(0),
 			uIsMorphing: new Uniform(false),
 			//  uPaint = new Uniform(paintTexture),
 			uResolution: new Uniform(
