@@ -97,31 +97,38 @@ export class POVCamera extends BaseCamera {
 
 		// Create Theatre Projects
 		// useTheatre(this, 'Bedroom-Camera');
-		// useTheatre(this, 'Clinique-Camera');
+		// useTheatre(this, 'Transition-Memories');
 
 		// this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 	}
 
-	// async createSheets() {
-	// 	const { clinique, bedroom } = scenesDatas;
+	async createSheets() {
+		const { bedroom } = scenesDatas;
 
-	// 	const cliniqueProject = this.$theatre['Clinique-Camera'];
-	// 	const bedroomProject = this.$theatre['Bedroom-Camera'];
+		const transitionProject = this.$theatre['Transition-Memories'];
 
-	// 	/// #if __DEBUG__
-	// 	// Need an await only if we use @theatre/studio
-	// 	await cliniqueProject.ready;
-	// 	await bedroomProject.ready;
-	// 	/// #endif
+		/// #if __DEBUG__
+		// Need an await only if we use @theatre/studio
+		await transitionProject.ready;
+		/// #endif
 
-	// 	const introSheet = new TheatreSheet('intro', { project: cliniqueProject });
 
-	// 	const audio = (await import('/assets/audios/clinique/intro.wav')).default;
-	// 	await introSheet.attachAudio(audio, 1);
+		const transitionSheet = new TheatreSheet('transition', { project: transitionProject });
+		this.$sheets['Transition-Memories'].transition = transitionSheet;
 
-	// 	introSheet.$target('camera', this.target, { nudgeMultiplier: 0.01 });
-	// 	introSheet.$composer(['global', 'bokeh', 'lut', 'bloom', 'rgbShift']);
-	// }
+		transitionSheet.$composer(['lut', 'crt']);
+		transitionSheet.$bool('switchScene', { value: false }, {
+			onUpdate: (bool) => {
+				if (bool) this.webgl.$scenes.switch('particle');
+				else this.webgl.$scenes.switch('bedroom');
+ 			}
+		})
+
+		// console.log(this.webgl.$scenes['particle'])
+
+
+
+	}
 
 	goTo({ x, y, z }) {
 		this.target.position.set(x, HEIGHT - y, z);

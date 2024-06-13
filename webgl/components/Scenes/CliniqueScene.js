@@ -5,6 +5,7 @@ import { useTheatre } from '#webgl/utils/useTheatre.js';
 import { scenesDatas } from './datas';
 import { types } from '@theatre/core';
 import { TheatreSheet } from '#webgl/plugins/theatre/utils/TheatreSheet.js';
+import { eventEmitter } from '#utils/state/emitter.js';
 
 export default class CliniqueScene extends BaseScene {
 	mixins = ['debugCamera'];
@@ -64,9 +65,9 @@ export default class CliniqueScene extends BaseScene {
 
 		// Override $theatre
 		useTheatre(this, 'Clinique-Scene');
-		useTheatre(this, 'Clinique-Camera');
+		// useTheatre(this, 'Clinique-Camera');
 
-		this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
+		// this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 	}
 
 	async createSheets() {
@@ -91,6 +92,7 @@ export default class CliniqueScene extends BaseScene {
 	}
 
 	async launch() {
+		console.log('launch');
 		await this.$sheets['Clinique-Camera'].intro.play();
 		console.log('intro played');
 
@@ -105,7 +107,7 @@ export default class CliniqueScene extends BaseScene {
 		// this.camera.setPosition([-2.71175, 3.13109, 4.39142]);
 
 		setTimeout(() => {
-			this.launch();
+			// this.launch();
 		}, 1000);
 	}
 

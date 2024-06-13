@@ -5,6 +5,7 @@ import { Vector3 } from 'three';
 import { raftween } from '#utils/anim/raftween.js';
 import { bezier } from '#utils/anim/bezier.js';
 import { easings } from '#utils/anim/easings.js';
+import { events } from '#utils/state/index.js';
 
 export default class Gpgpu extends BaseComponent {
 
@@ -19,9 +20,49 @@ export default class Gpgpu extends BaseComponent {
 		this.previousTime = 0
 		this.tweens = []
 		this.index = 0
+		this.webgl.$theatre.sheets.watchImmediate(this.plugToSheets.bind(this))
 	}
 
+	async plugToSheets() {
+		if(!this.webgl.$theatre.get('Transition-Memories')) return
+		const sheet = this.webgl.$theatre.get('Transition-Memories').$sheets.transition
+		const uniforms = this.gpgpu.variables.particles.material.uniforms
 
+		sheet.$group('Particles', [
+			{
+				id: 'uniforms',
+				child: {
+					uFlowFieldFrequency: {
+						value: uniforms.uFlowFieldFrequency,
+						range: [0, 1]
+					},
+					uFlowFieldStrength: {
+						value: uniforms.uFlowFieldStrength,
+						range: [0, 10]
+					},
+					uFlowFieldInfluence: {
+						value: uniforms.uFlowFieldInfluence,
+						range: [0, 1]
+					}
+				},
+
+
+			},
+			{
+				id: 'uniformstimes',
+				child: {
+					uPercentRange: {
+						value: uniforms.uPercentRange,
+						range: [0, 20],
+					},
+					uTime: {
+						value: uniforms.uTime,
+						range: [0, 1000]
+					}
+				}
+			}
+		])
+	}
 
 
 	setupFromBox(box, opts = {}) {
@@ -226,10 +267,11 @@ export default class Gpgpu extends BaseComponent {
 	update() {
 		// console.log(this.index)
 		this.index++
-
+		console.log(this.gpgpu.variables.particles.material.uniforms.uTime.value)
+		console.log(this.gpgpu.variables.particles.material.uniforms.uPercentRange.value)
 		Object.values(this.gpgpu.variables).forEach(variable => {
-			if(variable.material.uniforms.uTime) variable.material.uniforms.uTime.value = this.webgl.$time.elapsed / 1000
-			if(variable.material.uniforms.uDeltaTime) variable.material.uniforms.uDeltaTime.value = this.webgl.$time.dt / 1000
+			// if(variable.material.uniforms.uTime) variable.material.uniforms.uTime.value = this.webgl.$time.elapsed / 1000
+			// if(variable.material.uniforms.uDeltaTime) variable.material.uniforms.uDeltaTime.value = this.webgl.$time.dt / 1000
 			// if(variable.material.uniforms.uPercentRange) variable.material.uniforms.uPercentRange.value += 0.04
 		})
 

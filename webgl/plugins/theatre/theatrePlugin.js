@@ -1,7 +1,8 @@
-import { w } from '#utils/state/index.js';
+import { events, w } from '#utils/state/index.js';
 import { storageSync } from '#utils/state/signalExtStorageSync.js';
 
 import core, { createRafDriver, getProject, onChange, types, val } from '@theatre/core';
+import { TheatreSheet } from './utils';
 
 /// #if __DEBUG__
 /// #code import studio from '@theatre/studio';
@@ -16,11 +17,12 @@ export function theatrePlugin(webgl) {
 	const projects = new Map();
 	const symbols = {};
 	const states = {};
+	const sheets = w(null);
 
 	const api = {
 		projects,
 		states,
-
+		sheets,
 		createProject,
 		get,
 
@@ -56,6 +58,34 @@ export function theatrePlugin(webgl) {
 		__DEBUG__ && addProjectToGui(project);
 
 		return project;
+	}
+
+	async function createSheets() {
+		/// #if __DEBUG__
+		const transitionProject = createProject('Transition-Memories')
+		await Promise.all([
+			transitionProject.ready,
+		]);
+		/// #endif
+
+		const transitionSheet = new TheatreSheet('transition', { project: transitionProject });
+		transitionSheet.$composer(['lut', 'crt']);
+		transitionSheet.$bool('switchScene', { value: false }, {
+			onUpdate: (bool) => {
+				if (bool) webgl.$scenes.switch('particle');
+				else webgl.$scenes.switch('bedroom');
+ 			}
+		})
+		transitionProject.$sheets = {
+			transition : transitionSheet
+		}
+
+		const _sheets = {
+			...transitionProject.$sheets
+		}
+
+		sheets.set(_sheets);
+
 	}
 
 	function get(id) {
@@ -107,6 +137,7 @@ export function theatrePlugin(webgl) {
 		},
 		load: () => {
 			webgl.$hooks.afterPreload.watchOnce(init);
+			webgl.$hooks.beforeStart.watchOnce(createSheets);
 			// webgl.$hooks.afterPreload.watchOnce(init);
 		},
 	};
