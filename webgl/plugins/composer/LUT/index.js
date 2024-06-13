@@ -84,25 +84,7 @@ export const useLutPass = (composer) => {
 		if (!enabled.value) mix.set(0);
 		else mix.set(forcedMix.value ?? 1);
 
-		saturationTween?.update(webgl.$time.dt / 1000);
-
 		filter.render();
-	}
-
-	function animateSaturation(to) {
-		return new Promise((resolve) => {
-			saturationTween = raftween({
-				from: saturation.value,
-				to,
-				target: saturation,
-				property: 'value',
-				duration: 2,
-				onComplete: resolve,
-				onProgress: (progress, current) => {
-					saturation.emit()
-				}
-			})
-		})
 	}
 
 	/// #if __DEBUG__

@@ -79,11 +79,6 @@ export default class BedroomScene extends BaseScene {
 	async createSheets() {
 		const project = this.webgl.$theatre.get('Transition-Memories');
 		const sheet = project.getSheet('transition');
-
-		sheet.$target('camera', this.webgl.$povCamera.target, {
-			nudgeMultiplier: 0.01,
-		});
-		console.log(this.webgl.$povCamera)
 	}
 
 	async enter() {
@@ -91,6 +86,7 @@ export default class BedroomScene extends BaseScene {
 		// this.camera = this.add(this.webgl.$povCamera);
 		this.webgl.$povCamera.onSceneSwitch(this);
 		this.camera = this.add(this.webgl.$povCamera);
+
 
 		// position: [ -8.34592, 2.24563, 7.35179 ],
 		// quaternion: [  ],

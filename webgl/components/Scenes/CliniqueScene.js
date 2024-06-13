@@ -73,9 +73,9 @@ export default class CliniqueScene extends BaseScene {
 
 		const audio = (await import('/assets/audios/clinique/intro.wav')).default;
 		await introSheet.attachAudio(audio, 1);
-		introSheet.$target('camera', this.webgl.$povCamera.target, {
-			nudgeMultiplier: 0.01,
-		});
+		// introSheet.$target('camera', this.webgl.$povCamera.target, {
+		// 	nudgeMultiplier: 0.01,
+		// });
 		introSheet.$composer(['global', 'bokeh', 'lut', 'bloom', 'rgbShift']);
 	}
 
