@@ -1,10 +1,13 @@
+import { TheatreBaseObject } from './TheatreBaseObject';
 import { types } from '@theatre/core';
 import { Vector2, Vector3, Vector4 } from 'three';
+import { log } from 'three/examples/jsm/nodes/Nodes.js';
 
 const NOOP = () => {};
 
-export class TheatreCompound {
+export class TheatreCompound extends TheatreBaseObject {
 	constructor(name, values = {}, opts = {}, sheet) {
+		super();
 		this._name = name;
 		this._values = values;
 		this._sheet = sheet;
@@ -13,10 +16,7 @@ export class TheatreCompound {
 		delete opts.onUpdate;
 
 		const valuesKeys = Object.keys(values);
-		this.childs = valuesKeys.reduce((acc, key) => {
-			acc[key] = {};
-			return acc;
-		}, {});
+		this.childs = {};
 
 		const obj = sheet.instance.object(name, {
 			...valuesKeys.reduce((acc, key) => {
@@ -24,7 +24,7 @@ export class TheatreCompound {
 					key,
 					values[key],
 					{ ...opts, ...(values[key].opts ?? {}) },
-					this.childs[key],
+					this.childs,
 				);
 				return acc;
 			}, {}),
@@ -40,27 +40,8 @@ export class TheatreCompound {
 		return this;
 	}
 
-	get name() {
-		return this._name;
-	}
 	get values() {
 		return this._values;
-	}
-	get sheet() {
-		return this._sheet;
-	}
-	get object() {
-		return this._object;
-	}
-
-	dispose() {
-		this._unwatch?.();
-		this._sheet.detach(this);
-	}
-
-	onChange(callback) {
-		this._onUpdate = callback;
-		return this;
 	}
 
 	update(values) {
@@ -69,8 +50,8 @@ export class TheatreCompound {
 			const child = this.childs[key];
 			const v = this._values[key];
 			if (child.isWritableSignal) {
-				if (child.isVector) v.value.set(v.value.copy(values[key]));
-				else v.value.set(values[key]);
+				if (child.isVector) v.set(v.copy(values[key]));
+				else v.set(values[key]);
 			} else {
 				if (child.isVector) v.value.copy(values[key]);
 				else v.value = values[key];
@@ -166,14 +147,6 @@ const createValue = (id, value, opts, object) => {
 			return o;
 		} else if (type === 'boolean') {
 			o = types.bool(v, opts);
-			object[id] = value;
-			return o;
-		} else if (type === 'number') {
-			o = types.number(v, opts);
-			object[id] = value;
-			return o;
-		} else if (type === 'string') {
-			o = types.string(v, opts);
 			object[id] = value;
 			return o;
 		}

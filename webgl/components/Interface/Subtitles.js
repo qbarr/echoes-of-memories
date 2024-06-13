@@ -84,8 +84,6 @@ export class Subtitles extends BaseComponent {
 		const dprWidth = size.x * $viewport.pixelRatio.value;
 		const mult = clampedMap(size.x, 375, 1680, 0.8, 0.4);
 		this.text.updateGeo({ width: dprWidth * mult });
-
-		console.log('RESPONSIVE TEXT', dprWidth * mult, dprWidth, mult);
 	}
 
 	onPartChange(part) {

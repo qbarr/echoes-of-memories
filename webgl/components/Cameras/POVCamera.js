@@ -14,14 +14,17 @@ import { useCameraHelper } from './useDebugHelper.js';
 
 import { TheatreSheet } from '#webgl/plugins/theatre/utils/index.js';
 import { scenesDatas } from '../Scenes/datas.js';
+import { types } from '@theatre/core';
 
-const HEIGHT = 1.95;
+import { damp, lerp } from '#utils/maths/map.js';
+
+const HEIGHT = 3;
 const DEFAULT_CAM = {
 	position: new Vector3(-8.67, HEIGHT, 4.88),
 	fov: 55,
 };
 const DEFAULT_TARGET = {
-	position: new Vector3(4, 1.4, 0),
+	position: new Vector3(4, 1, 0), // on clinique room
 };
 
 export class POVCamera extends BaseCamera {
@@ -31,10 +34,13 @@ export class POVCamera extends BaseCamera {
 		this.onClick = this.onClick.bind(this);
 		this.onPointerLockChange = this.onPointerLockChange.bind(this);
 
-		this.$wobbleIntensity = { value: 0.0004 };
-
 		this.base = new Object3D();
 		this.target = new Object3D();
+
+		this.wobble_intentisty = { value: 0.0004 };
+		this.wobble_frequency = { value: new Vector3(0.6, 0.6, 0.6) };
+		this.wobble_amplitude = { value: new Vector3(0.2, 0.1, 0.1) };
+		this.wobble_scale = { value: 1 };
 	}
 
 	/// #if __DEBUG__
@@ -69,13 +75,15 @@ export class POVCamera extends BaseCamera {
 	afterInit() {
 		const ratio = window.innerWidth / window.innerHeight;
 
+		// this.webgl.$hooks.afterStart.watchOnce(this.afterStart.bind(this));
+
 		// Create POV Camera
 		this.cam = this.base = new PerspectiveCamera(DEFAULT_CAM.fov, ratio, 0.1, 100);
 		this.cam.position.copy(DEFAULT_CAM.position);
 		this.cam.fov = DEFAULT_CAM.fov;
 		this.cam.updateProjectionMatrix();
 
-		// Create POV Controller
+		// POV Controller
 		this.controls = POVController(this, {
 			enabled: this.$pointerLocked,
 			target: DEFAULT_TARGET.position,
@@ -85,41 +93,19 @@ export class POVCamera extends BaseCamera {
 		});
 
 		// Create Wobble (idle) effect
-		this.wobble = new Wobble(this.cam.position);
+		this.wobble = new Wobble({
+			position: this.cam.position,
+			frequency: this.wobble_frequency.value,
+			amplitude: this.wobble_amplitude.value,
+			scale: this.wobble_scale.value,
+		});
 
 		document.addEventListener('click', this.onClick); // TODO: temp
 		document.addEventListener('pointerlockchange', this.onPointerLockChange);
 
 		const dbs = this.webgl.$renderer.drawingBufferSize;
 		this.resizeSignal = dbs.watchImmediate(this.resize, this);
-
-		// this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 	}
-
-	// async createSheets() {
-	// 	const { bedroom } = scenesDatas;
-
-	// 	const transitionProject = this.$theatre['Transition-Memories'];
-
-	// 	const transitionSheet = new TheatreSheet('transition', {
-	// 		project: transitionProject,
-	// 	});
-	// 	this.$sheets['Transition-Memories'].transition = transitionSheet;
-
-	// 	transitionSheet.$composer(['lut', 'crt']);
-	// 	transitionSheet.$bool(
-	// 		'switchScene',
-	// 		{ value: false },
-	// 		{
-	// 			onUpdate: (bool) => {
-	// 				if (bool) this.webgl.$scenes.switch('particle');
-	// 				else this.webgl.$scenes.switch('bedroom');
-	// 			},
-	// 		},
-	// 	);
-
-	// 	// console.log(this.webgl.$scenes['particle'])
-	// }
 
 	goTo({ x, y, z }) {
 		this.target.position.set(x, HEIGHT - y, z);
@@ -159,12 +145,16 @@ export class POVCamera extends BaseCamera {
 	}
 
 	update() {
-		// this.wobble.update(this.webgl.$time.elapsed * this.$wobbleIntensity);
-		// this.controls?.update?.();
+		this.wobble.update(this.webgl.$time.elapsed * this.wobble_intentisty.value);
+
 		const { dt } = this.webgl.$time;
 
 		this.base.position.damp(this.target.position, 0.2, dt);
-		this.base.rotation.damp(this.target.rotation, 0.2, dt);
+		// this.base.rotation.damp(this.target.rotation, 0.1, dt);
+
+		if (this.controls) {
+			this.controls.update();
+		}
 
 		this.cam.updateProjectionMatrix();
 	}

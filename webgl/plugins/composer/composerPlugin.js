@@ -66,6 +66,8 @@ export function composerPlugin(webgl) {
 
 			// Vignette
 			uVignette: { value: new Vector2() },
+			// uDitherStrength: { value: 1 },
+			uDitherStrength: { value: 0.2 },
 		});
 
 		Object.assign(defines, { ...webgl.defines });
