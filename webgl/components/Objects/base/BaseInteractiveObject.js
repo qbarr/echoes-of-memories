@@ -36,19 +36,7 @@ export class BaseInteractiveObject extends BaseComponent {
 	onClick() {
 		this.log('INTERACTION:click');
 
-		const cam = this.webgl.$povCamera;
-		const vec3 = Vector3.get();
-		const dir = Vector3.get();
-
-		vec3.copy(this.base.position);
-		dir.copy(cam.base.position).sub(vec3).normalize();
-		vec3.addScaledVector(dir, 4);
-		vec3.y = 0;
-		cam.goTo(vec3);
-
-		dir.release();
-		vec3.release();
-
+		// TODO: Go to this object
 		// TODO: Subtitles
 		// TODO: Transition
 	}

@@ -102,26 +102,26 @@ export class POVCamera extends BaseCamera {
 		// this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 	}
 
-	async createSheets() {
-		const { clinique, bedroom } = scenesDatas;
+	// async createSheets() {
+	// 	const { clinique, bedroom } = scenesDatas;
 
-		const cliniqueProject = this.$theatre['Clinique-Camera'];
-		const bedroomProject = this.$theatre['Bedroom-Camera'];
+	// 	const cliniqueProject = this.$theatre['Clinique-Camera'];
+	// 	const bedroomProject = this.$theatre['Bedroom-Camera'];
 
-		/// #if __DEBUG__
-		// Need an await only if we use @theatre/studio
-		await cliniqueProject.ready;
-		await bedroomProject.ready;
-		/// #endif
+	// 	/// #if __DEBUG__
+	// 	// Need an await only if we use @theatre/studio
+	// 	await cliniqueProject.ready;
+	// 	await bedroomProject.ready;
+	// 	/// #endif
 
-		const introSheet = new TheatreSheet('intro', { project: cliniqueProject });
+	// 	const introSheet = new TheatreSheet('intro', { project: cliniqueProject });
 
-		const audio = (await import('/assets/audios/clinique/intro.wav')).default;
-		await introSheet.attachAudio(audio, 1);
+	// 	const audio = (await import('/assets/audios/clinique/intro.wav')).default;
+	// 	await introSheet.attachAudio(audio, 1);
 
-		introSheet.$target('camera', this.target, { nudgeMultiplier: 0.01 });
-		introSheet.$composer(['global', 'bokeh', 'lut', 'bloom', 'rgbShift']);
-	}
+	// 	introSheet.$target('camera', this.target, { nudgeMultiplier: 0.01 });
+	// 	introSheet.$composer(['global', 'bokeh', 'lut', 'bloom', 'rgbShift']);
+	// }
 
 	goTo({ x, y, z }) {
 		this.target.position.set(x, HEIGHT - y, z);
