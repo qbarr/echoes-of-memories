@@ -2,11 +2,14 @@ import { getApp } from '#app/core/index.js';
 import { getWebGL } from '#webgl/core/index.js';
 import { getProject } from '@theatre/core';
 import { TheatreSheet } from './TheatreSheet';
+import { createLogger } from '#utils/debug/logger.js';
 
 export class TheatreProject {
 	constructor(id) {
 		this.$webgl = getWebGL();
 		this.$app = getApp();
+
+		Object.assign(this, createLogger(`TH.${id}`, '#000', '#70abff'));
 
 		this.id = id;
 		this.symbol = Symbol(id);

@@ -64,7 +64,6 @@ function POVController(
 	const horizontalMax = Math.PI / 2;
 
 	const introSheet = webgl.$theatre.getProject('Clinique-Camera').getSheet('intro');
-	console.log(introSheet);
 
 	const FREE_CAM = w(false);
 	const CINEAMATIC_CAM = w(true);
@@ -82,7 +81,6 @@ function POVController(
 	}
 
 	function attachAnimationToSheet() {
-		console.log('attachAnimationToSheet', introSheet);
 		if (!introSheet) return;
 
 		introSheet.$compound('POVController', { lat, lon });
@@ -112,7 +110,6 @@ function POVController(
 	}
 
 	function updateCineamaticCamMode(dt) {
-		console.log('updateCineamaticCamMode');
 		lerpedLat = damp(lerpedLat, lat.value, 0.4, dt);
 		lerpedLon = damp(lerpedLon, lon.value, 0.4, dt);
 

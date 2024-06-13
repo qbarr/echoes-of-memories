@@ -25,7 +25,7 @@ export default createWebgl({
 
 	async preload() {
 		const { load } = webgl.$assets;
-		const { $sounds, $subtitles } = webgl;
+		const { $sounds, $theatre } = webgl;
 
 		webgl.$audioListener = new AudioListener();
 
@@ -55,6 +55,11 @@ export default createWebgl({
 			// Theatre
 			load('theatre'),
 		]);
+
+		/// #if __DEBUG__
+		// Only await for the theatre project in studio mode
+		await $theatre.ready;
+		/// #endif
 	},
 
 	async start() {

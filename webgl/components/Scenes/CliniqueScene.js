@@ -60,7 +60,6 @@ export default class CliniqueScene extends BaseScene {
 		_objects.forEach((o) => this.add(o));
 		this.base.add(scene);
 
-		this.$sheets = {};
 		// this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 		this.createSheets();
 	}
@@ -71,8 +70,6 @@ export default class CliniqueScene extends BaseScene {
 		const cameraProject = this.webgl.$theatre.get('Clinique-Camera');
 
 		const introSheet = cameraProject.getSheet('intro');
-		// new TheatreSheet('intro', { project: cameraProject });
-		// this.$sheets['Clinique-Camera'].intro = introSheet;
 
 		const audio = (await import('/assets/audios/clinique/intro.wav')).default;
 		await introSheet.attachAudio(audio, 1);

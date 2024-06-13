@@ -1,3 +1,4 @@
+import { deferredPromise } from '#utils/async/deferredPromise.js';
 import { w } from '#utils/state/index.js';
 import { storageSync } from '#utils/state/signalExtStorageSync.js';
 import { getWebGL } from '#webgl/core/index.js';
@@ -57,12 +58,14 @@ export function theatrePlugin(webgl) {
 	const states = {};
 	const sheets = new Map();
 
-	const projectsPromises = [];
+	const dp = deferredPromise();
 
 	const api = {
 		projects,
 		states,
 		sheets,
+
+		ready: dp.promise,
 
 		registerProject,
 		register: registerProject,
@@ -80,10 +83,21 @@ export function theatrePlugin(webgl) {
 		/// #endif
 	};
 
-	function init() {
+	async function init() {
 		const datas = webgl.$assets.data.theatre;
 		// Register all projects' state
 		Object.assign(states, datas);
+
+		const p = [];
+		PROJECTS_LIST.forEach((id) => {
+			const project = new TheatreProject(id);
+			projects.set(project.symbol, project);
+			p.push(project.instance.isReady);
+		});
+
+		await Promise.all(p);
+
+		dp.resolve();
 	}
 
 	function registerProject(ClassProject) {
@@ -153,6 +167,49 @@ export function theatrePlugin(webgl) {
 		ClassProject.devtools?.();
 		folderUid++;
 	}
+
+	function useDiskStorage(projectID) {
+		const key = `EOM:theatrejs.persistent`;
+		const data = localStorage.getItem(key);
+		if (data) {
+			const lsData = JSON.parse(data);
+
+			const state = states[projectID];
+			const lsProject = lsData.historic.innerState.coreByProject[projectID];
+			const stateProject = state[projectID];
+
+			// override the project
+			Object.assign(stateProject, lsProject);
+
+			localStorage.setItem(key, JSON.stringify(lsData));
+			console.log('Project data overriden');
+		}
+	}
+	window.useDiskStorage = useDiskStorage;
+
+	function overrideSheetLocalStorage(project, sheet) {
+		const key = `EOM:theatrejs.persistent`;
+		const data = localStorage.getItem(key);
+		if (data) {
+			const lsData = JSON.parse(data);
+
+			if (typeof project === 'string') project = getProject(project);
+			if (typeof sheet === 'string') sheet = project.getSheet(sheet);
+
+			const state = states[project.id];
+			// > historic > coreByProject > [ProjectID] > sheetsById > [SheetID]
+			const lsSheet =
+				lsData.historic.innerState.coreByProject[project.id].sheetsById[sheet.id];
+			const stateSheet = state.sheetsById[sheet.id];
+
+			// override the sheet
+			Object.assign(stateSheet, lsSheet);
+
+			localStorage.setItem(key, JSON.stringify(lsData));
+			console.log('Sheet data overriden');
+		}
+	}
+	window.overrideSheetLocalStorage = overrideSheetLocalStorage;
 	/// #endif
 
 	return {
@@ -161,19 +218,18 @@ export function theatrePlugin(webgl) {
 
 			__DEBUG__ && devtools();
 
-			PROJECTS_LIST.forEach((id) => {
-				const project = new TheatreProject(id);
-				projects.set(project.symbol, project);
-				projectsPromises.push(project.instance.isReady);
-			});
+			// PROJECTS_LIST.forEach((id) => {
+			// 	const project = new TheatreProject(id);
+			// 	projects.set(project.symbol, project);
+			// 	projectsPromises.push(project.instance.isReady);
+			// });
 
-			const { $preloader } = webgl.$app;
-			projectsPromises.forEach((promise) => $preloader.task(promise));
+			// const { $preloader } = webgl.$app;
+			// projectsPromises.forEach((promise) => $preloader.task(promise));
 		},
 		load: () => {
-			webgl.$hooks.afterPreload.watchOnce(init);
 			// webgl.$hooks.beforeStart.watchOnce(createSheets);
-			// webgl.$hooks.afterPreload.watchOnce(init);
+			webgl.$hooks.afterPreload.watchOnce(init);
 		},
 	};
 }

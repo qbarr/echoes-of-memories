@@ -131,7 +131,6 @@ export class POVCamera extends BaseCamera {
 		const currentCam = scene.getCurrentCamera();
 
 		if (!this.$pointerLocked && currentCam.name !== 'Debug Camera') {
-			this.log('onClick');
 			$canvas.requestPointerLock();
 		}
 	}
