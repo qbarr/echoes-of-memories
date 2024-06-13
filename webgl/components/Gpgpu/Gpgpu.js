@@ -194,7 +194,7 @@ export default class Gpgpu extends BaseComponent {
 		this.gpgpu.computation.init()
 
 		/// #if __DEBUG__
-		this.devTools()
+		// this.devTools()
 		/// #endif
 	}
 
@@ -268,10 +268,9 @@ export default class Gpgpu extends BaseComponent {
 		// console.log(this.index)
 		this.index++
 		console.log(this.gpgpu.variables.particles.material.uniforms.uTime.value)
-		console.log(this.gpgpu.variables.particles.material.uniforms.uPercentRange.value)
 		Object.values(this.gpgpu.variables).forEach(variable => {
-			// if(variable.material.uniforms.uTime) variable.material.uniforms.uTime.value = this.webgl.$time.elapsed / 1000
-			// if(variable.material.uniforms.uDeltaTime) variable.material.uniforms.uDeltaTime.value = this.webgl.$time.dt / 1000
+			if(variable.material.uniforms.uTime) variable.material.uniforms.uTime.value = this.webgl.$time.elapsed / 1000
+			if(variable.material.uniforms.uDeltaTime) variable.material.uniforms.uDeltaTime.value = this.webgl.$time.dt / 1000
 			// if(variable.material.uniforms.uPercentRange) variable.material.uniforms.uPercentRange.value += 0.04
 		})
 
