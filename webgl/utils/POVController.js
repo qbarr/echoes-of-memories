@@ -1,6 +1,6 @@
 import { clamp, damp } from '#utils/maths/map.js';
 import { mod } from '#utils/maths/mod.js';
-// import { mod } from '#utils/maths/mod.js';
+import { w } from '#utils/state/index.js';
 import { webgl } from '#webgl/core';
 import { Vector2, Vector3, MathUtils, Euler } from 'three';
 
@@ -32,8 +32,9 @@ function vec3ToSphericalPos(v, cam) {
 	const phiDegrees = MathUtils.radToDeg(phi);
 	const thetaDegrees = MathUtils.radToDeg(theta);
 
-	return { lat: phiDegrees, lon: thetaDegrees };
+	// return { lat: phiDegrees, lon: thetaDegrees };
 	// return { lat: 90, lon: 90 };
+	return { lat: w(phiDegrees), lon: w(thetaDegrees) };
 }
 
 function POVController(
@@ -49,13 +50,10 @@ function POVController(
 	const cam = Class.cam;
 	const base = Class.base;
 
-	let { lat, lon } = vec3ToSphericalPos(target, cam);
+	const { lat, lon } = vec3ToSphericalPos(target, cam);
 
-	// console.log('lat', lat);
-	// console.log('lon', lon);
-
-	let lerpedLat = lat;
-	let lerpedLon = lon;
+	let lerpedLat = lat.value;
+	let lerpedLon = lon.value;
 
 	const rotateStart = new Vector2();
 
@@ -65,33 +63,67 @@ function POVController(
 	const horizontalMin = -Math.PI / 2;
 	const horizontalMax = Math.PI / 2;
 
+	const introSheet = webgl.$theatre.getProject('Clinique-Camera').getSheet('intro');
+
+	const FREE_CAM = w(false);
+	const CINEAMATIC_CAM = w(true);
+
+	const state = w({
+		FREE_CAM,
+		CINEAMATIC_CAM,
+	});
+
 	updateLookAt();
+	attachAnimationToSheet();
 
 	function updateLookAt() {
 		cam.lookAt(target);
 	}
 
+	function attachAnimationToSheet() {
+		if (!introSheet) return;
+
+		introSheet.$compound('POVController', { lat, lon });
+	}
+
 	function update() {
 		const dt = webgl.$time.dt;
-		lerpedLat = damp(lerpedLat, lat, 0.4, dt);
-		lerpedLon = damp(lerpedLon, lon, 0.4, dt);
+		const { FREE_CAM, CINEAMATIC_CAM } = state.value;
+
+		if (FREE_CAM.value) {
+			updateFreeCamMode(dt);
+		} else if (CINEAMATIC_CAM.value) {
+			updateCineamaticCamMode(dt);
+		}
+	}
+
+	function updateFreeCamMode(dt) {
+		console.log('updateFreeCamMode');
+		lerpedLat = damp(lerpedLat, lat.value, 0.4, dt);
+		lerpedLon = damp(lerpedLon, lon.value, 0.4, dt);
 
 		const phi = MathUtils.degToRad(90 - lerpedLat);
 		const theta = MathUtils.degToRad(lerpedLon);
 		target.setFromSphericalCoords(1, phi, theta).add(cam.position);
 
 		updateLookAt();
+	}
 
-		// if (debug) devtools();
+	function updateCineamaticCamMode(dt) {
+		lerpedLat = damp(lerpedLat, lat.value, 0.4, dt);
+		lerpedLon = damp(lerpedLon, lon.value, 0.4, dt);
+
+		const phi = MathUtils.degToRad(90 - lerpedLat);
+		const theta = MathUtils.degToRad(lerpedLon);
+		target.setFromSphericalCoords(1, phi, theta).add(cam.position);
+
+		updateLookAt();
 	}
 
 	function handleMoveRotate(x, y) {
 		const dt = webgl.$time.dt * 0.001;
 		tempVec2a.set(x, y);
-		tempVec2b
-			// .subVectors(tempVec2a, rotateStart)
-			.add(tempVec2a, rotateStart)
-			.multiplyScalar(speed * dt);
+		tempVec2b.add(tempVec2a, rotateStart).multiplyScalar(speed * dt);
 
 		const el = element === document ? document.body : element;
 		const height = el === document.body ? window.innerHeight : el.clientHeight;
@@ -99,21 +131,30 @@ function POVController(
 		const verticalLookRatio = Math.PI / (verticalMax - verticalMin);
 		const horizontalLookRatio = Math.PI / (horizontalMax - horizontalMin);
 
-		// console.log('verticalLookRatio', verticalLookRatio);
-		// console.log('horizontalLookRatio', horizontalLookRatio);
-
 		lon -= tempVec2b.x * horizontalLookRatio;
 		lat -= tempVec2b.y * verticalLookRatio;
 		lat = clamp(lat, -70, 50);
 
-		// console.log('lon', lon);
-		// console.log('lat', lat);
-
 		rotateStart.copy(tempVec2a);
+	}
+
+	function goFreeCamMode() {
+		state.value.FREE_CAM.value = true;
+		state.value.CINEAMATIC_CAM.value = false;
+	}
+
+	function goCineamaticCamMode() {
+		state.value.FREE_CAM.value = false;
+		state.value.CINEAMATIC_CAM.value = true;
 	}
 
 	const onMouseMove = (e) => {
 		if (!enabled) return;
+
+		const { CINEAMATIC_CAM, FREE_CAM } = state.value;
+
+		if (CINEAMATIC_CAM.value) return;
+
 		const x = e.movementX;
 		const y = e.movementY;
 		handleMoveRotate(x, y);
@@ -121,6 +162,10 @@ function POVController(
 
 	const onTouchMove = (e) => {
 		if (!enabled) return;
+
+		const { CINEAMATIC_CAM, FREE_CAM } = state.value;
+
+		if (CINEAMATIC_CAM.value) return;
 
 		handleMoveRotate(e.touches[0].pageX, e.touches[0].pageY);
 	};
@@ -135,28 +180,17 @@ function POVController(
 		element.removeEventListener('touchmove', onTouchMove);
 	};
 
-	const onLockEnter = () => {
-		console.log('[POVController] onLockEnter');
-		// enabled = true;
-	};
-
-	const onLockExit = () => {
-		console.log('[POVController] onLockExit');
-		// enabled = false;
-	};
-
 	addHandlers();
 
 	return {
 		remove,
 		update,
-		onLockEnter,
-		onLockExit,
 
 		target,
+		lat,
+		lon,
 
 		set enabled(v) {
-			console.log('[POVController] enabled', v);
 			enabled = v;
 		},
 		get enabled() {

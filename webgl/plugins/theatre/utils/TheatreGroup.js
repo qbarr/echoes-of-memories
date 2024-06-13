@@ -77,28 +77,8 @@ export class TheatreGroup extends TheatreBaseObject {
 	}
 
 	update(values) {
-		// for (let i = 0; i < this.childsChildsKeys.length; i++) {
-		// 	const keys = this.childsChildsKeys[i];
-		// 	const parent = this.childsKeys[i];
-		// 	for (let j = 0; j < keys.length; j++) {
-		// 		const key = keys[j];
-		// 		const child = this.childs[parent][key];
-		// 		console.log(this._values);
-		// 		console.log(this.childs);
-		// 		console.log(this._values[parent][key]);
-		// 		const v = this._values[parent][key];
-		// 		if (child.isWritableSignal) {
-		// 			if (child.isVector) v.set(v.get().copy(values[parent][key]));
-		// 			else v.set(values[parent][key]);
-		// 		} else {
-		// 			if (child.isVector) v.value.copy(values[parent][key]);
-		// 			else v.value = values[parent][key];
-		// 		}
-		// 	}
-		// }
-		for (let i = 0; i < this._values.length; i++) {
-			const { id, child } = this._values[i];
-			const keys = Object.keys(child);
+		for (let i = 0; i < this.childsChildsKeys.length; i++) {
+			const keys = this.childsChildsKeys[i];
 			const parent = this.childsKeys[i];
 			for (let j = 0; j < keys.length; j++) {
 				const key = keys[j];

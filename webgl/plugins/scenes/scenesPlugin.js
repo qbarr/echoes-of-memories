@@ -120,18 +120,23 @@ export function scenesPlugin(webgl) {
 			label: 'Current Scene',
 			readonly: true,
 		});
-		current.watchImmediate(({ name }) => (o.name = name));
 
-		gui.addBlade({
-			view: 'list',
-			label: 'Scenes',
-			options: api.list.map((scene) => ({
-				text: scene.name,
-				value: scene.name,
-			})),
-			value: current.value.name,
-		}).on('change', ({ value }) => set(value));
+		const select = gui
+			.addBlade({
+				view: 'list',
+				label: 'Scenes',
+				options: api.list.map((scene) => ({
+					text: scene.name,
+					value: scene.name,
+				})),
+				value: current.value.name,
+			})
+			.on('change', ({ value }) => set(value));
 
+		current.watchImmediate(({ name }) => {
+			o.name = name;
+			select.value = name;
+		});
 	}
 	/// #endif
 

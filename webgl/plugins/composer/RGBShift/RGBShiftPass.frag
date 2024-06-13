@@ -21,7 +21,6 @@ void main() {
 	vec4 shiftColor = vec4(cr.r, cb.g, texel.b, texel.a);
 	vec4 color = mix(texel, shiftColor, smoothstep(0.3, 1., pow(1. - depth, .6)));
 
-	// gl_FragColor = shiftColor;
 	gl_FragColor = color;
 
 	vec4 outlines = texture2D(tSketchLines, vUv);
