@@ -1,5 +1,5 @@
 import BaseScene from '#webgl/core/BaseScene.js';
-import { MeshBasicMaterial, Uniform, Vector2, Vector3 } from 'three';
+import { Mesh, MeshBasicMaterial, Uniform, Vector2, Vector3 } from 'three';
 import { MainCamera } from '../Cameras/MainCamera';
 import { Particles } from '../Particles/Particles';
 
@@ -15,22 +15,17 @@ export default class ParticleScene extends BaseScene {
 	mixins = ['debugCamera'];
 
 	init() {
-		const { $assets } = this.webgl;
+		const { $assets, $gpgpu } = this.webgl;
 		const boat  = $assets.objects['boat'].scene;
 		boat.position.set(0, 0, 0);
 		this.camera = this.add(MainCamera);
 		this.camera.base.lookAt(0, 0, 0);
 		this.camera.base.position.z = 10;
+
 		this.particles = this.add(Particles, {
-			instance: boat.children[0].geometry.clone(),
-			type: 'instance',
-			options: {
-				gpgpu: {
-					uniforms: {
-						...startValues
-					}
-				}
-			}
+			scene: boat,
+			gpgpu: $gpgpu.computedsGPGPU.get()[0],
+			options: {}
 		})
 
 		this.mouse = new Vector2(0, 0)

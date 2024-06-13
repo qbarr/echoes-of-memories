@@ -91,7 +91,6 @@ export class TheatreGroup extends TheatreBaseObject {
 				} else {
 					if (child.isVector) v.value.copy(values[parent][key]);
 					else v.value = values[parent][key];
-					console.log('update', v.value)
 				}
 			}
 		}

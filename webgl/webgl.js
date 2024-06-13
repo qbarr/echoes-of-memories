@@ -74,7 +74,8 @@ export default createWebgl({
 	},
 
 	render() {
-		const { $composer } = webgl;
+		const { $composer, $gpgpu } = webgl;
 		$composer.render();
+		$gpgpu.render()
 	},
 });
