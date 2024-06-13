@@ -29,6 +29,7 @@ studio.onSelectionChange(([selection]) => {
 		if (studioSelectedSheet?.id === sheetId) return;
 		const project = getProject(projectId);
 		const sheet = project.getSheet(sheetId);
+		studioSelectedSheet = sheet;
 		sheet.setActive(true);
 	}
 });

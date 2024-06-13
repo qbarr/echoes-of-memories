@@ -96,35 +96,30 @@ export class POVCamera extends BaseCamera {
 		// this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 	}
 
-	async createSheets() {
-		const { bedroom } = scenesDatas;
+	// async createSheets() {
+	// 	const { bedroom } = scenesDatas;
 
-		const transitionProject = this.$theatre['Transition-Memories'];
+	// 	const transitionProject = this.$theatre['Transition-Memories'];
 
-		/// #if __DEBUG__
-		// Need an await only if we use @theatre/studio
-		await transitionProject.ready;
-		/// #endif
+	// 	const transitionSheet = new TheatreSheet('transition', {
+	// 		project: transitionProject,
+	// 	});
+	// 	this.$sheets['Transition-Memories'].transition = transitionSheet;
 
-		const transitionSheet = new TheatreSheet('transition', {
-			project: transitionProject,
-		});
-		this.$sheets['Transition-Memories'].transition = transitionSheet;
+	// 	transitionSheet.$composer(['lut', 'crt']);
+	// 	transitionSheet.$bool(
+	// 		'switchScene',
+	// 		{ value: false },
+	// 		{
+	// 			onUpdate: (bool) => {
+	// 				if (bool) this.webgl.$scenes.switch('particle');
+	// 				else this.webgl.$scenes.switch('bedroom');
+	// 			},
+	// 		},
+	// 	);
 
-		transitionSheet.$composer(['lut', 'crt']);
-		transitionSheet.$bool(
-			'switchScene',
-			{ value: false },
-			{
-				onUpdate: (bool) => {
-					if (bool) this.webgl.$scenes.switch('particle');
-					else this.webgl.$scenes.switch('bedroom');
-				},
-			},
-		);
-
-		// console.log(this.webgl.$scenes['particle'])
-	}
+	// 	// console.log(this.webgl.$scenes['particle'])
+	// }
 
 	goTo({ x, y, z }) {
 		this.target.position.set(x, HEIGHT - y, z);

@@ -128,21 +128,17 @@ export class TheatreSheet {
 	}
 
 	setActive(bool) {
-		console.log('setActive', bool);
+		console.log('setActive', this.id, bool);
 		this._active = bool;
 		bool ? this.listen() : this.unlisten();
 	}
 
 	listen() {
-		this.objects.forEach((Object) => {
-			Object.listen();
-		});
+		this.objects.forEach((Object) => Object.listen());
 	}
 
 	unlisten() {
-		this.objects.forEach((Object) => {
-			Object.unlisten();
-		});
+		this.objects.forEach((Object) => Object.unlisten());
 	}
 
 	play(args = {}) {

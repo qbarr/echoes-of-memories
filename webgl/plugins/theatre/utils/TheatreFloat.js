@@ -32,11 +32,8 @@ export class TheatreFloat extends TheatreBaseObject {
 	}
 
 	update({ value }) {
-		if (this._isWritable) {
-			this._value.set(value);
-		} else {
-			this._value.value = value;
-		}
+		if (this._isWritable) this._value.set(value);
+		else this._value.value = value;
 
 		this._onUpdate(value);
 	}
