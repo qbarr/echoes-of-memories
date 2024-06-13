@@ -36,8 +36,10 @@ export default class ParticleScene extends BaseScene {
 		this.mouse = new Vector2(0, 0)
 		this.offset = new Vector3(0, 0, 0);
 		this.cameraBasePosition = this.camera.base.position.clone();
-		// window.addEventListener('mousemove', this.onMouseMove.bind(this));
 	}
+
+
+
 
 	onMouseMove(e) {
 		this.mouse.x = e.clientX / window.innerWidth * 2 - 1;

@@ -28,6 +28,8 @@ export default class Gpgpu extends BaseComponent {
 		const sheet = this.webgl.$theatre.get('Transition-Memories').$sheets.transition
 		const uniforms = this.gpgpu.variables.particles.material.uniforms
 
+		sheet.$float('uPercentRange', uniforms.uPercentRange, { range: [0, 10]  })
+
 		sheet.$group('Particles', [
 			{
 				id: 'uniforms',
@@ -45,20 +47,18 @@ export default class Gpgpu extends BaseComponent {
 						range: [0, 1]
 					}
 				},
-
-
 			},
 			{
 				id: 'uniformstimes',
 				child: {
-					uPercentRange: {
-						value: uniforms.uPercentRange,
-						range: [0, 20],
-					},
-					uTime: {
-						value: uniforms.uTime,
-						range: [0, 1000]
-					}
+					// uPercentRange: {
+					// 	value: uniforms.uPercentRange,
+					// 	range: [0, 20],
+					// },
+					// uTime: {
+					// 	value: uniforms.uTime,
+					// 	range: [0, 1000]
+					// }
 				}
 			}
 		])
@@ -264,17 +264,15 @@ export default class Gpgpu extends BaseComponent {
 
 	// }
 
+
 	update() {
 		// console.log(this.index)
-		this.index++
-		console.log(this.gpgpu.variables.particles.material.uniforms.uTime.value)
 		Object.values(this.gpgpu.variables).forEach(variable => {
 			if(variable.material.uniforms.uTime) variable.material.uniforms.uTime.value = this.webgl.$time.elapsed / 1000
 			if(variable.material.uniforms.uDeltaTime) variable.material.uniforms.uDeltaTime.value = this.webgl.$time.dt / 1000
 			// if(variable.material.uniforms.uPercentRange) variable.material.uniforms.uPercentRange.value += 0.04
 		})
 
-		this.tweens.forEach(tween => tween.update(this.webgl.$time.dt / 1000))
 		this.gpgpu.computation.compute()
 	}
 }

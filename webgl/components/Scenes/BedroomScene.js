@@ -91,13 +91,32 @@ export default class BedroomScene extends BaseScene {
 
 		// Override $theatre
 		this.$theatre = useTheatre(this, 'Bedroom-Scene');
+		this.webgl.$theatre.sheets.watchImmediate(this.plugToSheets.bind(this))
 	}
 
+	async plugToSheets() {
+		const project = this.webgl.$theatre.get('Transition-Memories')
+		if(!project) return
+		const sheet = project.$sheets.transition
+
+		sheet.$float('Bedroom transparency', { value: this.sprite.material.opacity }, { range: [0, 1]  }).onChange((v)=> {
+			this.sprite.material.opacity = v
+		})
+
+		sheet.$target('camera', this.webgl.$povCamera.target, {
+			nudgeMultiplier: 0.01,
+		});
+	}
 	async enter() {
 		this.log('enter');
 		// this.camera = this.add(this.webgl.$povCamera);
 		this.webgl.$povCamera.onSceneSwitch(this);
 		this.camera = this.add(this.webgl.$povCamera);
+
+			// position: [ -8.34592, 2.24563, 7.35179 ],
+			// quaternion: [  ],
+			// euler: [ -0.2965, -0.8265, -0.2210 ],
+
 		// this.camera.setPosition([-8.67082, 0, 4.88725]);
 	}
 
@@ -127,7 +146,7 @@ export default class BedroomScene extends BaseScene {
 
 	update() {
 		this.camera.base.getWorldDirection( this.cameraDirection );
-		this.sprite.position.copy( this.camera.base.position ).add( this.cameraDirection.multiplyScalar( 1.1 ))
-		this.opacityTween?.update(this.webgl.$time.dt / 1000);
+		this.sprite.position.copy( this.camera.base.position ).add( this.cameraDirection.multiplyScalar( 1 ))
+		// this.opacityTween?.update(this.webgl.$time.dt / 1000);
 	}
 }

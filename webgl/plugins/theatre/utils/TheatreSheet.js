@@ -128,7 +128,6 @@ export class TheatreSheet {
 	}
 
 	play(args = {}) {
-		return
 		return this.sequence.play(args);
 	}
 
