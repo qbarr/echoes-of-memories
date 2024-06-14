@@ -9,7 +9,7 @@ export default class BedroomScene extends BaseScene {
 	init() {
 		const { $assets } = this.webgl;
 		const datas = scenesDatas.bedroom;
-		const scene = $assets.objects['chambre-model'].scene;
+		const scene = $assets.objects.bedroom.model.scene;
 
 		// Get raycastables and remove them from the scene
 		const _raycastables = [];
@@ -25,7 +25,7 @@ export default class BedroomScene extends BaseScene {
 		});
 		// scene.remove(..._raycastables);
 
-		const textures = $assets.textures['chambre'];
+		const textures = $assets.textures['bedroom'];
 
 		// Get textures for meshes
 		const _textures = {

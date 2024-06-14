@@ -51,15 +51,21 @@ export default {
 
 	boat: glb('scenes/boat'),
 
-	// Chambre
-	'chambre-model': glb('scenes/chambre/model'),
-	'chambre/textures': ktx2('scenes/chambre/*', { flipY: false }),
-
 	// Clinique
-	'clinique-model': glb('scenes/clinique/model'),
+	'clinique/model': glb('scenes/clinique/model'),
 	'clinique/textures': ktx2('scenes/clinique/*', { flipY: false }),
 	'clinique/audios': audio('audios/clinique/*'),
 	'clinique/subtitles': json('subtitles/clinique/*', { type: 'subtitles' }),
+
+	// TV Room
+	// 'tv-room-model': glb('scenes/tv-room/model'),
+	// 'tv-room/textures': ktx2('scenes/tv-room/*', { flipY: false }),
+	'tv-room/subtitles': json('subtitles/tv-room/*', { type: 'subtitles' }),
+
+	// Bedroom
+	'bedroom/model': glb('scenes/bedroom/model'),
+	'bedroom/textures': ktx2('scenes/bedroom/*', { flipY: false }),
+	'bedroom/subtitles': json('subtitles/bedroom/*', { type: 'subtitles' }),
 
 	// Audios
 	positions: audio('audios/positional/*', { type: 'positional' }),

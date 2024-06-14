@@ -10,7 +10,7 @@ export default class CliniqueScene extends BaseScene {
 	init() {
 		const { $assets } = this.webgl;
 
-		const scene = $assets.objects['clinique-model'].scene;
+		const scene = $assets.objects.clinique.model.scene;
 		const textures = $assets.textures['clinique'];
 
 		const _textures = {
@@ -60,6 +60,11 @@ export default class CliniqueScene extends BaseScene {
 		_objects.forEach((o) => this.add(o));
 		this.base.add(scene);
 
+		console.log(this.webgl.$statesMachine);
+		this.$statesMachine = this.webgl.$statesMachine.create('Clinique', {
+			filter: 'clinique',
+		});
+
 		// this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 		this.createSheets();
 	}
@@ -73,10 +78,7 @@ export default class CliniqueScene extends BaseScene {
 
 		// const audio = (await import('/assets/audios/clinique/intro.wav')).default;
 		const audio = this.webgl.$assets.audios['clinique']['intro'];
-		console.log(audio);
 		await introSheet.attachAudio(audio, 1);
-		const d = new Object3D();
-		introSheet.$target('camera', d, { nudgeMultiplier: 0.01 });
 		introSheet.$compound('Camera', {
 			position: { value: this.webgl.$povCamera.target },
 			lat: this.webgl.$povCamera.controls.lat,
@@ -85,26 +87,14 @@ export default class CliniqueScene extends BaseScene {
 		introSheet.$composer(['global', 'bokeh', 'lut', 'bloom', 'rgbShift']);
 	}
 
-	async launch() {
-		console.log('launch');
-		const introSheet = this.webgl.$theatre.get('Clinique-Camera').getSheet('intro');
-		console.log(introSheet);
-		await introSheet.play();
-		console.log('intro played');
-
-		this.log('TUTO INTERACTION');
-		// interactions enabled
-	}
-
 	async enter() {
-		this.log('enter');
 		this.webgl.$povCamera.onSceneSwitch(this);
 		this.camera = this.add(this.webgl.$povCamera);
 		// this.camera.setPosition([-2.71175, 3.13109, 4.39142]);
 
 		/// #if !__DEBUG__
 		setTimeout(() => {
-			// this.launch();
+			this.$statesMachine.set('intro');
 		}, 1000);
 		/// #endif
 	}

@@ -25,6 +25,7 @@ export class Subtitles extends BaseComponent {
 			align: 'center',
 			color: new Color(0xffd700).offsetHSL(0, 0.3, 0.1),
 		});
+		this.setColor = this.text.setColor.bind(this.text);
 		this.text.position.set(0, -23, 0);
 
 		const backgroundGeo = new PlaneGeometry(1, 3, 16, 16);

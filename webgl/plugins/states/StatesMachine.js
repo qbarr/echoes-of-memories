@@ -34,6 +34,8 @@ export class StatesMachine {
 		this._currentState.watch(this.handleStateChange.bind(this));
 
 		states.forEach((state) => this.registerState(state));
+
+		this.set = this.setState;
 	}
 
 	get currentState() {

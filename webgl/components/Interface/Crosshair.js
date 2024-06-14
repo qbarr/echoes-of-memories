@@ -3,7 +3,7 @@ import { AdditiveBlending, Mesh, PlaneGeometry, ShaderMaterial } from 'three';
 
 export class Crosshair extends BaseComponent {
 	init() {
-		const icon = this.webgl.$assets.textures.interface;
+		const icon = this.webgl.$assets.textures.interface.eye;
 		const ratio = icon.image.width / icon.image.height;
 		const planeGeo = new PlaneGeometry(1, 1);
 		const planeMat = new ShaderMaterial({

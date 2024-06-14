@@ -1,6 +1,6 @@
 import BaseComponent from '#webgl/core/BaseComponent';
 import { varsToUniforms } from '#webgl/utils/varToUniform';
-import { Mesh, Object3D, Vector2, Vector3 } from 'three';
+import { Color, Mesh, Object3D, Vector2, Vector3 } from 'three';
 import MSDFTextGeometry from '../MSDFTextGeometry';
 import MSDFTextMaterial, { uniforms } from '../MSDFTextMaterial';
 
@@ -88,6 +88,11 @@ export default class MSDFTextMesh extends BaseComponent {
 
 		this.base = new Object3D();
 		this.base.add(text);
+	}
+
+	setColor(color) {
+		if (typeof color === 'string') color = new Color(color);
+		this.mat.uniforms.uColor.value = color;
 	}
 
 	edit(content) {

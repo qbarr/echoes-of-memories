@@ -52,14 +52,12 @@ export function subtitlesPlugin() {
 
 					try {
 						// creating .VTT file
-						await generate({
-							..._VTT_EXPORT_OPTION,
-							inputFile: audio,
-						});
+						await generate({ ..._VTT_EXPORT_OPTION, inputFile: audio });
 
-						const vtt = fs.readFileSync(path.join(_EXPORT_PATH, `/${$.name}.vtt`), {
-							encoding: 'utf-8',
-						});
+						const vtt = fs.readFileSync(
+							path.join(_EXPORT_PATH, `/${$.name}.vtt`),
+							{ encoding: 'utf-8' },
+						);
 						const json = await vttToJson(vtt);
 
 						// removing words from JSON conversion
@@ -74,7 +72,9 @@ export function subtitlesPlugin() {
 						);
 
 						// removing .VTT file
-						await fsPromises.unlink(path.join(_EXPORT_PATH, `/${$.name}.vtt`));
+						await fsPromises.unlink(
+							path.join(_EXPORT_PATH, `/${$.name}.vtt`),
+						);
 
 						console.log(`[Subtitles plugin] ${$.name}.json file generated`);
 					} catch (e) {

@@ -46,7 +46,7 @@ export default ({ mode = 'development' }) => {
 			hotShadersRollupPlugin(isDevelopment),
 			timestampPlugin(),
 			manifestPlugin(),
-			subtitlesPlugin(),
+			// subtitlesPlugin(),
 			ViteRestart({
 				restart: ['./assets/**/*'],
 				reload: ['./public/**/*'],

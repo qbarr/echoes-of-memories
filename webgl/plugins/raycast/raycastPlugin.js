@@ -71,12 +71,12 @@ export function raycastPlugin(webgl) {
 		const ev = shouldListen ? 'addEventListener' : 'removeEventListener';
 
 		$el[ev]('touchstart', onDown, opts);
-		// $el[ev]('touchmove', onMove, opts);
+		$el[ev]('touchmove', onMove, opts);
 		$el[ev]('touchend', onUp, opts);
 		$el[ev]('touchcancel', onUp, opts);
 
 		$el[ev]('mousedown', onDown, opts);
-		// $el[ev]('mousemove', onMove, opts);
+		$el[ev]('mousemove', onMove, opts);
 		$el[ev]('mouseup', onUp, opts);
 		$el[ev]('mouseleave', onUp, opts);
 
@@ -264,7 +264,8 @@ export function raycastPlugin(webgl) {
 	}
 
 	function update() {
-		const scene = webgl.$scenes.current;
+		const { $app, $scenes } = webgl;
+		const scene = $app.$store.isPaused ? $scenes.ui.component : $scenes.current;
 		if (!scenes.has(scene?.id)) return;
 
 		const { objects, rawList } = scenes.get(scene.id);
@@ -282,7 +283,7 @@ export function raycastPlugin(webgl) {
 		if (idDebugCamera) return;
 		/// #endif
 
-		pointer.position.set(0, 0);
+		!$app.$store.isPaused && pointer.position.set(0, 0);
 
 		// Update raycaster globally
 		if (!cameraNeedsUpdate) {

@@ -1,0 +1,28 @@
+[
+	{
+		"start": 500,
+		"end": 2000,
+		"content": "Ben"
+	},
+	{
+		"end": 3000,
+		"content": "Ben!"
+	},
+	{
+		"end": 4000,
+		"content": "Réveille-toi!"
+	},
+	{
+		"start": 6500,
+		"end": 7000,
+		"content": "Où-"
+	},
+	{
+		"end": 8700,
+		"content": "Où est-ce que je suis ?"
+	},
+	{
+		"end": 10000,
+		"content": "Qu'est-ce que'il se passe ?"
+	}
+]

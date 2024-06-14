@@ -17,7 +17,7 @@ export default class UIScene extends BaseScene {
 	init() {
 		this.camera = this.add(UICamera);
 
-		this.add(Subtitles);
+		this.subtitles = this.add(Subtitles);
 		this.crosshair = this.add(Crosshair);
 	}
 

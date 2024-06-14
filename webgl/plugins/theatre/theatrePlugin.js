@@ -1,12 +1,12 @@
 import { deferredPromise } from '#utils/async/deferredPromise.js';
-import { w } from '#utils/state/index.js';
+import { w } from '#utils/state';
 import { storageSync } from '#utils/state/signalExtStorageSync.js';
-import { getWebGL } from '#webgl/core/index.js';
+import { getWebGL } from '#webgl/core';
 
 import { TheatreProject } from './utils/TheatreProject';
 
 /// #if __DEBUG__
-/// #code import studio from '@theatre/studio';
+import studio from '@theatre/studio';
 studio.initialize({
 	persistenceKey: 'EOM:theatrejs',
 	usePersistentStorage: true,
@@ -136,7 +136,11 @@ export function theatrePlugin(webgl) {
 		gui.addBinding(studioActive, 'value', { label: 'Enable Studio' });
 
 		studioActive.watchImmediate((v) => {
-			v ? studio.ui.restore() : studio.ui.hide();
+			const { ui, __experimental } = studio;
+			v ? ui.restore() : ui.hide();
+			v
+				? __experimental.__experimental_enablePlayPauseKeyboardShortcut()
+				: __experimental.__experimental_disblePlayPauseKeyboardShortcut();
 		});
 
 		const warningGui = gui.addFolder({ title: '⚠️ Warning' });
@@ -161,7 +165,7 @@ export function theatrePlugin(webgl) {
 	function addProjectToGui(ClassProject) {
 		const projectGui = projectsGui.addFolder({
 			title: '📽️ ' + ClassProject.id,
-			bg: folderUid % 2 ? '#202020' : '#101010',
+			bg: folderUid % 2 ? '#573538' : '#101010',
 		});
 		Object.assign(ClassProject, { $gui: projectGui });
 		ClassProject.devtools?.();

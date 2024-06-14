@@ -151,12 +151,12 @@ export function assetsPlugin(webgl) {
 		const p = [];
 		const files = Object.values(file.files);
 		for (const f of files) {
-			let [subID, id] = fileID.split('/');
-			if (files.length > 1) id = f.origin.id ?? id;
-			if (id === undefined) {
-				id = subID;
-				subID = null;
-			}
+			// let [subID, id] = fileID.split('/');
+			let id = fileID.split('/').pop();
+			let subID = fileID.split('/').shift();
+			// if (files.length > 1)
+			id = f.origin.id ?? id;
+			if (subID === id) subID = null;
 
 			const options = { ...opts, ...file.opts };
 			const url = f.url;

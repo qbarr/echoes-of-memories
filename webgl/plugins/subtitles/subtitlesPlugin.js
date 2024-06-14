@@ -1,5 +1,7 @@
 import { w } from '#utils/state';
 
+const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
+
 export function subtitlesPlugin(webgl, opts = {}) {
 	const tempSubtitles = []; // Array of objects, like so: [{ start: 0, end: 1, part: 'text' }]
 	const currentPart = w(null);
@@ -8,7 +10,6 @@ export function subtitlesPlugin(webgl, opts = {}) {
 		tempSubtitles,
 		currentPart,
 		flush,
-		setCurrent,
 		getContentByTime,
 	};
 
@@ -16,21 +17,82 @@ export function subtitlesPlugin(webgl, opts = {}) {
 		attachSubtitlesToSounds();
 	}
 
-	function getSubtitle({ id }) {
-		const { subtitles } = webgl.$assets.data;
+	function addDatasToSubtitles(subtitles) {
+		subtitles = deepCopy(subtitles);
+		// let current = null;
+		// let subtitlesRange = [subtitles[0].start, subtitles[subtitles.length - 1].end];
 
-		return subtitles[id];
-	}
+		// capitalize all content
+		// remove accents
+		// set start time to the last end time if not set
+		for (let i = 0; i < subtitles.length; i++) {
+			// const prev = subtitles[i - 1] ?? { end: 0 };
+			// const current = subtitles[i];
+			subtitles[i] = subtitles[i]
+				.toUpperCase()
+				.normalize('NFD')
+				.replace(/[\u0300-\u036f]/g, '');
 
-	function setCurrent({ id }) {
-		const { subtitles } = webgl.$assets.data;
-
-		try {
-			api.tempSubtitles = JSON.parse(JSON.stringify(subtitles[id]));
-		} catch (e) {
-			console.error('Error while updating current file', e);
+			// current.start = current.start ?? prev.end;
 		}
-		console.log('[Subtitles plugin] setCurrent');
+
+		// const contents = subtitles.map((s) => s.content);
+
+		// const s = {
+		// 	get contents() {
+		// 		return subtitles;
+		// 	},
+		// 	get onlyContents() {
+		// 		return contents;
+		// 	},
+		// 	datas: {
+		// 		get current() {
+		// 			return current;
+		// 		},
+		// 		subtitlesRange,
+		// 	},
+		// };
+
+		// Object.defineProperty(s, 'onChange', {
+		// 	value: () => {},
+		// 	writable: true,
+		// 	enumerable: false,
+		// });
+
+		// const updateBySheetProgress = ({ time }) => {
+		// 	if (
+		// 		(subtitlesRange[0] > time || subtitlesRange[1] < time) &&
+		// 		current !== null
+		// 	) {
+		// 		current = null;
+		// 		s.onChange(null);
+		// 		return;
+		// 	}
+
+		// 	for (let i = 0; i < subtitles.length; i++) {
+		// 		const subtitle = subtitles[i];
+		// 		if (current?.end >= time) continue;
+
+		// 		if (current?.end < time && time < subtitle.start) {
+		// 			current = null;
+		// 			s.onChange(null);
+		// 		}
+
+		// 		if (current === subtitle) continue;
+		// 		if (time >= subtitle.start && time <= subtitle.end) {
+		// 			current = subtitle;
+		// 			s.onChange(subtitle);
+		// 		}
+		// 	}
+		// };
+
+		// Object.defineProperty(s, 'updateBySheetProgress', {
+		// 	value: updateBySheetProgress,
+		// 	writable: false,
+		// 	enumerable: false,
+		// });
+
+		return { content: subtitles };
 	}
 
 	function attachSubtitlesToSounds() {
@@ -40,18 +102,7 @@ export function subtitlesPlugin(webgl, opts = {}) {
 			const jsons = data[k];
 			for (const kk in jsons) {
 				if (!audios[k][kk]) continue;
-				const s = jsons[kk];
-
-				// capitalize all content
-				// remove accents
-				for (let i = 0; i < s.length; i++) {
-					s[i].content = s[i].content
-						.toUpperCase()
-						.normalize('NFD')
-						.replace(/[\u0300-\u036f]/g, '');
-
-					s[i].start = s[i].start ?? s[i - 1].end;
-				}
+				const s = addDatasToSubtitles(jsons[kk]);
 				audios[k][kk].subtitles = s;
 			}
 		}

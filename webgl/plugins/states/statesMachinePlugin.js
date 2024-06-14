@@ -20,24 +20,23 @@ export function statesMachinePlugin(webgl) {
 	const symbols = {};
 
 	const api = {
-		raw: ALL_STATES,
+		states: ALL_STATES,
 		get statesMachines() {
 			return statesMachines;
 		},
+		create,
+		get,
 	};
 
-	function create(id, statesFilter = null) {
+	function create(id, { filter = null } = {}) {
 		if (!id) return;
 
-		const states = Object.values(ALL_STATES[statesFilter ?? id] ?? {});
-		console.log(states);
+		const states = Object.values(ALL_STATES[filter ?? id] ?? {});
 
 		const sm = new StatesMachine(id, { states });
 		const symbol = Symbol(id);
 		statesMachines.set(symbol, sm);
 		symbols[id] = symbol;
-
-		console.log(`StatesMachine • ${id} created`, sm);
 
 		return sm;
 	}
@@ -50,11 +49,19 @@ export function statesMachinePlugin(webgl) {
 		statesMachines.forEach((sm) => sm.update());
 	}
 
+	/// #if __DEBUG__
+	function devtool() {
+		const gui = webgl.$gui.addFolder({ title: 'States Machines' });
+	}
+	/// #endif
+
 	return {
 		install: (webgl) => {
 			webgl.$statesMachine = api;
 			webgl.$states = api.statesMachines;
 			webgl.$getState = get;
+
+			__DEBUG__ && devtool();
 		},
 		load: () => {
 			webgl.$hooks.beforeStart.watchOnce(() =>

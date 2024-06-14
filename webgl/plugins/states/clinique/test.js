@@ -1,11 +1,11 @@
-function enter() {
+async function enter({ machine }) {
 	this.log('enter');
-}
-function leave() {
-	this.log('leave');
 }
 function update() {
 	this.log('update');
+}
+async function leave({ machine }) {
+	this.log('leave');
 }
 
 export default { enter, leave, update };

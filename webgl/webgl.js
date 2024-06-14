@@ -43,15 +43,22 @@ export default createWebgl({
 			load('luts'),
 
 			load('boat'),
-			// Chambre
-			load('chambre-model'),
-			load('chambre/textures'),
 
 			// Clinique
-			load('clinique-model'),
+			load('clinique/model'),
 			load('clinique/textures'),
 			load('clinique/audios'),
 			load('clinique/subtitles'),
+
+			// TV Room
+			// load('tv-room-model'),
+			// load('tv-room/textures'),
+			load('tv-room/subtitles'),
+
+			// Bedroom
+			load('bedroom/model'),
+			load('bedroom/textures'),
+			load('bedroom/subtitles'),
 
 			// Theatre
 			load('theatre'),
@@ -77,6 +84,6 @@ export default createWebgl({
 	render() {
 		const { $composer, $gpgpu } = webgl;
 		$composer.render();
-		$gpgpu.render()
+		$gpgpu.render();
 	},
 });

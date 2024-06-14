@@ -1,17 +1,5 @@
 [
-	{
-		"start": 1,
-		"end": 2,
-		"content": "Ben"
-	},
-	{
-		"start": 2.5,
-		"end": 3.5,
-		"content": "Ben!"
-	},
-	{
-		"start": 4.5,
-		"end": 6,
-		"content": "Révelle-toi!"
-	}
+	"Mon “enregistrement de souvenirs“ ?",
+	"Il parle de la cassette ?",
+	"C'est quoi ce délire encore ?!"
 ]
