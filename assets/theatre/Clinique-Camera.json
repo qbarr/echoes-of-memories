@@ -1098,20 +1098,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": 0.5253164556962023
-                  },
-                  {
-                    "id": "Dnu4V3rnHJ",
-                    "position": 5.067,
-                    "connectedRight": true,
-                    "handles": [
-                      0.5,
-                      1,
-                      0.5,
-                      0
-                    ],
-                    "type": "bezier",
-                    "value": 0.5253164556962023
+                    "value": 0.6898734177215191
                   },
                   {
                     "id": "FdK_alCjZd",
@@ -2118,6 +2105,201 @@
               "[\"lat\"]": "FxPMGoGXUl",
               "[\"lon\"]": "9Zn7ZztPZ8"
             }
+          },
+          "subtitles": {
+            "trackData": {
+              "ZuFmPBx3kx": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "subtitles:[\"value\"]",
+                "keyframes": [
+                  {
+                    "id": "KV9O0jIORt",
+                    "position": 0,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "__NONE__"
+                  },
+                  {
+                    "id": "7QguLKuewL",
+                    "position": 0.633,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "BEN"
+                  },
+                  {
+                    "id": "p6IEtdvQra",
+                    "position": 2,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "BEN!"
+                  },
+                  {
+                    "id": "CtMs2YUiHe",
+                    "position": 3.133,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "REVEILLE-TOI!"
+                  },
+                  {
+                    "id": "0wEo4Nbj1H",
+                    "position": 4.133,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "__NONE__"
+                  },
+                  {
+                    "id": "kQTAi4ugsB",
+                    "position": 6.2,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "OU-"
+                  },
+                  {
+                    "id": "jogJX0obPO",
+                    "position": 7.4,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "OU EST-CE QUE JE SUIS ?"
+                  },
+                  {
+                    "id": "h7yrVA8Cul",
+                    "position": 8.9,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "QU'EST-CE QUE'IL SE PASSE ?"
+                  },
+                  {
+                    "id": "FX2XMp--jB",
+                    "position": 10.467,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "__NONE__"
+                  },
+                  {
+                    "id": "5ZNqTZHgL5",
+                    "position": 16.633,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "OK OK, ON SE CALME"
+                  },
+                  {
+                    "id": "nN9_PohGuK",
+                    "position": 20.433,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "HE HO! IL Y A QUELQU'UN ?"
+                  },
+                  {
+                    "id": "LYTFHIr39i",
+                    "position": 23.467,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "IL N'Y A PERSONNE... C'EST BIZARRE"
+                  },
+                  {
+                    "id": "r7K_tW3UBy",
+                    "position": 26.333,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "__NONE__"
+                  },
+                  {
+                    "id": "ZX8PsMQGm2",
+                    "position": 28.1,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "TIENS, C'EST QUOI CA ?"
+                  }
+                ]
+              }
+            },
+            "trackIdByPropPath": {
+              "[\"value\"]": "ZuFmPBx3kx"
+            }
           }
         }
       }
@@ -2125,6 +2307,7 @@
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "bcIo-3L9pfx0FYK-",
     "J3Rrgpe-rNA5qcjF",
     "fRfAKpSYiF4jEMpY",
     "1PfRb0N8oa_2sIgT",
