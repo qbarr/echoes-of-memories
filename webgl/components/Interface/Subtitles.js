@@ -50,7 +50,7 @@ export class Subtitles extends BaseComponent {
 		});
 		this.hide();
 
-		watch($subtitles.currentPart, this.onPartChange.bind(this));
+		$subtitles.currentPart.watch(this.onPartChange.bind(this));
 	}
 
 	// Pas super propre, à revoir aussi lol
@@ -89,7 +89,7 @@ export class Subtitles extends BaseComponent {
 	onPartChange(part) {
 		this.hide();
 
-		if (part.length) {
+		if (part?.length) {
 			this.text.edit(part);
 			this.matchPartWidthToBackgroundSize({
 				part,

@@ -71,7 +71,9 @@ export default class CliniqueScene extends BaseScene {
 
 		const introSheet = cameraProject.getSheet('intro');
 
-		const audio = (await import('/assets/audios/clinique/intro.wav')).default;
+		// const audio = (await import('/assets/audios/clinique/intro.wav')).default;
+		const audio = this.webgl.$assets.audios['clinique']['intro'];
+		console.log(audio);
 		await introSheet.attachAudio(audio, 1);
 		const d = new Object3D();
 		introSheet.$target('camera', d, { nudgeMultiplier: 0.01 });

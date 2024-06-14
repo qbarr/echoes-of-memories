@@ -13,6 +13,7 @@ import { TheatreVec2 } from './TheatreVec2';
 import { TheatreVec3 } from './TheatreVec3';
 
 const NOOP = () => {};
+const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
 
 let uid = 0;
 const hash = (str) => {
@@ -28,6 +29,9 @@ const hash = (str) => {
 
 export class TheatreSheet {
 	constructor(id, { project }) {
+		this.$webgl = project.$webgl;
+		this.$app = project.$app;
+
 		this._id = id;
 		this._project = project;
 		this._objects = new Map();
@@ -37,6 +41,7 @@ export class TheatreSheet {
 		this._active = false;
 
 		this._duration = 0;
+		this._subtitles = [];
 
 		this.$float = (name, value, opts = {}) => new TheatreFloat(name, value, opts, this); // prettier-ignore
 		this.$bool = (name, value, opts = {}) => new TheatreBool(name, value, opts, this);
@@ -54,6 +59,7 @@ export class TheatreSheet {
 		});
 		onChange(this.sequence.pointer.position, (pos) => {
 			this._progress.set((pos * 1000) / this._duration);
+			this.updateSubtitles(pos);
 		});
 
 		// Just to make it easier to use
@@ -111,19 +117,57 @@ export class TheatreSheet {
 		loweredGain.connect(audioContext.destination);
 	}
 
-	async _attachAudioBuffer({ audioBuffer, audioContext, destinationNode } = {}) {
+	async _attachAudioBuffer({ buffer, context, destination } = {}) {
+		const destinationNode = destination || context.destination;
 		await this.sequence.attachAudio({
-			source: audioBuffer,
-			audioContext,
+			source: buffer,
+			audioContext: context,
 			destinationNode,
 		});
 	}
 
 	async attachAudio(source, volume = 1) {
+		if (source.subtitles) {
+			this.registerSubtitles(source.subtitles);
+			source = source.audio;
+		}
+
 		if (typeof source === 'string') {
 			return this._attachAudioSource(source, volume);
 		} else {
 			return this._attachAudioBuffer(source);
+		}
+	}
+
+	registerSubtitles(subtitles) {
+		this._subtitles = deepCopy(subtitles);
+		this._lastSubtitle = null;
+		this._subtitlesRange = [subtitles[0].start, subtitles[subtitles.length - 1].end];
+	}
+
+	updateSubtitles(time) {
+		const subtitles = this._subtitles;
+		if (subtitles.length === 0) return;
+
+		if (this._subtitlesRange[0] > time || this._subtitlesRange[1] < time) {
+			this._lastSubtitle = null;
+			this.$webgl.$subtitles.currentPart.set(null);
+			return;
+		}
+
+		for (let i = 0; i < subtitles.length; i++) {
+			const subtitle = subtitles[i];
+			if (this._lastSubtitle?.end >= time) continue;
+			if (this._lastSubtitle?.end < time && time < subtitle.start) {
+				this._lastSubtitle = null;
+				this.$webgl.$subtitles.currentPart.set(null);
+			}
+			if (this._lastSubtitle === subtitle) continue;
+			if (time >= subtitle.start && time <= subtitle.end) {
+				// console.log('subtitle', subtitle.content);
+				this._lastSubtitle = subtitle;
+				this.$webgl.$subtitles.currentPart.set(subtitle.content);
+			}
 		}
 	}
 

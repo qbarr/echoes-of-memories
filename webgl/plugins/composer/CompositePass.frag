@@ -15,7 +15,7 @@ uniform float uDitherStrength;
 uniform float uStripesScale;
 
 // Vignette
-uniform vec4 uVignette;
+// uniform vec2 uVignette;
 
 // Passes
 uniform sampler2D tMap;
@@ -67,23 +67,17 @@ void main() {
 	stripes += step(size, uv.y); // top
 	stripes -= step(1. - size, uv.y); // bottom
 
-	// Vignette
-	vec2 uvVignette = uv;
-	uvVignette -= 0.5;
-	uvVignette *= 4.;
-	uvVignette += 0.5;
-
-	vec2 position = uvVignette - 0.5;
-	position *= 1. + uVignette.zw * 4.;
-	position.y *= pow(abs(position.y), uVignette.w);
+	// Eye Vignette
+	// vec2 uvVignette = uv;
+	// vec2 position = uvVignette - 0.5;
+	// position.y *= pow(abs(position.y), -uVignette.y);
 	// float len = length(position);
-
-	float len = sin(uvVignette.y) * (0.5 + smoothstep(0.5, 1., uVignette.w));
-	float vignetteProgress = 1. - uVignette.x;
-	float vignette = smoothstep(vignetteProgress, vignetteProgress - 0.5, len);
-	vignette = smoothstep(0.0, uVignette.y, vignette);
-	vignette = pow(vignette, uVignette.y);
-	gl_FragColor.rgb *= vignette;
+	// float vignetteProgress = 1. - uVignette.x;
+	// float vignette = smoothstep(vignetteProgress, vignetteProgress - 0.5, len);
+	// float vignetteSmoothness = 0.323;
+	// vignette = smoothstep(0.0, vignetteSmoothness, vignette);
+	// vignette = pow(vignette, vignetteSmoothness);
+	// gl_FragColor.rgb *= vignette;
 
 	gl_FragColor.rgb *= stripes;
 	gl_FragColor.a = 1.0;

@@ -1,4 +1,5 @@
 import { cache } from '#utils/files/cache';
+import { webgl } from '#webgl/core/index.js';
 
 import { Audio, AudioLoader, PositionalAudio } from 'three';
 
@@ -6,12 +7,12 @@ const audioLoader = new AudioLoader();
 
 export default function loadAudio(url, opts) {
 	return new Promise((resolve, reject) => {
-		const { onLoad, type, audioListener } = opts;
+		const { onLoad, type = null } = opts;
+
+		const listener = opts.audioListener || webgl.$audioListener;
 
 		const sound =
-			type == 'positional'
-				? new PositionalAudio(opts.audioListener)
-				: new Audio(opts.audioListener);
+			type == 'positional' ? new PositionalAudio(listener) : new Audio(listener);
 
 		audioLoader.load(
 			url,

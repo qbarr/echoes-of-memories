@@ -275,7 +275,7 @@ export function raycastPlugin(webgl) {
 		const cameraComponent = scene.component._cam.current;
 		const cam = cameraComponent.cam;
 		if (!cam) return;
-		if (!cameraComponent.$pointerLocked) return;
+		// if (!cameraComponent.$pointerLocked) return;
 
 		/// #if __DEBUG__
 		const idDebugCamera = !!scene.component._cam.forced;

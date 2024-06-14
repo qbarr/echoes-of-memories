@@ -8,6 +8,7 @@ uniform float uAmount;
 uniform float uAngle;
 uniform float uDarkness;
 varying vec2 vUv;
+uniform vec2 uVignette;
 
 void main() {
 	float depth = texture2D(tDepth, vUv).r;
@@ -25,6 +26,17 @@ void main() {
 
 	vec4 outlines = texture2D(tSketchLines, vUv);
 	gl_FragColor.rgb += outlines.rgb;
+
+	vec2 uvVignette = vUv;
+	vec2 position = uvVignette - 0.5;
+	position.y *= pow(abs(position.y), -uVignette.y);
+	float len = length(position);
+	float vignetteProgress = 1. - uVignette.x;
+	float vignette = smoothstep(vignetteProgress, vignetteProgress - 0.5, len);
+	float vignetteSmoothness = 0.323;
+	vignette = smoothstep(0.0, vignetteSmoothness, vignette);
+	vignette = pow(vignette, vignetteSmoothness);
+	gl_FragColor.rgb *= vignette;
 
 	vec4 interfaceColor = texture2D(tInterface, vUv);
 	interfaceColor.rgb *= 1.2;

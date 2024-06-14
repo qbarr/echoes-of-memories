@@ -24,17 +24,16 @@ export default createWebgl({
 	},
 
 	async preload() {
-		const { load } = webgl.$assets;
-		const { $sounds, $theatre } = webgl;
-
-		webgl.$audioListener = new AudioListener();
+		const { $theatre, $assets } = webgl;
+		const { load } = $assets;
 
 		await Promise.all([
 			load('msdf-font/VCR_OSD_MONO'),
 
 			// Sounds
-			load('sound/positions'),
-			load('sound/vocals'),
+			load('positions'),
+			load('vocals'),
+			load('sfx'),
 
 			// Subtitles
 			load('subtitles'),
@@ -51,6 +50,8 @@ export default createWebgl({
 			// Clinique
 			load('clinique-model'),
 			load('clinique/textures'),
+			load('clinique/audios'),
+			load('clinique/subtitles'),
 
 			// Theatre
 			load('theatre'),

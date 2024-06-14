@@ -1,18 +1,18 @@
 import createFilter from '#webgl/utils/createFilter';
-import { MeshNormalMaterial, Vector2, Vector4 } from 'three';
+import { Vector2, Vector3 } from 'three';
 
 import { prng } from '#utils/maths/prng.js';
 import { w } from '#utils/state';
 
-import CompositePass from './CompositePass.frag?hotshader';
 import { useBokehPass } from './Bokeh';
 import { useCRTPass } from './CRT';
+import CompositePass from './CompositePass.frag?hotshader';
 import { useDepthPass } from './Depth';
 import { useLutPass } from './LUT';
 import { useRGBShiftPass } from './RGBShift';
+import { useSelectiveNormalPass } from './SelectiveNormal';
 import { useSketchLinesPass } from './SketchLines';
 import { useUnrealBloomPass } from './UnrealBloom';
-import { useSelectiveNormalPass } from './SelectiveNormal';
 
 const rf = prng.randomFloat;
 
@@ -66,7 +66,7 @@ export function composerPlugin(webgl) {
 			uStripesScale: { value: 0 },
 
 			// Vignette
-			uVignette: { value: new Vector4(0, 0.5, 0, 0) },
+			uVignette: { value: new Vector2(0.171, 0) },
 			// uDitherStrength: { value: 1 },
 			uDitherStrength: { value: 0.2 },
 		});

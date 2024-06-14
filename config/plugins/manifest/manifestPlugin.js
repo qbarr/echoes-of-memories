@@ -88,6 +88,8 @@ const Parser = {
 		const files = fs
 			.readdirSync(folder)
 			.map((file) => {
+				if (file === '.DS_Store') return null;
+
 				const [id, ext] = file.split('.');
 				const url = '/assets/' + path.join(folder, file).split('assets/').pop();
 				const filename = `${id}.${ext}`;

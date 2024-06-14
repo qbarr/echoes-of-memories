@@ -50,6 +50,7 @@ export default {
 	luts: lut('luts/*.[png|jpg]'),
 
 	boat: glb('scenes/boat'),
+
 	// Chambre
 	'chambre-model': glb('scenes/chambre/model'),
 	'chambre/textures': ktx2('scenes/chambre/*', { flipY: false }),
@@ -57,11 +58,13 @@ export default {
 	// Clinique
 	'clinique-model': glb('scenes/clinique/model'),
 	'clinique/textures': ktx2('scenes/clinique/*', { flipY: false }),
+	'clinique/audios': audio('audios/clinique/*'),
+	'clinique/subtitles': json('subtitles/clinique/*', { type: 'subtitles' }),
 
 	// Audios
-	'sound/positions': audio('audios/positional/*', { type: 'positional' }),
-	'sound/vocals': audio('audios/vocals/*', { type: 'vocal' }),
-	'sound/sfx': audio('audios/sfx/*', { type: 'sfx' }),
+	positions: audio('audios/positional/*', { type: 'positional' }),
+	vocals: audio('audios/vocals/*', { type: 'vocal' }),
+	sfx: audio('audios/sfx/*', { type: 'sfx' }),
 
 	// Subtitles
 	subtitles: json('subtitles/export/*', { type: 'subtitles' }),

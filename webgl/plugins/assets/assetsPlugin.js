@@ -25,7 +25,7 @@ export function assetsPlugin(webgl) {
 
 	let pgen = null;
 	const data = {};
-	const sounds = {};
+	const audios = {};
 	const subtitles = {};
 	const fonts = {};
 	const luts = {};
@@ -53,7 +53,7 @@ export function assetsPlugin(webgl) {
 		luts,
 		textures,
 		objects,
-		sounds,
+		audios,
 		pgen,
 		materials,
 		geometries,
@@ -138,12 +138,10 @@ export function assetsPlugin(webgl) {
 	}
 
 	function execLoad(fileID, { onLoad, bypassManifest = false, ...opts } = {}) {
-		// console.log('execLoad', fileID);
 		const { $preloader, $manifest } = webgl.$app;
 		const task = !$preloader.finished ? $preloader.task : NOOP;
 
 		let file = $manifest.get(fileID);
-		// console.log('EXECUTE LOAD', file, file.type);
 		if (!file && !bypassManifest) return;
 		if (!file.files) return;
 
@@ -291,19 +289,21 @@ export function assetsPlugin(webgl) {
 		});
 	}
 
-	async function audioTask({ id, url, opts }) {
+	async function audioTask({ subID, id, url, opts }) {
 		return files.load(url, {
 			type: opts.type,
-			audioListener: webgl.$audioListener,
 			onLoad: (audio) => {
-				sounds[id] = {
-					audio,
-				};
+				if (subID) {
+					audios[subID] = audios[subID] ?? {};
+					audios[subID][id] = { audio };
+				} else {
+					audios[id] = { audio };
+				}
 			},
 		});
 	}
 
-	async function spritesheetTask({ id, file, ...opts }) {
+	async function spritesheetTask({ subID, id, file, ...opts }) {
 		const textureID = 'spritesheet-' + id;
 
 		const [json] = await Promise.all([

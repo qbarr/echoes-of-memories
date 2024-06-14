@@ -16,7 +16,7 @@ export class BaseSoundObject extends BaseComponent {
 	}
 
 	attachSound() {
-		const sound = this.webgl.$sounds.getSound({ id: 'dsi' });
+		const sound = this.webgl.$audio.getSound({ id: 'dsi' });
 		console.log('ATTACH SOUND', sound);
 		this.base.add(sound);
 

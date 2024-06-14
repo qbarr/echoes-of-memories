@@ -1,8 +1,8 @@
-import { ref } from 'vue';
+import { w } from '#utils/state';
 
 export function subtitlesPlugin(webgl, opts = {}) {
 	const tempSubtitles = []; // Array of objects, like so: [{ start: 0, end: 1, part: 'text' }]
-	const currentPart = ref(null);
+	const currentPart = w(null);
 
 	const api = {
 		tempSubtitles,
@@ -11,12 +11,6 @@ export function subtitlesPlugin(webgl, opts = {}) {
 		setCurrent,
 		getContentByTime,
 	};
-
-	/// #if __DEBUG__
-	function devTools() {
-		const $gui = webgl.$app.$gui;
-	}
-	/// #endif
 
 	function init() {
 		attachSubtitlesToSounds();
@@ -40,19 +34,34 @@ export function subtitlesPlugin(webgl, opts = {}) {
 	}
 
 	function attachSubtitlesToSounds() {
-		const { sounds } = webgl.$assets;
-		const { subtitles } = webgl.$assets.data;
+		const { audios, data } = webgl.$assets;
+		for (const k in data) {
+			if (!audios[k]) continue;
+			const jsons = data[k];
+			for (const kk in jsons) {
+				if (!audios[k][kk]) continue;
+				const s = jsons[kk];
 
-		for (const file in subtitles) {
-			if (sounds[file]) sounds[file].subtitles = subtitles[file];
+				// capitalize all content
+				// remove accents
+				for (let i = 0; i < s.length; i++) {
+					s[i].content = s[i].content
+						.toUpperCase()
+						.normalize('NFD')
+						.replace(/[\u0300-\u036f]/g, '');
+
+					s[i].start = s[i].start ?? s[i - 1].end;
+				}
+				audios[k][kk].subtitles = s;
+			}
 		}
 	}
 
-	function getContentByTime({ id, time }) {
+	function getContentByTime({ time }) {
 		for (let i = 0; i < api.tempSubtitles.length; i++) {
 			const subtitle = api.tempSubtitles[i];
 			if (time >= subtitle.start && time <= subtitle.end) {
-				api.currentPart.value = subtitle.part;
+				api.currentPart.set(subtitle.part);
 				api.tempSubtitles.splice(i, 1);
 			}
 		}
@@ -60,7 +69,7 @@ export function subtitlesPlugin(webgl, opts = {}) {
 
 	function flush() {
 		api.tempSubtitles = [];
-		api.currentPart.value = '';
+		api.currentPart.set(null);
 	}
 
 	return {
@@ -68,10 +77,7 @@ export function subtitlesPlugin(webgl, opts = {}) {
 			webgl.$subtitles = api;
 		},
 		load: () => {
-			__DEBUG__ && devTools();
-
-			const { afterStart } = webgl.$hooks;
-			afterStart.watchOnce(init);
+			webgl.$hooks.afterPreload.watchOnce(init);
 		},
 	};
 }
