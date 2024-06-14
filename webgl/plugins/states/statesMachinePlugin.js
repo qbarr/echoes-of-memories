@@ -58,8 +58,11 @@ export function statesMachinePlugin(webgl) {
 	return {
 		install: (webgl) => {
 			webgl.$statesMachine = api;
-			webgl.$states = api.statesMachines;
-			webgl.$getState = get;
+
+			const sm = create('Experience', { filter: 'experience' });
+			webgl.$xpSM = sm;
+			webgl.$xpStatesMachine = sm;
+			webgl.$setState = (id) => sm.setState(id);
 
 			__DEBUG__ && devtool();
 		},

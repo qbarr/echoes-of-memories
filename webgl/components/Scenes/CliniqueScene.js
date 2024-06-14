@@ -60,10 +60,8 @@ export default class CliniqueScene extends BaseScene {
 		_objects.forEach((o) => this.add(o));
 		this.base.add(scene);
 
-		console.log(this.webgl.$statesMachine);
-		this.$statesMachine = this.webgl.$statesMachine.create('Clinique', {
-			filter: 'clinique',
-		});
+		// console.log(this.webgl.$statesMachine);
+		// this.$statesMachine = this.webgl.$statesMachine.create('Clinique', { filter: 'clinique' });
 
 		// this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 		this.createSheets();
@@ -94,7 +92,7 @@ export default class CliniqueScene extends BaseScene {
 
 		/// #if !__DEBUG__
 		setTimeout(() => {
-			this.$statesMachine.set('intro');
+			this.webgl.$setState('intro');
 		}, 1000);
 		/// #endif
 	}

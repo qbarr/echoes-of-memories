@@ -4,7 +4,7 @@ import { w } from '#utils/state';
 import { getApp } from '#app/core';
 import { getWebGL } from '#webgl/core';
 
-let elapsedTime = 0;
+let elapsedTime = 0; // elapsed time since the last state change
 const NOOP = (v) => v;
 
 export const createState = (id, state = {}) => ({
