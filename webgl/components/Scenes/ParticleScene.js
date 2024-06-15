@@ -1,13 +1,43 @@
 import BaseScene from '#webgl/core/BaseScene.js';
-import { Mesh, MeshBasicMaterial, Uniform, Vector2, Vector3 } from 'three';
+import { MathUtils, Mesh, MeshBasicMaterial, Quaternion, Uniform, Vector2, Vector3 } from 'three';
 import { MainCamera } from '../Cameras/MainCamera';
 import { Particles } from '../Particles/Particles';
+import { raftween } from '#utils/anim/raftween.js';
+import { damp, dampPrecise } from '#utils/maths/map.js';
 
 const startValues = {
 	uFlowFieldFrequency: { value: 0.21 },
 	uFlowFieldStrength: { value: 2.3 },
 	uFlowFieldInfluence: { value: 1.0 }
 }
+
+const coords = {
+	from: {
+		position: [ 0.048841, -0.365468, 3.647662 ],
+		quaternion: [ 0.07773159, 0.00986795, -0.00076942, 0.99692519 ]
+	},
+	to: {
+		position: [],
+		quaternion: []
+	},
+	toMobile: {
+		position: [ -0.04504, -0.33404, 1.55420 ],
+		quaternion: [ 0.102611, -0.007329, 0.000756, 0.994694 ],
+		fov: 70.00
+	},
+	toDesktop: {
+		position: [ -0.01613, -0.43987, 1.41361 ],
+		quaternion: [ 0.144932, 0.001752, -0.000257, 0.989440 ],
+		fov: 55.00
+	}
+};
+
+for (let k in coords) {
+	const c = coords[ k ];
+	c.position = new Vector3(...c.position);
+	c.quaternion = new Quaternion(...c.quaternion);
+}
+
 
 const lerp = (a, b, n) => a + n * (b - a)
 
@@ -18,9 +48,6 @@ export default class ParticleScene extends BaseScene {
 		const { $assets, $gpgpu } = this.webgl;
 		const boat  = $assets.objects['boat'].scene;
 		boat.position.set(0, 0, 0);
-		this.camera = this.add(MainCamera);
-		this.camera.base.lookAt(0, 0, 0);
-		this.camera.base.position.z = 10;
 
 		this.particles = this.add(Particles, {
 			scene: boat,
@@ -29,40 +56,60 @@ export default class ParticleScene extends BaseScene {
 		})
 
 		this.mouse = new Vector2(0, 0)
-		this.offset = new Vector3(0, 0, 0);
-		// window.addEventListener('mousemove', this.onMouseMove.bind(this));
+		this.offset = 0
+
+		window.addEventListener('mousemove', this.onMouseMove.bind(this));
+
+	}
+
+	afterInit() {
+
+	}
+
+	initState() {
+		this.state = {};
+		this.state.mouseInfluence = 0;
+		this.state.dollyProgress = 0;
+		this.state.mouseX = 0;
+		this.state.mouseY = 0;
+		this.state.ang = 0;
+
+		this.state.camTween = raftween({
+			target: this.state,
+			property: 'dollyProgress',
+			easing: 'inOutExpo',
+			from: 0,
+			to: 1,
+			duration: 1600
+		});
 	}
 
 	onMouseMove(e) {
 		this.mouse.x = e.clientX / window.innerWidth * 2 - 1;
 		this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-		// this.offset.x = this.lerp(this.offset.x, -this.mouse.x * .06, .05)
-		// this.rotateAroundPoint(this.camera.base, new Vector3(0), new Vector3(0, 1, 0), 0.01, false)
-
 	}
 
 	async enter() {
-		// this.introAnimate();
-		// this.webgl.$povCamera.onSceneSwitch(this);
-		// this.camera = this.webgl.$povCamera;
-		// this.camera.add(MainCamera);
+		// this.initState()
+		this.webgl.$povCamera.onSceneSwitch(this);
+		// this.camera.base.position.set(11, 4, 10)
+		// this.cam era = this.add(MainCamera)
+
+		// this.camera.base.position.set(22, 1, 14)
+		// this.camera.base.lookAt(0, 0, 0)
+		// this.camera.controls.lon = { value: 236 }
+		// this.camera.
+		// {
+		// 	position: [ 9.45749, 3.10490, 8.09413 ],
+		// 	quaternion: [ -0.140791, 0.424356, 0.066982, 0.891971 ],
+		// 	euler: [ -0.4741, 0.8303, 0.3621 ],
+		//    fov: 75.00
+		// }
+		setTimeout(() => {
+
+			this.webgl.$setState('flashback')
+		}, 0);
 	}
-
-	// introAnimate() {
-	// 	const { $composer } = this.webgl;
-	// 	$composer.$crt.unglitch()
-	// 	$composer.$lut.animateSaturation(1)
-
-	// 	setTimeout(() => {
-	// 		this.particles.gpgpu.uniformsTo({
-	// 			uFlowFieldFrequency: new Uniform(0.5),
-	// 			uFlowFieldInfluence: new Uniform(0.4),
-	// 			uFlowFieldStrength: new Uniform(2),
-	// 		})
-	// 	}, 3000);
-
-	// }
-
 
 	rotateAroundPoint (obj, point, axis, theta, pointIsWorld = false) {
 		if (pointIsWorld) obj.parent?.localToWorld(obj.position) // compensate for world coordinate
@@ -77,26 +124,65 @@ export default class ParticleScene extends BaseScene {
 	}
 
 	update() {
-		const { $time } = this.webgl;
+		return
+		// const { $time } = this.webgl;
+		// this.offsetX = lerp(this.offset, Math.sign(this.mouse.x) * .001, .01)
+		// this.rotateAroundPoint(this.camera.base, new Vector3(0), new Vector3(0, 1, 0), this.offsetX, false)
+		// this.camera.base.lookAt(new Vector3(0))
+		const sdt = this.webgl.$time.stableDt;
+		const t = this.webgl.$time.elapsed;
 
-		// this.offset.x = 15 * Math.sin( $time.elapsed * 0.0001 );
-		// this.offset.y = 2 * Math.sin( $time.elapsed * 0.0001 );
-		// this.offset.z = 10 * Math.cos( $time.elapsed * 0.0001 );
-		// this.offset.y = 5
-		// this.camera.base.position.copy(this.particles.base.position).add(this.offset);
-		// this.camera.base.lookAt(0, 0, 0);
-		// this.particles.base.rotation.x = Math.sin($time.elapsed * 0.0005) * 0.1;
-		// this.particles.base.rotation.y = Math.cos($time.elapsed * 0.0002) * 0.03;
-		// this.particles.base.rotation.z = Math.sin($time.elapsed * 0.0005) * 0.05;
+		if (
+			this.state.mouseInfluence <= 0
+			&& this.state.dollyProgress >= 1
+			&& !this.state.needsUpdate
+		) return;
 
-		// this.camera.base.position.x = this.cameraBasePosition.x + (this.mouse.x * .3);
-		// this.camera.base.position.y = this.cameraBasePosition.y + (this.mouse.y * .3);
-		// this.camera.base.lookAt(0, 0, 0);
+		this.state.mouseInfluence = dampPrecise(
+			this.state.mouseInfluence,
+			0.3,
+			0.1,
+			sdt,
+			0.001
+		);
 
+		if (this.state.camTween) this.state.camTween.update(sdt);
 
+		if (this.state.mouseInfluence > 0) {
+			const m = this.state.mouseInfluence * this.state.dollyProgress;
+			const tx = this.mouse.x * m;
+			const ty = this.mouse.y * m;
+			const px = this.state.mouseX;
 
-		// this.camera.base.lookAt(0, 0, 0);
-		// this.camera.base.rotation.y = this.mouse.y * 0.01;
+			// damped mouse influence
+			let x = this.state.mouseX = damp(this.state.mouseX, tx, 0.1, sdt);
+			let y = this.state.mouseY = damp(this.state.mouseY, ty, 0.1, sdt);
+			console.log(x, y)
+			// wiggle effect
+			// const tm = 2.2;
+			// const am = 0.25 * m;
+			// x += Math.sin(t * 0.001 * tm) * 0.02 * am;
+			// y += Math.cos(t * 0.001 * tm) * 0.3 * am;
+
+			this.state.ang = damp(this.state.ang, (x - px) * 0.5, 0.2, sdt);
+			this.camera.base.position.x += x * 0.03;
+			this.camera.base.position.y += y * 0.02;
+			this.camera.base.rotation.y += x * 0.03;
+			this.camera.base.rotateZ(this.state.ang);
+			// this.camera.base.lookAt(0, 0, 0);
+		}
+		// this.camera.base.position.lerpVectors(
+		// 	coords.from.position,
+		// 	coords.to.position,
+		// 	this.state.dollyProgress
+		// );
+
+		// this.camera.base.quaternion.slerpQuaternions(
+		// 	coords.from.quaternion,
+		// 	coords.to.quaternion,
+		// 	this.state.dollyProgress
+		// );
+
 	}
 
 

@@ -17,7 +17,8 @@ void main()
 	if(distanceToCenter < 0.5)
 		discard;
 	vec3 color = vColor;
-    gl_FragColor = vec4(vec3(color * 2.), 1.);
+    gl_FragColor = vec4(vec3(color * 2.), distanceToCenter);
+	gl_FragColor = vec4(color, 1.);
 
     #include <tonemapping_fragment>
     #include <colorspace_fragment>

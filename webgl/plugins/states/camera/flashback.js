@@ -1,13 +1,13 @@
 async function enter({ machine }) {
-	const { $scenes } = this.$webgl;
+	const { $scenes, $povCamera: camera } = this.$webgl;
 
 	const uiScene = $scenes.ui.component;
 	const { crosshair } = uiScene;
 
-	// camera.
 	crosshair.setVisible(false);
-	// camera.controls.goFlashbackMode();
+	camera.controls.goFlashBackMode();
 }
+
 function update() {}
 async function leave({ machine }) {}
 

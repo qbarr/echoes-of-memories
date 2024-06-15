@@ -115,5 +115,7 @@ export default class BedroomScene extends BaseScene {
 	// 	})
 	// }
 
-	update() {}
+	update() {
+
+	}
 }

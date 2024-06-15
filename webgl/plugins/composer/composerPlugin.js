@@ -43,6 +43,14 @@ export function composerPlugin(webgl) {
 		removeOutline: (obj) => api.$selectiveNormal.remove(obj),
 	};
 
+	function createSheets() {
+		const project = webgl.$theatre.getProject('Transition-Memories');
+		const sheetIn = project.getSheet('transitionIn');
+		const sheetOut = project.getSheet('transitionOut');
+		sheetIn.$composer(['global', 'lut', 'crt']);
+		sheetOut.$composer(['global', 'lut', 'crt']);
+	}
+
 	function init() {
 		const { $assets, $threeRenderer, $renderer, $hooks, $fbo } = webgl;
 		const { textures } = $assets;
@@ -202,6 +210,8 @@ export function composerPlugin(webgl) {
 		},
 		load: () => {
 			webgl.$hooks.afterStart.watchOnce(init);
+			webgl.$hooks.afterStart.watchOnce(createSheets)
+
 		},
 	};
 }

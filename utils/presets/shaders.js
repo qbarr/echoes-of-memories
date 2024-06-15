@@ -9,10 +9,12 @@ import emissiveParticleFragment from '#webgl/shaders/particle/emissive/emissiveP
 
 // GPGPU
 import base from '#webgl/shaders/gpgpu/particles.glsl'
+import other from '#webgl/shaders/gpgpu/other.glsl'
 
 export const presetsShader = {
 	gpgpu: {
-		base
+		base,
+		other
 	},
 	particles: {
 		base: {

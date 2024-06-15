@@ -46,21 +46,9 @@ export function gpgpuPlugin(webgl) {
 		return gpgpu;
 	}
 
-
-	function precomputeParticles(model, shader, timePauseCompute) {
-		const boat  = webgl.$assets.objects['boat'].scene;
-		const instance = boat.children[0].geometry.clone();
-		const baseGeometry = {};
-		baseGeometry.instance = instance;
-		baseGeometry.count = baseGeometry.instance.attributes.position.count;
-		const gpgpu = create(baseGeometry.count);
-		gpgpu.instance = baseGeometry.instance;
-		//dirty mais nsm
-
-		gpgpu.attributesTexture = gpgpu.computation.createTexture();
-		gpgpu.baseModelTexture = gpgpu.computation.createTexture();
-
+	function fillPositionTexture(gpgpu, baseGeometry) {
 		const additiveDustParticles = 100;
+		gpgpu.attributesTexture = gpgpu.computation.createTexture();
 
 		for (let i = 0; i < gpgpu.count; i++) {
 			const i3 = i * 3;
@@ -87,6 +75,21 @@ export function gpgpuPlugin(webgl) {
 			gpgpu.attributesTexture.image.data[i4 + 2] = 0;
 			gpgpu.attributesTexture.image.data[i4 + 3] = 0;
 		}
+	}
+
+
+	function precomputeParticles(model, shader, timePauseCompute) {
+		const boat  = webgl.$assets.objects['boat'].scene;
+		const instance = boat.children[0].geometry.clone();
+		const baseGeometry = {};
+		baseGeometry.instance = instance;
+		baseGeometry.count = baseGeometry.instance.attributes.position.count;
+		const gpgpu = create(baseGeometry.count);
+		gpgpu.instance = baseGeometry.instance;
+		//dirty mais nsm
+
+		fillPositionTexture(gpgpu, baseGeometry)
+		gpgpu.otherTexture = gpgpu.computation.createTexture();
 
 		//
 		gpgpu.timePauseCompute = timePauseCompute;
@@ -102,17 +105,27 @@ export function gpgpuPlugin(webgl) {
 			shader,
 			gpgpu.baseTexture,
 		);
-		gpgpu.computation.setVariableDependencies(gpgpu.variables.particles, [ gpgpu.variables.particles]);
+		gpgpu.variables.other = gpgpu.computation.addVariable(
+			'uOther',
+			shader,
+			gpgpu.otherTexture,
+		)
+		gpgpu.computation.setVariableDependencies(gpgpu.variables.particles, [ gpgpu.variables.particles, gpgpu.variables.other ]);
+		gpgpu.computation.setVariableDependencies(gpgpu.variables.other, [ gpgpu.variables.particles ]);
 		// Uniforms
 		gpgpu.variables.particles.material.uniforms = {
 			uTime: new Uniform(0),
 			uDeltaTime: new Uniform(0),
 			uBase: new Uniform(gpgpu.baseTexture),
+			uData : new Uniform(gpgpu.otherTexture),
 			uAttributes: new Uniform(gpgpu.attributesTexture),
-			uBaseModel: new Uniform(gpgpu.baseModelTexture),
 			uFlowFieldFrequency: { value: 0.21 },
 			uFlowFieldStrength: { value: 2.3 },
 			uFlowFieldInfluence: { value: 1.0 },
+
+			uFlowFieldFrequency2: { value: 0.5 },
+			uFlowFieldStrength2: { value: 2 },
+			uFlowFieldInfluence2: { value: 1.5 },
 			uPercentRange: new Uniform(0),
 			uIsMorphing: new Uniform(false),
 			//  uPaint = new Uniform(paintTexture),
@@ -134,9 +147,9 @@ export function gpgpuPlugin(webgl) {
 		precomputeParticles(instance, presetsShader.gpgpu.base, 15);
 	}
 
-	function getByScene(scene) {
-		// return computedsGPGPU.get().find(gpgpu => gpgpu.scene === 'boat');
-	}
+	// function getByScene(scene) {
+	// 	// return computedsGPGPU.get().find(gpgpu => gpgpu.scene === 'boat');
+	// }
 
 	function render() {
 		computedsGPGPU.get().forEach(gpgpu => {
@@ -148,11 +161,12 @@ export function gpgpuPlugin(webgl) {
 	}
 
 	function createSheets(gpgpu) {
-		const project = webgl.$theatre.get('Transition-Memories');
+		const project = webgl.$theatre.get('Flashback');
 		if (!project) return;
-		const sheet = project.getSheet('transition');
+		const sheet = project.getSheet('flashbackIn');
 		const uniforms = gpgpu.variables.particles.material.uniforms;
-		sheet.$group('Particles', [
+
+		sheet.$group('Uniforms', [
 			{
 				id: 'uniforms',
 				child: {
@@ -175,19 +189,11 @@ export function gpgpuPlugin(webgl) {
 				},
 			}
 		]);
-
-		sheet.$composer(['global', 'lut', 'crt']);
-		sheet.$bool(
-			'switchScene',
-			{ value: false },
-			{
-				onUpdate: (bool) => {
-					if (bool) webgl.$scenes.switch('particle');
-					else webgl.$scenes.switch('bedroom');
-				},
-			},
-		);
-		sheet.$bool('forceCompute' , gpgpu.forceCompute)
+		sheet.$compound('Camera', {
+			position: { value: webgl.$povCamera.target },
+			lat: webgl.$povCamera.controls.lat,
+			lon: webgl.$povCamera.controls.lon,
+		});
 	}
 
 	return {

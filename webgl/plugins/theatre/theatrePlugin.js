@@ -41,11 +41,8 @@ const PROJECTS_LIST = [
 	'Bedroom',
 	'TV-Room',
 	'Global',
-	// 'Clinique-Scene',
-	// 'Clinique-Camera',
-	// 'Bedroom-Scene',
-	// 'Bedroom-Camera',
 	'Transition-Memories',
+	'Flashback'
 ];
 
 function getProject(id) {

@@ -1,6 +1,6 @@
 import { presetsShader } from '#utils/presets/shaders.js';
 import BaseComponent from '#webgl/core/BaseComponent.js';
-import { BufferAttribute, BufferGeometry, Points, ShaderMaterial, Uniform, Vector2 } from 'three';
+import { AdditiveBlending, BufferAttribute, BufferGeometry, Points, ShaderMaterial, Uniform, Vector2 } from 'three';
 
 export class Particles extends BaseComponent {
 	init() {
@@ -66,6 +66,7 @@ export class Particles extends BaseComponent {
 				...propsUniforms
 			},
 			transparent: true,
+			blending: AdditiveBlending,
 			// depthWrite: false,
 			// depthTest: false,
 			...propsMaterial

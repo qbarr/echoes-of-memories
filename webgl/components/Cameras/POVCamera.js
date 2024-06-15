@@ -157,7 +157,9 @@ export class POVCamera extends BaseCamera {
 		this.wobble.update(elapsed * this.wobble_intentisty.value);
 		this.base.position.damp(this.target, 0.2, dt);
 
-		this.controls?.update();
+		if (this.controls) {
+			this.controls.update();
+		}
 
 		this.cam.updateProjectionMatrix();
 	}

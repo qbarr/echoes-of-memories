@@ -8,10 +8,12 @@ attribute float aSize;
 
 varying vec3 vColor;
 varying vec2 vUv;
-// varying float vZpos;
+varying float vZpos;
 
 void main()
 {
+
+
     vec4 particle = texture(uParticlesTexture, aParticlesUv);
 
     // Final position
@@ -20,16 +22,17 @@ void main()
     vec4 projectedPosition = projectionMatrix * viewPosition;
     gl_Position = projectedPosition;
 
+    // Varyings
+    vUv = uv;
+    vColor = aColor;
+    float depthSize = mix(0.3, 1., projectedPosition.z * .1);
+
+
     // Point size
     float sizeIn = smoothstep(0.0, 0.1, particle.a);
     float sizeOut = 1.0 - smoothstep(0.7, 1.0, particle.a);
     float size = min(sizeIn, sizeOut);
 
-    gl_PointSize = 2. * size * aSize * uSize * uResolution.y;
+    gl_PointSize = 2. * size * aSize * uSize * uResolution.y * depthSize;
     gl_PointSize *= (1.0 / - viewPosition.z);
-
-    // Varyings
-	vUv = uv;
-	// vZpos = projectedPosition.z / projectedPosition.w;
-    vColor = aColor;
 }
