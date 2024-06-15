@@ -8,7 +8,9 @@ export default class CliniqueScene extends BaseScene {
 	mixins = ['debugCamera'];
 
 	init() {
-		const { $assets } = this.webgl;
+		const { $assets, $theatre } = this.webgl;
+
+		this.$project = $theatre.get('Clinique');
 
 		const scene = $assets.objects.clinique.model.scene;
 		const textures = $assets.textures['clinique'];
@@ -42,6 +44,7 @@ export default class CliniqueScene extends BaseScene {
 		});
 
 		const _objects = [];
+		this.interactiveObjects = {};
 
 		scene.traverse((child) => {
 			if (!child.isMesh || !child.material) return;
@@ -52,6 +55,7 @@ export default class CliniqueScene extends BaseScene {
 				child.material = texture;
 				if (Class) {
 					const obj = new Class({ name: child.name, mesh: child });
+					this.interactiveObjects[child.name] = obj;
 					_objects.push(obj);
 				}
 			}
@@ -63,20 +67,14 @@ export default class CliniqueScene extends BaseScene {
 		// console.log(this.webgl.$statesMachine);
 		// this.$statesMachine = this.webgl.$statesMachine.create('Clinique', { filter: 'clinique' });
 
-		// this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
-		this.createSheets();
+		this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
+		// this.createSheets();
 	}
 
 	async createSheets() {
-		const { clinique, bedroom } = scenesDatas;
-
-		const cameraProject = this.webgl.$theatre.get('Clinique-Camera');
-
-		const introSheet = cameraProject.getSheet('intro');
-
-		// const audio = (await import('/assets/audios/clinique/intro.wav')).default;
-		const audio = this.webgl.$assets.audios['clinique']['intro'];
-		await introSheet.attachAudio(audio, 1);
+		const introSheet = this.$project.getSheet('intro');
+		// const audio = this.webgl.$assets.audios['clinique']['intro'];
+		await introSheet.attachAudio('clinique/intro');
 		introSheet.$compound('Camera', {
 			position: { value: this.webgl.$povCamera.target },
 			lat: this.webgl.$povCamera.controls.lat,
@@ -93,7 +91,7 @@ export default class CliniqueScene extends BaseScene {
 		/// #if !__DEBUG__
 		setTimeout(() => {
 			this.webgl.$setState('intro');
-		}, 1000);
+		}, 2000);
 		/// #endif
 	}
 

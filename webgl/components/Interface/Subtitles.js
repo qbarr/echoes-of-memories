@@ -14,6 +14,7 @@ export class Subtitles extends BaseComponent {
 		this.base = new Object3D();
 		this.baseScale = 0.5;
 		this.default_part = 'LOREM IPSUM DOLOR SIT AMET. ';
+		this.caps = props.caps ?? true;
 	}
 
 	init() {
@@ -91,6 +92,12 @@ export class Subtitles extends BaseComponent {
 		this.hide();
 
 		if (part?.length) {
+			if (this.caps) {
+				part = part
+					.toUpperCase()
+					.normalize('NFD')
+					.replace(/[\u0300-\u036f]/g, '');
+			}
 			this.text.edit(part);
 			this.matchPartWidthToBackgroundSize({
 				part,

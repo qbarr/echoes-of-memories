@@ -25,16 +25,16 @@ export function subtitlesPlugin(webgl, opts = {}) {
 		// capitalize all content
 		// remove accents
 		// set start time to the last end time if not set
-		for (let i = 0; i < subtitles.length; i++) {
-			// const prev = subtitles[i - 1] ?? { end: 0 };
-			// const current = subtitles[i];
-			subtitles[i] = subtitles[i]
-				.toUpperCase()
-				.normalize('NFD')
-				.replace(/[\u0300-\u036f]/g, '');
+		// for (let i = 0; i < subtitles.length; i++) {
+		// const prev = subtitles[i - 1] ?? { end: 0 };
+		// const current = subtitles[i];
+		// subtitles[i] = subtitles[i]
+		// 	.toUpperCase()
+		// 	.normalize('NFD')
+		// 	.replace(/[\u0300-\u036f]/g, '');
 
-			// current.start = current.start ?? prev.end;
-		}
+		// current.start = current.start ?? prev.end;
+		// }
 
 		// const contents = subtitles.map((s) => s.content);
 

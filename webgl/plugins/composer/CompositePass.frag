@@ -12,7 +12,7 @@ uniform vec2 uDitherOffset;
 uniform float uDitherStrength;
 
 // Black stripes
-uniform float uStripesScale;
+// uniform float uStripesScale;
 
 // Vignette
 // uniform vec2 uVignette;
@@ -61,11 +61,11 @@ void main() {
 
 	gl_FragColor = tex;
 
-	// Black stripe
-	float stripes = 0.;
-	float size = uStripesScale * 0.5;
-	stripes += step(size, uv.y); // top
-	stripes -= step(1. - size, uv.y); // bottom
+	// // Black stripe
+	// float stripes = 0.;
+	// float size = uStripesScale * 0.5;
+	// stripes += step(size, uv.y); // top
+	// stripes -= step(1. - size, uv.y); // bottom
 
 	// Eye Vignette
 	// vec2 uvVignette = uv;
@@ -79,6 +79,6 @@ void main() {
 	// vignette = pow(vignette, vignetteSmoothness);
 	// gl_FragColor.rgb *= vignette;
 
-	gl_FragColor.rgb *= stripes;
+	// gl_FragColor.rgb *= stripes;
 	gl_FragColor.a = 1.0;
 }

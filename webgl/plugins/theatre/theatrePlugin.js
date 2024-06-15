@@ -6,7 +6,7 @@ import { getWebGL } from '#webgl/core';
 import { TheatreProject } from './utils/TheatreProject';
 
 /// #if __DEBUG__
-import studio from '@theatre/studio';
+/// #code import studio from '@theatre/studio';
 studio.initialize({
 	persistenceKey: 'EOM:theatrejs',
 	usePersistentStorage: true,
@@ -37,10 +37,14 @@ studio.onSelectionChange(([selection]) => {
 /// #endif
 
 const PROJECTS_LIST = [
-	'Clinique-Scene',
-	'Clinique-Camera',
-	'Bedroom-Scene',
-	'Bedroom-Camera',
+	'Clinique',
+	'Bedroom',
+	'TV-Room',
+	'Global',
+	// 'Clinique-Scene',
+	// 'Clinique-Camera',
+	// 'Bedroom-Scene',
+	// 'Bedroom-Camera',
 	'Transition-Memories',
 ];
 

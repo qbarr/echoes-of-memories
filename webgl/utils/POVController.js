@@ -63,7 +63,8 @@ function POVController(
 	const horizontalMin = -Math.PI / 2;
 	const horizontalMax = Math.PI / 2;
 
-	const introSheet = webgl.$theatre.getProject('Clinique-Camera').getSheet('intro');
+	const $project = webgl.$theatre.getProject('Clinique');
+	const introSheet = $project.getSheet('intro');
 
 	const FREE_CAM = w(false);
 	const CINEAMATIC_CAM = w(true);

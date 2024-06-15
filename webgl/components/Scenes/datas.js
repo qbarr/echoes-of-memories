@@ -1,5 +1,7 @@
-import { Guitare } from '../Objects/Guitare';
 import { BaseInteractiveObject } from '../Objects/base/BaseInteractiveObject';
+
+import { Guitare } from '../Objects/bedroom';
+import { Cassette, Door } from '../Objects/clinique';
 
 const datas = {
 	bedroom: {
@@ -15,18 +17,18 @@ const datas = {
 		livres: { class: BaseInteractiveObject },
 		peinture: { class: BaseInteractiveObject },
 		couverture: { class: BaseInteractiveObject },
-		posters: { class: null },
-		drowninggirl: { class: null },
+		posters: {},
+		drowninggirl: {},
 	},
 	clinique: {
 		pipesacrak: {},
 		murs: {},
 		tableaux: {},
 		computers: {},
-		cassette: { class: BaseInteractiveObject },
+		cassette: { class: Cassette },
 		contrat: { class: BaseInteractiveObject },
 		ecrans: {},
-		porte: { class: BaseInteractiveObject },
+		porte: { class: Door },
 	},
 };
 

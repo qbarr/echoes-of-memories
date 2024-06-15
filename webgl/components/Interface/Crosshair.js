@@ -52,4 +52,8 @@ export class Crosshair extends BaseComponent {
 	toggleHover(hover) {
 		this.base.material.uniforms.uType.value = hover ? 0 : 1;
 	}
+
+	setVisible(visible) {
+		this.base.visible = visible;
+	}
 }

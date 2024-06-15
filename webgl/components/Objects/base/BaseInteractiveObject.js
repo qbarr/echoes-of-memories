@@ -10,9 +10,12 @@ export class BaseInteractiveObject extends BaseComponent {
 		super(props);
 		this.isInteractiveObject = true;
 		this.base = new Object3D();
+		this.$composables = {};
 	}
 
 	beforeInit() {
+		this.$project = this.scene.$project;
+
 		const m = (this.mesh = this.props.mesh);
 		this.raycastMesh = this.props?.data?.raycastMesh ?? m.clone();
 
@@ -29,9 +32,12 @@ export class BaseInteractiveObject extends BaseComponent {
 		const { padding } = useInteraction(this);
 		this.padding = padding;
 
-		const { threshold } = useProximity(this);
-		this.threshold = threshold;
+		// const { threshold } = useProximity(this);
+		// this.threshold = threshold;
+		this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 	}
+
+	createSheets() {}
 
 	onClick() {
 		this.log('INTERACTION:click');
@@ -44,18 +50,20 @@ export class BaseInteractiveObject extends BaseComponent {
 		this.log('INTERACTION:hold');
 	}
 	onEnter() {
-		this.webgl.$hooks.afterFrame.watchOnce(() => {
+		const { $hooks, $composer, $scenes, $povCamera } = this.webgl;
+		$hooks.afterFrame.watchOnce(() => {
 			this.log('INTERACTION:enter');
-			this.webgl.$composer.addOutline(this.mesh);
-			this.webgl.$scenes.ui.component.crosshair.toggleHover(true);
-			this.webgl.$povCamera.onInteractiveEnter();
+			$composer.addOutline(this.mesh);
+			$scenes.ui.component.crosshair.toggleHover(true);
+			$povCamera.onInteractiveEnter();
 		});
 	}
 	onLeave() {
 		this.log('INTERACTION:leave');
-		this.webgl.$composer.removeOutline(this.mesh);
-		this.webgl.$scenes.ui.component.crosshair.toggleHover(false);
-		this.webgl.$povCamera.onInteractiveLeave();
+		const { $composer, $scenes, $povCamera } = this.webgl;
+		$composer.removeOutline(this.mesh);
+		$scenes.ui.component.crosshair.toggleHover(false);
+		$povCamera.onInteractiveLeave();
 	}
 
 	onEnterPerimeter() {

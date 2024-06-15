@@ -40,9 +40,10 @@ export class TheatreSheet {
 		this._symbol = Symbol(id);
 		this._progress = w(0);
 		this._active = false;
+		this._hasBeenCanceled = false;
 
 		this._duration = 0;
-		this._subtitles = null;
+		this._hasSubtitles = false;
 
 		// Just to make it easier to use
 		this.object = this._instance.object.bind(this._instance);
@@ -66,7 +67,7 @@ export class TheatreSheet {
 			const time = pos * 1000;
 			this._progress.set(time / this._duration);
 			// this.updateSubtitles(pos);
-			this._subtitles?.updateBySheetProgress({ time });
+			// this._subtitles?.updateBySheetProgress({ time });
 		});
 
 		__DEBUG__ && this.devtools();
@@ -76,9 +77,6 @@ export class TheatreSheet {
 		return this;
 	}
 
-	get progress() {
-		return this._progress.value;
-	}
 	get id() {
 		return this._id;
 	}
@@ -102,6 +100,9 @@ export class TheatreSheet {
 	}
 	get duration() {
 		return this._duration;
+	}
+	get progress() {
+		return this._progress.value;
 	}
 	get isActive() {
 		return this._active;
@@ -131,20 +132,33 @@ export class TheatreSheet {
 	}
 
 	async attachAudio(source, volume = 1) {
-		if (source.subtitles) {
-			this.$list('subtitles', source.subtitles.content).onChange((subtitle) =>
-				this.$webgl.$subtitles.currentPart.set(subtitle),
-			);
-			// this._subtitles = source.subtitles;
-			// this._subtitles.onChange = (subtitle) => {
-			// 	this.$webgl.$subtitles.currentPart.set(subtitle?.content);
-			// };
-			source = source.audio;
-		}
-
 		if (typeof source === 'string') {
-			return this._attachAudioSource(source, volume);
+			// Check if it's a path to the file
+			// Or if it's the id of the audio
+			if (source.includes('.')) {
+				return this._attachAudioSource(source, volume);
+			} else {
+				const id = source.split('/').pop();
+				let subID = source.split('/').shift();
+				if (subID === id) subID = null;
+				const { audios } = this.$webgl.$assets;
+				const audio = subID ? audios[subID][id] : audios[id];
+				return this.attachAudio(audio);
+			}
 		} else {
+			if (source.subtitles) {
+				this.$list('subtitles', source.subtitles.content).onChange((subtitle) =>
+					this.$webgl.$subtitles.currentPart.set(subtitle),
+				);
+				this._hasSubtitles = true;
+				// this._subtitles = source.subtitles;
+				// this._subtitles.onChange = (subtitle) => {
+				// 	this.$webgl.$subtitles.currentPart.set(subtitle?.content);
+				// };
+			}
+
+			source = source.audio ?? source;
+
 			return this._attachAudioBuffer(source);
 		}
 	}
@@ -193,9 +207,12 @@ export class TheatreSheet {
 
 	unlisten() {
 		this.objects.forEach((Object) => Object.unlisten());
+
+		if (this._hasSubtitles) this.$webgl.$subtitles.currentPart.set(null);
 	}
 
 	play(args = {}) {
+		this._hasBeenCanceled = false;
 		const done = this.sequence.play(args);
 		done.then(() => this.unlisten());
 		this.listen();
@@ -210,6 +227,10 @@ export class TheatreSheet {
 		this.pause();
 		this.seek(0);
 		this.unlisten();
+
+		if (this.progress < 1) {
+			this._hasBeenCanceled = true;
+		}
 	}
 
 	seek(time) {

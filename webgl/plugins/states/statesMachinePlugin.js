@@ -38,6 +38,8 @@ export function statesMachinePlugin(webgl) {
 		statesMachines.set(symbol, sm);
 		symbols[id] = symbol;
 
+		__DEBUG__ && addToGui(sm);
+
 		return sm;
 	}
 
@@ -50,8 +52,47 @@ export function statesMachinePlugin(webgl) {
 	}
 
 	/// #if __DEBUG__
+	let $gui = null;
 	function devtool() {
-		const gui = webgl.$gui.addFolder({ title: 'States Machines' });
+		$gui = webgl.$app.$gui.mainPage.addFolder({ title: '🚂 States Machines' });
+	}
+
+	let folderUid = 0;
+	function addToGui(sm) {
+		const gui = $gui.addFolder({
+			title: sm.id,
+			bg: folderUid % 2 ? '#573538' : '#101010',
+		});
+
+		const o = { name: '' };
+		const sceneMonitor = gui.addBinding(o, 'name', {
+			label: 'Current State',
+			readonly: true,
+		});
+
+		const s = [];
+		sm.states.forEach((state) => s.push({ text: state.id, value: state.id }));
+
+		const select = gui
+			.addBlade({
+				view: 'list',
+				label: 'States',
+				options: s,
+				value: sm.currentState?.id ?? null,
+			})
+			.on('change', ({ value }) => sm.set(value));
+
+		gui.addButton({ title: 'Force Reset' }).on('click', () =>
+			sm.set(sm.currentState.id, true),
+		);
+
+		sm._currentState.watchImmediate((state) => {
+			if (!state) return;
+			o.name = state.id;
+			select.value = state.id;
+		});
+
+		folderUid++;
 	}
 	/// #endif
 
@@ -59,12 +100,12 @@ export function statesMachinePlugin(webgl) {
 		install: (webgl) => {
 			webgl.$statesMachine = api;
 
+			__DEBUG__ && devtool();
+
 			const sm = create('Experience', { filter: 'experience' });
 			webgl.$xpSM = sm;
 			webgl.$xpStatesMachine = sm;
 			webgl.$setState = (id) => sm.setState(id);
-
-			__DEBUG__ && devtool();
 		},
 		load: () => {
 			webgl.$hooks.beforeStart.watchOnce(() =>

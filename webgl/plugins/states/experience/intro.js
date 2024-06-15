@@ -1,24 +1,50 @@
-async function enter({ machine }) {
-	this.log('enter');
+const p = (cb) => new Promise((r) => cb(r));
+
+async function enter({ machine, isCanceled }) {
 	const { $webgl } = this;
-	const { $theatre, $scenes } = $webgl;
+	const { $theatre, $scenes, $raycast, $povCamera: camera } = $webgl;
+
+	const scene = $scenes.clinique.component;
+	const { cassette } = scene.interactiveObjects;
 
 	const uiScene = $scenes.ui.component;
-	const Subtitles = uiScene.subtitles;
+	const { subtitles, crosshair } = uiScene;
 
-	Subtitles.setColor('white');
+	camera.$setState('cinematic');
+	subtitles.setColor('white');
+	crosshair.setVisible(false);
+	$raycast.disable();
 
-	const $project = $theatre.get('Clinique-Camera');
+	const $project = $theatre.get('Clinique');
 
 	const introSheet = $project.getSheet('intro');
 	await introSheet.play();
-	console.log('interaction cassette');
+
+	if (isCanceled()) return;
+
+	camera.$setState('tuto');
+	crosshair.setVisible(true);
+	$raycast.enable();
+
+	await p(cassette._onClick.bind(cassette));
+
+	if (isCanceled()) return;
+
+	cassette.removeInteraction();
+	await cassette.$sheet.play();
+
+	if (isCanceled()) return;
+
+	camera.$setState('free');
+	// camera free
 }
-function update() {
-	this.log('update');
-}
+function update() {}
 async function leave({ machine }) {
-	this.log('leave');
+	const { $theatre } = this.$webgl;
+
+	const $project = $theatre.get('Clinique');
+	const introSheet = $project.getSheet('intro');
+	introSheet.stop();
 }
 
 export default { enter, leave, update };

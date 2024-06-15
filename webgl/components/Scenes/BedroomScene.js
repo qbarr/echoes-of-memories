@@ -7,7 +7,10 @@ export default class BedroomScene extends BaseScene {
 	mixins = ['debugCamera'];
 
 	init() {
-		const { $assets } = this.webgl;
+		const { $assets, $theatre } = this.webgl;
+
+		this.$project = $theatre.get('Bedroom');
+
 		const datas = scenesDatas.bedroom;
 		const scene = $assets.objects.bedroom.model.scene;
 
@@ -75,14 +78,7 @@ export default class BedroomScene extends BaseScene {
 		this.createSheets();
 	}
 
-	async createSheets() {
-		const project = this.webgl.$theatre.get('Transition-Memories');
-		const sheet = project.getSheet('transition');
-
-		sheet.$target('camera', this.webgl.$povCamera.target, {
-			nudgeMultiplier: 0.01,
-		});
-	}
+	async createSheets() {}
 
 	async enter() {
 		this.log('enter');

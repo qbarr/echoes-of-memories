@@ -24,6 +24,7 @@ const surchargeMethod = (_class, id, cb, before) => {
 
 export function useInteraction(Class) {
 	let mesh = null;
+	let removeRaycast = NOOP;
 
 	const onClick = (Class.onClick ?? NOOP).bind(Class);
 	const onHold = (Class.onHold ?? NOOP).bind(Class);
@@ -56,22 +57,23 @@ export function useInteraction(Class) {
 		mesh.visible = false;
 		/// #endif
 
-		webgl.$raycast.add(mesh, {
+		removeRaycast = webgl.$raycast.add(mesh, {
 			onDown: onClick,
 			onHold: onHold,
 			onEnter: onEnter,
 			onLeave: onLeave,
 			forceVisible: true,
 			forcedScene: Class.scene,
-		});
+		}).remove;
 
 		Class.scene.base.add(mesh);
 	}
 
 	function destroy() {
 		if (!mesh) return;
-		webgl.$raycast.remove(mesh);
+		removeRaycast();
 		mesh.parent?.remove(mesh);
+		delete Class.$composables['interaction'];
 	}
 
 	/// #if __DEBUG__
@@ -101,5 +103,6 @@ export function useInteraction(Class) {
 	surchargeMethod(Class, 'beforeDestroy', destroy, true);
 	__DEBUG__ && surchargeMethod(Class, 'devtools', devtools);
 
+	Class.$composables['interaction'] = { destroy, padding };
 	return { destroy, padding };
 }

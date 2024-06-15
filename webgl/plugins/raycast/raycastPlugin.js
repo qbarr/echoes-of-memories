@@ -36,6 +36,8 @@ export function raycastPlugin(webgl) {
 
 	const raycaster = new Raycaster();
 
+	const needsUpdate = w(true);
+
 	const api = {
 		get count() {
 			const scene = webgl.$scenes.current;
@@ -52,6 +54,9 @@ export function raycastPlugin(webgl) {
 		get raycaster() {
 			return raycaster;
 		},
+
+		enable: () => needsUpdate.set(true),
+		disable: () => needsUpdate.set(false),
 
 		add,
 		remove,
@@ -98,6 +103,8 @@ export function raycastPlugin(webgl) {
 
 		// if (ev.target.closest('[prevent-drag]')) return;
 		// if (ev.target.closest('button')) return;
+
+		if (!webgl.$app.$store.pointerLocked) return;
 
 		pointer.isPressed = true;
 		pointer.justClicked = true;
@@ -230,6 +237,7 @@ export function raycastPlugin(webgl) {
 		const { objects, rawList } = scenes.get(id);
 
 		if (objects.has(object)) return;
+		opts.sceneId = id;
 		const obj = createRaycastableObject(object, opts);
 
 		objects.set(object, obj);
@@ -239,24 +247,30 @@ export function raycastPlugin(webgl) {
 			(o) => o.onBeforeSetCamera === NOOP || o.onAfterSetCamera === NOOP,
 		).length;
 
-		return { object: obj, remove: () => remove(object) };
+		return { object: obj, remove: () => remove(object, scene) };
 	}
 
-	function remove(...listObjects) {
-		for (let i = 0; i < listObjects.length; i++) {
-			const object = listObjects[i];
+	function remove(object, forcedScene = null) {
+		// for (let i = 0; i < listObjects.length; i++) {
+		// const object = listObjects[i];
 
-			const scene = webgl.$scenes.current;
-			if (!scenes.has(scene?.id)) return;
-			const { objects, rawList } = scenes.get(scene.id);
+		let scene = null;
+		if (forcedScene) scene = forcedScene;
+		else if (object.parent?.isScene) scene = object.parent;
+		else scene = object.scene ?? webgl.$getCurrentScene();
 
-			if (!objects.has(object))
-				return __DEBUG__ && console.warn(`Object ${object} not registered`);
+		const { id } = webgl.$scenes.getSceneByComponent(scene);
 
-			// Remove from objects
-			rawList.splice(rawList.indexOf(object), 1);
-			objects.delete(object);
-		}
+		if (!scenes.has(id)) return;
+		const { objects, rawList } = scenes.get(id);
+
+		if (!objects.has(object))
+			return __DEBUG__ && console.warn(`Object ${object} not registered`);
+
+		// Remove from objects
+		rawList.splice(rawList.indexOf(object), 1);
+		objects.delete(object);
+		// }
 
 		cameraNeedsUpdate = !!rawList.filter(
 			(o) => o.onBeforeSetCamera === NOOP || o.onAfterSetCamera === NOOP,
@@ -356,7 +370,7 @@ export function raycastPlugin(webgl) {
 			onAfterRaycast(raycaster);
 
 			const intersect = intersects.find((i) => i.object === object);
-			const shouldIntersect = !!intersect;
+			const shouldIntersect = !!intersect && needsUpdate.value;
 
 			if (_isRaycasted.value !== shouldIntersect) {
 				shouldIntersect && onEnter(intersect);

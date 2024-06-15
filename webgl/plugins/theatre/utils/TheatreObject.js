@@ -5,11 +5,11 @@ import { TheatreBaseObject } from './TheatreBaseObject';
 const NOOP = () => {};
 
 export class TheatreObject extends TheatreBaseObject {
-	constructor(name, value = new Object3D(), opts = {}, sheet) {
+	constructor(name, value = { value: new Object3D() }, opts = {}, sheet) {
 		super();
 
 		this._name = name;
-		this._value = value;
+		this._value = value.value;
 		this._sheet = sheet;
 
 		this._onUpdate = opts.onUpdate ?? NOOP;
@@ -19,21 +19,22 @@ export class TheatreObject extends TheatreBaseObject {
 		opts.rotation = opts.rotation ?? {};
 		opts.scale = opts.scale ?? {};
 
+		const { position, rotation, scale } = this._value;
 		const obj = sheet.instance.object(name, {
 			position: types.compound({
-				x: types.number(value.x, { ...opts, ...opts.position }),
-				y: types.number(value.y, { ...opts, ...opts.position }),
-				z: types.number(value.z, { ...opts, ...opts.position }),
+				x: types.number(position.x, { ...opts, ...opts.position }),
+				y: types.number(position.y, { ...opts, ...opts.position }),
+				z: types.number(position.z, { ...opts, ...opts.position }),
 			}),
 			rotation: types.compound({
-				x: types.number(value.rotation.x, { ...opts, ...opts.rotation }),
-				y: types.number(value.rotation.y, { ...opts, ...opts.rotation }),
-				z: types.number(value.rotation.z, { ...opts, ...opts.rotation }),
+				x: types.number(rotation.x, { ...opts, ...opts.rotation }),
+				y: types.number(rotation.y, { ...opts, ...opts.rotation }),
+				z: types.number(rotation.z, { ...opts, ...opts.rotation }),
 			}),
 			scale: types.compound({
-				x: types.number(value.scale.x, { ...opts, ...opts.scale }),
-				y: types.number(value.scale.y, { ...opts, ...opts.scale }),
-				z: types.number(value.scale.z, { ...opts, ...opts.scale }),
+				x: types.number(scale.x, { ...opts, ...opts.scale }),
+				y: types.number(scale.y, { ...opts, ...opts.scale }),
+				z: types.number(scale.z, { ...opts, ...opts.scale }),
 			}),
 		});
 		this._object = obj;

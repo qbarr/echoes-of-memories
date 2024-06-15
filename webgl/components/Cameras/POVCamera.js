@@ -41,6 +41,11 @@ export class POVCamera extends BaseCamera {
 		this.wobble_frequency = { value: new Vector3(0.6, 0.6, 0.6) };
 		this.wobble_amplitude = { value: new Vector3(0.2, 0.1, 0.1) };
 		this.wobble_scale = { value: 1 };
+
+		this.$statesMachine = this.webgl.$statesMachine.create('Camera', {
+			filter: 'camera',
+		});
+		this.$setState = this.$statesMachine.setState.bind(this.$statesMachine);
 	}
 
 	/// #if __DEBUG__
@@ -114,9 +119,11 @@ export class POVCamera extends BaseCamera {
 	onPointerLockChange(ev) {
 		if (!this.$pointerLocked) {
 			this.$pointerLocked = true;
+			this.webgl.$app.$store.pointerLocked = true;
 			this.controls.enabled = this.$pointerLocked;
 		} else {
 			this.$pointerLocked = false;
+			this.webgl.$app.$store.pointerLocked = false;
 			this.controls.enabled = this.$pointerLocked;
 		}
 	}
@@ -136,11 +143,11 @@ export class POVCamera extends BaseCamera {
 	}
 
 	onInteractiveEnter() {
-		this.wobble.onInteractiveEnter();
+		this.wobble.setTargetLerpSpeed(0.002);
 	}
 
 	onInteractiveLeave() {
-		this.wobble.onInteractiveLeave();
+		this.wobble.setTargetLerpSpeed(0.02);
 	}
 
 	update() {

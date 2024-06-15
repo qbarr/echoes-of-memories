@@ -35,21 +35,14 @@ export default class Wobble {
 	}
 	/// #endif
 
-	onInteractiveEnter() {
-		this.targetLerpSpeed = 0.002;
-		// console.log('[Wobble] onInteractiveEnter', this.baseLerpSpeed);
-	}
-
-	onInteractiveLeave() {
-		this.targetLerpSpeed = 0.02;
-		// console.log('[Wobble] onInteractiveLeave', this.baseLerpSpeed);
+	setTargetLerpSpeed(speed) {
+		this.targetLerpSpeed = speed;
 	}
 
 	theatreUpdate({ intensity, frequency, amplitude, scale }) {
 		this.frequency = frequency;
 		this.amplitude = amplitude;
 		this.scale = scale;
-		// console.log('here', this.scale);
 	}
 
 	update(time) {

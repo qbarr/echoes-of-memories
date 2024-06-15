@@ -18,7 +18,9 @@ export const createState = (id, state = {}) => ({
 	...createLogger(`State • ${id}`, '#000', '#cbb3ff'),
 	$webgl: getWebGL(),
 	$app: getApp(),
-	_needsUpdate: false,
+	_et: 0,
+	_needsUpdate: true,
+	_isCanceled: false,
 });
 
 export class StatesMachine {
@@ -28,6 +30,7 @@ export class StatesMachine {
 
 		Object.assign(this, createLogger(`States • ${id}`, '#000', '#a880ff'));
 
+		this.id = id;
 		this._symbols = {};
 		this._states = new Map();
 		this._currentState = w(null);
@@ -77,9 +80,8 @@ export class StatesMachine {
 		if (!state._needsUpdate) return;
 
 		const { dt, et } = this.$webgl.$time;
-		elapsedTime += dt;
-
-		state?.update({ machine: this, dt, et, etFromStart: elapsedTime });
+		state._et += dt;
+		state.update({ machine: this, dt, et, etFromStart: state._et });
 	}
 
 	checkValidChange(from, to) {
@@ -88,11 +90,25 @@ export class StatesMachine {
 		return from.isValidChange(to);
 	}
 
+	// Check if the state is canceled
+	// Useful to prevent async operations from the previous state to continue
+	isCanceled(s) {
+		return !this.is(s) || s._isCanceled;
+	}
+
 	async handleStateChange(curr, prev) {
-		if (prev) prev._needsUpdate = false;
-		elapsedTime = 0;
-		await prev?.leave({ machine: this, to: curr });
-		await curr?.enter({ machine: this, from: prev });
-		if (curr) curr._needsUpdate = true;
+		if (prev === curr) prev._isCanceled = curr._isCanceled = true;
+		if (prev) {
+			await prev.leave({ machine: this, to: curr });
+		}
+		if (curr) {
+			curr._et = 0;
+			await curr.enter({
+				machine: this,
+				from: prev,
+				isCanceled: () => this.isCanceled(curr),
+			});
+			curr._isCanceled = false;
+		}
 	}
 }
