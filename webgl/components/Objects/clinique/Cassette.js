@@ -7,8 +7,6 @@ export class Cassette extends BaseInteractiveObject {
 		this.isSimpleObject = true;
 		this.audioId = 'clinique/cassette';
 
-		this.hasClicked = deferredPromise();
-
 		this.baseDummy = new Object3D();
 		this.baseDummy.position.copy(this.base.position);
 		this.baseDummy.rotation.copy(this.base.rotation);

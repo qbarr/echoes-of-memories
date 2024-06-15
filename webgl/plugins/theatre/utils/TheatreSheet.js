@@ -108,6 +108,10 @@ export class TheatreSheet {
 		return this._active;
 	}
 
+	// skip() {
+
+	// }
+
 	async _attachAudioSource(source, volume = 1) {
 		// Can be a path to the file or an AudioBuffer
 		const audioGraph = await this.sequence.attachAudio({ source });
