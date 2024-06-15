@@ -8,6 +8,11 @@ export class Cassette extends BaseInteractiveObject {
 		this.audioId = 'clinique/cassette';
 
 		this.hasClicked = deferredPromise();
+
+		this.baseDummy = new Object3D();
+		this.baseDummy.position.copy(this.base.position);
+		this.baseDummy.rotation.copy(this.base.rotation);
+		this.baseDummy.scale.copy(this.mesh.scale);
 	}
 
 	createSheets() {
@@ -19,24 +24,15 @@ export class Cassette extends BaseInteractiveObject {
 			lat: cam.controls.lat,
 			lon: cam.controls.lon,
 		});
-		this.dummy = new Object3D();
-		this.dummy.position.copy(this.base.position);
-		this.dummy.rotation.copy(this.base.rotation);
-		this.dummy.scale.copy(this.mesh.scale);
+		this.dummy = this.baseDummy.clone();
 		this.$sheet.$object('Cassette', { value: this.dummy }, { nudgeMultiplier: 0.01 });
-
-		this._onClick = (cb) => {
-			this._onClick = cb;
-		};
 	}
 
-	onClick() {
-		this._onClick();
-	}
-
-	removeInteraction() {
-		this.onLeave();
-		this.$composables['interaction'].destroy();
+	reset() {
+		super.reset();
+		this.dummy.position.copy(this.baseDummy.position);
+		this.dummy.rotation.copy(this.baseDummy.rotation);
+		this.dummy.scale.copy(this.baseDummy.scale);
 	}
 
 	update() {

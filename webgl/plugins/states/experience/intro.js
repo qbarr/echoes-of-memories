@@ -5,7 +5,8 @@ async function enter({ machine, isCanceled }) {
 	const { $theatre, $scenes, $raycast, $povCamera: camera } = $webgl;
 
 	const scene = $scenes.clinique.component;
-	const { cassette } = scene.interactiveObjects;
+	const { cassette, porte } = scene.interactiveObjects;
+	console.log(scene.interactiveObjects);
 
 	const uiScene = $scenes.ui.component;
 	const { subtitles, crosshair } = uiScene;
@@ -13,7 +14,12 @@ async function enter({ machine, isCanceled }) {
 	camera.$setState('cinematic');
 	subtitles.setColor('white');
 	crosshair.setVisible(false);
-	$raycast.disable();
+	// $raycast.disable();
+
+	porte.disableInteraction();
+
+	cassette.enableInteraction();
+	cassette.reset();
 
 	const $project = $theatre.get('Clinique');
 
@@ -24,19 +30,19 @@ async function enter({ machine, isCanceled }) {
 
 	camera.$setState('tuto');
 	crosshair.setVisible(true);
-	$raycast.enable();
+	// $raycast.enable();
 
 	await p(cassette._onClick.bind(cassette));
 
 	if (isCanceled()) return;
 
-	cassette.removeInteraction();
+	cassette.disableInteraction();
 	await cassette.$sheet.play();
 
 	if (isCanceled()) return;
 
 	camera.$setState('free');
-	// camera free
+	porte.enableInteraction();
 }
 function update() {}
 async function leave({ machine }) {

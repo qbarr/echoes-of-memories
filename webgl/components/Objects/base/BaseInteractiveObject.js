@@ -11,6 +11,8 @@ export class BaseInteractiveObject extends BaseComponent {
 		this.isInteractiveObject = true;
 		this.base = new Object3D();
 		this.$composables = {};
+
+		this._onClick = (cb) => (this._onClick = cb);
 	}
 
 	beforeInit() {
@@ -39,8 +41,14 @@ export class BaseInteractiveObject extends BaseComponent {
 
 	createSheets() {}
 
+	reset() {
+		this._onClick = (cb) => (this._onClick = cb);
+		this.$sheet?.stop();
+	}
+
 	onClick() {
 		this.log('INTERACTION:click');
+		this._onClick();
 
 		// TODO: Go to this object
 		// TODO: Subtitles
@@ -64,6 +72,15 @@ export class BaseInteractiveObject extends BaseComponent {
 		$composer.removeOutline(this.mesh);
 		$scenes.ui.component.crosshair.toggleHover(false);
 		$povCamera.onInteractiveLeave();
+	}
+
+	disableInteraction() {
+		this.onLeave();
+		this.$composables['interaction'].disable();
+	}
+
+	enableInteraction() {
+		this.$composables['interaction'].enable();
 	}
 
 	onEnterPerimeter() {

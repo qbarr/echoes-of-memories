@@ -197,6 +197,7 @@ export function raycastPlugin(webgl) {
 		return {
 			object,
 			isRaycasted,
+			needRaycast: true,
 			pointer,
 			onEnter,
 			onLeave,
@@ -247,7 +248,12 @@ export function raycastPlugin(webgl) {
 			(o) => o.onBeforeSetCamera === NOOP || o.onAfterSetCamera === NOOP,
 		).length;
 
-		return { object: obj, remove: () => remove(object, scene) };
+		return {
+			object: obj,
+			remove: () => remove(object, scene),
+			disable: () => disableObject(object, scene),
+			enable: () => enableObject(object, scene),
+		};
 	}
 
 	function remove(object, forcedScene = null) {
@@ -275,6 +281,32 @@ export function raycastPlugin(webgl) {
 		cameraNeedsUpdate = !!rawList.filter(
 			(o) => o.onBeforeSetCamera === NOOP || o.onAfterSetCamera === NOOP,
 		).length;
+	}
+
+	function disableObject(object, forcedScene) {
+		const scene = forcedScene ?? object.scene ?? webgl.$getCurrentScene();
+		const { id } = webgl.$scenes.getSceneByComponent(scene);
+
+		if (!scenes.has(id)) return;
+		const { objects } = scenes.get(id);
+
+		if (!objects.has(object)) return;
+		const obj = objects.get(object);
+
+		obj.needRaycast = false;
+	}
+
+	function enableObject(object, forcedScene) {
+		const scene = forcedScene ?? object.scene ?? webgl.$getCurrentScene();
+		const { id } = webgl.$scenes.getSceneByComponent(scene);
+
+		if (!scenes.has(id)) return;
+		const { objects } = scenes.get(id);
+
+		if (!objects.has(object)) return;
+		const obj = objects.get(object);
+
+		obj.needRaycast = true;
 	}
 
 	function update() {
@@ -334,6 +366,7 @@ export function raycastPlugin(webgl) {
 			const {
 				onLeave,
 				isRaycasted: _isRaycasted,
+				needRaycast,
 				object,
 				onEnter,
 				onHover,
@@ -346,6 +379,8 @@ export function raycastPlugin(webgl) {
 				onAfterRaycast,
 				forceVisible,
 			} = obj;
+
+			if (!needRaycast) continue;
 
 			// Update raycaster for each object if any of them has callbacks
 			if (cameraNeedsUpdate) {
