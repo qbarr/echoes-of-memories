@@ -60,6 +60,8 @@ export class TheatreEvents {
 		// 	}
 		// });
 
+		console.log(list);
+
 		const obj = sheet.object('Events', {
 			events: types.compound(list),
 		});
@@ -83,6 +85,17 @@ export class TheatreEvents {
 	}
 	get object() {
 		return this._object;
+	}
+
+	listen(callback) {
+		if (!this.object) return __DEBUG__ && console.warn('No object to listen to');
+		this._unwatch = this.object.onValuesChange(this.update.bind(this));
+		return this;
+	}
+
+	unlisten() {
+		this._unwatch?.();
+		return this;
 	}
 
 	dispose() {

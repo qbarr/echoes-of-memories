@@ -42,7 +42,7 @@ const json = (path, args = {}) => ({
 });
 
 export default {
-	'msdf-font/VCR_OSD_MONO': msdf('msdf/VCR_OSD_MONO'),
+	'msdf/VCR_OSD_MONO': msdf('msdf/VCR_OSD_MONO'),
 
 	// scene1: glb('models/scene1'),
 	noises: img('data-textures/*.png', { repeat: true }),
@@ -66,7 +66,12 @@ export default {
 	// Bedroom
 	'bedroom/model': glb('scenes/bedroom/model'),
 	'bedroom/textures': ktx2('scenes/bedroom/*', { flipY: false }),
+	'bedroom/audios': audio('audios/bedroom/*'),
 	'bedroom/subtitles': json('subtitles/bedroom/*', { type: 'subtitles' }),
+
+	// Flashback
+	'flashback/audios': audio('audios/flashback/*'),
+	// 'flashback/subtitles': json('subtitles/flashback/*', { type: 'subtitles' }),
 
 	// Audios
 	positions: audio('audios/positional/*', { type: 'positional' }),

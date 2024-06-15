@@ -23,7 +23,7 @@ export class TheatreCompound extends TheatreBaseObject {
 				acc[key] = createValue(
 					key,
 					values[key],
-					{ ...opts, ...(values[key].opts ?? {}) },
+					{ ...opts, ...(opts[key] ?? {}) },
 					this.childs,
 				);
 				return acc;
@@ -105,7 +105,7 @@ const getTypeFromValue = (value) => {
 		type = 'vec';
 	}
 	if (typeof value === 'boolean') {
-		type = 'bool';
+		type = 'boolean';
 	}
 	if (typeof value === 'number') {
 		type = 'number';
@@ -146,7 +146,7 @@ const createValue = (id, value, opts, object) => {
 			object[id] = value;
 			return o;
 		} else if (type === 'boolean') {
-			o = types.bool(v, opts);
+			o = types.boolean(v, opts);
 			object[id] = value;
 			return o;
 		}

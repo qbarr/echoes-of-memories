@@ -59,12 +59,18 @@ export class TheatreSheet {
 		this.$compound = (name, values, opts = {}) => new TheatreCompound(name, values, opts, this); // prettier-ignore
 		this.$events = (events) => new TheatreEvents('Events', events, this); // prettier-ignore
 		this.$list = (name, values, opts = {}) => new TheatreList(name, values, opts, this); // prettier-ignore
-		this.$addCamera = () =>
-			this.$compound('Camera', {
-				position: { value: this.$webgl.$povCamera.target },
-				lat: this.$webgl.$povCamera.controls.lat,
-				lon: this.$webgl.$povCamera.controls.lon,
-			});
+		this.$addCamera = () => {
+			const cam = this.$webgl.$povCamera;
+			this.$compound(
+				'Camera',
+				{
+					position: { value: cam.target },
+					lat: cam.controls.lat,
+					lon: cam.controls.lon,
+				},
+				{ position: { nudgeMultiplier: 0.1 } },
+			);
+		};
 
 		onChange(this.sequence.pointer.length, (len) => {
 			this._duration = len * 1000;
@@ -130,23 +136,28 @@ export class TheatreSheet {
 		loweredGain.gain.setValueAtTime(volume, audioContext.currentTime);
 		sequenceGain.connect(loweredGain);
 		loweredGain.connect(audioContext.destination);
+
+		const res = { audioGraph, audioContext, sequenceGain, loweredGain };
+		return res;
 	}
 
 	async _attachAudioBuffer({ buffer, context, destination } = {}) {
 		const destinationNode = destination || context.destination;
-		await this.sequence.attachAudio({
+		const res = this.sequence.attachAudio({
 			source: buffer,
 			audioContext: context,
 			destinationNode,
 		});
+		return res;
 	}
 
 	async attachAudio(source, volume = 1) {
+		let res = null;
 		if (typeof source === 'string') {
 			// Check if it's a path to the file
 			// Or if it's the id of the audio
 			if (source.includes('.')) {
-				return this._attachAudioSource(source, volume);
+				res = this._attachAudioSource(source, volume);
 			} else {
 				const id = source.split('/').pop();
 				let subID = source.split('/').shift();
@@ -169,8 +180,20 @@ export class TheatreSheet {
 
 			source = source.audio ?? source;
 
-			return this._attachAudioBuffer(source);
+			res = this._attachAudioBuffer(source);
 		}
+
+		/// #if __DEBUG__
+		res.then((res) => {
+			const { studio, waveformViewer } = this.$webgl.$theatre;
+			const decodedBuffer = res.decodedBuffer ?? res.audioGraph.decodedBuffer;
+
+			console.log('decodedBuffer', decodedBuffer);
+			waveformViewer.addAudio({ decodedBuffer, sequence: this.sequence }); // Pass the audioGraph and the sequence to the extension
+		});
+		/// #endif
+
+		return res;
 	}
 
 	// registerSubtitles(subtitles) {

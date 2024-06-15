@@ -145,28 +145,12 @@ export function debugCameraPlugin(webgl) {
 			.map((v) => v.toFixed(4))
 			.join(', ');
 
-		// calculate the latitude and longitude by the quaternion
-		const quat = api.currentCamera.cam.quaternion;
-		const lat = (Math.asin(2 * (quat.x * quat.z - quat.w * quat.y)) * 180) / Math.PI;
-		const lon =
-			(Math.atan2(
-				2 * (quat.x * quat.y + quat.w * quat.z),
-				quat.w * quat.w - quat.x * quat.x - quat.y * quat.y + quat.z * quat.z,
-			) *
-				180) /
-			Math.PI;
-
-		const latStr = lat.toFixed(4);
-		const lonStr = lon.toFixed(4);
-
 		const str = [
 			'{',
 			'	position: [ ' + posStr + ' ],',
 			'	quaternion: [ ' + qtStr + ' ],',
 			'	euler: [ ' + eulerStr + ' ],',
-			'	fov: ' + api.currentCamera.cam.fov.toFixed(2) + '',
-			'	lat: ' + latStr + ',',
-			'	lon: ' + lonStr + ',',
+			'   fov: ' + api.currentCamera.cam.fov.toFixed(2) + '',
 			'}',
 		].join('\n');
 
