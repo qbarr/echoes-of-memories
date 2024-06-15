@@ -66,33 +66,30 @@ function POVController(
 	const $project = webgl.$theatre.getProject('Clinique');
 	const introSheet = $project.getSheet('intro');
 
-	const FREE_CAM = w(false);
-	const CINEAMATIC_CAM = w(true);
-
-	const state = w({
-		FREE_CAM,
-		CINEAMATIC_CAM,
-	});
+	const states = ['FREE', 'CINEMATIC', 'FLASHBACK'].reduce((acc, key) => {
+		acc[key] = key;
+		return acc;
+	}, {});
+	const state = w(states.FREE);
+	state.is = (s) => state.value === s;
 
 	updateLookAt();
 
-	function updateLookAt() {
-		cam.lookAt(target);
+	function updateLookAt(forcedLookAt) {
+		cam.lookAt(forcedLookAt ?? target);
 	}
 
 	function update() {
 		const dt = webgl.$time.dt;
-		const { FREE_CAM, CINEAMATIC_CAM } = state.value;
 
-		if (FREE_CAM.value) {
-			updateFreeCamMode(dt);
-		} else if (CINEAMATIC_CAM.value) {
-			updateCineamaticCamMode(dt);
+		if (state.is(states.FREE) || state.is(states.CINEMATIC)) {
+			updatePOVMode(dt);
+		} else if (state.is(states.FLASHBACK)) {
+			updateFlashbackMode(dt);
 		}
 	}
 
-	function updateFreeCamMode(dt) {
-		console.log('updateFreeCamMode');
+	function updatePOVMode(dt) {
 		lerpedLat = damp(lerpedLat, lat.value, 0.4, dt);
 		lerpedLon = damp(lerpedLon, lon.value, 0.4, dt);
 
@@ -103,15 +100,9 @@ function POVController(
 		updateLookAt();
 	}
 
-	function updateCineamaticCamMode(dt) {
-		lerpedLat = damp(lerpedLat, lat.value, 0.4, dt);
-		lerpedLon = damp(lerpedLon, lon.value, 0.4, dt);
-
-		const phi = MathUtils.degToRad(90 - lerpedLat);
-		const theta = MathUtils.degToRad(lerpedLon);
-		target.setFromSphericalCoords(1, phi, theta).add(cam.position);
-
-		updateLookAt();
+	function updateFlashbackMode(dt) {
+		const lookat = Vector3.get().set(0, 0, 0);
+		updateLookAt(lookat);
 	}
 
 	function handleMoveRotate(x, y) {
@@ -132,22 +123,21 @@ function POVController(
 		rotateStart.copy(tempVec2a);
 	}
 
-	function goFreeCamMode() {
-		state.value.FREE_CAM.value = true;
-		state.value.CINEAMATIC_CAM.value = false;
+	function goFreeMode() {
+		state.set(states.FREE);
 	}
 
-	function goCineamaticCamMode() {
-		state.value.FREE_CAM.value = false;
-		state.value.CINEAMATIC_CAM.value = true;
+	function goCinematicMode() {
+		state.set(states.CINEMATIC);
+	}
+
+	function goFlashBackMode() {
+		state.set(states.FLASHBACK);
 	}
 
 	const onMouseMove = (e) => {
 		if (!enabled) return;
-
-		const { CINEAMATIC_CAM, FREE_CAM } = state.value;
-
-		if (CINEAMATIC_CAM.value) return;
+		if (!state.is(states.FREE)) return;
 
 		const x = e.movementX;
 		const y = e.movementY;
@@ -156,10 +146,7 @@ function POVController(
 
 	const onTouchMove = (e) => {
 		if (!enabled) return;
-
-		const { CINEAMATIC_CAM, FREE_CAM } = state.value;
-
-		if (CINEAMATIC_CAM.value) return;
+		if (!state.is(states.FREE)) return;
 
 		handleMoveRotate(e.touches[0].pageX, e.touches[0].pageY);
 	};
@@ -179,6 +166,10 @@ function POVController(
 	return {
 		remove,
 		update,
+
+		goFreeMode,
+		goCinematicMode,
+		goFlashBackMode,
 
 		target,
 		lat,

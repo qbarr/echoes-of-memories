@@ -48,7 +48,7 @@ export default ({ mode = 'development' }) => {
 			manifestPlugin(),
 			// subtitlesPlugin(),
 			ViteRestart({
-				restart: ['./assets/**/*'],
+				restart: ['./assets/**/*', './assets/manifest.js'],
 				reload: ['./public/**/*'],
 			}),
 		],

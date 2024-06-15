@@ -16,13 +16,9 @@ export class Cassette extends BaseInteractiveObject {
 	createSheets() {
 		this.$sheet = this.$project.getSheet('cassette');
 		this.$sheet.attachAudio(this.audioId);
-		const cam = this.webgl.$povCamera;
-		this.$sheet.$compound('Camera', {
-			position: { value: cam.target },
-			lat: cam.controls.lat,
-			lon: cam.controls.lon,
-		});
+		this.$sheet.$addCamera();
 		this.dummy = this.baseDummy.clone();
+
 		this.$sheet.$object('Cassette', { value: this.dummy }, { nudgeMultiplier: 0.01 });
 	}
 

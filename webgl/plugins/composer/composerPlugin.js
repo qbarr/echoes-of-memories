@@ -101,6 +101,8 @@ export function composerPlugin(webgl) {
 			api.$crt.enabled.set(true);
 		} else if (name === 'clinique') {
 			api.$crt.enabled.set(false);
+		} else if (name === 'tv-room') {
+			api.$crt.enabled.set(false);
 		}
 	}
 

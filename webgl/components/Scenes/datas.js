@@ -30,6 +30,12 @@ const datas = {
 		ecrans: {},
 		porte: { class: Door },
 	},
+	['tv-room']: {
+		objets: { class: BaseInteractiveObject },
+		sol: {},
+		VHS: {},
+		ecran: {},
+	},
 };
 
 export { datas as scenesDatas };

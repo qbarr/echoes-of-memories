@@ -4,6 +4,7 @@ import ParticleScene from './components/Scenes/ParticleScene';
 import BedroomScene from './components/Scenes/BedroomScene';
 import CliniqueScene from './components/Scenes/CliniqueScene';
 import UIScene from './components/Scenes/UIScene';
+import TVRoomScene from './components/Scenes/TVRoomScene';
 
 import { POVCamera } from './components/Cameras/POVCamera';
 import { createWebgl, webgl } from './core';
@@ -17,8 +18,9 @@ export default createWebgl({
 
 		webgl.$povCamera = new POVCamera();
 
-		$scenes.create('bedroom', BedroomScene);
 		$scenes.create('clinique', CliniqueScene, { default: true });
+		$scenes.create('tv-room', TVRoomScene);
+		$scenes.create('bedroom', BedroomScene);
 		$scenes.create('ui', UIScene);
 		$scenes.create('particle', ParticleScene);
 	},
@@ -51,8 +53,9 @@ export default createWebgl({
 			load('clinique/subtitles'),
 
 			// TV Room
-			// load('tv-room-model'),
-			// load('tv-room/textures'),
+			load('tv-room/model'),
+			load('tv-room/textures'),
+			load('tv-room/audios'),
 			load('tv-room/subtitles'),
 
 			// Bedroom

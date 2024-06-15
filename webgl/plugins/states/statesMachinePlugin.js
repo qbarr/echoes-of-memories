@@ -28,12 +28,12 @@ export function statesMachinePlugin(webgl) {
 		get,
 	};
 
-	function create(id, { filter = null } = {}) {
+	function create(id, { filter = null, ...args } = {}) {
 		if (!id) return;
 
 		const states = Object.values(ALL_STATES[filter ?? id] ?? {});
 
-		const sm = new StatesMachine(id, { states });
+		const sm = new StatesMachine(id, { states, ...args });
 		const symbol = Symbol(id);
 		statesMachines.set(symbol, sm);
 		symbols[id] = symbol;

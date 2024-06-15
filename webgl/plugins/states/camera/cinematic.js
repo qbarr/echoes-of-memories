@@ -1,4 +1,13 @@
-async function enter({ machine }) {}
+async function enter({ machine }) {
+	const { $webgl, camera } = this;
+	const { $scenes } = $webgl;
+
+	const uiScene = $scenes.ui.component;
+	const { crosshair } = uiScene;
+
+	crosshair.setVisible(false);
+	camera.controls.goCinematicMode();
+}
 function update() {}
 async function leave({ machine }) {}
 

@@ -58,8 +58,9 @@ export default {
 	'clinique/subtitles': json('subtitles/clinique/*', { type: 'subtitles' }),
 
 	// TV Room
-	// 'tv-room-model': glb('scenes/tv-room/model'),
-	// 'tv-room/textures': ktx2('scenes/tv-room/*', { flipY: false }),
+	'tv-room/model': glb('scenes/tv-room/model'),
+	'tv-room/textures': ktx2('scenes/tv-room/*', { flipY: false }),
+	'tv-room/audios': audio('audios/tv-room/*'),
 	'tv-room/subtitles': json('subtitles/tv-room/*', { type: 'subtitles' }),
 
 	// Bedroom

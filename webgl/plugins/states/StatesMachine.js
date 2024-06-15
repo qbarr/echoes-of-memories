@@ -24,7 +24,7 @@ export const createState = (id, state = {}) => ({
 });
 
 export class StatesMachine {
-	constructor(id, { states = [] } = {}) {
+	constructor(id, { states = [], ...args } = {}) {
 		this.$webgl = getWebGL();
 		this.$app = getApp();
 
@@ -35,6 +35,7 @@ export class StatesMachine {
 		this._states = new Map();
 		this._currentState = w(null);
 		this._currentState.watch(this.handleStateChange.bind(this));
+		this._args = args ?? {};
 
 		states.forEach((state) => this.registerState(state));
 
@@ -60,7 +61,7 @@ export class StatesMachine {
 
 	registerState(state) {
 		const id = state.forceId ?? state.id;
-		const s = createState(id, state);
+		const s = createState(id, { ...state, ...this._args });
 		this.states.set(s.symbol, s);
 		this._symbols[id] = s.symbol;
 		return s;

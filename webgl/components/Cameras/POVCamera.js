@@ -1,5 +1,5 @@
 import BaseCamera from '#webgl/core/BaseCamera';
-import POVController from '#webgl/utils/POVController.js';
+import POVController from './POVController.js';
 import {
 	BoxGeometry,
 	Mesh,
@@ -44,6 +44,7 @@ export class POVCamera extends BaseCamera {
 
 		this.$statesMachine = this.webgl.$statesMachine.create('Camera', {
 			filter: 'camera',
+			camera: this,
 		});
 		this.$setState = this.$statesMachine.setState.bind(this.$statesMachine);
 	}
@@ -151,16 +152,12 @@ export class POVCamera extends BaseCamera {
 	}
 
 	update() {
-		this.wobble.update(this.webgl.$time.elapsed * this.wobble_intentisty.value);
+		const { dt, elapsed } = this.webgl.$time;
 
-		const { dt } = this.webgl.$time;
-
+		this.wobble.update(elapsed * this.wobble_intentisty.value);
 		this.base.position.damp(this.target, 0.2, dt);
-		// this.base.rotation.damp(this.target.rotation, 0.1, dt);
 
-		if (this.controls) {
-			this.controls.update();
-		}
+		this.controls?.update();
 
 		this.cam.updateProjectionMatrix();
 	}

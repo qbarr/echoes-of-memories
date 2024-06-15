@@ -82,9 +82,7 @@ export default class BedroomScene extends BaseScene {
 
 	async enter() {
 		this.log('enter');
-		// this.camera = this.add(this.webgl.$povCamera);
 		this.webgl.$povCamera.onSceneSwitch(this);
-		this.camera = this.add(this.webgl.$povCamera);
 
 		// position: [ -8.34592, 2.24563, 7.35179 ],
 		// quaternion: [  ],

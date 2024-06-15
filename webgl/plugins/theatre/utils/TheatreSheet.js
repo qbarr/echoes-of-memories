@@ -59,6 +59,12 @@ export class TheatreSheet {
 		this.$compound = (name, values, opts = {}) => new TheatreCompound(name, values, opts, this); // prettier-ignore
 		this.$events = (events) => new TheatreEvents('Events', events, this); // prettier-ignore
 		this.$list = (name, values, opts = {}) => new TheatreList(name, values, opts, this); // prettier-ignore
+		this.$addCamera = () =>
+			this.$compound('Camera', {
+				position: { value: this.$webgl.$povCamera.target },
+				lat: this.$webgl.$povCamera.controls.lat,
+				lon: this.$webgl.$povCamera.controls.lon,
+			});
 
 		onChange(this.sequence.pointer.length, (len) => {
 			this._duration = len * 1000;

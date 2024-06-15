@@ -41,6 +41,14 @@ export class BaseInteractiveObject extends BaseComponent {
 
 	createSheets() {}
 
+	hide() {
+		this.base.visible = false;
+	}
+
+	show() {
+		this.base.visible = true;
+	}
+
 	reset() {
 		this._onClick = (cb) => (this._onClick = cb);
 		this.$sheet?.stop();
