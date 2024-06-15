@@ -8,6 +8,7 @@ import TVRoomScene from './components/Scenes/TVRoomScene';
 
 import { POVCamera } from './components/Cameras/POVCamera';
 import { createWebgl, webgl } from './core';
+import { w } from '#utils/state/index.js';
 
 export default createWebgl({
 	async setup() {
@@ -23,6 +24,8 @@ export default createWebgl({
 		$scenes.create('bedroom', BedroomScene);
 		$scenes.create('ui', UIScene);
 		$scenes.create('particle', ParticleScene);
+
+		webgl.$lastClickedObject = w(null);
 	},
 
 	async preload() {
@@ -30,7 +33,7 @@ export default createWebgl({
 		const { load } = $assets;
 
 		await Promise.all([
-			load('msdf-font/VCR_OSD_MONO'),
+			load('msdf/VCR_OSD_MONO'),
 
 			// Sounds
 			load('positions'),
@@ -61,7 +64,11 @@ export default createWebgl({
 			// Bedroom
 			load('bedroom/model'),
 			load('bedroom/textures'),
+			load('bedroom/audios'),
 			load('bedroom/subtitles'),
+
+			// Flashback
+			load('flashback/audios'),
 
 			// Theatre
 			load('theatre'),

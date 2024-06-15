@@ -8,8 +8,8 @@ import { damp, dampPrecise } from '#utils/maths/map.js';
 const startValues = {
 	uFlowFieldFrequency: { value: 0.21 },
 	uFlowFieldStrength: { value: 2.3 },
-	uFlowFieldInfluence: { value: 1.0 }
-}
+	uFlowFieldInfluence: { value: 1.0 },
+};
 
 const coords = {
 	from: {
@@ -46,14 +46,14 @@ export default class ParticleScene extends BaseScene {
 
 	init() {
 		const { $assets, $gpgpu } = this.webgl;
-		const boat  = $assets.objects['boat'].scene;
+		const boat = $assets.objects['boat'].scene;
 		boat.position.set(0, 0, 0);
 
 		this.particles = this.add(Particles, {
 			scene: boat,
 			gpgpu: $gpgpu.computedsGPGPU.get()[0],
-			options: {}
-		})
+			options: {},
+		});
 
 		this.mouse = new Vector2(0, 0)
 		this.offset = 0
@@ -85,42 +85,35 @@ export default class ParticleScene extends BaseScene {
 	}
 
 	onMouseMove(e) {
-		this.mouse.x = e.clientX / window.innerWidth * 2 - 1;
+		this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
 		this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+		// this.offset.x = this.lerp(this.offset.x, -this.mouse.x * .06, .05)
+		// this.rotateAroundPoint(this.camera.base, new Vector3(0), new Vector3(0, 1, 0), 0.01, false)
 	}
 
 	async enter() {
-		// this.initState()
+		// this.introAnimate();
 		this.webgl.$povCamera.onSceneSwitch(this);
-		// this.camera.base.position.set(11, 4, 10)
-		// this.cam era = this.add(MainCamera)
-
-		// this.camera.base.position.set(22, 1, 14)
-		// this.camera.base.lookAt(0, 0, 0)
-		// this.camera.controls.lon = { value: 236 }
-		// this.camera.
-		// {
-		// 	position: [ 9.45749, 3.10490, 8.09413 ],
-		// 	quaternion: [ -0.140791, 0.424356, 0.066982, 0.891971 ],
-		// 	euler: [ -0.4741, 0.8303, 0.3621 ],
-		//    fov: 75.00
-		// }
-		setTimeout(() => {
-
-			this.webgl.$setState('flashback')
-		}, 0);
+		this.camera.$setState('flashback');
+		// this.camera = this.webgl.$povCamera;
+		// this.camera.add(MainCamera);
 	}
 
-	rotateAroundPoint (obj, point, axis, theta, pointIsWorld = false) {
-		if (pointIsWorld) obj.parent?.localToWorld(obj.position) // compensate for world coordinate
+	leave() {
+		this.camera.$setState('cinematique');
+	}
 
-		obj.position.sub(point) // remove the offset
-		obj.position.applyAxisAngle(axis, theta) // rotate the POSITION
-		obj.position.add(point) // re-add the offset
 
-		if (pointIsWorld) obj.parent?.worldToLocal(obj.position) // undo world coordinates compensation
+	rotateAroundPoint(obj, point, axis, theta, pointIsWorld = false) {
+		if (pointIsWorld) obj.parent?.localToWorld(obj.position); // compensate for world coordinate
 
-		obj.rotateOnAxis(axis, theta) // rotate the OBJECT
+		obj.position.sub(point); // remove the offset
+		obj.position.applyAxisAngle(axis, theta); // rotate the POSITION
+		obj.position.add(point); // re-add the offset
+
+		if (pointIsWorld) obj.parent?.worldToLocal(obj.position); // undo world coordinates compensation
+
+		obj.rotateOnAxis(axis, theta); // rotate the OBJECT
 	}
 
 	update() {
@@ -185,9 +178,7 @@ export default class ParticleScene extends BaseScene {
 
 	}
 
-
 	lerp(a, b, n) {
-		return a + n * (b - a)
+		return a + n * (b - a);
 	}
-
 }

@@ -17,12 +17,14 @@ export default class TVRoomScene extends BaseScene {
 		const scene = $assets.objects['tv-room'].model.scene;
 		const textures = $assets.textures['tv-room'];
 
+		const vhsMap = $assets.textures.clinique.cassette_map;
+
 		const _textures = {
 			sol: new MeshBasicMaterial({ map: textures['sol_map'] }),
 			objets: new MeshBasicMaterial({ map: textures['atlas_map'] }),
-			ecran: new MeshBasicMaterial({ color: 0xff00ff }),
+			ecran: new MeshBasicMaterial({ map: textures['atlas_map'] }),
+			VHS: new MeshBasicMaterial({ map: vhsMap }),
 		};
-		_textures.VHS = _textures.objets;
 
 		const datas = scenesDatas['tv-room'];
 		Object.keys(datas).forEach((k) => {
@@ -49,24 +51,8 @@ export default class TVRoomScene extends BaseScene {
 		_objects.forEach((o) => this.add(o));
 		this.base.add(scene);
 
-		/*
-			{
-				position: [ -8.08293, 1.26830, -4.13953 ],
-				quaternion: [ -0.024169, -0.684171, -0.022696, 0.728568 ],
-				euler: [ -0.8135, -1.4795, -0.8114 ],
-				fov: 55.00
-				lat: 86.4000,
-				lon: 0.0000,
-			}
-		*/
-
-		// console.log(this.webgl.$statesMachine);
-		// this.$statesMachine = this.webgl.$statesMachine.create('Clinique', { filter: 'clinique' });
-
-		this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
-		// this.createSheets();
-
 		this.hide();
+		this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 	}
 
 	hide() {
@@ -83,6 +69,7 @@ export default class TVRoomScene extends BaseScene {
 		await enterSheet.attachAudio('tv-room/enter');
 		enterSheet.$bool('Reveal Scene', { value: false }).onChange((v) => {
 			v ? this.show() : this.hide();
+			this.log('Reveal Scene', v);
 		});
 		enterSheet.$addCamera();
 	}

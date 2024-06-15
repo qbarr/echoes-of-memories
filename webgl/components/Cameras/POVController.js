@@ -66,7 +66,8 @@ function POVController(
 	const $project = webgl.$theatre.getProject('Clinique');
 	const introSheet = $project.getSheet('intro');
 
-	const states = ['FREE', 'CINEMATIC', 'FLASHBACK'].reduce((acc, key) => {
+	const rawStates = ['FREE', 'CINEMATIC', 'FLASHBACK'];
+	const states = rawStates.reduce((acc, key) => {
 		acc[key] = key;
 		return acc;
 	}, {});
@@ -131,7 +132,7 @@ function POVController(
 		state.set(states.CINEMATIC);
 	}
 
-	function goFlashBackMode() {
+	function goFlashbackMode() {
 		state.set(states.FLASHBACK);
 	}
 
@@ -169,7 +170,11 @@ function POVController(
 
 		goFreeMode,
 		goCinematicMode,
-		goFlashBackMode,
+		goFlashbackMode,
+
+		states,
+		rawStates,
+		state,
 
 		target,
 		lat,

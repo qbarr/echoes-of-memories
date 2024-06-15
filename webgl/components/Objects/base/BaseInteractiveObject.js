@@ -56,7 +56,8 @@ export class BaseInteractiveObject extends BaseComponent {
 
 	onClick() {
 		this.log('INTERACTION:click');
-		this._onClick();
+		this.webgl.$lastClickedObject.set(this);
+		this._onClick?.();
 
 		// TODO: Go to this object
 		// TODO: Subtitles
