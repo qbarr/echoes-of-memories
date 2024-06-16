@@ -82,8 +82,9 @@ export function statesMachinePlugin(webgl) {
 			})
 			.on('change', ({ value }) => sm.set(value));
 
-		gui.addButton({ title: 'Force Reset' }).on('click', () =>
-			sm.set(sm.currentState.id, true),
+		gui.addButton({ title: 'Force Reset' }).on(
+			'click',
+			() => sm.currentState && sm.set(sm.currentState.id, true),
 		);
 
 		sm._currentState.watchImmediate((state) => {

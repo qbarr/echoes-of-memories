@@ -15,7 +15,6 @@ export default class BedroomScene extends BaseScene {
 		const scene = $assets.objects.bedroom.model.scene;
 
 		// Get raycastables and remove them from the scene
-		const _raycastables = [];
 		scene.traverse((child) => {
 			if (!child.isMesh || !child.material) return;
 			if (child.name.includes('raycastable')) {
@@ -23,10 +22,8 @@ export default class BedroomScene extends BaseScene {
 				const o = datas[idRef];
 				o.raycastMesh = child;
 				child.visible = false;
-				_raycastables.push(child);
 			}
 		});
-		// scene.remove(..._raycastables);
 
 		const textures = $assets.textures['bedroom'];
 
@@ -82,7 +79,8 @@ export default class BedroomScene extends BaseScene {
 
 	async enter() {
 		this.log('enter');
-		this.webgl.$povCamera.onSceneSwitch(this);
+		const { $povCamera } = this.webgl;
+		$povCamera.onSceneSwitch(this);
 
 		// position: [ -8.34592, 2.24563, 7.35179 ],
 		// quaternion: [  ],

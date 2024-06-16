@@ -8,7 +8,7 @@ async function enter({ machine, isCanceled }) {
 	console.log(scene.interactiveObjects);
 
 	const uiScene = $scenes.ui.component;
-	const { subtitles, crosshair } = uiScene;
+	const { subtitles } = uiScene;
 
 	camera.$setState('cinematic');
 	subtitles.setColor('white');
@@ -26,20 +26,21 @@ async function enter({ machine, isCanceled }) {
 
 	if (isCanceled()) return;
 
-	camera.$setState('tuto');
+	console.log('cassette._onClick');
+	camera.$setState('focus');
 
-	await p(cassette._onClick.bind(cassette));
+	// await p(cassette._onClick.bind(cassette));
 
-	if (isCanceled()) return;
+	// if (isCanceled()) return;
 
-	cassette.disableInteraction();
-	await cassette.$sheet.play();
-	cassette.hide();
+	// cassette.disableInteraction();
+	// await cassette.$sheet.play();
+	// cassette.hide();
 
-	if (isCanceled()) return;
+	// if (isCanceled()) return;
 
-	camera.$setState('free');
-	porte.enableInteraction();
+	// camera.$setState('free');
+	// porte.enableInteraction();
 }
 function update() {}
 async function leave({ machine }) {

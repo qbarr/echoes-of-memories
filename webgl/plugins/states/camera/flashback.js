@@ -5,7 +5,7 @@ async function enter({ machine }) {
 	const { crosshair } = uiScene;
 
 	crosshair.setVisible(false);
-	camera.controls.goFlashbackMode();
+	camera.controls.setMode('flashback');
 }
 
 function update() {}

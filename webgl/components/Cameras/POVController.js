@@ -7,7 +7,29 @@ import { Vector2, Vector3, MathUtils, Euler } from 'three';
 const tempVec2a = new Vector2();
 const tempVec2b = new Vector2();
 
+const lastCoords = { lon: 0, lat: 0 };
+
 const lerp = (x, y, a) => x * (1 - a) + y * a;
+
+function cartesianToSpherical(x, y, z) {
+	const radius = Math.sqrt(x * x + y * y + z * z);
+	const phi = Math.acos(y / radius);
+	const theta = Math.atan2(z, x);
+
+	return { radius, phi, theta };
+}
+
+function lookAtSpherical(cameraPos, targetPos) {
+	// Calculate direction vector from camera to target
+	const directionX = targetPos.x - cameraPos.x;
+	const directionY = targetPos.y - cameraPos.y;
+	const directionZ = targetPos.z - cameraPos.z;
+
+	// Convert direction vector to spherical coordinates
+	const sphericalCoords = cartesianToSpherical(directionX, directionY, directionZ);
+
+	return sphericalCoords;
+}
 
 function vec3ToSphericalPos(v, cam) {
 	const position1 = cam.position;
@@ -32,8 +54,6 @@ function vec3ToSphericalPos(v, cam) {
 	const phiDegrees = MathUtils.radToDeg(phi);
 	const thetaDegrees = MathUtils.radToDeg(theta);
 
-	// return { lat: phiDegrees, lon: thetaDegrees };
-	// return { lat: 90, lon: 90 };
 	return { lat: w(phiDegrees), lon: w(thetaDegrees) };
 }
 
@@ -66,7 +86,7 @@ function POVController(
 	const $project = webgl.$theatre.getProject('Clinique');
 	const introSheet = $project.getSheet('intro');
 
-	const rawStates = ['FREE', 'CINEMATIC', 'FLASHBACK'];
+	const rawStates = ['FREE', 'CINEMATIC', 'FLASHBACK', 'FOCUS'];
 	const states = rawStates.reduce((acc, key) => {
 		acc[key] = key;
 		return acc;
@@ -80,14 +100,27 @@ function POVController(
 		cam.lookAt(forcedLookAt ?? target);
 	}
 
+	function focusOn(_target) {
+		_target = _target.position ?? _target;
+		// console.log(_target);
+		// const sphericalCoords = lookAtSpherical(cam.position, _target);
+		// console.log(sphericalCoords);
+		// lat.value = sphericalCoords.phi;
+		// lon.value = sphericalCoords.theta;
+		// // const f = vec3ToSphericalPos(position, cam);
+		// // console.log(f);
+		// // lat.value = f.lat.value;
+		// // lon.value = f.lon.value;
+
+		// target.copy(_target);
+	}
+
 	function update() {
 		const dt = webgl.$time.dt;
 
-		if (state.is(states.FREE) || state.is(states.CINEMATIC)) {
-			updatePOVMode(dt);
-		} else if (state.is(states.FLASHBACK)) {
-			updateFlashbackMode(dt);
-		}
+		if (state.is(states.FLASHBACK)) updateFlashbackMode(dt);
+		// else if (state.is(states.FOCUS)) updateLookAt();
+		else updatePOVMode(dt);
 	}
 
 	function updatePOVMode(dt) {
@@ -102,8 +135,9 @@ function POVController(
 	}
 
 	function updateFlashbackMode(dt) {
-		const lookat = Vector3.get().set(0, 0, 0);
+		const lookat = Vector3.get();
 		updateLookAt(lookat);
+		lookat.release();
 	}
 
 	function handleMoveRotate(x, y) {
@@ -121,11 +155,40 @@ function POVController(
 		lat.value -= tempVec2b.y * verticalLookRatio;
 		lat.value = clamp(lat.value, -70, 50);
 
+		if (state.is(states.FOCUS)) {
+			const threshold = 5;
+			lat.value = clamp(
+				lat.value,
+				lastCoords.lat - threshold,
+				lastCoords.lat + threshold,
+			);
+			lon.value = clamp(
+				lon.value,
+				lastCoords.lon - threshold,
+				lastCoords.lon + threshold,
+			);
+		}
+
 		rotateStart.copy(tempVec2a);
+	}
+
+	function setMode(mode) {
+		if (mode === 'free') goFreeMode();
+		else if (mode === 'cinematic') goCinematicMode();
+		else if (mode === 'flashback') goFlashbackMode();
+		else if (mode === 'focus') goFocusMode();
 	}
 
 	function goFreeMode() {
 		state.set(states.FREE);
+	}
+
+	function goFocusMode() {
+		webgl.$hooks.afterFrame.watchOnce(() => {
+			lastCoords.lat = lat.value;
+			lastCoords.lon = lon.value;
+		});
+		state.set(states.FOCUS);
 	}
 
 	function goCinematicMode() {
@@ -138,7 +201,7 @@ function POVController(
 
 	const onMouseMove = (e) => {
 		if (!enabled) return;
-		if (!state.is(states.FREE)) return;
+		if (!state.is(states.FREE) && !state.is(states.FOCUS)) return;
 
 		const x = e.movementX;
 		const y = e.movementY;
@@ -147,7 +210,7 @@ function POVController(
 
 	const onTouchMove = (e) => {
 		if (!enabled) return;
-		if (!state.is(states.FREE)) return;
+		if (!state.is(states.FREE) && !state.is(states.FOCUS)) return;
 
 		handleMoveRotate(e.touches[0].pageX, e.touches[0].pageY);
 	};
@@ -168,9 +231,13 @@ function POVController(
 		remove,
 		update,
 
+		setMode,
 		goFreeMode,
+		goFocusMode,
 		goCinematicMode,
 		goFlashbackMode,
+
+		focusOn,
 
 		states,
 		rawStates,

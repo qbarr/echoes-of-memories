@@ -1,2 +1,2 @@
-export * from './TV_Table_Chair';
+export * from './Desk';
 export * from './Screen/Screen';

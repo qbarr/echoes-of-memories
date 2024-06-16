@@ -71,6 +71,8 @@ export function composerPlugin(webgl) {
 			// Dither uniforms
 			uDitherOffset: { value: new Vector2() },
 			uDitherStrength: { value: 1 },
+
+			// Darkness
 			uDarkness: { value: 0 },
 
 			// Black stripes
@@ -110,10 +112,13 @@ export function composerPlugin(webgl) {
 		const { name } = scene;
 		if (name === 'bedroom') {
 			api.$crt.enabled.set(true);
+			api.$lut.set('bedroom');
 		} else if (name === 'clinique') {
 			api.$crt.enabled.set(false);
+			api.$lut.set('clinique');
 		} else if (name === 'tv-room') {
 			api.$crt.enabled.set(false);
+			api.$lut.set('tv-room');
 		}
 	}
 

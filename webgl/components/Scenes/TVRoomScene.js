@@ -1,8 +1,9 @@
 import BaseScene from '#webgl/core/BaseScene';
 
-import { TheatreSheet } from '#webgl/plugins/theatre/utils/TheatreSheet.js';
-import { MeshBasicMaterial, Object3D } from 'three';
+import { MeshBasicMaterial } from 'three';
+
 import { scenesDatas } from './datas';
+import { w } from '#utils/state';
 
 const BLACK_MAT = new MeshBasicMaterial({ color: 0x000000 });
 
@@ -21,12 +22,24 @@ export default class TVRoomScene extends BaseScene {
 
 		const _textures = {
 			sol: new MeshBasicMaterial({ map: textures['sol_map'] }),
-			objets: new MeshBasicMaterial({ map: textures['atlas_map'] }),
-			ecran: new MeshBasicMaterial({ map: textures['atlas_map'] }),
+			desk: new MeshBasicMaterial({ map: textures['atlas_map'] }),
 			VHS: new MeshBasicMaterial({ map: vhsMap }),
 		};
 
+		['ecran', 'tv', 'lecteur', 'keyboard'].forEach(
+			(k) => (_textures[k] = _textures.desk),
+		);
+
 		const datas = scenesDatas['tv-room'];
+		scene.traverse((child) => {
+			if (!child.isMesh || !child.material) return;
+			if (child.name.includes('raycastable')) {
+				const idRef = child.name.split('_')[0];
+				const o = datas[idRef];
+				o.raycastMesh = child;
+				child.visible = false;
+			}
+		});
 		Object.keys(datas).forEach((k) => {
 			Object.assign(datas[k], { texture: _textures[k] });
 		});
@@ -36,12 +49,14 @@ export default class TVRoomScene extends BaseScene {
 
 		scene.traverse((child) => {
 			if (!child.isMesh || !child.material) return;
-			this.log(child.name);
-			if (datas[child.name]) {
-				const { class: Class, texture } = datas[child.name];
+			if (child.name.includes('raycastable')) return;
+
+			const data = datas[child.name];
+			if (data) {
+				const { class: Class, texture } = data;
 				child.material = texture;
 				if (Class) {
-					const obj = new Class({ name: child.name, mesh: child });
+					const obj = new Class({ name: child.name, mesh: child, data });
 					this.interactiveObjects[child.name] = obj;
 					_objects.push(obj);
 				}
@@ -51,31 +66,41 @@ export default class TVRoomScene extends BaseScene {
 		_objects.forEach((o) => this.add(o));
 		this.base.add(scene);
 
-		this.hide();
 		this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 	}
 
-	hide() {
-		this.base.visible = false;
-	}
-
-	show() {
-		this.base.visible = true;
-	}
-
 	async createSheets() {
-		const enterSheet = this.$project.getSheet('enter');
+		this.$sheet = this.$project.getSheet('enter');
 
-		await enterSheet.attachAudio('tv-room/enter');
-		enterSheet.$bool('Reveal Scene', { value: false }).onChange((v) => {
-			v ? this.show() : this.hide();
-			this.log('Reveal Scene', v);
-		});
-		enterSheet.$addCamera();
+		await this.$sheet.attachAudio('tv-room/enter');
+		this.$sheet.$addCamera();
+		this.$sheet.$composer(['global', 'bloom']);
 	}
 
 	async enter() {
-		this.webgl.$povCamera.onSceneSwitch(this);
+		this.log('enter');
+		const { $povCamera, $raycast, $scenes } = this.webgl;
+		$povCamera.onSceneSwitch(this);
+
+		const uiScene = $scenes.ui.component;
+		uiScene.subtitles.setColor('white');
+
+		setTimeout(async () => {
+			$raycast.disable();
+
+			const { tv, lecteur } = this.interactiveObjects;
+			tv.disableInteraction();
+			lecteur.disableInteraction();
+
+			$povCamera.$setState('cinematic');
+
+			await this.$sheet.play();
+
+			$raycast.enable();
+			// lecteur.enableInteraction();
+			// tv.enableInteraction();
+			$povCamera.$setState('focus');
+		}, 2000);
 	}
 
 	async leave() {

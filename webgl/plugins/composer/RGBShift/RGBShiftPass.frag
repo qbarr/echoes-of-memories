@@ -50,10 +50,13 @@ void main() {
 	stripes -= step(1. - size, uv.y); // bottom
 	gl_FragColor.rgb *= stripes;
 
+	// Darkness
+	gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.), uDarkness);
+
+	// Interface
 	vec4 interfaceColor = texture2D(tInterface, uv);
 	interfaceColor.rgb *= 1.2;
 	gl_FragColor.rgb = mix(gl_FragColor.rgb, interfaceColor.rgb, interfaceColor.a);
-	gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.), uDarkness);
 
 	// debug
 	// gl_FragColor += vec4(smoothstep(0.3, 1., pow(1. - depth, .6)));

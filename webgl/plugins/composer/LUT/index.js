@@ -17,7 +17,7 @@ export const useLutPass = (composer) => {
 	const mix = w(1);
 	const forcedMix = w(mix.value);
 
-	const currentLut = storageSync('webgl:composer:lut:current', w('neutral'));
+	const currentLut = w('neutral');
 
 	const lut = webgl.$assets.luts[currentLut.value];
 	const texture = lut.texture3D;
@@ -25,16 +25,7 @@ export const useLutPass = (composer) => {
 
 	const api = {
 		get lut() {
-			return currentLut.value;
-		},
-
-		set lut(value) {
-			if (value === currentLut.value) return;
-			if (!webgl.$assets.luts[value])
-				return __DEBUG__ && console.warn(`LUT ${value} not found`);
-
-			currentLut.value = value;
-			set(webgl.$assets.luts[value]);
+			return currentLut.get();
 		},
 
 		enabled,
@@ -70,11 +61,11 @@ export const useLutPass = (composer) => {
 	});
 	LUTPass.use(filter.material);
 
-	function set(lut) {
-		if (typeof lut === 'string') lut = webgl.$assets.luts[lut];
-		if (!lut) return;
+	function set(id) {
+		const lut = webgl.$assets.luts[id];
+		if (!lut) return __DEBUG__ && console.warn(`LUT '${id}' not found`);
 
-		currentLut.set(lut.texture3D.userData.id);
+		currentLut.set(id);
 		filter.uniforms.tLutMap.value = lut.texture3D;
 	}
 
@@ -92,12 +83,17 @@ export const useLutPass = (composer) => {
 
 		const lutList = Object.keys(webgl.$assets.luts);
 
-		gui.addBlade({
-			label: 'Presets',
-			options: lutList.map((id) => ({ text: id, value: id })),
-			view: 'list',
-			value: currentLut.value,
-		}).on('change', ({ value }) => set(value));
+		const preset = gui
+			.addBlade({
+				label: 'Presets',
+				options: lutList.map((id) => ({ text: id, value: id })),
+				view: 'list',
+				value: currentLut.value,
+			})
+			.on('change', ({ value }) => set(value));
+		currentLut.watchImmediate((value) => {
+			preset.value = value;
+		});
 
 		gui.addSeparator();
 

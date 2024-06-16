@@ -17,14 +17,6 @@ float lerpBloomFactor(float factor) {
 }
 
 void main() {
-	// FragColor = uBloomStrength * ( //
-	// lerpBloomFactor(uBloomFactors[ 0 ]) * vec4(uBloomTintColors[ 0 ], 1.0) * texture(tBlur1, vUv) +
-	// 	lerpBloomFactor(uBloomFactors[ 1 ]) * vec4(uBloomTintColors[ 1 ], 1.0) * texture(tBlur2, vUv) +
-	// 	lerpBloomFactor(uBloomFactors[ 2 ]) * vec4(uBloomTintColors[ 2 ], 1.0) * texture(tBlur3, vUv) +
-	// 	lerpBloomFactor(uBloomFactors[ 3 ]) * vec4(uBloomTintColors[ 3 ], 1.0) * texture(tBlur4, vUv) +
-	// 	lerpBloomFactor(uBloomFactors[ 4 ]) * vec4(uBloomTintColors[ 4 ], 1.0) * texture(tBlur5, vUv) //
-	// );
-
 	vec4 bloom = vec4(0.0);
 
 	bloom += lerpBloomFactor(uBloomFactors[ 0 ]) * vec4(uBloomTintColors[ 0 ], 1.0) * texture(tBlur1, vUv);

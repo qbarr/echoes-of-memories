@@ -60,21 +60,38 @@ export default class CliniqueScene extends BaseScene {
 	}
 
 	async createSheets() {
-		const introSheet = this.$project.getSheet('intro');
+		this.$sheet = this.$project.getSheet('intro');
 		// const audio = this.webgl.$assets.audios['clinique']['intro'];
-		await introSheet.attachAudio('clinique/intro');
-		introSheet.$addCamera();
-		introSheet.$composer(['global', 'bokeh', 'lut', 'bloom', 'rgbShift']);
+		await this.$sheet.attachAudio('clinique/intro');
+		this.$sheet.$addCamera();
+		this.$sheet.$composer(['global', 'bokeh', 'lut', 'bloom', 'rgbShift']);
 	}
 
 	async enter() {
-		this.webgl.$povCamera.onSceneSwitch(this);
+		this.log('enter');
+		const { $scenes, $povCamera } = this.webgl;
 
-		/// #if !__DEBUG__
-		setTimeout(() => {
-			this.webgl.$setState('intro');
+		const { cassette, porte } = this.interactiveObjects;
+
+		const uiScene = $scenes.ui.component;
+		uiScene.subtitles.setColor('white');
+
+		$povCamera.onSceneSwitch(this);
+
+		setTimeout(async () => {
+			$povCamera.$setState('cinematic');
+
+			cassette.enableInteraction();
+			cassette.reset();
+			cassette.show();
+
+			porte.disableInteraction();
+
+			this.$sheet.reset();
+			await this.$sheet.play();
+
+			$povCamera.$setState('focus');
 		}, 2000);
-		/// #endif
 	}
 
 	async leave() {

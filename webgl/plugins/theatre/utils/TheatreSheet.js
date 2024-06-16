@@ -1,5 +1,5 @@
 import { w } from '#utils/state/index.js';
-import { onChange } from '@theatre/core';
+import { onChange, val } from '@theatre/core';
 
 import { TheatreBool } from './TheatreBool';
 import { TheatreComposer } from './TheatreComposer';
@@ -12,6 +12,7 @@ import { TheatreTarget } from './TheatreTarget';
 import { TheatreVec2 } from './TheatreVec2';
 import { TheatreVec3 } from './TheatreVec3';
 import { TheatreList } from './TheatreList';
+import { createLogger } from '#utils/debug/logger.js';
 
 const NOOP = () => {};
 const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
@@ -32,6 +33,8 @@ export class TheatreSheet {
 	constructor(id, { project }) {
 		this.$webgl = project.$webgl;
 		this.$app = project.$app;
+
+		Object.assign(this, createLogger('Sheet.' + id, '#000', '#fb7c23'));
 
 		this._id = id;
 		this._project = project;
@@ -59,9 +62,9 @@ export class TheatreSheet {
 		this.$compound = (name, values, opts = {}) => new TheatreCompound(name, values, opts, this); // prettier-ignore
 		this.$events = (events) => new TheatreEvents('Events', events, this); // prettier-ignore
 		this.$list = (name, values, opts = {}) => new TheatreList(name, values, opts, this); // prettier-ignore
-		this.$addCamera = () => {
+		this.$addCamera = (initialValues = {}) => {
 			const cam = this.$webgl.$povCamera;
-			this.$compound(
+			const o = this.$compound(
 				'Camera',
 				{
 					position: { value: cam.target },
@@ -70,6 +73,8 @@ export class TheatreSheet {
 				},
 				{ position: { nudgeMultiplier: 0.1 } },
 			);
+
+			if (Object.keys(initialValues).length) o.setInitialValues(initialValues);
 		};
 
 		onChange(this.sequence.pointer.length, (len) => {
@@ -82,7 +87,16 @@ export class TheatreSheet {
 			// this._subtitles?.updateBySheetProgress({ time });
 		});
 
-		__DEBUG__ && this.devtools();
+		/// #if __DEBUG__
+		this.devtools();
+
+		window.addEventListener('keydown', (ev) => {
+			if (ev.code === 'Semicolon' && this.isActive) {
+				this.log('skip');
+				if (this.isActive) this.skip();
+			}
+		});
+		/// #endif
 
 		project.registerSheet(this);
 
@@ -120,9 +134,57 @@ export class TheatreSheet {
 		return this._active;
 	}
 
-	// skip() {
+	getKeyframes(prop) {
+		return this.sequence.__experimental_getKeyframes(prop);
+	}
 
-	// }
+	getLastKeyframe(prop) {
+		return this.getKeyframes(prop)[0];
+	}
+
+	// Je pète mon crâne
+	skip() {
+		// go to the last frame
+		// and force update all the objects values to trigger the .onValuesChange
+		this.sequence.position = this.duration;
+
+		// this.objects.forEach((Object) => {
+		// 	// get last keyframes for each object
+		// 	// and force update the values
+		// 	const props = val(Object.object.props);
+		// 	const values = {};
+		// 	console.log('props', props);
+		// 	for (const p in props) {
+		// 		const prop = props[p];
+
+		// 		if (typeof prop === 'object') {
+		// 			values[p] = {};
+		// 			for (const value in prop) {
+		// 				const _value = prop[value];
+		// 				if (typeof _value === 'object') {
+		// 					values[p][value] = {};
+		// 					for (const v in _value) {
+		// 						const lastKeyframe = this.getLastKeyframe(
+		// 							Object.object.props[p][value][v],
+		// 						);
+		// 						if (lastKeyframe)
+		// 							values[p][value][v] = lastKeyframe.value;
+		// 					}
+		// 				} else {
+		// 					const lastKeyframe = this.getLastKeyframe(
+		// 						Object.object.props[p][value],
+		// 					);
+		// 					if (lastKeyframe) values[p][value] = lastKeyframe.value;
+		// 				}
+		// 			}
+		// 		} else {
+		// 			const lastKeyframe = this.getLastKeyframe(Object.object.props[p]);
+		// 			if (lastKeyframe) values[p] = lastKeyframe.value;
+		// 		}
+		// 	}
+		// 	Object.update(values);
+		// });
+	}
 
 	async _attachAudioSource(source, volume = 1) {
 		// Can be a path to the file or an AudioBuffer
@@ -186,8 +248,6 @@ export class TheatreSheet {
 		res.then((res) => {
 			const { studio, waveformViewer } = this.$webgl.$theatre;
 			const decodedBuffer = res.decodedBuffer ?? res.audioGraph.decodedBuffer;
-
-			console.log('decodedBuffer', decodedBuffer);
 			waveformViewer.addAudio({ decodedBuffer, sequence: this.sequence }); // Pass the audioGraph and the sequence to the extension
 		});
 		/// #endif
@@ -227,20 +287,22 @@ export class TheatreSheet {
 	// 	}
 	// }
 
+	/// #if __DEBUG__
 	setActive(bool) {
-		console.log('setActive', this.id, bool);
 		this._active = bool;
 		bool ? this.listen() : this.unlisten();
 	}
+	/// #endif
 
 	listen() {
+		this._active = true;
 		this.objects.forEach((Object) => Object.listen());
 	}
 
 	unlisten() {
-		this.objects.forEach((Object) => Object.unlisten());
-
+		this._active = false;
 		if (this._hasSubtitles) this.$webgl.$subtitles.currentPart.set(null);
+		this.objects.forEach((Object) => Object.unlisten());
 	}
 
 	play(args = {}) {
@@ -270,6 +332,10 @@ export class TheatreSheet {
 		if (this.progress < 1) {
 			this._hasBeenCanceled = true;
 		}
+	}
+
+	reset() {
+		this.seek(0);
 	}
 
 	seek(time) {
@@ -315,6 +381,7 @@ export class TheatreSheet {
 			['Pause', this.pause.bind(this)],
 			['Stop', this.stop.bind(this)],
 			['Reset', () => this.seek(0)],
+			['Skip', this.skip.bind(this)],
 		]);
 	}
 	/// #endif

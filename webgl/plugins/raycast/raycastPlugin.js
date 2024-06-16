@@ -232,6 +232,7 @@ export function raycastPlugin(webgl) {
 			scenes.set(id, {
 				objects: new Map(),
 				rawList: [],
+				intersectedObject: null,
 			});
 		}
 
@@ -273,6 +274,14 @@ export function raycastPlugin(webgl) {
 		if (!objects.has(object))
 			return __DEBUG__ && console.warn(`Object ${object} not registered`);
 
+		if (raycastScene.intersectedObject) {
+			const obj = objects.get(object);
+			if (raycastScene.intersectedObject === obj) {
+				obj.onLeave();
+				raycastScene.intersectedObject = null;
+			}
+		}
+
 		// Remove from objects
 		rawList.splice(rawList.indexOf(object), 1);
 		objects.delete(object);
@@ -288,10 +297,19 @@ export function raycastPlugin(webgl) {
 		const { id } = webgl.$scenes.getSceneByComponent(scene);
 
 		if (!scenes.has(id)) return;
-		const { objects } = scenes.get(id);
+		const raycastScene = scenes.get(id);
+		const { objects } = raycastScene;
 
 		if (!objects.has(object)) return;
 		const obj = objects.get(object);
+
+		if (raycastScene.intersectedObject) {
+			console.log(raycastScene.intersectedObject, obj);
+			if (raycastScene.intersectedObject === obj.object) {
+				obj.onLeave();
+				raycastScene.intersectedObject = null;
+			}
+		}
 
 		obj.needRaycast = false;
 	}
@@ -314,7 +332,8 @@ export function raycastPlugin(webgl) {
 		const scene = $app.$store.isPaused ? $scenes.ui.component : $scenes.current;
 		if (!scenes.has(scene?.id)) return;
 
-		const { objects, rawList } = scenes.get(scene.id);
+		const raycastScene = scenes.get(scene.id);
+		const { objects, rawList } = raycastScene;
 
 		if (!rawList.length) return;
 
@@ -393,6 +412,12 @@ export function raycastPlugin(webgl) {
 
 			intersectObject(object, raycaster, intersects, false);
 
+			if (
+				raycastScene.intersectedObject &&
+				raycastScene.intersectedObject !== object
+			)
+				continue;
+
 			// Only keep the first intersected object by distance
 			// if (RAYCAST_ONLY_FIRST && intersects.length > 1) {
 			// find the closest object
@@ -408,8 +433,14 @@ export function raycastPlugin(webgl) {
 			const shouldIntersect = !!intersect && needsUpdate.value;
 
 			if (_isRaycasted.value !== shouldIntersect) {
-				shouldIntersect && onEnter(intersect);
-				!shouldIntersect && onLeave(intersect);
+				if (shouldIntersect) {
+					onEnter(intersect);
+					raycastScene.intersectedObject = object;
+				}
+				if (!shouldIntersect) {
+					onLeave(intersect);
+					raycastScene.intersectedObject = null;
+				}
 			}
 
 			if (pointer.justClicked && shouldIntersect) {
