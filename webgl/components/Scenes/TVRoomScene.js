@@ -92,14 +92,14 @@ export default class TVRoomScene extends BaseScene {
 			tv.disableInteraction();
 			lecteur.disableInteraction();
 
-			$povCamera.$setState('focus');
+			$povCamera.$setState('cinematic');
 
 			await this.$sheet.play();
 
 			$raycast.enable();
 			// lecteur.enableInteraction();
 			// tv.enableInteraction();
-			$povCamera.$setState('free');
+			$povCamera.$setState('focus');
 		}, 2000);
 	}
 
