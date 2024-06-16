@@ -47,7 +47,6 @@ export function gpgpuPlugin(webgl) {
 	}
 
 	function fillPositionTexture(gpgpu, baseGeometry) {
-		const additiveDustParticles = 100;
 		gpgpu.attributesTexture = gpgpu.computation.createTexture();
 
 		for (let i = 0; i < gpgpu.count; i++) {
@@ -163,37 +162,45 @@ export function gpgpuPlugin(webgl) {
 	function createSheets(gpgpu) {
 		const project = webgl.$theatre.get('Flashback');
 		if (!project) return;
-		const sheet = project.getSheet('flashbackIn');
+
+		const sheets = [
+			project.getSheet('flashback_photo'),
+			project.getSheet('flashback_colier'),
+			project.getSheet('flashback_bague')
+		]
 		const uniforms = gpgpu.variables.particles.material.uniforms;
 
-		sheet.$group('Uniforms', [
-			{
-				id: 'uniforms',
-				child: {
-					uFlowFieldFrequency: {
-						value: uniforms.uFlowFieldFrequency,
-						range: [0, 1],
+		sheets.forEach(sheet => {
+			sheet.$group('Particles', [
+				{
+					id: 'uniforms',
+					child: {
+						uFlowFieldFrequency: {
+							value: uniforms.uFlowFieldFrequency,
+							range: [0, 1],
+						},
+						uFlowFieldStrength: {
+							value: uniforms.uFlowFieldStrength,
+							range: [0, 10],
+						},
+						uFlowFieldInfluence: {
+							value: uniforms.uFlowFieldInfluence,
+							range: [0, 1],
+						},
+						uPercentRange: {
+							value: uniforms.uPercentRange,
+							range: [0, 10],
+						},
 					},
-					uFlowFieldStrength: {
-						value: uniforms.uFlowFieldStrength,
-						range: [0, 10],
-					},
-					uFlowFieldInfluence: {
-						value: uniforms.uFlowFieldInfluence,
-						range: [0, 1],
-					},
-					uPercentRange: {
-						value: uniforms.uPercentRange,
-						range: [0, 10],
-					},
-				},
-			}
-		]);
-		sheet.$compound('Camera', {
-			position: { value: webgl.$povCamera.target },
-			lat: webgl.$povCamera.controls.lat,
-			lon: webgl.$povCamera.controls.lon,
-		});
+				}
+			]);
+			// sheet.$compound('Camera', {
+			// 	position: { value: webgl.$povCamera.target },
+			// 	lat: webgl.$povCamera.controls.lat,
+			//  	lon: webgl.$povCamera.controls.lon
+			//  });
+
+		})
 	}
 
 	return {

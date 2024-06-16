@@ -127,7 +127,6 @@ export class TheatreSheet {
 	async _attachAudioSource(source, volume = 1) {
 		// Can be a path to the file or an AudioBuffer
 		const audioGraph = await this.sequence.attachAudio({ source });
-
 		const audioContext = audioGraph.audioContext;
 		const sequenceGain = audioGraph.gainNode;
 
@@ -251,6 +250,13 @@ export class TheatreSheet {
 		this.listen();
 		return done;
 	}
+
+	playBackward(args = {}) {
+		console.log(this)
+		this.seek(20)
+		this.play({ ...args, direction: 'alternateReverse' });
+	}
+
 
 	pause() {
 		this.sequence.pause();

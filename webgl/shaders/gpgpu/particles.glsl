@@ -36,6 +36,7 @@ void main()
     float friction = _attribute.y;
     float particleSize = fract(particle.a * .1);
 
+
     // Dead
     if(particle.a >= 1.0)
     {
@@ -47,7 +48,7 @@ void main()
     else
     {
         bool isMorphing = (range < uPercentRange);
-        bool isModelParticleMorph = isMorphing && range < 9.;
+        // bool isModelParticleMorph = isMorphing && range < 9.;
 
         float flowFieldFrequency = isMorphing ? uFlowFieldFrequency2 : uFlowFieldFrequency;
         float flowFieldStrength = isMorphing ? uFlowFieldStrength2 : uFlowFieldStrength;
@@ -68,26 +69,21 @@ void main()
 
         if (isMorphing) {
             vec3 baseFriction = base.xyz + (particle.xyz - base.xyz) * friction;
-            // // bool endedAnimation = distance(baseFriction, base.xyz) < 0.2 || uOther.x = 1.;
+            bool animationCompleted = distance(baseFriction, base.xyz) < 0.2;
 
-            // if(distance(baseFriction, base.xyz) < 0.2) {
-            //     particle.a = 1.0;
-            // }
-
-            // if (data.x == 1.) {
-            //     particle.xyz += flowField * uDeltaTime * strength * flowFieldStrength;
-            //     particle.a += uDeltaTime * 0.3;
-            // } else {
-            //     particle.xyz = baseFriction;
-            // }
+            if (animationCompleted) {
+                particle.xyz += flowField * uDeltaTime * strength * flowFieldStrength;
+                particle.a += uDeltaTime * 0.3;
+            } else {
+                particle.xyz = baseFriction;
+            }
             particle.xyz = baseFriction;
 
         } else {
-            particle.xyz += flowField * uDeltaTime * strength * flowFieldStrength;
+           particle.xyz += flowField * uDeltaTime * strength * flowFieldStrength;
         }
 
     }
 
     gl_FragColor = particle;
-
 }

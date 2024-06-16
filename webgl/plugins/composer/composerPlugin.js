@@ -45,10 +45,13 @@ export function composerPlugin(webgl) {
 
 	function createSheets() {
 		const project = webgl.$theatre.getProject('Transition-Memories');
-		const sheetIn = project.getSheet('transitionIn');
-		const sheetOut = project.getSheet('transitionOut');
-		sheetIn.$composer(['global', 'lut', 'crt']);
-		sheetOut.$composer(['global', 'lut', 'crt']);
+		const sheet = project.getSheet('transition');
+		sheet.$composer(['global', 'lut', 'crt']);
+		// sheet.$bool('SwitchSceneParticles', { value: false }).onChange((v) => {
+		// 	if (v) webgl.$scenes.switch('particle')
+		// 	else webgl.$scenes.switch('bedroom')
+		// });
+
 	}
 
 	function init() {

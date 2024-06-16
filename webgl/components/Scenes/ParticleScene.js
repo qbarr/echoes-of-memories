@@ -94,7 +94,8 @@ export default class ParticleScene extends BaseScene {
 	async enter() {
 		// this.introAnimate();
 		this.webgl.$povCamera.onSceneSwitch(this);
-		this.camera.$setState('flashback');
+		this.webgl.$gpgpu.computedsGPGPU.get()[0].forceCompute.set(true);
+		this.camera.$setState('flashback')
 		// this.camera = this.webgl.$povCamera;
 		// this.camera.add(MainCamera);
 	}

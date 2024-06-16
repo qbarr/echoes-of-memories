@@ -1,6 +1,6 @@
 import { BaseInteractiveObject } from '../Objects/base/BaseInteractiveObject';
 
-import { Guitare, _Photo } from '../Objects/bedroom';
+import { FamilyPhoto, Guitare } from '../Objects/bedroom';
 import { Cassette, Door } from '../Objects/clinique';
 import { TV_Table_Chair, Screen } from '../Objects/tv-room';
 
@@ -11,7 +11,7 @@ const datas = {
 		crucifix: { class: BaseInteractiveObject },
 		platine: { class: BaseInteractiveObject },
 		vinyles: { class: BaseInteractiveObject },
-		photodefamille: { class: _Photo },
+		photodefamille: { class: FamilyPhoto },
 		testament: { class: BaseInteractiveObject },
 		guitare: { class: Guitare },
 		nounours: { class: BaseInteractiveObject },
