@@ -7,6 +7,7 @@ import {
 	Object3D,
 	PerspectiveCamera,
 	Vector3,
+	Vector4,
 } from 'three';
 
 import Wobble from './Wobble.js';
@@ -35,7 +36,7 @@ export class POVCamera extends BaseCamera {
 		this.onPointerLockChange = this.onPointerLockChange.bind(this);
 
 		this.base = new Object3D();
-		this.target = new Vector3();
+		this.target = new Vector4(0, 0, 0, 0.2);
 
 		this.wobble_intentisty = { value: 0.0004 };
 		this.wobble_frequency = { value: new Vector3(0.6, 0.6, 0.6) };
@@ -155,7 +156,7 @@ export class POVCamera extends BaseCamera {
 		const { dt, elapsed } = this.webgl.$time;
 
 		this.wobble.update(elapsed * this.wobble_intentisty.value);
-		this.base.position.damp(this.target, 0.2, dt);
+		this.base.position.damp(this.target, this.target.w, dt);
 
 		if (this.controls) {
 			this.controls.update();

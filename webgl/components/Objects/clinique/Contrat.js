@@ -2,10 +2,10 @@ import { deferredPromise } from '#utils/async/deferredPromise.js';
 import { Object3D } from 'three';
 import { BaseInteractiveObject } from '../base/BaseInteractiveObject';
 
-export class Cassette extends BaseInteractiveObject {
+export class Contrat extends BaseInteractiveObject {
 	init() {
 		this.isSimpleObject = true;
-		this.audioId = 'clinique/cassette';
+		this.audioId = 'clinique/contrat';
 
 		this.baseDummy = new Object3D();
 		this.baseDummy.position.copy(this.base.position);
@@ -15,25 +15,23 @@ export class Cassette extends BaseInteractiveObject {
 
 	async onClick() {
 		super.onClick();
-
 		this.disableInteraction();
-		await this.$sheet.play();
-		this.hide();
 
 		const { $povCamera: camera } = this.webgl;
-		const { porte } = this.scene.interactiveObjects;
+
+		camera.$setState('focus');
+		// camera.controls.focusOn(this.base.position);
+
+		await this.$sheet.play();
 
 		camera.$setState('free');
-		porte.enableInteraction();
 	}
 
 	async createSheets() {
-		this.$sheet = this.$project.getSheet('cassette');
+		this.$sheet = this.$project.getSheet('contrat');
 		await this.$sheet.attachAudio(this.audioId);
-		// this.$sheet.$addCamera();
 		this.dummy = this.baseDummy.clone();
-
-		this.$sheet.$object('Cassette', { value: this.dummy }, { nudgeMultiplier: 0.01 });
+		this.$sheet.$object('Contrat', { value: this.dummy }, { nudgeMultiplier: 0.01 });
 	}
 
 	reset() {

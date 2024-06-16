@@ -6,7 +6,7 @@ async function enter({ machine }) {
 	const { crosshair } = uiScene;
 
 	crosshair.setVisible(true);
-	camera.controls.goFreeMode();
+	camera.controls.setMode('free');
 	$raycast.enable();
 }
 function update() {}

@@ -7,7 +7,7 @@ import { waveformViewerExtension } from './extensions/peaks/waveformViewerExtens
 import { TheatreProject } from './utils/TheatreProject';
 
 /// #if __DEBUG__
-/// #code import studio from '@theatre/studio';
+import studio from '@theatre/studio';
 studio.initialize({
 	persistenceKey: 'EOM:theatrejs',
 	usePersistentStorage: true,
@@ -145,11 +145,15 @@ export function theatrePlugin(webgl) {
 		gui.addBinding(studioActive, 'value', { label: 'Enable Studio' });
 
 		studioActive.watchImmediate((v) => {
-			const { ui, __experimental } = studio;
-			v ? ui.restore() : ui.hide();
-			v
-				? __experimental.__experimental_enablePlayPauseKeyboardShortcut()
-				: __experimental.__experimental_disblePlayPauseKeyboardShortcut();
+			const { setSelection, ui, __experimental } = studio;
+			if (v) {
+				ui.restore();
+				__experimental.__experimental_enablePlayPauseKeyboardShortcut();
+			} else {
+				ui.hide();
+				__experimental.__experimental_disblePlayPauseKeyboardShortcut();
+				// setSelection([]);
+			}
 		});
 
 		const warningGui = gui.addFolder({ title: '⚠️ Warning' });
@@ -181,48 +185,48 @@ export function theatrePlugin(webgl) {
 		folderUid++;
 	}
 
-	function useDiskStorage(projectID) {
-		const key = `EOM:theatrejs.persistent`;
-		const data = localStorage.getItem(key);
-		if (data) {
-			const lsData = JSON.parse(data);
+	// function useDiskStorage(projectID) {
+	// 	const key = `EOM:theatrejs.persistent`;
+	// 	const data = localStorage.getItem(key);
+	// 	if (data) {
+	// 		const lsData = JSON.parse(data);
 
-			const state = states[projectID];
-			const lsProject = lsData.historic.innerState.coreByProject[projectID];
-			const stateProject = state[projectID];
+	// 		const state = states[projectID];
+	// 		const lsProject = lsData.historic.innerState.coreByProject[projectID];
+	// 		const stateProject = state[projectID];
 
-			// override the project
-			Object.assign(stateProject, lsProject);
+	// 		// override the project
+	// 		Object.assign(stateProject, lsProject);
 
-			localStorage.setItem(key, JSON.stringify(lsData));
-			console.log('Project data overriden');
-		}
-	}
-	window.useDiskStorage = useDiskStorage;
+	// 		localStorage.setItem(key, JSON.stringify(lsData));
+	// 		console.log('Project data overriden');
+	// 	}
+	// }
+	// window.useDiskStorage = useDiskStorage;
 
-	function overrideSheetLocalStorage(project, sheet) {
-		const key = `EOM:theatrejs.persistent`;
-		const data = localStorage.getItem(key);
-		if (data) {
-			const lsData = JSON.parse(data);
+	// function overrideSheetLocalStorage(project, sheet) {
+	// 	const key = `EOM:theatrejs.persistent`;
+	// 	const data = localStorage.getItem(key);
+	// 	if (data) {
+	// 		const lsData = JSON.parse(data);
 
-			if (typeof project === 'string') project = getProject(project);
-			if (typeof sheet === 'string') sheet = project.getSheet(sheet);
+	// 		if (typeof project === 'string') project = getProject(project);
+	// 		if (typeof sheet === 'string') sheet = project.getSheet(sheet);
 
-			const state = states[project.id];
-			// > historic > coreByProject > [ProjectID] > sheetsById > [SheetID]
-			const lsSheet =
-				lsData.historic.innerState.coreByProject[project.id].sheetsById[sheet.id];
-			const stateSheet = state.sheetsById[sheet.id];
+	// 		const state = states[project.id];
+	// 		// > historic > coreByProject > [ProjectID] > sheetsById > [SheetID]
+	// 		const lsSheet =
+	// 			lsData.historic.innerState.coreByProject[project.id].sheetsById[sheet.id];
+	// 		const stateSheet = state.sheetsById[sheet.id];
 
-			// override the sheet
-			Object.assign(stateSheet, lsSheet);
+	// 		// override the sheet
+	// 		Object.assign(stateSheet, lsSheet);
 
-			localStorage.setItem(key, JSON.stringify(lsData));
-			console.log('Sheet data overriden');
-		}
-	}
-	window.overrideSheetLocalStorage = overrideSheetLocalStorage;
+	// 		localStorage.setItem(key, JSON.stringify(lsData));
+	// 		console.log('Sheet data overriden');
+	// 	}
+	// }
+	// window.overrideSheetLocalStorage = overrideSheetLocalStorage;
 	/// #endif
 
 	return {

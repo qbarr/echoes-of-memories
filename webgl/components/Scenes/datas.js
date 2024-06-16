@@ -1,10 +1,29 @@
 import { BaseInteractiveObject } from '../Objects/base/BaseInteractiveObject';
 
 import { FamilyPhoto, Guitare } from '../Objects/bedroom';
-import { Cassette, Door } from '../Objects/clinique';
-import { TV_Table_Chair, Screen } from '../Objects/tv-room';
+import { Cassette, Contrat, Door } from '../Objects/clinique';
+import { Desk, Screen } from '../Objects/tv-room';
 
 const datas = {
+	clinique: {
+		pipesacrak: {},
+		murs: {},
+		tableaux: {},
+		computers: {},
+		cassette: { class: Cassette },
+		contrat: { class: Contrat },
+		ecrans: {},
+		porte: { class: Door },
+	},
+	['tv-room']: {
+		desk: { class: Desk },
+		sol: {},
+		VHS: {},
+		ecran: { class: Screen },
+		tv: { class: BaseInteractiveObject },
+		lecteur: { class: BaseInteractiveObject },
+		keyboard: {},
+	},
 	bedroom: {
 		objets: {},
 		mursetsol: {},
@@ -20,22 +39,6 @@ const datas = {
 		couverture: { class: BaseInteractiveObject },
 		posters: {},
 		drowninggirl: {},
-	},
-	clinique: {
-		pipesacrak: {},
-		murs: {},
-		tableaux: {},
-		computers: {},
-		cassette: { class: Cassette },
-		contrat: { class: BaseInteractiveObject },
-		ecrans: {},
-		porte: { class: Door },
-	},
-	['tv-room']: {
-		objets: { class: TV_Table_Chair },
-		sol: {},
-		VHS: {},
-		ecran: { class: Screen },
 	},
 };
 

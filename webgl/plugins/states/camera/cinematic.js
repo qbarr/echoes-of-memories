@@ -6,7 +6,7 @@ async function enter({ machine }) {
 	const { crosshair } = uiScene;
 
 	crosshair.setVisible(false);
-	camera.controls.goCinematicMode();
+	camera.controls.setMode('cinematic');
 }
 function update() {}
 async function leave({ machine }) {}

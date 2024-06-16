@@ -13,8 +13,8 @@ export const useBokehPass = (composer) => {
 	const { buffers, filters, uniforms, defines } = composer;
 
 	const enabled = w(true);
-	const amount = w(1.239);
-	const strength = w(0.85);
+	const amount = w(0.815);
+	const strength = w(2.22);
 
 	let texture = DUMMY_RT.texture;
 	const api = {

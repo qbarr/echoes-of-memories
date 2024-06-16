@@ -44,6 +44,10 @@ export class TheatreCompound extends TheatreBaseObject {
 		return this._values;
 	}
 
+	setInitialValues(values) {
+		this.update(values);
+	}
+
 	update(values) {
 		for (let i = 0; i < this.childsKeys.length; i++) {
 			const key = this.childsKeys[i];

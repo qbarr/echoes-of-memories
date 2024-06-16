@@ -25,16 +25,16 @@ async function enter({ machine, isCanceled }) {
 
 	camera.$setState('free');
 
-	await p(objets._onClick.bind(objets));
-	if (isCanceled()) return;
+	// await p(objets._onClick.bind(objets));
+	// if (isCanceled()) return;
 
-	camera.$setState('cinematic');
-	objets.disableInteraction();
+	// camera.$setState('cinematic');
+	// objets.disableInteraction();
 
-	await objets.$sheet.play();
+	// await objets.$sheet.play();
 
-	ecran.enableInteraction();
-	camera.$setState('free');
+	// ecran.enableInteraction();
+	// camera.$setState('free');
 }
 function update() {}
 async function leave({ machine }) {
