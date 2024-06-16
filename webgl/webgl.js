@@ -69,6 +69,7 @@ export default createWebgl({
 
 			// Flashback
 			load('flashback/audios'),
+			load('flashbacks/meal/model'),
 
 			// Theatre
 			load('theatre'),

@@ -3,6 +3,7 @@ import { w } from '#utils/state/index.js';
 import { Uniform, Vector2 } from 'three';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer.js';
 
+
 export function gpgpuPlugin(webgl) {
 	const computedsGPGPU = w([]);
 	const api = { create, createPooling, computedsGPGPU, render };
@@ -57,7 +58,6 @@ export function gpgpuPlugin(webgl) {
 			const indexRange = i / range;
 
 			const friction = Math.random() * 0.035 + 0.96;
-
 			gpgpu.baseTexture.image.data[i4 + 0] =
 				baseGeometry.instance.attributes.position.array[i3 + 0];
 			gpgpu.baseTexture.image.data[i4 + 1] =
@@ -76,23 +76,43 @@ export function gpgpuPlugin(webgl) {
 		}
 	}
 
+	function fillDustParticles(gpgpu, baseGeometry, count) {
+		gpgpu.dustTexture = gpgpu.computation.createTexture();
 
-	function precomputeParticles(model, shader, timePauseCompute) {
-		const boat  = webgl.$assets.objects['boat'].scene;
-		const instance = boat.children[0].geometry.clone();
+		for (let i = 0; i < count; i++) {
+			const i3 = i * 3;
+			const i4 = i * 4;
+
+			gpgpu.dustTexture.image.data[i4 + 0] =
+				baseGeometry.instance.attributes.position.array[i3 + 0];
+			gpgpu.dustTexture.image.data[i4 + 1] =
+				baseGeometry.instance.attributes.position.array[i3 + 1];
+			gpgpu.dustTexture.image.data[i4 + 2] =
+				baseGeometry.instance.attributes.position.array[i3 + 2];
+			gpgpu.dustTexture.image.data[i4 + 3] = Math.random()
+
+		}
+	}
+
+
+	function precomputeParticles(instance, shader, timePauseCompute) {
 		const baseGeometry = {};
 		baseGeometry.instance = instance;
-		baseGeometry.count = baseGeometry.instance.attributes.position.count;
+		baseGeometry.count = instance.attributes.position.count;
 		const gpgpu = create(baseGeometry.count);
 		gpgpu.instance = baseGeometry.instance;
 		//dirty mais nsm
-
+		const additiveDustParticles = 100000;
 		fillPositionTexture(gpgpu, baseGeometry)
-		gpgpu.otherTexture = gpgpu.computation.createTexture();
+		fillDustParticles(gpgpu, baseGeometry,additiveDustParticles)
 
 		//
 		gpgpu.timePauseCompute = timePauseCompute;
 		gpgpu.forceCompute = w(false);
+		gpgpu.savedRenderTargets = {
+			particles: null,
+			dustParticles: null
+		}
 		initBase(shader, gpgpu)
 		computedsGPGPU.set([...computedsGPGPU.get(), gpgpu]);
 		return gpgpu;
@@ -104,29 +124,28 @@ export function gpgpuPlugin(webgl) {
 			shader,
 			gpgpu.baseTexture,
 		);
-		gpgpu.variables.other = gpgpu.computation.addVariable(
-			'uOther',
-			shader,
-			gpgpu.otherTexture,
-		)
-		gpgpu.computation.setVariableDependencies(gpgpu.variables.particles, [ gpgpu.variables.particles, gpgpu.variables.other ]);
-		gpgpu.computation.setVariableDependencies(gpgpu.variables.other, [ gpgpu.variables.particles ]);
+
+		gpgpu.variables.dustParticles = gpgpu.computation.addVariable(
+			'uDustParticles',
+			presetsShader.gpgpu.dust,
+			gpgpu.dustTexture,
+		);
+
+		gpgpu.computation.setVariableDependencies(gpgpu.variables.particles, [ gpgpu.variables.particles ]);
+		gpgpu.computation.setVariableDependencies(gpgpu.variables.dustParticles, [ gpgpu.variables.dustParticles ]);
 		// Uniforms
 		gpgpu.variables.particles.material.uniforms = {
 			uTime: new Uniform(0),
 			uDeltaTime: new Uniform(0),
 			uBase: new Uniform(gpgpu.baseTexture),
-			uData : new Uniform(gpgpu.otherTexture),
 			uAttributes: new Uniform(gpgpu.attributesTexture),
 			uFlowFieldFrequency: { value: 0.21 },
 			uFlowFieldStrength: { value: 2.3 },
 			uFlowFieldInfluence: { value: 1.0 },
 
-			uFlowFieldFrequency2: { value: 0.5 },
-			uFlowFieldStrength2: { value: 2 },
-			uFlowFieldInfluence2: { value: 1.5 },
 			uPercentRange: new Uniform(0),
 			uIsMorphing: new Uniform(false),
+			uMorphEnded: new Uniform(false),
 			//  uPaint = new Uniform(paintTexture),
 			uResolution: new Uniform(
 				new Vector2(
@@ -136,13 +155,26 @@ export function gpgpuPlugin(webgl) {
 			),
 		};
 
+		gpgpu.variables.dustParticles.material.uniforms ={
+			...gpgpu.variables.particles.material.uniforms,
+			uFlowFieldFrequency: { value: 0.5 },
+			uFlowFieldStrength: { value: 2 },
+			uFlowFieldInfluence: { value: 1.5 }
+		}
+
 		gpgpu.computation.init();
 		return gpgpu
 	}
 
 	function precomputeMemories() {
-		const boat  = webgl.$assets.objects['boat'].scene;
-		const instance = boat.children[0].geometry.clone();
+		const meal  = webgl.$assets.objects.flashbacks.meal.scene;
+
+		const instance = meal.children[2].geometry.clone();
+		console.log(instance.attributes.position.count)
+		// instance.rotateX(Math.PI / 2);
+		// instance.rotateY(Math.PI * 0.5);
+		instance.scale(2, 2, 2);
+		console.log(meal)
 		precomputeParticles(instance, presetsShader.gpgpu.base, 15);
 	}
 
@@ -155,7 +187,19 @@ export function gpgpuPlugin(webgl) {
 			const elapsed = webgl.$time.elapsed * 0.001
 			gpgpu.variables.particles.material.uniforms.uTime.value = elapsed;
 			gpgpu.variables.particles.material.uniforms.uDeltaTime.value = webgl.$time.dt * 0.001;
-			if(elapsed < gpgpu.timePauseCompute || gpgpu.forceCompute.get()) gpgpu.computation.compute()
+
+			if(elapsed >= 5 && !gpgpu.savedRenderTargets.particles) {
+
+				gpgpu.savedRenderTargets.particles = gpgpu.computation.getCurrentRenderTarget(gpgpu.variables.particles)
+
+				// renderTargetTextureToJPG(gpgpu.savedRenderTargets.particles)
+				//
+				// gpgpu.variables.particles.material.uniforms.uParticles.value = gpgpu.savedRenderTargets.particles.texture
+				// gpgpu.computation.doRenderTarget(gpgpu.variables.particles.material, gpgpu.variables.particles.renderTargets[0])
+
+				// }, 5000);
+			}
+			gpgpu.computation.compute()
 		})
 	}
 
@@ -168,40 +212,124 @@ export function gpgpuPlugin(webgl) {
 			project.getSheet('flashback_colier'),
 			project.getSheet('flashback_bague')
 		]
-		const uniforms = gpgpu.variables.particles.material.uniforms;
+
+		const modelUniforms = gpgpu.variables.particles.material.uniforms;
+		const dustUniforms = gpgpu.variables.dustParticles.material.uniforms;
 
 		sheets.forEach(sheet => {
 			sheet.$group('Particles', [
 				{
-					id: 'uniforms',
+					id: 'modelUniforms',
 					child: {
-						uFlowFieldFrequency: {
-							value: uniforms.uFlowFieldFrequency,
+						uFlowFieldFrequencyModel: {
+							value: modelUniforms.uFlowFieldFrequency,
 							range: [0, 1],
 						},
-						uFlowFieldStrength: {
-							value: uniforms.uFlowFieldStrength,
+						uFlowFieldStrengthModel: {
+							value: modelUniforms.uFlowFieldStrength,
 							range: [0, 10],
 						},
-						uFlowFieldInfluence: {
-							value: uniforms.uFlowFieldInfluence,
+						uFlowFieldInfluenceModel: {
+							value: modelUniforms.uFlowFieldInfluence,
 							range: [0, 1],
 						},
-						uPercentRange: {
-							value: uniforms.uPercentRange,
+						uPercentRangeModel: {
+							value: modelUniforms.uPercentRange,
 							range: [0, 10],
+						},
+						uMorphEndedModel: {
+							value: modelUniforms.uMorphEnded,
+							type: 'boolean',
 						},
 					},
+				},
+				{
+					id: 'dustUniforms',
+					child : {
+						uFlowFieldFrequencyDust: {
+							value: dustUniforms.uFlowFieldFrequency,
+							range: [0, 1],
+						},
+						uFlowFieldStrengthDust: {
+							value: dustUniforms.uFlowFieldStrength,
+							range: [0, 10],
+						},
+						uFlowFieldInfluenceDust: {
+							value: dustUniforms.uFlowFieldInfluence,
+							range: [0, 1],
+						}
+					}
 				}
 			]);
-			// sheet.$compound('Camera', {
-			// 	position: { value: webgl.$povCamera.target },
-			// 	lat: webgl.$povCamera.controls.lat,
-			//  	lon: webgl.$povCamera.controls.lon
-			//  });
 
 		})
 	}
+
+	// function dataTextureToJPG(dataTexture) {
+	// 	const canvas = document.createElement('canvas');
+	// 	canvas.width = dataTexture.image.width;
+	// 	canvas.height = dataTexture.image.height;
+	// 	const context = canvas.getContext('2d');
+
+	// 	const imageData = context.createImageData(dataTexture.image.width, dataTexture.image.height);
+	// 	console.log(imageData, dataTexture.image)
+	// 	imageData.data.set(dataTexture.image.data);
+	// 	context.putImageData(imageData, 0, 0);
+
+	// 	// Exporter en image JPEG
+	// 	const jpegUrl = canvas.toDataURL('image/jpeg');
+
+	// 	// Créer un lien pour télécharger l'image
+	// 	const link = document.createElement('a');
+	// 	link.href = jpegUrl;
+	// 	link.download = 'texture.jpg';
+	// 	link.click();
+	// }
+
+	function renderTargetTextureToJPG(renderTarget) {
+		const width = renderTarget.width;
+		const height = renderTarget.height;
+		const { $threeRenderer: renderer } = webgl;
+
+		// Création d'un canvas pour copier la texture
+		const canvas = document.createElement('canvas');
+		canvas.width = width;
+		canvas.height = height;
+		const context = canvas.getContext('2d');
+
+		// Lecture des pixels de la texture du render target
+		const buffer = new Uint8Array(width * height * 4);
+
+		renderer.readRenderTargetPixels(renderTarget, 0, 0, width, height, buffer);
+
+		// Création d'une ImageData et copie des pixels dedans
+		const imageData = context.createImageData(width, height);
+		imageData.data.set(buffer);
+
+		// Les données des pixels sont retournées verticalement, nous devons donc les retourner
+		const flippedImageData = context.createImageData(width, height);
+		for (let y = 0; y < height; y++) {
+			for (let x = 0; x < width; x++) {
+				const destIndex = (y * width + x) * 4;
+				const srcIndex = ((height - y - 1) * width + x) * 4;
+				flippedImageData.data[destIndex] = imageData.data[srcIndex];
+				flippedImageData.data[destIndex + 1] = imageData.data[srcIndex + 1];
+				flippedImageData.data[destIndex + 2] = imageData.data[srcIndex + 2];
+				flippedImageData.data[destIndex + 3] = imageData.data[srcIndex + 3];
+			}
+		}
+		context.putImageData(flippedImageData, 0, 0);
+		console.log(flippedImageData)
+		// Exporter en image JPEG
+		const jpegUrl = canvas.toDataURL('image/jpeg');
+
+		// Créer un lien pour télécharger l'image
+		const link = document.createElement('a');
+		link.href = jpegUrl;
+		link.download = 'render_target_texture.jpg';
+		link.click();
+	}
+
 
 	return {
 		install: () => {

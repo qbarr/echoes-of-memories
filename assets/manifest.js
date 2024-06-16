@@ -71,6 +71,7 @@ export default {
 
 	// Flashback
 	'flashback/audios': audio('audios/flashback/*'),
+	'flashbacks/meal/model': glb('scenes/flashbacks/meal'),
 	// 'flashback/subtitles': json('subtitles/flashback/*', { type: 'subtitles' }),
 
 	// Audios
