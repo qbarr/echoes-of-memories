@@ -2,7 +2,7 @@ import { presetsShader } from '#utils/presets/shaders.js';
 import { w } from '#utils/state/index.js';
 import { Uniform, Vector2 } from 'three';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer.js';
-
+import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 
 export function gpgpuPlugin(webgl) {
 	const computedsGPGPU = w([]);
@@ -144,6 +144,7 @@ export function gpgpuPlugin(webgl) {
 			uFlowFieldInfluence: { value: 1.0 },
 
 			uPercentRange: new Uniform(0),
+			uDeathRange: new Uniform(0),
 			uIsMorphing: new Uniform(false),
 			uMorphEnded: new Uniform(false),
 			//  uPaint = new Uniform(paintTexture),
@@ -164,15 +165,16 @@ export function gpgpuPlugin(webgl) {
 
 		gpgpu.computation.init();
 		return gpgpu
+
 	}
 
 	function precomputeMemories() {
 		const meal  = webgl.$assets.objects.flashbacks.meal.scene;
-
-		const instance = meal.children[2].geometry.clone();
-		console.log(instance.attributes.position.count)
+		const instance = meal.children[0].geometry.clone();
+		const mergeGeometry = BufferGeometryUtils.mergeGeometries([instance]);
+		console.log(mergeGeometry)
 		// instance.rotateX(Math.PI / 2);
-		// instance.rotateY(Math.PI * 0.5);
+		instance.rotateY(Math.PI * 0.5);
 		instance.scale(2, 2, 2);
 		console.log(meal)
 		precomputeParticles(instance, presetsShader.gpgpu.base, 15);

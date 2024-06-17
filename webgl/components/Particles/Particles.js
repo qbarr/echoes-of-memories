@@ -55,14 +55,15 @@ export class Particles extends BaseComponent {
 			const i4 = i * 4;
 
 
-			colorsArray[i4 + 0] = Math.random()
-			colorsArray[i4 + 1] = Math.random()
-			colorsArray[i4 + 2] = Math.random()
+			colorsArray[i4 + 0] = 1
+			colorsArray[i4 + 1] = 1
+			colorsArray[i4 + 2] = 1
 			colorsArray[i4 + 3] = 1
 
 		}
 		colorsArray = new BufferAttribute(new Float32Array(colorsArray), 4)
-		console.log(colorsArray)
+		if(gpgpu.instance) colorsArray = gpgpu.instance.attributes.color
+		// console.log(gpgpu.instance.attributes)
 		// const newColor = new BufferAttribute(
 		// 	gpgpu.instance.attributes.color.map(),
 		// 	4
@@ -71,7 +72,8 @@ export class Particles extends BaseComponent {
 		particles.geometry.setDrawRange(0, gpgpu.count)
 		particles.geometry.setAttribute('aParticlesUv', new BufferAttribute(particlesUvArray, 2))
 		particles.geometry.setAttribute('aSize', new BufferAttribute(sizesArray, 1))
-		 particles.geometry.setAttribute('aColor', colorsArray)
+		particles.geometry.setAttribute('aColor', colorsArray)
+		console.log(colorsArray)
 		const propsMaterial = this.props.material || {}
 		const propsUniforms = Object.assign({}, propsMaterial?.uniforms) || {}
 		delete propsMaterial?.uniforms
@@ -82,7 +84,7 @@ export class Particles extends BaseComponent {
 			fragmentShader: this.shader.fragment,
 			uniforms:
 			{
-				uSize: new Uniform(0.03),
+				uSize: new Uniform(0.02),
 				uResolution: new Uniform(
 					new Vector2(
 						$viewport.size.get().x * $viewport.pixelRatio.get(),
@@ -147,12 +149,14 @@ export class Particles extends BaseComponent {
 		// 	colorsArray[i * 3 + 1] = .5 + (Math.random() * .5)
 		// 	colorsArray[i * 3 + 2] = .5 + (Math.random() * .5)
 		// }
-		// const colorsArray = gpgpu.instance.attributes.color.array.slice(0, count * 4)
+		const colorsArray = gpgpu.instance.attributes.color.array.slice(0, count * 4)
+		console.log(gpgpu.instance.attributes.color)
 		// const colorsArray
 		particles.geometry.setDrawRange(0, count)
 		particles.geometry.setAttribute('aParticlesUv', new BufferAttribute(particlesUvArray, 2))
 		particles.geometry.setAttribute('aSize', new BufferAttribute(sizesArray, 1))
-		// particles.geometry.setAttribute('aColor', new BufferAttribute(colorsArray, 4))
+		particles.geometry.setAttribute('aColor', new BufferAttribute(colorsArray, 4))
+		console.log(colorsArray)
 		const propsMaterial = this.props.material || {}
 		const propsUniforms = Object.assign({}, propsMaterial?.uniforms) || {}
 		delete propsMaterial?.uniforms
@@ -179,7 +183,6 @@ export class Particles extends BaseComponent {
 			// depthTest: false,
 			// ...propsMaterial
 		})
-
 		particles.points = new Points(particles.geometry, particles.material)
 		particles.points.frustumCulled = false
 		this.dustMaterial = particles.material

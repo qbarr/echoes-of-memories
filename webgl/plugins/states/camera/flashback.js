@@ -4,7 +4,7 @@ async function enter({ machine }) {
 	const uiScene = $scenes.ui.component;
 	const { crosshair } = uiScene;
 
-	crosshair.setVisible(false);
+	// crosshair.setVisible(false);
 	camera.controls.setMode('flashback');
 }
 
