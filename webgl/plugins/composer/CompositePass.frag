@@ -1,4 +1,5 @@
 precision highp float;
+
 #include <colorspace_pars_fragment>
 #include <props>
 #include <packing>
@@ -45,8 +46,6 @@ vec3 dither(vec3 color) {
 	// Shift the color by dither_shift
 	return color + dither_shift_RGB;
 }
-
-#include <colorspace_pars_fragment>
 
 void main() {
 	vec2 uv = vUv;
