@@ -1,12 +1,13 @@
 import createFilter from '#webgl/utils/createFilter';
-import { Vector2, Vector3 } from 'three';
+import { Vector2 } from 'three';
 
 import { prng } from '#utils/maths/prng.js';
 import { w } from '#utils/state';
 
+import CompositePass from './CompositePass.frag?hotshader';
+import { useAfterImagePass } from './AfterImage';
 import { useBokehPass } from './Bokeh';
 import { useCRTPass } from './CRT';
-import CompositePass from './CompositePass.frag?hotshader';
 import { useDepthPass } from './Depth';
 import { useLutPass } from './LUT';
 import { useRGBShiftPass } from './RGBShift';
@@ -51,7 +52,6 @@ export function composerPlugin(webgl) {
 		// 	if (v) webgl.$scenes.switch('particle')
 		// 	else webgl.$scenes.switch('bedroom')
 		// });
-
 	}
 
 	function init() {
@@ -95,6 +95,7 @@ export function composerPlugin(webgl) {
 		passes.push(useSketchLinesPass(api));
 		passes.push(useBokehPass(api));
 		passes.push(useRGBShiftPass(api));
+		passes.push(useAfterImagePass(api));
 		passes.push(useCRTPass(api));
 		passes.push(useUnrealBloomPass(api));
 		passes.push(useLutPass(api));
@@ -110,15 +111,31 @@ export function composerPlugin(webgl) {
 	function onSceneSwitch(scene) {
 		currentScene = scene;
 		const { name } = scene;
+		const { $crt, $lut, $afterImage, $sketchLines, uniforms } = api;
 		if (name === 'bedroom') {
-			api.$crt.enabled.set(true);
-			api.$lut.set('bedroom');
+			$crt.enabled.set(true);
+			$lut.set('bedroom');
+			$afterImage.enabled.set(false);
+			$sketchLines.enabled.set(true);
+			uniforms.SRGB_TRANSFER.value = 0;
 		} else if (name === 'clinique') {
-			api.$crt.enabled.set(false);
-			api.$lut.set('clinique');
+			$crt.enabled.set(false);
+			$lut.set('clinique');
+			$afterImage.enabled.set(false);
+			$sketchLines.enabled.set(true);
+			uniforms.SRGB_TRANSFER.value = 0;
 		} else if (name === 'tv-room') {
-			api.$crt.enabled.set(false);
-			api.$lut.set('tv-room');
+			$crt.enabled.set(false);
+			$lut.set('tv-room');
+			$afterImage.enabled.set(false);
+			$sketchLines.enabled.set(true);
+			uniforms.SRGB_TRANSFER.value = 0;
+		} else if (name === 'particle') {
+			$crt.enabled.set(true);
+			// $lut.set('particle');
+			$afterImage.enabled.set(true);
+			$sketchLines.enabled.set(false);
+			uniforms.SRGB_TRANSFER.value = 1;
 		}
 	}
 
@@ -160,6 +177,9 @@ export function composerPlugin(webgl) {
 
 		// Render Bokeh pass
 		api.$bokeh.render();
+
+		// Render after image pass
+		api.$afterImage.render(scene);
 
 		// Render RGB shift pass
 		api.$rgbShift.render();
@@ -218,8 +238,7 @@ export function composerPlugin(webgl) {
 		},
 		load: () => {
 			webgl.$hooks.afterStart.watchOnce(init);
-			webgl.$hooks.afterStart.watchOnce(createSheets)
-
+			webgl.$hooks.afterStart.watchOnce(createSheets);
 		},
 	};
 }

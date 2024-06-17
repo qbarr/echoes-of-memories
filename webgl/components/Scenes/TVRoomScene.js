@@ -15,6 +15,8 @@ export default class TVRoomScene extends BaseScene {
 
 		this.$project = $theatre.get('TV-Room');
 
+		this._hasStarted = false;
+
 		const scene = $assets.objects['tv-room'].model.scene;
 		const textures = $assets.textures['tv-room'];
 
@@ -78,34 +80,36 @@ export default class TVRoomScene extends BaseScene {
 	}
 
 	async enter() {
-		this.log('enter');
-		const { $povCamera, $raycast, $scenes } = this.webgl;
+		this._hasStarted = false;
+
+		const { $povCamera, $scenes, $app } = this.webgl;
 		$povCamera.onSceneSwitch(this);
 
 		const uiScene = $scenes.ui.component;
-		uiScene.subtitles.setColor('white');
-
-		setTimeout(async () => {
-			$raycast.disable();
-
-			const { tv, lecteur } = this.interactiveObjects;
-			tv.disableInteraction();
-			lecteur.disableInteraction();
-
-			$povCamera.$setState('cinematic');
-
-			await this.$sheet.play();
-
-			$raycast.enable();
-			// lecteur.enableInteraction();
-			// tv.enableInteraction();
-			$povCamera.$setState('focus');
-		}, 2000);
+		uiScene.subtitles.setColor($app.$store.subtitles.colors.white);
 	}
 
 	async leave() {
 		this.log('leave');
 	}
 
-	update() {}
+	async start() {
+		const { $povCamera, $raycast } = this.webgl;
+
+		this._hasStarted = true;
+
+		const { tv, lecteur, desk } = this.interactiveObjects;
+		tv.disableInteraction();
+		lecteur.disableInteraction();
+		desk.disableInteraction();
+
+		$povCamera.$setState('cinematic');
+
+		await this.$sheet.play();
+
+		desk.enableInteraction();
+		// lecteur.enableInteraction();
+		// tv.enableInteraction();
+		$povCamera.$setState('focus');
+	}
 }

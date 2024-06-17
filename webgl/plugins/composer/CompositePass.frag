@@ -4,9 +4,6 @@ precision highp float;
 #include <packing>
 #include <common>
 
-uniform float time;
-uniform vec4 resolution;
-
 // Dither
 uniform vec2 uDitherOffset;
 uniform float uDitherStrength;
@@ -49,6 +46,8 @@ vec3 dither(vec3 color) {
 	return color + dither_shift_RGB;
 }
 
+#include <colorspace_pars_fragment>
+
 void main() {
 	vec2 uv = vUv;
 
@@ -81,6 +80,7 @@ void main() {
 
 	// gl_FragColor.rgb *= stripes;
 	gl_FragColor.a = 1.0;
-	gl_FragColor = sRGBTransferOETF(gl_FragColor);
-
+	if (SRGB_TRANSFER == 1) {
+		gl_FragColor = sRGBTransferOETF(gl_FragColor);
+	}
 }

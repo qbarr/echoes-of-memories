@@ -62,7 +62,6 @@ export class Crosshair extends BaseComponent {
 	}
 
 	setVisible(visible) {
-		console.log('visible:', visible);
 		this.base.visible = visible;
 	}
 }

@@ -1,11 +1,23 @@
 import { w } from '#utils/state/index.js';
+import { useAnimationsMixer } from '#webgl/utils/useAnimationsMixer.js';
 import { BaseInteractiveObject } from '../base/BaseInteractiveObject';
 
 export class Door extends BaseInteractiveObject {
+	beforeInit() {
+		this.$project = this.scene.$project;
+
+		const m = (this.mesh = this.props.mesh);
+		this.raycastMesh = this.props?.data?.raycastMesh ?? m.clone();
+		this.base.add(m);
+	}
+
 	init() {
 		this.isSimpleObject = true;
 		this.audioId = 'clinique/door';
+		this.actionId = 'porte';
 		this.animationProgress = w(0);
+
+		this.scene.$mixer.play(this.actionId);
 	}
 
 	async createSheets() {
@@ -14,9 +26,11 @@ export class Door extends BaseInteractiveObject {
 		this.$sheet.$object('Door', { value: this.base });
 		this.$sheet.$composer(['global']);
 		this.$sheet.$addCamera();
-		this.$sheet.$float('animation_progress', this.animationProgress, {
-			range: [0, 1],
-		});
+		this.$sheet
+			.$float('animation_progress', this.animationProgress, {
+				range: [0, 0.999],
+			})
+			.onChange((v) => this.scene.$mixer.normSeek(v));
 	}
 
 	async onClick() {

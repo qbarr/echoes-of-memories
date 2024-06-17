@@ -131,6 +131,7 @@ export default class MSDFTextMesh extends BaseComponent {
 
 	/// #if __DEBUG__
 	devtools(_gui) {
+		// this.log(this.scene);
 		const gui = (_gui ?? this.scene?.gui ?? this.webgl.$gui).addFolder({
 			title: this.name,
 		});

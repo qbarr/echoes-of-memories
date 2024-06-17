@@ -62,6 +62,7 @@ export function raycastPlugin(webgl) {
 		remove,
 
 		listen,
+		unlisten: stop,
 		stop,
 
 		update,
@@ -92,6 +93,7 @@ export function raycastPlugin(webgl) {
 	function listen() {
 		toggle(true);
 	}
+
 	function stop() {
 		toggle(false);
 	}
@@ -104,7 +106,7 @@ export function raycastPlugin(webgl) {
 		// if (ev.target.closest('[prevent-drag]')) return;
 		// if (ev.target.closest('button')) return;
 
-		if (webgl.$app.$store.pointerLocked) return;
+		if (!webgl.$app.$store.pointerLocked && !$app.$store.isPaused) return;
 
 		pointer.isPressed = true;
 		pointer.justClicked = true;

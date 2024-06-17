@@ -1,5 +1,13 @@
 import BaseScene from '#webgl/core/BaseScene.js';
-import { MathUtils, Mesh, MeshBasicMaterial, Quaternion, Uniform, Vector2, Vector3 } from 'three';
+import {
+	MathUtils,
+	Mesh,
+	MeshBasicMaterial,
+	Quaternion,
+	Uniform,
+	Vector2,
+	Vector3,
+} from 'three';
 import { MainCamera } from '../Cameras/MainCamera';
 import { Particles } from '../Particles/Particles';
 import { raftween } from '#utils/anim/raftween.js';
@@ -13,33 +21,32 @@ const startValues = {
 
 const coords = {
 	from: {
-		position: [ 0.048841, -0.365468, 3.647662 ],
-		quaternion: [ 0.07773159, 0.00986795, -0.00076942, 0.99692519 ]
+		position: [0.048841, -0.365468, 3.647662],
+		quaternion: [0.07773159, 0.00986795, -0.00076942, 0.99692519],
 	},
 	to: {
 		position: [],
-		quaternion: []
+		quaternion: [],
 	},
 	toMobile: {
-		position: [ -0.04504, -0.33404, 1.55420 ],
-		quaternion: [ 0.102611, -0.007329, 0.000756, 0.994694 ],
-		fov: 70.00
+		position: [-0.04504, -0.33404, 1.5542],
+		quaternion: [0.102611, -0.007329, 0.000756, 0.994694],
+		fov: 70.0,
 	},
 	toDesktop: {
-		position: [ -0.01613, -0.43987, 1.41361 ],
-		quaternion: [ 0.144932, 0.001752, -0.000257, 0.989440 ],
-		fov: 55.00
-	}
+		position: [-0.01613, -0.43987, 1.41361],
+		quaternion: [0.144932, 0.001752, -0.000257, 0.98944],
+		fov: 55.0,
+	},
 };
 
 for (let k in coords) {
-	const c = coords[ k ];
+	const c = coords[k];
 	c.position = new Vector3(...c.position);
 	c.quaternion = new Quaternion(...c.quaternion);
 }
 
-
-const lerp = (a, b, n) => a + n * (b - a)
+const lerp = (a, b, n) => a + n * (b - a);
 
 export default class ParticleScene extends BaseScene {
 	mixins = ['debugCamera'];
@@ -55,16 +62,13 @@ export default class ParticleScene extends BaseScene {
 			options: {},
 		});
 
-		this.mouse = new Vector2(0, 0)
-		this.offset = 0
+		this.mouse = new Vector2(0, 0);
+		this.offset = 0;
 
 		window.addEventListener('mousemove', this.onMouseMove.bind(this));
-
 	}
 
-	afterInit() {
-
-	}
+	afterInit() {}
 
 	initState() {
 		this.state = {};
@@ -80,7 +84,7 @@ export default class ParticleScene extends BaseScene {
 			easing: 'inOutExpo',
 			from: 0,
 			to: 1,
-			duration: 1600
+			duration: 1600,
 		});
 	}
 
@@ -93,17 +97,17 @@ export default class ParticleScene extends BaseScene {
 
 	async enter() {
 		// this.introAnimate();
-		this.webgl.$povCamera.onSceneSwitch(this);
-		this.webgl.$gpgpu.computedsGPGPU.get()[0].forceCompute.set(true);
-		this.camera.$setState('flashback')
-		// this.camera = this.webgl.$povCamera;
+		const { $povCamera, $app, $gpgpu } = this.webgl;
+		$povCamera.onSceneSwitch(this);
+		$gpgpu.computedsGPGPU.get()[0].forceCompute.set(true);
+		this.camera.$setState('flashback');
+		// this.camera = $povCamera;
 		// this.camera.add(MainCamera);
 	}
 
 	leave() {
 		this.camera.$setState('cinematique');
 	}
-
 
 	rotateAroundPoint(obj, point, axis, theta, pointIsWorld = false) {
 		if (pointIsWorld) obj.parent?.localToWorld(obj.position); // compensate for world coordinate
@@ -118,7 +122,7 @@ export default class ParticleScene extends BaseScene {
 	}
 
 	update() {
-		return
+		return;
 		// const { $time } = this.webgl;
 		// this.offsetX = lerp(this.offset, Math.sign(this.mouse.x) * .001, .01)
 		// this.rotateAroundPoint(this.camera.base, new Vector3(0), new Vector3(0, 1, 0), this.offsetX, false)
@@ -127,17 +131,18 @@ export default class ParticleScene extends BaseScene {
 		const t = this.webgl.$time.elapsed;
 
 		if (
-			this.state.mouseInfluence <= 0
-			&& this.state.dollyProgress >= 1
-			&& !this.state.needsUpdate
-		) return;
+			this.state.mouseInfluence <= 0 &&
+			this.state.dollyProgress >= 1 &&
+			!this.state.needsUpdate
+		)
+			return;
 
 		this.state.mouseInfluence = dampPrecise(
 			this.state.mouseInfluence,
 			0.3,
 			0.1,
 			sdt,
-			0.001
+			0.001,
 		);
 
 		if (this.state.camTween) this.state.camTween.update(sdt);
@@ -149,9 +154,9 @@ export default class ParticleScene extends BaseScene {
 			const px = this.state.mouseX;
 
 			// damped mouse influence
-			let x = this.state.mouseX = damp(this.state.mouseX, tx, 0.1, sdt);
-			let y = this.state.mouseY = damp(this.state.mouseY, ty, 0.1, sdt);
-			console.log(x, y)
+			let x = (this.state.mouseX = damp(this.state.mouseX, tx, 0.1, sdt));
+			let y = (this.state.mouseY = damp(this.state.mouseY, ty, 0.1, sdt));
+			console.log(x, y);
 			// wiggle effect
 			// const tm = 2.2;
 			// const am = 0.25 * m;
@@ -176,7 +181,6 @@ export default class ParticleScene extends BaseScene {
 		// 	coords.to.quaternion,
 		// 	this.state.dollyProgress
 		// );
-
 	}
 
 	lerp(a, b, n) {

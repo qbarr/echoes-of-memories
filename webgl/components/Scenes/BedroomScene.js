@@ -9,6 +9,8 @@ export default class BedroomScene extends BaseScene {
 	init() {
 		const { $assets, $theatre } = this.webgl;
 
+		this._hasStarted = false;
+
 		this.$project = $theatre.get('Bedroom');
 
 		const datas = scenesDatas.bedroom;
@@ -78,9 +80,15 @@ export default class BedroomScene extends BaseScene {
 	async createSheets() {}
 
 	async enter() {
-		this.log('enter');
-		const { $povCamera } = this.webgl;
+		this._hasStarted = true;
+
+		const { $povCamera, $app, $scenes } = this.webgl;
 		$povCamera.onSceneSwitch(this);
+
+		const uiScene = $scenes.ui.component;
+		uiScene.subtitles.setColor($app.$store.subtitles.colors.yellow);
+
+		$povCamera.$setState('free');
 
 		// position: [ -8.34592, 2.24563, 7.35179 ],
 		// quaternion: [  ],
@@ -88,6 +96,8 @@ export default class BedroomScene extends BaseScene {
 
 		// this.camera.setPosition([-8.67082, 0, 4.88725]);
 	}
+
+	async start() {}
 
 	// async leave() {
 	// 	const { $composer, $scenes } = this.webgl;
@@ -112,8 +122,4 @@ export default class BedroomScene extends BaseScene {
 	// 		})
 	// 	})
 	// }
-
-	update() {
-
-	}
 }

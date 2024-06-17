@@ -27,7 +27,7 @@ export default class DebugCameraMixin extends BaseMixin {
 	unused() {
 		const el = this.base;
 		if (!el.isScene) return;
-		el.unregisterDebugCamera();
+		// el.unregisterDebugCamera();
 	}
 
 	componentAttached() {
@@ -39,7 +39,7 @@ export default class DebugCameraMixin extends BaseMixin {
 	componentDetached() {
 		const el = this.base;
 		if (!el.isScene) return;
-		el.unregisterDebugCamera();
+		// el.unregisterDebugCamera();
 	}
 }
 

@@ -31,16 +31,14 @@ export class UiText extends BaseComponent {
 		// console.log('UiText props:', props.componentWidth, props.text.width);
 
 		this.base = new Object3D();
+	}
 
+	init() {
 		this.text = this.add(MSDFTextMesh, {
 			...this.props.text,
 			align: 'left',
 		});
-		this.base.scale.set(
-			this.props.text.scale,
-			this.props.text.scale,
-			this.props.text.scale,
-		);
+		this.base.scale.setScalar(this.props.text.scale);
 
 		this.width = this.text.geo._layout.width;
 	}
