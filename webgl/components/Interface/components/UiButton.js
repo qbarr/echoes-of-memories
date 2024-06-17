@@ -106,7 +106,7 @@ export class UiButton extends BaseComponent {
 			forcedScene: scene,
 		});
 
-		// this.onLeave();
+		this.onLeave();
 	}
 
 	onClick() {
@@ -114,11 +114,11 @@ export class UiButton extends BaseComponent {
 	}
 
 	onEnter() {
-		// this.hoverIn();
+		this.hoverIn();
 	}
 
 	onLeave() {
-		// this.hoverOut();
+		this.hoverOut();
 	}
 
 	hoverIn() {
