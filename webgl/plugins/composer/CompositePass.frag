@@ -1,5 +1,5 @@
 precision highp float;
-
+#include <colorspace_pars_fragment>
 #include <props>
 #include <packing>
 #include <common>
@@ -81,4 +81,6 @@ void main() {
 
 	// gl_FragColor.rgb *= stripes;
 	gl_FragColor.a = 1.0;
+	gl_FragColor = sRGBTransferOETF(gl_FragColor);
+
 }
