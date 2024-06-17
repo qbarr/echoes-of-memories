@@ -53,6 +53,8 @@ export function scenesPlugin(webgl) {
 			render: Scene.triggerRender.bind(Scene),
 		});
 
+		// console.log(`Scene created: ${name}`, s);
+
 		api.list.push(s);
 
 		return s;

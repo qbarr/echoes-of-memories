@@ -104,7 +104,7 @@ export function raycastPlugin(webgl) {
 		// if (ev.target.closest('[prevent-drag]')) return;
 		// if (ev.target.closest('button')) return;
 
-		if (!webgl.$app.$store.pointerLocked) return;
+		if (webgl.$app.$store.pointerLocked) return;
 
 		pointer.isPressed = true;
 		pointer.justClicked = true;
@@ -127,7 +127,9 @@ export function raycastPlugin(webgl) {
 		pointer.isHolding = false;
 		pointer.justClicked = false;
 
-		const scene = webgl.$scenes.current;
+		const { $app, $scenes } = webgl;
+		// const scene = webgl.$scenes.current;
+		const scene = $app.$store.isPaused ? $scenes.ui : $scenes.current;
 		if (!scenes.has(scene?.id)) return;
 		const { objects, rawList } = scenes.get(scene.id);
 
@@ -238,6 +240,8 @@ export function raycastPlugin(webgl) {
 
 		const { objects, rawList } = scenes.get(id);
 
+		// console.log('ADD', id, rawList);
+
 		if (objects.has(object)) return;
 		opts.sceneId = id;
 		const obj = createRaycastableObject(object, opts);
@@ -329,7 +333,8 @@ export function raycastPlugin(webgl) {
 
 	function update() {
 		const { $app, $scenes } = webgl;
-		const scene = $app.$store.isPaused ? $scenes.ui.component : $scenes.current;
+		const scene = $app.$store.isPaused ? $scenes.ui : $scenes.current;
+
 		if (!scenes.has(scene?.id)) return;
 
 		const raycastScene = scenes.get(scene.id);
@@ -348,6 +353,7 @@ export function raycastPlugin(webgl) {
 		if (idDebugCamera) return;
 		/// #endif
 
+		// pointer.position.set(0, 0);
 		!$app.$store.isPaused && pointer.position.set(0, 0);
 
 		// Update raycaster globally

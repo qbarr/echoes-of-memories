@@ -101,6 +101,11 @@ export default class MSDFTextMesh extends BaseComponent {
 		this.updateTextPosition();
 	}
 
+	editColor(color) {
+		this.mat.uniforms.uColor.value = color;
+		this.mat.uniforms.uColor.needsUpdate = true;
+	}
+
 	updateGeo(arg = {}) {
 		this.geo.update(arg);
 		if (arg.text) this.content = arg.text;

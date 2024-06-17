@@ -1,6 +1,8 @@
 import BaseComponent from '#webgl/core/BaseComponent.js';
 import { AdditiveBlending, Mesh, PlaneGeometry, ShaderMaterial } from 'three';
 
+import { watch } from 'vue';
+
 export class Crosshair extends BaseComponent {
 	init() {
 		const icon = this.webgl.$assets.textures.interface.eye;
@@ -47,6 +49,12 @@ export class Crosshair extends BaseComponent {
 		this.base = new Mesh(planeGeo, planeMat);
 		this.base.scale.setScalar(2);
 		this.base.position.set(0, 0, -0.5);
+
+		// const { isPaused } = this.webgl.$app.$store;
+		// watch(this.webgl.$app.$store.isPaused, (paused) => {
+		// 	console.log('isPaused:', paused);
+		// 	this.setVisible(!paused);
+		// });
 	}
 
 	toggleHover(hover) {
@@ -54,6 +62,7 @@ export class Crosshair extends BaseComponent {
 	}
 
 	setVisible(visible) {
+		console.log('visible:', visible);
 		this.base.visible = visible;
 	}
 }

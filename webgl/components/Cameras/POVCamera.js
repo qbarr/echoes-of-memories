@@ -135,11 +135,16 @@ export class POVCamera extends BaseCamera {
 		if (preventDebug(ev)) return;
 		/// #endif
 
-		const { $getCurrentScene, $canvas } = this.webgl;
+		const { $getCurrentScene, $canvas, $app } = this.webgl;
+		const { $store } = $app;
 		const scene = $getCurrentScene();
 		const currentCam = scene.getCurrentCamera();
 
-		if (!this.$pointerLocked && currentCam.name !== 'Debug Camera') {
+		if (
+			!this.$pointerLocked &&
+			!$store.isPaused &&
+			currentCam.name !== 'Debug Camera'
+		) {
 			$canvas.requestPointerLock();
 		}
 	}

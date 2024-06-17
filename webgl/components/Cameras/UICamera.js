@@ -33,5 +33,6 @@ export class UICamera extends BaseCamera {
 		this.cam.updateProjectionMatrix();
 
 		this.base.width = this.base.right * 2;
+		this.base.height = this.base.top * 2;
 	}
 }
