@@ -69,6 +69,7 @@ export class UiNavigation extends BaseComponent {
 					...this.props.text,
 					content: tab,
 					scale: 0.75,
+					strokeWidth: 0,
 				},
 				index: i,
 				onClick: this.navClick,

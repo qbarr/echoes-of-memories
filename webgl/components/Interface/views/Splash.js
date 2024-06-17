@@ -22,6 +22,7 @@ export class Splash extends BaseUiView {
 				color: new Color(0xffd700).offsetHSL(0, 0.3, 0.1),
 				// scale: 0.5,
 				scale: 1,
+				strokeWidth: 0,
 				letterSpacing: -2,
 			},
 			componentWidth: 900,

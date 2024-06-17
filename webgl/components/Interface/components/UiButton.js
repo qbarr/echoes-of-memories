@@ -36,8 +36,6 @@ export class UiButton extends BaseComponent {
 		this.base.name = 'UiButton';
 		this.base.index = this.props.index;
 
-		// console.log(this.base.index);
-
 		this.color = this.props.text.color;
 		this.hoveredColor = this.props.hoveredColor;
 		this.backgroundColor = this.props.backgroundColor;
@@ -51,8 +49,6 @@ export class UiButton extends BaseComponent {
 		this.setupText();
 		this.setupBackground();
 		this.justifyContent();
-
-		// console.log(this.UiText.width, this.props.componentWidth);
 	}
 
 	setupText() {
@@ -110,7 +106,7 @@ export class UiButton extends BaseComponent {
 			forcedScene: scene,
 		});
 
-		this.onLeave();
+		// this.onLeave();
 	}
 
 	onClick() {
@@ -118,11 +114,11 @@ export class UiButton extends BaseComponent {
 	}
 
 	onEnter() {
-		this.hoverIn();
+		// this.hoverIn();
 	}
 
 	onLeave() {
-		this.hoverOut();
+		// this.hoverOut();
 	}
 
 	hoverIn() {
