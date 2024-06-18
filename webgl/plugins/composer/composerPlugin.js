@@ -2,7 +2,7 @@ import createFilter from '#webgl/utils/createFilter';
 import { Vector2 } from 'three';
 
 import { prng } from '#utils/maths/prng.js';
-import { w } from '#utils/state';
+import { s, w } from '#utils/state';
 
 import CompositePass from './CompositePass.frag?hotshader';
 import { useAfterImagePass } from './AfterImage';
@@ -29,6 +29,8 @@ export function composerPlugin(webgl) {
 
 	let currentScene = null;
 
+	const $hooks = { beforeRenderEmissive: s(), afterRenderEmissive: s() };
+
 	const api = {
 		buffers,
 		filters,
@@ -36,6 +38,8 @@ export function composerPlugin(webgl) {
 
 		uniforms,
 		defines,
+
+		$hooks,
 
 		update,
 		render,
@@ -59,12 +63,14 @@ export function composerPlugin(webgl) {
 		const { textures } = $assets;
 
 		buffers.base = $fbo.createBuffer({ name: 'Base' });
+		buffers.emissive = $fbo.createBuffer({ name: 'Emissive' });
 		buffers.interface = $fbo.createBuffer({ name: 'Interface' });
 		buffers.composite = $fbo.createBuffer({ name: 'Composite' });
 
 		Object.assign(uniforms, {
 			...webgl.uniforms,
 			tMap: { value: buffers.base.texture, type: 't' },
+			tEmissive: { value: buffers.emissive.texture, type: 't' },
 			tInterface: { value: buffers.interface.texture, type: 't' },
 			tComposite: { value: buffers.composite.texture, type: 't' },
 
@@ -94,8 +100,8 @@ export function composerPlugin(webgl) {
 		passes.push(useBokehPass(api));
 		passes.push(useRGBShiftPass(api));
 		passes.push(useAfterImagePass(api));
-		passes.push(useCRTPass(api));
 		passes.push(useUnrealBloomPass(api));
+		passes.push(useCRTPass(api));
 		passes.push(useLutPass(api));
 
 		webgl.$scenes._current.watchImmediate(onSceneSwitch);
@@ -156,6 +162,15 @@ export function composerPlugin(webgl) {
 		$scenes.ui.component.triggerRender();
 		uniforms.tInterface.value = buffers.interface.texture;
 
+		// Render emissive pass
+		$hooks.beforeRenderEmissive.emit();
+		renderer.setRenderTarget(buffers.emissive);
+		renderer.clear();
+		scene.triggerRender();
+		renderer.clearDepth();
+		uniforms.tEmissive.value = buffers.emissive.texture;
+		$hooks.afterRenderEmissive.emit();
+
 		// Render depth pass
 		api.$depth.render(scene);
 
@@ -182,11 +197,11 @@ export function composerPlugin(webgl) {
 		// Render RGB shift pass
 		api.$rgbShift.render();
 
-		// Render VHS pass
-		api.$crt.render();
-
 		// Render Unreal Bloom pass
 		api.$unrealBloom.render();
+
+		// Render VHS pass
+		api.$crt.render();
 
 		// Render composite pass
 		renderer.setRenderTarget(buffers.composite);

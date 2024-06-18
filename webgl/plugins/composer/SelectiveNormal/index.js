@@ -4,7 +4,7 @@ import { GLSL3, MeshBasicMaterial, MeshNormalMaterial, WebGLRenderTarget } from 
 import createFilter from '#webgl/utils/createFilter.js';
 import { w } from '#utils/state';
 
-const DUMMY_RT = new WebGLRenderTarget(1, 1);
+const DUMMY_RT = new WebGLRenderTarget(1, 1, { depthBuffer: false });
 const BLACK_MATERIAL = new MeshBasicMaterial({ color: 0x000000 });
 // const WHITE_MATERIAL = new MeshBasicMaterial({ color: 0xffffff });
 const OVERRIDE_MATERIAL = new MeshNormalMaterial();
