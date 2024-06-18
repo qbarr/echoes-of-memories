@@ -75,8 +75,11 @@ export default class CliniqueScene extends BaseScene {
 
 		const { $scenes, $povCamera, $app } = this.webgl;
 		$povCamera.onSceneSwitch(this);
+
+		/// #if __DEBUG__
 		$povCamera.setPosition([1.6618, 3.09741, 5.98017]);
 		$povCamera.$setState('free');
+		/// #endif
 
 		const uiScene = $scenes.ui.component;
 		uiScene.subtitles.setColor($app.$store.subtitles.colors.white);

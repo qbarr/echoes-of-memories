@@ -1,4 +1,4 @@
-import { ShaderMaterial } from 'three';
+import { ShaderMaterial, Vector2 } from 'three';
 import { BaseInteractiveObject } from '../../base/BaseInteractiveObject';
 
 import fs from './ScreenFs.frag?hotshader';
@@ -9,15 +9,18 @@ export class Screen extends BaseComponent {
 	init() {
 		this.mesh = this.props.mesh;
 
-		const { $assets, uniforms } = this.webgl;
-		const texture = $assets.textures['tv-room']['instructions_map'];
+		const { uniforms } = this.webgl;
 
 		this.mesh.material = new ShaderMaterial({
 			uniforms: {
 				...uniforms,
-				tMap: { value: texture },
+				uInterferences: { value: new Vector2(2, 0.2) },
+				tMap: { value: this.getInstructionsScreen() },
 			},
 		});
+
+		this.mat = this.mesh.material;
+		this.uniforms = this.mat.uniforms;
 		fs.use(this.mesh.material);
 		vs.use(this.mesh.material);
 
@@ -25,6 +28,22 @@ export class Screen extends BaseComponent {
 
 		this.isSimpleObject = true;
 		// this.audioId = 'common/footstep';
+	}
+
+	getSplashScreen() {
+		return this.webgl.$assets.textures['tv-room']['splash_screen_map'];
+	}
+
+	getInstructionsScreen() {
+		return this.webgl.$assets.textures['tv-room']['instructions_map'];
+	}
+
+	setSplashScreen() {
+		this.uniforms.tMap.value = this.getSplashScreen();
+	}
+
+	setInstructionsScreen() {
+		this.uniforms.tMap.value = this.getInstructionsScreen();
 	}
 
 	// createSheets() {

@@ -70,7 +70,7 @@ export function composerPlugin(webgl) {
 
 			// Dither uniforms
 			uDitherOffset: { value: new Vector2() },
-			uDitherStrength: { value: 1 },
+			uDitherStrength: { value: 0.2 },
 
 			// Darkness
 			uDarkness: { value: 0 },
@@ -80,8 +80,6 @@ export function composerPlugin(webgl) {
 
 			// Vignette
 			uVignette: { value: new Vector2(0.171, 0) },
-			// uDitherStrength: { value: 1 },
-			uDitherStrength: { value: 0.2 },
 		});
 
 		Object.assign(defines, { ...webgl.defines });
@@ -221,6 +219,7 @@ export function composerPlugin(webgl) {
 
 		add(uniforms.uDitherStrength, { label: 'Dithering', max: 2 });
 		add(uniforms.uStripesScale, { label: 'Stripes', max: 1 });
+		add(uniforms.uDarkness, { label: 'Darkness', max: 1 });
 
 		gui.addSeparator();
 

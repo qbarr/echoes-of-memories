@@ -9,6 +9,7 @@ export class TheatreBool extends TheatreBaseObject {
 
 		this._name = name;
 		this._value = value;
+		this._initialValue = this._value;
 		this._sheet = sheet;
 
 		this._isWritable = !!value.isWritableSignal;
@@ -29,9 +30,6 @@ export class TheatreBool extends TheatreBaseObject {
 
 	get name() {
 		return this._name;
-	}
-	get value() {
-		return this._value;
 	}
 	get sheet() {
 		return this._sheet;

@@ -33,7 +33,7 @@ export class Cassette extends BaseInteractiveObject {
 		// this.$sheet.$addCamera();
 		this.dummy = this.baseDummy.clone();
 
-		this.$sheet.$object('Cassette', { value: this.dummy }, { nudgeMultiplier: 0.01 });
+		this.$sheet.$object('Cassette', this.dummy, { nudgeMultiplier: 0.01 });
 	}
 
 	reset() {

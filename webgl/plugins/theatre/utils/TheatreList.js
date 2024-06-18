@@ -9,6 +9,7 @@ export class TheatreList extends TheatreBaseObject {
 
 		this._name = name;
 		this._values = values;
+		this._initialValues = this._values;
 		this._sheet = sheet;
 
 		this._onUpdate = opts.onUpdate ?? NOOP;
@@ -36,9 +37,6 @@ export class TheatreList extends TheatreBaseObject {
 
 	get name() {
 		return this._name;
-	}
-	get values() {
-		return this._values;
 	}
 	get sheet() {
 		return this._sheet;

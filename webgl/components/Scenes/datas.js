@@ -2,7 +2,7 @@ import { BaseInteractiveObject } from '../Objects/base/BaseInteractiveObject';
 
 import { FamilyPhoto, Guitare } from '../Objects/bedroom';
 import { Cassette, Contrat, Door } from '../Objects/clinique';
-import { Desk, Screen } from '../Objects/tv-room';
+import { Desk, Lecteur, Screen, TV } from '../Objects/tv-room';
 
 const datas = {
 	clinique: {
@@ -20,8 +20,8 @@ const datas = {
 		sol: {},
 		VHS: {},
 		ecran: { class: Screen },
-		tv: { class: BaseInteractiveObject },
-		lecteur: { class: BaseInteractiveObject },
+		tv: { class: TV },
+		lecteur: { class: Lecteur },
 		keyboard: {},
 	},
 	bedroom: {

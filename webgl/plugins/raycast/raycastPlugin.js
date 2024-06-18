@@ -236,7 +236,7 @@ export function raycastPlugin(webgl) {
 			scenes.set(id, {
 				objects: new Map(),
 				rawList: [],
-				intersectedObject: null,
+				lastRaycastedObject: null,
 			});
 		}
 
@@ -280,11 +280,11 @@ export function raycastPlugin(webgl) {
 		if (!objects.has(object))
 			return __DEBUG__ && console.warn(`Object ${object} not registered`);
 
-		if (raycastScene.intersectedObject) {
+		if (raycastScene.lastRaycastedObject) {
 			const obj = objects.get(object);
-			if (raycastScene.intersectedObject === obj) {
+			if (raycastScene.lastRaycastedObject === obj) {
 				obj.onLeave();
-				raycastScene.intersectedObject = null;
+				raycastScene.lastRaycastedObject = null;
 			}
 		}
 
@@ -309,11 +309,10 @@ export function raycastPlugin(webgl) {
 		if (!objects.has(object)) return;
 		const obj = objects.get(object);
 
-		if (raycastScene.intersectedObject) {
-			console.log(raycastScene.intersectedObject, obj);
-			if (raycastScene.intersectedObject === obj.object) {
+		if (raycastScene.lastRaycastedObject) {
+			if (raycastScene.lastRaycastedObject === obj.object) {
 				obj.onLeave();
-				raycastScene.intersectedObject = null;
+				raycastScene.lastRaycastedObject = null;
 			}
 		}
 
@@ -379,89 +378,88 @@ export function raycastPlugin(webgl) {
 			vec3.release();
 			/// #endif
 
-			for (let i = 0; i < rawList.length; i++) {
-				const obj = objects.get(rawList[i]);
-				if (!obj) continue;
-				obj.onAfterSetCamera(cam);
+			// for (let i = 0; i < rawList.length; i++) {
+			// 	const obj = objects.get(rawList[i]);
+			// 	if (!obj) continue;
+			// 	obj.onAfterSetCamera(cam);
+			// }
+		}
+
+		raycaster.intersectObjects(rawList, true, intersects);
+		intersects.sort((a, b) => a.distance - b.distance);
+
+		let closest = intersects[0];
+
+		for (let i = 0; i < intersects.length; i++) {
+			if (closest) {
+				if (!objects.get(closest.object).needRaycast) closest = intersects[i];
+				else break;
 			}
 		}
 
-		for (let i = 0; i < rawList.length; i++) {
-			const obj = objects.get(rawList[i]);
-			if (!obj) continue;
-
-			const {
-				onLeave,
-				isRaycasted: _isRaycasted,
-				needRaycast,
-				object,
-				onEnter,
-				onHover,
-				onMove,
-				onDown,
-				onHold,
-				onBeforeSetCamera,
-				onAfterSetCamera,
-				onBeforeRaycast,
-				onAfterRaycast,
-				forceVisible,
-			} = obj;
-
-			if (!needRaycast) continue;
-
-			// Update raycaster for each object if any of them has callbacks
-			if (cameraNeedsUpdate) {
-				onBeforeSetCamera(cam);
-				raycaster.setFromCamera(pointer.position, cam);
-				onAfterSetCamera(cam);
-			}
-
-			onBeforeRaycast(raycaster);
-
-			intersectObject(object, raycaster, intersects, false);
-
-			if (
-				raycastScene.intersectedObject &&
-				raycastScene.intersectedObject !== object
-			)
-				continue;
-
-			// Only keep the first intersected object by distance
-			// if (RAYCAST_ONLY_FIRST && intersects.length > 1) {
-			// find the closest object
-			// intersects.sort((a, b) => a.distance - b.distance);
-			// console.log(intersects);
-			// intersects.length = 1;
-			// debugger;
-			// }
-
-			onAfterRaycast(raycaster);
-
-			const intersect = intersects.find((i) => i.object === object);
-			const shouldIntersect = !!intersect && needsUpdate.value;
-
-			if (_isRaycasted.value !== shouldIntersect) {
-				if (shouldIntersect) {
-					onEnter(intersect);
-					raycastScene.intersectedObject = object;
-				}
-				if (!shouldIntersect) {
-					onLeave(intersect);
-					raycastScene.intersectedObject = null;
+		if (closest) {
+			if (raycastScene.lastRaycastedObject) {
+				if (raycastScene.lastRaycastedObject !== closest.object) {
+					const prevObj = objects.get(raycastScene.lastRaycastedObject);
+					prevObj.onLeave();
 				}
 			}
 
-			if (pointer.justClicked && shouldIntersect) {
-				pointer.justClicked = false;
-				onDown(intersect);
+			const obj = objects.get(closest.object);
+			raycastScene.lastRaycastedObject = closest.object;
+			if (obj) {
+				const {
+					onEnter,
+					isRaycasted: _isRaycasted,
+					needRaycast,
+					object,
+					onLeave,
+					onHover,
+					onMove,
+					onDown,
+					onHold,
+					onBeforeRaycast,
+					onAfterRaycast,
+					forceVisible,
+				} = obj;
+
+				if (needRaycast) {
+					if (_isRaycasted.value !== true) {
+						onEnter(closest);
+					}
+
+					onAfterRaycast(raycaster);
+
+					const shouldIntersect = !!closest && needsUpdate.value;
+
+					if (_isRaycasted.value !== shouldIntersect) {
+						if (shouldIntersect) {
+							onEnter(closest);
+						}
+						if (!shouldIntersect) {
+							onLeave(closest);
+						}
+					}
+
+					if (pointer.justClicked && shouldIntersect) {
+						pointer.justClicked = false;
+						onDown(closest);
+					}
+
+					if (shouldIntersect && (object.visible || forceVisible)) {
+						onHover(closest);
+						onMove(closest);
+
+						pointer.isHolding && onHold(closest);
+					}
+				}
 			}
-
-			if (!shouldIntersect || (!object.visible && !forceVisible)) continue;
-
-			onHover(intersect);
-			onMove(intersect);
-
-			pointer.isHolding && onHold(intersect);
+		} else {
+			if (raycastScene.lastRaycastedObject) {
+				const obj = objects.get(raycastScene.lastRaycastedObject);
+				obj.onLeave();
+				raycastScene.lastRaycastedObject = null;
+			}
 		}
 
 		pointer.hasClicked = false;
