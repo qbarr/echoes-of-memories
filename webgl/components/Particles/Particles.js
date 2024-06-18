@@ -84,7 +84,7 @@ export class Particles extends BaseComponent {
 			fragmentShader: this.shader.fragment,
 			uniforms:
 			{
-				uSize: new Uniform(0.02),
+				uSize: new Uniform(0.03),
 				uResolution: new Uniform(
 					new Vector2(
 						$viewport.size.get().x * $viewport.pixelRatio.get(),

@@ -139,14 +139,14 @@ export function gpgpuPlugin(webgl) {
 			uDeltaTime: new Uniform(0),
 			uBase: new Uniform(gpgpu.baseTexture),
 			uAttributes: new Uniform(gpgpu.attributesTexture),
-			uFlowFieldFrequency: { value: 0.21 },
-			uFlowFieldStrength: { value: 2.3 },
-			uFlowFieldInfluence: { value: 1.0 },
+			uFlowFieldFrequency: { value: 0.8 },
+			uFlowFieldStrength: { value: 4 },
+			uFlowFieldInfluence: { value: 0.35 },
 
 			uPercentRange: new Uniform(0),
 			uDeathRange: new Uniform(0),
-			uIsMorphing: new Uniform(false),
-			uMorphEnded: new Uniform(false),
+			uIsMorphing: new Uniform(true),
+			uMorphEnded: new Uniform(true),
 			//  uPaint = new Uniform(paintTexture),
 			uResolution: new Uniform(
 				new Vector2(
@@ -170,13 +170,14 @@ export function gpgpuPlugin(webgl) {
 
 	function precomputeMemories() {
 		const meal  = webgl.$assets.objects.flashbacks.meal.scene;
-		const instance = meal.children[0].geometry.clone();
-		const mergeGeometry = BufferGeometryUtils.mergeGeometries([instance]);
-		console.log(mergeGeometry)
-		// instance.rotateX(Math.PI / 2);
-		instance.rotateY(Math.PI * 0.5);
-		instance.scale(2, 2, 2);
 		console.log(meal)
+		const instance = meal.children[0].geometry.clone()
+		// const instances = meal.children.map(child => child.geometry.clone())
+		// const mergeGeometry = BufferGeometryUtils.mergeGeometries([instances[4], instances[2], instances[1]]);
+		// console.log(mergeGeometry)
+		// instance.rotateX(Math.PI / 2);
+		// instance.rotateY(Math.PI * 0.5);
+		// instance.scale(2, 2, 2);
 		precomputeParticles(instance, presetsShader.gpgpu.base, 15);
 	}
 
