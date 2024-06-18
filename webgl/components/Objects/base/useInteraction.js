@@ -96,6 +96,12 @@ export function useInteraction(Class) {
 		gui.addButton({ title: 'Enter' }).on('click', onEnter);
 		gui.addButton({ title: 'Leave' }).on('click', onLeave);
 		gui.addSeparator();
+		const _disable = storageSync(
+			'webgl:' + Class.name + ':interaction:isDisable',
+			w(false),
+		);
+		gui.addBinding(_disable, 'value', { label: 'Disable' });
+		_disable.watchImmediate((v) => (v ? disable() : enable()));
 		gui.addBinding(displayDebug, 'value', { label: 'Debug' });
 		gui.addBinding(padding, 'value', {
 			label: 'Padding',

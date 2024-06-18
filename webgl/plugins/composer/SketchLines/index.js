@@ -9,7 +9,7 @@ import SketchLinesPass from './SketchLinesPass.frag?hotshader';
 
 const rf = prng.randomFloat;
 
-const DUMMY_RT = new WebGLRenderTarget(1, 1);
+const DUMMY_RT = new WebGLRenderTarget(1, 1, { depthBuffer: false });
 const SKETCH_OFFSET_DELAY = 230;
 
 export const useSketchLinesPass = (composer) => {

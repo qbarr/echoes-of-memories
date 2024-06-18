@@ -10,6 +10,7 @@ export class TheatreCompound extends TheatreBaseObject {
 		super();
 		this._name = name;
 		this._values = values;
+		this._initialValues = this._values;
 		this._sheet = sheet;
 
 		this._onUpdate = opts.onUpdate ?? NOOP;
@@ -38,10 +39,6 @@ export class TheatreCompound extends TheatreBaseObject {
 		sheet.register(this);
 
 		return this;
-	}
-
-	get values() {
-		return this._values;
 	}
 
 	setInitialValues(values) {

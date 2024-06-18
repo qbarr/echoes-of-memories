@@ -55,7 +55,7 @@ void main()
     // Alive
     else
     {
-        bool isMorphing = (range < uPercentRange);
+        bool isMorphing = true;
         float strength = simplexNoise4d(vec4(base.xyz * 0.2, time + 1.0));
 
 

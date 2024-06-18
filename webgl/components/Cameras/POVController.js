@@ -192,8 +192,7 @@ function POVController(
 	}
 
 	function setMode(_mode) {
-		const mode =_mode.toLowerCase();
-		console.log(mode)
+		const mode = _mode.toLowerCase();
 		if (mode === 'free') goFreeMode();
 		else if (mode === 'cinematic') goCinematicMode();
 		else if (mode === 'flashback') goFlashbackMode();

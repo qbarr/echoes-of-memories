@@ -6,6 +6,7 @@ precision highp float;
 uniform sampler2D tMap;
 uniform sampler2D tDepth;
 uniform sampler2D tAfterImage;
+uniform sampler2D tBloom;
 
 uniform vec2 uPadding;
 uniform vec2 uFishEye;
@@ -89,14 +90,15 @@ void main() {
 	uv.x += ifx1 + -ifx2;
 
 	vec3 texel = texture2D(tMap, uv).xyz;
+	texel += texture2D(tBloom, uv).xyz;
 
 	float scanl = 0.5 + 0.5 * abs(sin(PI * uv2.y * YRES));
 	scanl = mix(scanl, 1.0, 1. - uScanLines.x);
 
-	vec3 rgb = vign * texel * scanl;
+	vec3 rgb = texel * scanl;
 	gl_FragColor = vec4(rgb, 1.0);
 
-	vec4 afterImage = texture2D(tAfterImage, uv);
-	gl_FragColor.rgb = max(gl_FragColor.rgb, afterImage.rgb) * vign;
-
+	//vec4 afterImage = texture2D(tAfterImage, uv);
+	//gl_FragColor.rgb = mix(gl_FragColor.rgb, max(gl_FragColor.rgb, afterImage.rgb), afterImage.rgb);
+	gl_FragColor.rgb *= vign;
 }

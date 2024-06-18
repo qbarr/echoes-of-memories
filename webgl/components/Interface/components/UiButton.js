@@ -30,7 +30,6 @@ export class UiButton extends BaseComponent {
 		};
 
 		super(props);
-		console.log('UiButton props:', this.props);
 
 		this.base = new Object3D();
 		this.base.name = 'UiButton';

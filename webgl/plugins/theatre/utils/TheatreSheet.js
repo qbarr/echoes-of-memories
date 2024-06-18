@@ -60,7 +60,7 @@ export class TheatreSheet {
 		this.$group = (name, value, opts = {}) => new TheatreGroup(name, value, opts, this); // prettier-ignore
 		this.$composer = (values, opts = {}) => new TheatreComposer('Composer', values, opts, this); // prettier-ignore
 		this.$compound = (name, values, opts = {}) => new TheatreCompound(name, values, opts, this); // prettier-ignore
-		this.$events = (events) => new TheatreEvents('Events', events, this); // prettier-ignore
+		this.$events = (values) => new TheatreEvents('Events', values, this); // prettier-ignore
 		this.$list = (name, values, opts = {}) => new TheatreList(name, values, opts, this); // prettier-ignore
 		this.$addCamera = (initialValues = {}) => {
 			const cam = this.$webgl.$povCamera;
@@ -246,14 +246,6 @@ export class TheatreSheet {
 			res = this._attachAudioBuffer(source);
 		}
 
-		/// #if __DEBUG__
-		res.then((res) => {
-			const { studio, waveformViewer } = this.$webgl.$theatre;
-			const decodedBuffer = res.decodedBuffer ?? res.audioGraph.decodedBuffer;
-			waveformViewer.addAudio({ decodedBuffer, sequence: this.sequence }); // Pass the audioGraph and the sequence to the extension
-		});
-		/// #endif
-
 		return res;
 	}
 
@@ -294,6 +286,10 @@ export class TheatreSheet {
 		this._active = bool;
 		bool ? this.listen() : this.unlisten();
 	}
+
+	resetValues() {
+		// this.objects.forEach((Object) => Object.reset());
+	}
 	/// #endif
 
 	listen() {
@@ -316,11 +312,10 @@ export class TheatreSheet {
 	}
 
 	playBackward(args = {}) {
-		console.log(this)
-		this.seek(20)
+		console.log(this);
+		this.seek(20);
 		this.play({ ...args, direction: 'alternateReverse' });
 	}
-
 
 	pause() {
 		this.sequence.pause();

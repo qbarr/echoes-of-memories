@@ -17,6 +17,7 @@ export const useDepthPass = (composer) => {
 
 	/* Params */
 	const distance = w(1.5);
+	const range = w(new Vector2(0.1, 0.5));
 
 	let texture = DUMMY_RT.texture;
 
@@ -24,6 +25,9 @@ export const useDepthPass = (composer) => {
 		get texture() {
 			return texture;
 		},
+
+		distance,
+		range,
 
 		render,
 		/// #if __DEBUG__
@@ -48,6 +52,7 @@ export const useDepthPass = (composer) => {
 			...uniforms,
 			tDepth: { value: DUMMY_RT.texture, type: 't' },
 			...wUniform('uDistance', distance),
+			...wUniform('uRange', range),
 		},
 		defines: { ...defines },
 	});

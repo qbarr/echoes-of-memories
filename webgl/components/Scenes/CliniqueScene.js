@@ -1,7 +1,7 @@
 import BaseScene from '#webgl/core/BaseScene';
 
 import { TheatreSheet } from '#webgl/plugins/theatre/utils/TheatreSheet.js';
-import { MeshBasicMaterial, Object3D } from 'three';
+import { Mesh, MeshBasicMaterial, Object3D } from 'three';
 import { scenesDatas } from './datas';
 import { wait } from '#utils/async/wait.js';
 import { useAnimationsMixer } from '#webgl/utils/useAnimationsMixer.js';
@@ -25,7 +25,7 @@ export default class CliniqueScene extends BaseScene {
 		const textures = $assets.textures['clinique'];
 
 		const _textures = {
-			pipesacrak: new MeshBasicMaterial({ map: textures['bed_board_map'] }),
+			pipesacrak: new MeshBasicMaterial({ map: textures['atlas_map'] }),
 			murs: new MeshBasicMaterial({ map: textures['murs_map'] }),
 			tableaux: new MeshBasicMaterial({ map: textures['door_tableaux_map'] }),
 			computers: new MeshBasicMaterial({ map: textures['computers_map'] }),
@@ -75,8 +75,11 @@ export default class CliniqueScene extends BaseScene {
 
 		const { $scenes, $povCamera, $app } = this.webgl;
 		$povCamera.onSceneSwitch(this);
+
+		/// #if __DEBUG__
 		$povCamera.setPosition([1.6618, 3.09741, 5.98017]);
 		$povCamera.$setState('free');
+		/// #endif
 
 		const uiScene = $scenes.ui.component;
 		uiScene.subtitles.setColor($app.$store.subtitles.colors.white);

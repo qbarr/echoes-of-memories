@@ -50,6 +50,17 @@ export class TheatreGroup extends TheatreBaseObject {
 			acc[id] = {};
 			return acc;
 		}, {});
+		this._initialValues = values.reduce((acc, { id }) => {
+			const o = values.find((v) => v.id === id);
+			const childs = Object.keys(o.child).reduce((acc, key) => {
+				acc[key] = o.child[key].value;
+				if (acc[key].value !== undefined) acc[key] = acc[key].value;
+				return acc;
+			}, {});
+			acc[id] = childs;
+			return acc;
+		}, {});
+		this._initialValues = Object.freeze(this._initialValues);
 
 		const obj = sheet.instance.object(name, {
 			...values.reduce((acc, { id, child }) => {
@@ -70,10 +81,6 @@ export class TheatreGroup extends TheatreBaseObject {
 		sheet.register(this);
 
 		return this;
-	}
-
-	get values() {
-		return this._values;
 	}
 
 	update(values) {

@@ -13,6 +13,24 @@ export class TheatreBaseObject {
 		return this._object;
 	}
 
+	get value() {
+		return this._value;
+	}
+	get values() {
+		return this._values;
+	}
+	get initialValue() {
+		return this._initialValue;
+	}
+	get initialValues() {
+		return this._initialValues;
+	}
+
+	reset() {
+		// Force update with initial values
+		// this.update(this.initialValues ?? this.initialValue);
+	}
+
 	onChange(callback) {
 		this._onUpdate = callback;
 		return this;

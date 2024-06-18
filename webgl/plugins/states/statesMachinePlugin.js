@@ -103,10 +103,10 @@ export function statesMachinePlugin(webgl) {
 
 			__DEBUG__ && devtool();
 
-			const sm = create('Experience', { filter: 'experience' });
-			webgl.$xpSM = sm;
-			webgl.$xpStatesMachine = sm;
-			webgl.$setState = (id) => sm.setState(id);
+			// const sm = create('Experience', { filter: 'experience' });
+			// webgl.$xpSM = sm;
+			// webgl.$xpStatesMachine = sm;
+			// webgl.$setState = (id) => sm.setState(id);
 		},
 		load: () => {
 			webgl.$hooks.beforeStart.watchOnce(() =>

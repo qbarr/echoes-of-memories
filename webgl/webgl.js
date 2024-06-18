@@ -45,8 +45,6 @@ export default createWebgl({
 			load('noises'),
 			load('luts'),
 
-			load('boat'),
-
 			// Clinique
 			load('clinique/model'),
 			load('clinique/textures'),

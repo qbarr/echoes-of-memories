@@ -20,7 +20,7 @@ export const useCRTPass = (composer) => {
 	const vignette = w(new Vector2(130, 0.8)); // Threshold, Smoothness
 	const interferences = w(new Vector2(0.6, 0.002)); // Global Level, Big Flicker
 	let texture = DUMMY_RT.texture;
-	let glitchTween = { x: null, y: null }
+	let glitchTween = { x: null, y: null };
 
 	const api = {
 		enabled,
@@ -78,8 +78,8 @@ export const useCRTPass = (composer) => {
 		}
 
 		renderer = renderer ?? $threeRenderer;
-		glitchTween['x']?.update(webgl.$time.dt / 1000)
-		glitchTween['y']?.update(webgl.$time.dt / 1000)
+		glitchTween['x']?.update(webgl.$time.dt * 0.001);
+		glitchTween['y']?.update(webgl.$time.dt * 0.001);
 		renderer.setRenderTarget(buffer);
 		renderer.clear();
 		filter.render();
@@ -87,24 +87,23 @@ export const useCRTPass = (composer) => {
 		uniforms.tMap.value = texture;
 		// uniforms.tCRT.value = texture;
 		renderer.setRenderTarget(null);
-
 	}
 
 	function glitch() {
-		return Promise.all [
+		return Promise.all[
 			glitchFromTo(interferences.value.x, 70)
 			// glitchFromTo(interferences.value.y, 20, 'y')
-		]
+		];
 	}
 
 	function unglitch() {
-		return Promise.all [
+		return Promise.all[
 			glitchFromTo(interferences.value.x, 0)
 			// glitchFromTo(interferences.value.y, 0.002, 'y')
-		]
+		];
 	}
 
- 	function glitchFromTo(from, to, property = 'x') {
+	function glitchFromTo(from, to, property = 'x') {
 		return new Promise((resolve) => {
 			glitchTween[property] = raftween({
 				from,
@@ -112,10 +111,10 @@ export const useCRTPass = (composer) => {
 				target: interferences.value,
 				property,
 				duration: 4,
-				onComplete: resolve
-			})
-			glitchTween[property].play()
-		})
+				onComplete: resolve,
+			});
+			glitchTween[property].play();
+		});
 	}
 
 	/// #if __DEBUG__

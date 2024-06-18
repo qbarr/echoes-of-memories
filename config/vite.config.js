@@ -13,6 +13,7 @@ import { paths } from './utils/paths';
 export default ({ mode = 'development' }) => {
 	const isDevelopment = mode === 'development';
 	const isProduction = mode === 'production';
+	const isPreproduction = mode === 'preproduction';
 	const isStaging = mode === 'staging';
 
 	const MANDATORY_DEFINES = {
@@ -20,7 +21,8 @@ export default ({ mode = 'development' }) => {
 		__DEVELOPMENT__: isDevelopment,
 		__PRODUCTION__: isProduction,
 		__STAGING__: isStaging,
-		__DEBUG__: isDevelopment,
+		__PREPRODUCTION__: isPreproduction,
+		__DEBUG__: isDevelopment || isPreproduction,
 	};
 
 	return defineConfig({

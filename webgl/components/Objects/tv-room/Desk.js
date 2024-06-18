@@ -24,7 +24,6 @@ export class Desk extends BaseInteractiveObject {
 		await this.$sheet.play();
 
 		tv.enableInteraction();
-		lecteur.enableInteraction();
 
 		$povCamera.$setState('free');
 	}

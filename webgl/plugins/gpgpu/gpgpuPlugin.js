@@ -19,12 +19,12 @@ const getDeathRange = (name) => {
 		case 'ben':
 			return 1
 	}
-}
+};
 
 export function gpgpuPlugin(webgl) {
 	const computedsGPGPU = w([]);
 	const api = { create, createPooling, computedsGPGPU, render };
-	let index = 0
+	let index = 0;
 	api.pool = createPooling(100);
 	api.pool.alloc(5);
 
@@ -106,11 +106,9 @@ export function gpgpuPlugin(webgl) {
 				baseGeometry.instance.attributes.position.array[i3 + 1];
 			gpgpu.dustTexture.image.data[i4 + 2] =
 				baseGeometry.instance.attributes.position.array[i3 + 2];
-			gpgpu.dustTexture.image.data[i4 + 3] = Math.random()
-
+			gpgpu.dustTexture.image.data[i4 + 3] = Math.random();
 		}
 	}
-
 
 	function precomputeParticles(instance, shader, timePauseCompute) {
 		const baseGeometry = {};
@@ -128,9 +126,9 @@ export function gpgpuPlugin(webgl) {
 		gpgpu.forceCompute = w(false);
 		gpgpu.savedRenderTargets = {
 			particles: null,
-			dustParticles: null
-		}
-		initBase(shader, gpgpu)
+			dustParticles: null,
+		};
+		initBase(shader, gpgpu);
 		computedsGPGPU.set([...computedsGPGPU.get(), gpgpu]);
 		return gpgpu;
 	}
@@ -148,8 +146,12 @@ export function gpgpuPlugin(webgl) {
 			gpgpu.dustTexture,
 		);
 
-		gpgpu.computation.setVariableDependencies(gpgpu.variables.particles, [ gpgpu.variables.particles ]);
-		gpgpu.computation.setVariableDependencies(gpgpu.variables.dustParticles, [ gpgpu.variables.dustParticles ]);
+		gpgpu.computation.setVariableDependencies(gpgpu.variables.particles, [
+			gpgpu.variables.particles,
+		]);
+		gpgpu.computation.setVariableDependencies(gpgpu.variables.dustParticles, [
+			gpgpu.variables.dustParticles,
+		]);
 		// Uniforms
 		gpgpu.variables.particles.material.uniforms = {
 			uTime: new Uniform(0),
@@ -168,27 +170,26 @@ export function gpgpuPlugin(webgl) {
 			uResolution: new Uniform(
 				new Vector2(
 					webgl.$viewport.size.get().x * webgl.$viewport.pixelRatio.get(),
-					webgl.$viewport.size.get().y * webgl.$viewport.pixelRatio.get()
+					webgl.$viewport.size.get().y * webgl.$viewport.pixelRatio.get(),
 				),
 			),
 		};
 
-		gpgpu.variables.dustParticles.material.uniforms ={
+		gpgpu.variables.dustParticles.material.uniforms = {
 			...gpgpu.variables.particles.material.uniforms,
 			uFlowFieldFrequency: { value: 0.5 },
 			uFlowFieldStrength: { value: 2 },
-			uFlowFieldInfluence: { value: 1.5 }
-		}
+			uFlowFieldInfluence: { value: 1.5 },
+		};
 
 		gpgpu.computation.init();
-		return gpgpu
-
+		return gpgpu;
 	}
 
 
 	function precomputeMemories() {
-		const meal  = webgl.$assets.objects.flashbacks.meal.scene;
-		let instances = meal.children.map(child => {
+		const meal = webgl.$assets.objects.flashbacks.meal.scene;
+		let instances = meal.children.map((child) => {
 			child.updateWorldMatrix(true, false);
 			child.geometry.applyMatrix4(child.matrixWorld);
 			const death = []
@@ -203,15 +204,12 @@ export function gpgpuPlugin(webgl) {
 		precomputeParticles(instances, presetsShader.gpgpu.base, 15);
 	}
 
-	// function getByScene(scene) {
-	// 	// return computedsGPGPU.get().find(gpgpu => gpgpu.scene === 'boat');
-	// }
-
 	function render() {
-		computedsGPGPU.get().forEach(gpgpu => {
-			const elapsed = webgl.$time.elapsed * 0.001
+		computedsGPGPU.get().forEach((gpgpu) => {
+			const elapsed = webgl.$time.elapsed * 0.001;
 			gpgpu.variables.particles.material.uniforms.uTime.value = elapsed;
-			gpgpu.variables.particles.material.uniforms.uDeltaTime.value = webgl.$time.dt * 0.001;
+			gpgpu.variables.particles.material.uniforms.uDeltaTime.value =
+				webgl.$time.dt * 0.001;
 
 			// if(elapsed >= 5 && !gpgpu.savedRenderTargets.particles) {
 
@@ -224,8 +222,9 @@ export function gpgpuPlugin(webgl) {
 
 			// 	// }, 5000);
 			// }
-			gpgpu.computation.compute()
-		})
+
+			gpgpu.computation.compute();
+		});
 	}
 
 	function createSheets(gpgpu) {
@@ -241,7 +240,7 @@ export function gpgpuPlugin(webgl) {
 		const modelUniforms = gpgpu.variables.particles.material.uniforms;
 		const dustUniforms = gpgpu.variables.dustParticles.material.uniforms;
 
-		sheets.forEach(sheet => {
+		sheets.forEach((sheet) => {
 			sheet.$group('Particles', [
 				{
 					id: 'modelUniforms',
@@ -274,7 +273,7 @@ export function gpgpuPlugin(webgl) {
 				},
 				{
 					id: 'dustUniforms',
-					child : {
+					child: {
 						uFlowFieldFrequencyDust: {
 							value: dustUniforms.uFlowFieldFrequency,
 							range: [0, 1],
@@ -286,12 +285,11 @@ export function gpgpuPlugin(webgl) {
 						uFlowFieldInfluenceDust: {
 							value: dustUniforms.uFlowFieldInfluence,
 							range: [0, 1],
-						}
-					}
-				}
+						},
+					},
+				},
 			]);
-
-		})
+		});
 	}
 
 	// function dataTextureToJPG(dataTexture) {
@@ -348,7 +346,7 @@ export function gpgpuPlugin(webgl) {
 			}
 		}
 		context.putImageData(flippedImageData, 0, 0);
-		console.log(flippedImageData)
+
 		// Exporter en image JPEG
 		const jpegUrl = canvas.toDataURL('image/jpeg');
 
@@ -359,14 +357,13 @@ export function gpgpuPlugin(webgl) {
 		link.click();
 	}
 
-
 	return {
 		install: () => {
 			webgl.$gpgpu = api;
 			webgl.$hooks.beforeStart.watchOnce(precomputeMemories);
 			webgl.$hooks.afterStart.watchOnce(() => {
 				setTimeout(() => {
-					createSheets(computedsGPGPU.get()[0])
+					createSheets(computedsGPGPU.get()[0]);
 				}, 500);
 			});
 		},

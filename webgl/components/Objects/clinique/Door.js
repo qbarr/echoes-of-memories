@@ -23,7 +23,7 @@ export class Door extends BaseInteractiveObject {
 	async createSheets() {
 		this.$sheet = this.$project.getSheet('Door');
 		await this.$sheet.attachAudio(this.audioId);
-		this.$sheet.$object('Door', { value: this.base });
+		this.$sheet.$object('Door', this.base);
 		this.$sheet.$composer(['global']);
 		this.$sheet.$addCamera();
 		this.$sheet

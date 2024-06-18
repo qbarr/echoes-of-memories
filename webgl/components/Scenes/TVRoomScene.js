@@ -48,18 +48,26 @@ export default class TVRoomScene extends BaseScene {
 
 		const _objects = [];
 		this.interactiveObjects = {};
+		this.cassette = null;
+		this.screen = null;
 
 		scene.traverse((child) => {
 			if (!child.isMesh || !child.material) return;
 			if (child.name.includes('raycastable')) return;
 
 			const data = datas[child.name];
+			if (child.name === 'VHS') {
+				this.cassette = child;
+				this.cassette.visible = false;
+			}
+
 			if (data) {
 				const { class: Class, texture } = data;
 				child.material = texture;
 				if (Class) {
 					const obj = new Class({ name: child.name, mesh: child, data });
 					this.interactiveObjects[child.name] = obj;
+					if (child.name === 'ecran') this.screen = obj;
 					_objects.push(obj);
 				}
 			}
@@ -84,6 +92,11 @@ export default class TVRoomScene extends BaseScene {
 
 		const { $povCamera, $scenes, $app } = this.webgl;
 		$povCamera.onSceneSwitch(this);
+
+		/// #if __DEBUG__
+		$povCamera.setPosition([-1.45968, 1.22633, -3.15793]);
+		$povCamera.$setState('free');
+		/// #endif
 
 		const uiScene = $scenes.ui.component;
 		uiScene.subtitles.setColor($app.$store.subtitles.colors.white);

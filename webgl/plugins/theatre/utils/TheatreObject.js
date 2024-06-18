@@ -5,11 +5,12 @@ import { TheatreBaseObject } from './TheatreBaseObject';
 const NOOP = () => {};
 
 export class TheatreObject extends TheatreBaseObject {
-	constructor(name, value = { value: new Object3D() }, opts = {}, sheet) {
+	constructor(name, value = new Object3D(), opts = {}, sheet) {
 		super();
 
 		this._name = name;
-		this._value = value.value;
+		this._value = value;
+		this._initialValue = this._value;
 		this._sheet = sheet;
 
 		this._onUpdate = opts.onUpdate ?? NOOP;
@@ -44,10 +45,6 @@ export class TheatreObject extends TheatreBaseObject {
 		sheet.register(this);
 
 		return this;
-	}
-
-	get value() {
-		return this._value;
 	}
 
 	update({ rotation, position, scale }) {
