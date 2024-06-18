@@ -116,7 +116,7 @@ export class Particles extends BaseComponent {
 		const particles = {}
 
 		// Geometry
-		const count = 100000
+		const count = 50000
 		const particlesUvArray = new Float32Array(count * 2)
 		const sizesArray = new Float32Array(count)
 		const size = Math.ceil(Math.sqrt(count))
@@ -149,8 +149,10 @@ export class Particles extends BaseComponent {
 		// 	colorsArray[i * 3 + 1] = .5 + (Math.random() * .5)
 		// 	colorsArray[i * 3 + 2] = .5 + (Math.random() * .5)
 		// }
-		const colorsArray = gpgpu.instance.attributes.color.array.slice(0, count * 4)
-		console.log(gpgpu.instance.attributes.color)
+		let colorsArray = []
+		if(gpgpu.instance) colorsArray = gpgpu.instance.attributes.color.array.slice(0, count * 4)
+
+
 		// const colorsArray
 		particles.geometry.setDrawRange(0, count)
 		particles.geometry.setAttribute('aParticlesUv', new BufferAttribute(particlesUvArray, 2))
@@ -163,8 +165,8 @@ export class Particles extends BaseComponent {
 		// Material
 
 		particles.material = new ShaderMaterial({
-			vertexShader: this.shader.vertex,
-			fragmentShader: this.shader.fragment,
+			vertexShader: presetsShader.particles.emissive.vertex,
+			fragmentShader:presetsShader.particles.emissive.fragment,
 			uniforms:
 			{
 				uSize: new Uniform(0.03),

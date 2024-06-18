@@ -7,17 +7,17 @@ import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js'
 const getDeathRange = (name) => {
 	switch (name) {
 		case 'background':
-			return 1
+			return .2
 		case 'chaise':
-			return 2
+			return .4
 		case 'sol':
-			return 2
+			return .4
 		case 'table':
-			return 3
+			return .6
 		case 'parents':
-			return 4
+			return .8
 		case 'ben':
-			return 5
+			return 1
 	}
 }
 
@@ -88,7 +88,7 @@ export function gpgpuPlugin(webgl) {
 
 			gpgpu.attributesTexture.image.data[i4 + 0] = indexRange; // assign a range to each particle
 			gpgpu.attributesTexture.image.data[i4 + 1] = friction;
-			gpgpu.attributesTexture.image.data[i4 + 2] = 0;
+			gpgpu.attributesTexture.image.data[i4 + 2] = baseGeometry.instance.attributes.death.array[i];
 			gpgpu.attributesTexture.image.data[i4 + 3] = 0;
 		}
 	}
@@ -119,7 +119,7 @@ export function gpgpuPlugin(webgl) {
 		const gpgpu = create(baseGeometry.count);
 		gpgpu.instance = baseGeometry.instance;
 		//dirty mais nsm
-		const additiveDustParticles = 100000;
+		const additiveDustParticles = 50000;
 		fillPositionTexture(gpgpu, baseGeometry)
 		fillDustParticles(gpgpu, baseGeometry,additiveDustParticles)
 
@@ -185,19 +185,21 @@ export function gpgpuPlugin(webgl) {
 
 	}
 
+
 	function precomputeMemories() {
 		const meal  = webgl.$assets.objects.flashbacks.meal.scene;
 		let instances = meal.children.map(child => {
 			child.updateWorldMatrix(true, false);
 			child.geometry.applyMatrix4(child.matrixWorld);
-			// for (let i = 0; i < child.geometry.attributes.position.count; i ++) {
-			// 	death.push(getDeathRange(child.name))
-			// }
-			// child.geometry.attributes.death = new BufferAttribute(new Float32Array(death), 1)
+			const death = []
+			for (let i = 0; i < child.geometry.attributes.position.count; i ++) {
+				death.push(getDeathRange(child.name))
+			}
+			child.geometry.attributes.death = new BufferAttribute(new Float32Array(death), 1)
+
 			return child.geometry.clone()
 		})
 		instances = BufferGeometryUtils.mergeGeometries(instances)
-
 		precomputeParticles(instances, presetsShader.gpgpu.base, 15);
 	}
 
@@ -232,7 +234,7 @@ export function gpgpuPlugin(webgl) {
 
 		const sheets = [
 			project.getSheet('flashback_photo'),
-			project.getSheet('flashback_colier'),
+			project.getSheet('flashback_crucifix'),
 			project.getSheet('flashback_bague')
 		]
 
@@ -259,6 +261,10 @@ export function gpgpuPlugin(webgl) {
 						uPercentRangeModel: {
 							value: modelUniforms.uPercentRange,
 							range: [0, 10],
+						},
+						uDeathRangeModel: {
+							value: modelUniforms.uDeathRange,
+							range: [0, 1]
 						},
 						uMorphEndedModel: {
 							value: modelUniforms.uMorphEnded,

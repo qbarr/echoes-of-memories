@@ -98,7 +98,7 @@ function POVController(
 	const $project = webgl.$theatre.getProject('Clinique');
 	const introSheet = $project.getSheet('intro');
 
-	const rawStates = ['FREE', 'CINEMATIC', 'FLASHBACK', 'FOCUS'];
+	const rawStates = ['FREE', 'CINEMATIC', 'FLASHBACK', 'FOCUS', 'FLASHBACK_FREE'];
 	const states = rawStates.reduce((acc, key) => {
 		acc[key] = key;
 		return acc;
@@ -130,9 +130,13 @@ function POVController(
 	function update() {
 		const dt = webgl.$time.dt;
 
-		if (state.is(states.FLASHBACK)) updateFlashbackMode(dt);
-		// else if (state.is(states.FOCUS)) updateLookAt();
+		if (state.is(states.FLASHBACK)
+			|| state.is(states.FLASHBACK_FREE)
+		) updateFlashbackMode(dt);
+
+
 		else updatePOVMode(dt);
+
 	}
 
 	function updatePOVMode(dt) {
@@ -147,10 +151,11 @@ function POVController(
 	}
 
 	function updateFlashbackMode(dt) {
-		const lookat = Vector3.get();
+		const lookat = Vector3.get().set(0, 0, 0);
 		updateLookAt(lookat);
 		lookat.release();
 	}
+
 
 	function handleMoveRotate(x, y) {
 		const dt = webgl.$time.dt * 0.001;
@@ -186,11 +191,14 @@ function POVController(
 		rotateStart.copy(tempVec2a);
 	}
 
-	function setMode(mode) {
+	function setMode(_mode) {
+		const mode =_mode.toLowerCase();
+		console.log(mode)
 		if (mode === 'free') goFreeMode();
 		else if (mode === 'cinematic') goCinematicMode();
 		else if (mode === 'flashback') goFlashbackMode();
 		else if (mode === 'focus') goFocusMode();
+		else if (mode === 'flashback_free') goFlashbackFreeMode();
 	}
 
 	function goFreeMode() {
@@ -203,6 +211,10 @@ function POVController(
 			lastCoords.lon = lon.value;
 		});
 		state.set(states.FOCUS);
+	}
+
+	function goFlashbackFreeMode() {
+		state.set(states.FLASHBACK_FREE);
 	}
 
 	function goCinematicMode() {

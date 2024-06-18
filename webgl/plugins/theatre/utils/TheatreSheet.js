@@ -1,4 +1,4 @@
-import { w } from '#utils/state/index.js';
+import { s, w } from '#utils/state/index.js';
 import { onChange, val } from '@theatre/core';
 
 import { TheatreBool } from './TheatreBool';
@@ -225,10 +225,12 @@ export class TheatreSheet {
 				if (subID === id) subID = null;
 				const { audios } = this.$webgl.$assets;
 				const audio = subID ? audios[subID][id] : audios[id];
+				console.log(audios)
 				return this.attachAudio(audio);
 			}
 		} else {
 			if (source.subtitles) {
+				console.log(source.subtitles, source)
 				this.$list('subtitles', source.subtitles.content).onChange((subtitle) =>
 					this.$webgl.$subtitles.currentPart.set(subtitle),
 				);

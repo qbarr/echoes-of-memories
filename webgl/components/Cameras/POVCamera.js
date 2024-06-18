@@ -114,6 +114,8 @@ export class POVCamera extends BaseCamera {
 		this.resizeSignal = dbs.watchImmediate(this.resize, this);
 	}
 
+
+
 	setPosition(pos) {
 		Array.isArray(pos) ? this.target.fromArray(pos) : this.target.copy(pos);
 		this.target.y = HEIGHT;
@@ -161,9 +163,12 @@ export class POVCamera extends BaseCamera {
 
 	update() {
 		const { dt, elapsed } = this.webgl.$time;
+		// console.log(this.$statesMachine?.currentState?.id);
 
 		this.wobble.update(elapsed * this.wobble_intentisty.value);
-		this.base.position.damp(this.target, this.target.w, dt);
+		if (this.$statesMachine?.currentState?.id !== 'FLASHBACK_FREE') {
+			this.base.position.damp(this.target, this.target.w, dt);
+		}
 
 		if (this.controls) {
 			this.controls.update();

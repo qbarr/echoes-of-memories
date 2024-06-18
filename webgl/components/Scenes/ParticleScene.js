@@ -63,8 +63,7 @@ export default class ParticleScene extends BaseScene {
 		});
 
 		this.mouse = new Vector2(0, 0);
-		this.offset = 0;
-
+		this.offset = new Vector2(0, 0);
 		window.addEventListener('mousemove', this.onMouseMove.bind(this));
 	}
 
@@ -100,7 +99,6 @@ export default class ParticleScene extends BaseScene {
 		const { $povCamera, $app, $gpgpu } = this.webgl;
 		$povCamera.onSceneSwitch(this);
 		$gpgpu.computedsGPGPU.get()[0].forceCompute.set(true);
-		this.camera.$setState('flashback');
 		// this.camera = $povCamera;
 		// this.camera.add(MainCamera);
 	}
@@ -122,11 +120,20 @@ export default class ParticleScene extends BaseScene {
 	}
 
 	update() {
-		return;
+
 		// const { $time } = this.webgl;
-		// this.offsetX = lerp(this.offset, Math.sign(this.mouse.x) * .001, .01)
-		// this.rotateAroundPoint(this.camera.base, new Vector3(0), new Vector3(0, 1, 0), this.offsetX, false)
-		// this.camera.base.lookAt(new Vector3(0))
+		// if (!this.) return
+
+		return
+		this.offset.x = lerp(this.offset.x, -this.mouse.x * .1, .01)
+		// console.log(this.offset.x
+		const point = Vector3.get().set(0, 0, 0)
+		const axis = Vector3.get().set(0, 1, 0)
+		this.rotateAroundPoint(this.camera.base, point, axis, this.offset.x, false)
+		point.release()
+		axis.release()
+		// console.log(this.camera.base)
+		return
 		const sdt = this.webgl.$time.stableDt;
 		const t = this.webgl.$time.elapsed;
 

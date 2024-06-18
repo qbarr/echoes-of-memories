@@ -66,8 +66,9 @@ export default createWebgl({
 			load('bedroom/subtitles'),
 
 			// Flashback
-			load('flashback/audios'),
+			load('flashbacks/audios'),
 			load('flashbacks/meal/model'),
+			load('flashbacks/subtitles'),
 
 			// Theatre
 			load('theatre'),

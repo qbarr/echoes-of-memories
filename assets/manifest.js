@@ -69,10 +69,10 @@ export default {
 	'bedroom/audios': audio('audios/bedroom/*'),
 	'bedroom/subtitles': json('subtitles/bedroom/*', { type: 'subtitles' }),
 
-	// Flashback
-	'flashback/audios': audio('audios/flashback/*'),
+	// É
+	'flashbacks/audios': audio('audios/flashbacks/*'),
 	'flashbacks/meal/model': glb('scenes/flashbacks/meal'),
-	// 'flashback/subtitles': json('subtitles/flashback/*', { type: 'subtitles' }),
+	'flashbacks/subtitles': json('subtitles/flashbacks/*', { type: 'subtitles' }),
 
 	// Audios
 	positions: audio('audios/positional/*', { type: 'positional' }),

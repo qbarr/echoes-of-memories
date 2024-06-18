@@ -16,6 +16,10 @@ uniform bool uMorphEnded;
 
 #include <simplexNoise4d>
 
+float map(float value, float min1, float max1, float min2, float max2) {
+  return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+
 void main()
 {
     float time = uTime * 0.1;
@@ -31,20 +35,21 @@ void main()
     float range = _attribute.x;
     float friction = _attribute.y;
     float deathRange = _attribute.z;
-    float particleSize = fract(particle.a * .1);
 
 
+    bool isDead = (uDeathRange > deathRange);
 
+    //  if (isDead) {
+    //     discard;
+    //     return;
+    // }
     // Dead
-    if(particle.a >= 1.0)
+    if(particle.a >= 1.0 && !isDead)
     {
-        bool isDead = (range > uDeathRange);
         particle.a = mod(particle.a, 1.0);
         particle.xyz = base.xyz;
 
-        // if(isDead) {
-        //     particle.a = 0.;
-        // }
+
     }
 
     // Alive
@@ -53,7 +58,13 @@ void main()
         bool isMorphing = (range < uPercentRange);
         float strength = simplexNoise4d(vec4(base.xyz * 0.2, time + 1.0));
 
-        float influence = (uFlowFieldInfluence - 0.5) * (- 2.0);
+
+        // float influenceDeath = (1. - (deathRange - uDeathRange));
+        // influenceDeath = map(influenceDeath, 1. - deathRange, 1.0, 0.0, 1.) * (.2 +(1. - deathRange));
+        // float mapInfluence = map(influenceDeath, influenceDeath, 1.0, 0.0, 0.5);
+        float influenceDeath = map(uDeathRange, deathRange - 0.2, deathRange, 0., 0.5);
+        influenceDeath = clamp(influenceDeath, 0.0, 0.5);
+        float influence = ((uFlowFieldInfluence + influenceDeath) - 0.5) * (- 2.0) ;
         strength = smoothstep(influence, 1.0, strength);
 
         vec3 flowField = vec3(
@@ -69,7 +80,7 @@ void main()
 
             if(uMorphEnded) {
                 particle.xyz += flowField * uDeltaTime * strength * uFlowFieldStrength;
-                particle.a += uDeltaTime * 0.3;
+                if (!isDead) particle.a += uDeltaTime * 0.3;
             } else {
                 particle.xyz = baseFriction;
             }
