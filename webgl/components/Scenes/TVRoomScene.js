@@ -24,7 +24,7 @@ export default class TVRoomScene extends BaseScene {
 
 		const _textures = {
 			sol: new MeshBasicMaterial({ map: textures['sol_map'] }),
-			desk: new MeshBasicMaterial({ map: textures['atlas_map-test'] }),
+			desk: new MeshBasicMaterial({ map: textures['atlas_map'] }),
 			VHS: new MeshBasicMaterial({ map: vhsMap }),
 		};
 

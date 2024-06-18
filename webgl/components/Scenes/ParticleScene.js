@@ -52,16 +52,6 @@ export default class ParticleScene extends BaseScene {
 	mixins = ['debugCamera'];
 
 	init() {
-		const { $assets, $gpgpu } = this.webgl;
-		const boat = $assets.objects['boat'].scene;
-		boat.position.set(0, 0, 0);
-
-		this.particles = this.add(Particles, {
-			scene: boat,
-			gpgpu: $gpgpu.computedsGPGPU.get()[0],
-			options: {},
-		});
-
 		this.mouse = new Vector2(0, 0);
 		this.offset = 0;
 

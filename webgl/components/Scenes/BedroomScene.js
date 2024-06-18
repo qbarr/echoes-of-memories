@@ -74,10 +74,15 @@ export default class BedroomScene extends BaseScene {
 
 		this.base.add(scene);
 
-		this.createSheets();
+		this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 	}
 
-	async createSheets() {}
+	async createSheets() {
+		this.$sheet = this.$project.getSheet('Enter');
+		await this.$sheet.attachAudio('bedroom/enter');
+		this.$sheet.$addCamera();
+		this.$sheet.$composer(['global', 'lut', 'bloom', 'bokeh', 'crt', 'depth']);
+	}
 
 	async enter() {
 		this._hasStarted = true;
@@ -88,13 +93,10 @@ export default class BedroomScene extends BaseScene {
 		const uiScene = $scenes.ui.component;
 		uiScene.subtitles.setColor($app.$store.subtitles.colors.yellow);
 
+		/// #if __DEBUG__
 		$povCamera.$setState('free');
-
-		// position: [ -8.34592, 2.24563, 7.35179 ],
-		// quaternion: [  ],
-		// euler: [ -0.2965, -0.8265, -0.2210 ],
-
-		// this.camera.setPosition([-8.67082, 0, 4.88725]);
+		$povCamera.setPosition([-8.67082, 0, 4.88725]);
+		/// #endif
 	}
 
 	async start() {}

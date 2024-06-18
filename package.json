@@ -16,7 +16,7 @@
     "_preview": "vite preview -c config/vite.config.js",
     "preview": "npm run build -- -- --clearCache --manifestForceHash && npm run _preview",
     "preview:dev": "npm run build -- -m development -- --clearCache --manifestForceHash && npm run _preview -- -m development",
-    "deploy:dev": "npm run build -- -m development -- --clearCache --manifestForceHash && netlify deploy --alias dev",
+    "deploy:dev": "npm run build -- -m preprod -- --clearCache --manifestForceHash && netlify deploy --alias dev",
     "deploy:prod": "npm run build -- -- --clearCache --manifestForceHash && netlify deploy --prod",
     "deploy": "npm run deploy:prod",
     "clean": "rm -rf node_modules && rm -rf .cache"

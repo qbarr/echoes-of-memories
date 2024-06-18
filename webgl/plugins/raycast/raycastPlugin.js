@@ -1,5 +1,5 @@
 /// #if __DEBUG__
-import { BufferGeometry, Line, LineBasicMaterial, Vector3 } from 'three';
+/// #code import { BufferGeometry, Line, LineBasicMaterial, Vector3 } from 'three';
 /// #endif
 import { Raycaster, Vector2 } from 'three';
 
@@ -106,7 +106,9 @@ export function raycastPlugin(webgl) {
 		// if (ev.target.closest('[prevent-drag]')) return;
 		// if (ev.target.closest('button')) return;
 
-		if (!webgl.$app.$store.pointerLocked && !$app.$store.isPaused) return;
+		const { $store } = webgl.$app;
+
+		if (!$store.pointerLocked && !$store.isPaused) return;
 
 		pointer.isPressed = true;
 		pointer.justClicked = true;

@@ -9,8 +9,9 @@ export class Lecteur extends BaseInteractiveObject {
 		this.screen = this.scene.screen;
 	}
 
-	createSheets() {
+	async createSheets() {
 		this.$sheet = this.$project.getSheet('Play-Tape');
+		await this.$sheet.attachAudio(this.audioId);
 		this.$sheet.$addCamera();
 		this.$sheet.$composer(['global', 'lut']);
 		this.$sheet.$object('Cassette', this.cassette, { nudgeMultiplier: 0.01 });
@@ -31,6 +32,9 @@ export class Lecteur extends BaseInteractiveObject {
 
 		const { $povCamera, $scenes } = this.webgl;
 		$povCamera.$setState('cinematic');
+
+		const { tv } = this.scene.interactiveObjects;
+		tv.disableInteraction();
 
 		this.cassette.visible = true;
 

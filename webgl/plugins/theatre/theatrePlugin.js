@@ -5,6 +5,12 @@ import { getWebGL } from '#webgl/core';
 
 import { TheatreProject } from './utils/TheatreProject';
 
+if (!__DEVELOPMENT__) {
+	console.log('Clearing localStorage');
+	localStorage.removeItem('EOM:theatrejs.persistent');
+	localStorage.removeItem('EOM:theatrejs');
+}
+
 /// #if __DEBUG__
 import studio from '@theatre/studio';
 studio.initialize({

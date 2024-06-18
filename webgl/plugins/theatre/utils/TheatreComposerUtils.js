@@ -3,7 +3,7 @@ import { getWebGL } from '#webgl/core/index.js';
 export const convertComposerDatasForTheatre = (values) => {
 	const webgl = getWebGL();
 	const { $composer } = webgl;
-	const { $bokeh, $lut, $unrealBloom, $crt, $rgbShift, uniforms } = $composer;
+	const { $bokeh, $lut, $unrealBloom, $crt, $rgbShift, $depth, uniforms } = $composer;
 
 	const api = {
 		global: {
@@ -58,7 +58,18 @@ export const convertComposerDatasForTheatre = (values) => {
 				angle: { value: $rgbShift.angle, range: [0, Math.PI] },
 			},
 		},
-	}
+		depth: {
+			id: 'depth',
+			child: {
+				distance: {
+					value: $depth.distance,
+					range: [0, 3],
+					nudgeMultiplier: 0.001,
+				},
+				range: { value: $depth.range, range: [0, 5], nudgeMultiplier: 0.001 },
+			},
+		},
+	};
 
 	return values.map((key) => api[key]).filter(Boolean);
 };

@@ -1335,7 +1335,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": -14.5
+                    "value": -31.5
                   },
                   {
                     "id": "Eb7N9JmORx",
@@ -1709,6 +1709,58 @@
               "[\"value\",\"x\"]": "zJptP3PMX4",
               "[\"value\",\"y\"]": "b1msFm1HAR"
             }
+          },
+          "subtitles": {
+            "trackData": {
+              "3fbavG9yWE": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "subtitles:[\"value\"]",
+                "keyframes": [
+                  {
+                    "id": "D1N6i3PStl",
+                    "position": 0,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "__NONE__"
+                  },
+                  {
+                    "id": "rbk5N-Sb2a",
+                    "position": 0.933,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "OK... C'est parti"
+                  },
+                  {
+                    "id": "RNmFMzY6m1",
+                    "position": 2.667,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "__NONE__"
+                  }
+                ]
+              }
+            },
+            "trackIdByPropPath": {
+              "[\"value\"]": "3fbavG9yWE"
+            }
           }
         }
       }
@@ -1716,6 +1768,8 @@
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "CujeZ-J7Ce5HEttP",
+    "WEZfX-lGxzscqsSX",
     "2CRxiUcBk75EbwhJ",
     "mBQa71vBYt59Cc0y",
     "8Y3L4njYz4G-G-4r",

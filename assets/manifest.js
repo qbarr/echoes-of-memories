@@ -49,8 +49,6 @@ export default {
 	interface: img('interface/*.*'),
 	luts: lut('luts/*.[png|jpg]'),
 
-	boat: glb('scenes/boat'),
-
 	// Clinique
 	'clinique/model': glb('scenes/clinique/model'),
 	'clinique/textures': ktx2('scenes/clinique/*', { flipY: false }),
