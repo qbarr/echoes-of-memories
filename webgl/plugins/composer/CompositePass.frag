@@ -1,11 +1,9 @@
 precision highp float;
 
+#include <colorspace_pars_fragment>
 #include <props>
 #include <packing>
 #include <common>
-
-uniform float time;
-uniform vec4 resolution;
 
 // Dither
 uniform vec2 uDitherOffset;
@@ -81,4 +79,7 @@ void main() {
 
 	// gl_FragColor.rgb *= stripes;
 	gl_FragColor.a = 1.0;
+	if (SRGB_TRANSFER == 1) {
+		gl_FragColor = sRGBTransferOETF(gl_FragColor);
+	}
 }

@@ -1,9 +1,10 @@
 import { getWebGL } from '#webgl/core';
 import {
 	LinearFilter,
+	LinearSRGBColorSpace,
 	RGBAFormat,
 	SRGBColorSpace,
-	WebGLRenderTarget
+	WebGLRenderTarget,
 } from 'three';
 
 // Small helper to easily create render buffers
@@ -23,7 +24,7 @@ export default function createBuffer({
 	height,
 	scale = 1,
 	srgb = false,
-	colorSpace = SRGBColorSpace,
+	colorSpace = LinearSRGBColorSpace,
 	generateMipmaps = false,
 	manualResize = false,
 	...opts
@@ -42,8 +43,6 @@ export default function createBuffer({
 	if (!width || !height) setScale(scale);
 
 	if (srgb) colorSpace = SRGBColorSpace;
-
-	console.log('>>>>>>', colorSpace);
 
 	rt = new WebGLRenderTarget(width, height, {
 		minFilter: LinearFilter,

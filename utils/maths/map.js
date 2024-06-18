@@ -1,4 +1,5 @@
-const PI2 = Math.PI * 2;
+const PI = Math.PI;
+const PI2 = PI * 2;
 
 // --- smoothstep ---
 export function smoothstep(min, max, value) {
@@ -17,7 +18,10 @@ export function clampedMap(value, start1, stop1, start2, stop2) {
 	const v = start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
 	let min = start2;
 	let max = stop2;
-	if (start2 > stop2) { min = stop2; max = start2 }
+	if (start2 > stop2) {
+		min = stop2;
+		max = start2;
+	}
 	return Math.max(min, Math.min(max, v));
 }
 export function norm(value, min = 0, max = 1) {
@@ -45,17 +49,38 @@ export function dampPrecise(a, b, smoothing, dt, limit) {
 }
 function shortAngleDist(a0, a1) {
 	let da = (a1 - a0) % PI2;
-	return 2 * da % PI2 - da;
+	return ((2 * da) % PI2) - da;
 }
 export function lerpAngle(a0, a1, t) {
 	return a0 + shortAngleDist(a0, a1) * t;
 }
 
+export function rLerp(start, end, t) {
+	const s = Math.sign(end);
+	const delta = ((end - start + PI2 + PI) % PI2) - PI;
+	return (start + delta * t + s * PI2) % PI2;
+}
+
+export function rLerpPrecise(start, end, t, limit) {
+	const s = Math.sign(end);
+	const delta = ((end - start + PI2 + PI) % PI2) - PI;
+	const r = (start + delta * t + s * PI2) % PI2;
+	return Math.abs(end - r) < limit ? end : r;
+}
+
+export function rDamp(start, end, smoothing, dt) {
+	return rLerp(start, end, 1 - Math.exp(-smoothing * 0.05 * dt));
+}
+
+export function rDampPrecise(start, end, smoothing, dt, limit) {
+	return rLerpPrecise(start, end, 1 - Math.exp(-smoothing * 0.05 * dt), limit);
+}
+
 // Linear interpolation between multiple values in an array,
 // This is kind of a js version of the scss `fluidSize` mixin
 export function valuesMapper(arr) {
-	const [ minIn, minOut ] = arr[ 0 ];
-	const [ maxIn, maxOut ] = arr[ arr.length - 1 ];
+	const [minIn, minOut] = arr[0];
+	const [maxIn, maxOut] = arr[arr.length - 1];
 	let len = arr.length;
 	let lastValue = null;
 	let lastReturn = 0;
@@ -64,20 +89,20 @@ export function valuesMapper(arr) {
 	return function valuesMap(current) {
 		if (lastValue === current) return lastReturn;
 		lastValue = current;
-		if (current <= minIn) return (lastBound = 0, lastReturn = minOut);
-		if (current >= maxIn) return (lastBound = len - 1, lastReturn = maxOut);
-		for (let i = (lastBound !== -1 ? -1 : 0); i < len; i++) {
+		if (current <= minIn) return (lastBound = 0), (lastReturn = minOut);
+		if (current >= maxIn) return (lastBound = len - 1), (lastReturn = maxOut);
+		for (let i = lastBound !== -1 ? -1 : 0; i < len; i++) {
 			let idx = i === -1 ? lastBound : i;
-			const bound = arr[ idx ];
-			const nextBound = arr[ idx + 1 ];
-			if (current >= bound[ 0 ] && current < nextBound[ 0 ]) {
+			const bound = arr[idx];
+			const nextBound = arr[idx + 1];
+			if (current >= bound[0] && current < nextBound[0]) {
 				lastBound = idx;
 				return (lastReturn = map(
 					current,
-					bound[ 0 ],
-					nextBound[ 0 ],
-					bound[ 1 ],
-					nextBound[ 1 ]
+					bound[0],
+					nextBound[0],
+					bound[1],
+					nextBound[1],
 				));
 			}
 		}

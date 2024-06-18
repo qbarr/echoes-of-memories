@@ -68,6 +68,11 @@ export function debugCameraPlugin(webgl) {
 		cinematicMode.init();
 
 		api.fov.watchImmediate(updateFOV);
+
+		webgl.$scenes._current.watchImmediate((scene) => {
+			if (!scene) return;
+			setScene(scene.component.name);
+		});
 	}
 
 	function restoreCameras(scene) {

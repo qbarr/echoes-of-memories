@@ -5,6 +5,8 @@ precision highp float;
 
 uniform sampler2D tMap;
 uniform sampler2D tDepth;
+uniform sampler2D tAfterImage;
+
 uniform vec2 uPadding;
 uniform vec2 uFishEye;
 uniform vec2 uInterferences;
@@ -93,4 +95,8 @@ void main() {
 
 	vec3 rgb = vign * texel * scanl;
 	gl_FragColor = vec4(rgb, 1.0);
+
+	vec4 afterImage = texture2D(tAfterImage, uv);
+	gl_FragColor.rgb = max(gl_FragColor.rgb, afterImage.rgb) * vign;
+
 }

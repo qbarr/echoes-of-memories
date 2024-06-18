@@ -31,6 +31,7 @@ export default class UIScene extends BaseScene {
 
 		// HUD
 		this.hudScreen = this.add(HudScreen);
+		this.crosshair = this.hudScreen.crosshair;
 
 		// Views
 		this.pauseScreen = this.add(PauseScreen);
@@ -46,7 +47,7 @@ export default class UIScene extends BaseScene {
 		});
 		this.$setState = this.$statesMachine.setState.bind(this.$statesMachine);
 
-		// this.$setState('settings');
+		this.$setState('hud');
 	}
 
 	async enter() {

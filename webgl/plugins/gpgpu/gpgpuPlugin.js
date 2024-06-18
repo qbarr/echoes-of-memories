@@ -1,8 +1,25 @@
 import { presetsShader } from '#utils/presets/shaders.js';
 import { w } from '#utils/state/index.js';
-import { Uniform, Vector2 } from 'three';
+import { BufferAttribute, Uniform, Vector2 } from 'three';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer.js';
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
+
+const getDeathRange = (name) => {
+	switch (name) {
+		case 'background':
+			return 1
+		case 'chaise':
+			return 2
+		case 'sol':
+			return 2
+		case 'table':
+			return 3
+		case 'parents':
+			return 4
+		case 'ben':
+			return 5
+	}
+}
 
 export function gpgpuPlugin(webgl) {
 	const computedsGPGPU = w([]);
@@ -139,14 +156,14 @@ export function gpgpuPlugin(webgl) {
 			uDeltaTime: new Uniform(0),
 			uBase: new Uniform(gpgpu.baseTexture),
 			uAttributes: new Uniform(gpgpu.attributesTexture),
-			uFlowFieldFrequency: { value: 0.8 },
-			uFlowFieldStrength: { value: 4 },
-			uFlowFieldInfluence: { value: 0.35 },
+			uFlowFieldFrequency: { value: 0.21 },
+			uFlowFieldStrength: { value: 2.3 },
+			uFlowFieldInfluence: { value: 1.0 },
 
 			uPercentRange: new Uniform(0),
 			uDeathRange: new Uniform(0),
-			uIsMorphing: new Uniform(true),
-			uMorphEnded: new Uniform(true),
+			uIsMorphing: new Uniform(false),
+			uMorphEnded: new Uniform(false),
 			//  uPaint = new Uniform(paintTexture),
 			uResolution: new Uniform(
 				new Vector2(
@@ -170,15 +187,18 @@ export function gpgpuPlugin(webgl) {
 
 	function precomputeMemories() {
 		const meal  = webgl.$assets.objects.flashbacks.meal.scene;
-		console.log(meal)
-		const instance = meal.children[0].geometry.clone()
-		// const instances = meal.children.map(child => child.geometry.clone())
-		// const mergeGeometry = BufferGeometryUtils.mergeGeometries([instances[4], instances[2], instances[1]]);
-		// console.log(mergeGeometry)
-		// instance.rotateX(Math.PI / 2);
-		// instance.rotateY(Math.PI * 0.5);
-		// instance.scale(2, 2, 2);
-		precomputeParticles(instance, presetsShader.gpgpu.base, 15);
+		let instances = meal.children.map(child => {
+			child.updateWorldMatrix(true, false);
+			child.geometry.applyMatrix4(child.matrixWorld);
+			// for (let i = 0; i < child.geometry.attributes.position.count; i ++) {
+			// 	death.push(getDeathRange(child.name))
+			// }
+			// child.geometry.attributes.death = new BufferAttribute(new Float32Array(death), 1)
+			return child.geometry.clone()
+		})
+		instances = BufferGeometryUtils.mergeGeometries(instances)
+
+		precomputeParticles(instances, presetsShader.gpgpu.base, 15);
 	}
 
 	// function getByScene(scene) {
@@ -191,17 +211,17 @@ export function gpgpuPlugin(webgl) {
 			gpgpu.variables.particles.material.uniforms.uTime.value = elapsed;
 			gpgpu.variables.particles.material.uniforms.uDeltaTime.value = webgl.$time.dt * 0.001;
 
-			if(elapsed >= 5 && !gpgpu.savedRenderTargets.particles) {
+			// if(elapsed >= 5 && !gpgpu.savedRenderTargets.particles) {
 
-				gpgpu.savedRenderTargets.particles = gpgpu.computation.getCurrentRenderTarget(gpgpu.variables.particles)
+			// 	gpgpu.savedRenderTargets.particles = gpgpu.computation.getCurrentRenderTarget(gpgpu.variables.particles)
 
-				// renderTargetTextureToJPG(gpgpu.savedRenderTargets.particles)
-				//
-				// gpgpu.variables.particles.material.uniforms.uParticles.value = gpgpu.savedRenderTargets.particles.texture
-				// gpgpu.computation.doRenderTarget(gpgpu.variables.particles.material, gpgpu.variables.particles.renderTargets[0])
+			// 	// renderTargetTextureToJPG(gpgpu.savedRenderTargets.particles)
+			// 	//
+			// 	// gpgpu.variables.particles.material.uniforms.uParticles.value = gpgpu.savedRenderTargets.particles.texture
+			// 	// gpgpu.computation.doRenderTarget(gpgpu.variables.particles.material, gpgpu.variables.particles.renderTargets[0])
 
-				// }, 5000);
-			}
+			// 	// }, 5000);
+			// }
 			gpgpu.computation.compute()
 		})
 	}
