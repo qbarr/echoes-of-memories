@@ -16,6 +16,8 @@ void main() {
 	float v = dot(texel.rgb, luma);
 	float alpha = smoothstep(uThreshold, uThreshold + uSmoothing, v);
 
+	alpha *= pow(1. - uDarkness, .5);
+
 	gl_FragColor = mix(vec4(0.), texel, alpha);
 	gl_FragColor = mix(gl_FragColor, vec4(0.), uDarkness);
 }

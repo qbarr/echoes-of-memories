@@ -13,6 +13,7 @@ export const convertComposerDatasForTheatre = (values) => {
 				stripes: { value: uniforms.uStripesScale, range: [0, 1] },
 				vignette: { value: uniforms.uVignette, range: [0, 1] },
 				darkness: { value: uniforms.uDarkness, range: [0, 1] },
+				pauseSaturation: { value: uniforms.uPauseSaturation, range: [0, 1] },
 			},
 		},
 		crt: {

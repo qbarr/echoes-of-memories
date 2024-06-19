@@ -80,6 +80,7 @@ export function composerPlugin(webgl) {
 
 			// Darkness
 			uDarkness: { value: 0 },
+			uPauseSaturation: { value: 0 },
 
 			// Black stripes
 			uStripesScale: { value: 0 },
@@ -235,6 +236,7 @@ export function composerPlugin(webgl) {
 		add(uniforms.uDitherStrength, { label: 'Dithering', max: 2 });
 		add(uniforms.uStripesScale, { label: 'Stripes', max: 1 });
 		add(uniforms.uDarkness, { label: 'Darkness', max: 1 });
+		add(uniforms.uPauseSaturation, { label: 'Pause Saturation', max: 1 });
 
 		gui.addSeparator();
 

@@ -139,6 +139,7 @@ export function raycastPlugin(webgl) {
 
 		for (let i = 0; i < rawList.length; i++) {
 			const obj = objects.get(rawList[i]);
+			// console.log(obj);
 			if (!obj) continue;
 			if (!obj.isRaycasted.value) continue;
 			const raycastedObject = raycaster.intersectObject(obj.object, true)[0];
@@ -232,12 +233,14 @@ export function raycastPlugin(webgl) {
 		else if (object.parent?.isScene) scene = object.parent;
 		else scene = object.scene ?? webgl.$getCurrentScene();
 
-		const { id } = webgl.$scenes.getSceneByComponent(scene);
+		const { id, name } = webgl.$scenes.getSceneByComponent(scene);
 
 		if (!scenes.has(id)) {
 			scenes.set(id, {
 				objects: new Map(),
 				rawList: [],
+				intersectedObject: null,
+				raycastOnlyOne: name !== 'ui',
 				lastRaycastedObject: null,
 			});
 		}
@@ -272,12 +275,17 @@ export function raycastPlugin(webgl) {
 		let scene = null;
 		if (forcedScene) scene = forcedScene;
 		else if (object.parent?.isScene) scene = object.parent;
-		else scene = object.scene ?? webgl.$getCurrentScene();
+		// else scene = object.scene ?? webgl.$getCurrentScene();
+		else scene = $app.$store.isPaused ? $scenes.ui : $scenes.current;
 
 		const { id } = webgl.$scenes.getSceneByComponent(scene);
 
+		const raycastScene = scenes.get(id);
+
 		if (!scenes.has(id)) return;
 		const { objects, rawList } = scenes.get(id);
+
+		// console.log(objects, rawList, object);
 
 		if (!objects.has(object))
 			return __DEBUG__ && console.warn(`Object ${object} not registered`);

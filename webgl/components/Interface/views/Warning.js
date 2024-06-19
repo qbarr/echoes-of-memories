@@ -10,10 +10,10 @@ export class Warning extends BaseUiView {
 		const { x: vw, y: vh } = $viewport.size.value;
 		const { right, width } = this.camera.base;
 
-		this.background = this.add(UiBackground, {
-			opacity: 1,
-		});
-		this.background.base.position.set(0, 0, -1);
+		// this.background = this.add(UiBackground, {
+		// 	opacity: 1,
+		// });
+		// this.background.base.position.set(0, 0, -1);
 
 		this.title = this.add(UiText, {
 			text: {

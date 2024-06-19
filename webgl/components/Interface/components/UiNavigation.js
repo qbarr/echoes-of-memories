@@ -49,6 +49,9 @@ export class UiNavigation extends BaseComponent {
 		this.backgroundColor = this.props.backgroundColor;
 
 		this.navClick = this.navClick.bind(this);
+		this.onKeyDown = this.onKeyDown.bind(this);
+
+		this.addListeners();
 	}
 
 	init() {
@@ -64,31 +67,48 @@ export class UiNavigation extends BaseComponent {
 
 		this.props.tabs.forEach((tab, i) => {
 			const text = this.add(UiButton, {
-				...this.props,
 				text: {
-					...this.props.text,
+					name: 'UiNav' + i,
 					content: tab,
-					scale: 0.75,
-					strokeWidth: 0,
 				},
 				index: i,
-				onClick: this.navClick,
+				callback: this.navClick,
 			});
-			text.base.position.set(i * 2.5, 0, 0);
+			text.base.position.set(i * 4, 0, 0);
 			this.tabs.push(text);
 		});
+
+		this.tabs[this.currentIndex.value].hoverIn();
 	}
 
 	navClick(e) {
-		// console.log('NAVIGATION CLICK', e);
-
 		const { object } = e;
 		const { index } = object.parent;
 
-		if (object && index) {
-			// console.log(this.currentIndex.set);
+		if (object && !isNaN(index)) {
+			this.currentIndex.set(index, true);
+		}
+	}
 
-			this.currentIndex.set(index);
+	addListeners() {
+		document.addEventListener('keydown', this.onKeyDown);
+	}
+
+	onKeyDown(e) {
+		if (e.key === 'ArrowRight') {
+			this.tabs[this.currentIndex.value].hoverOut();
+			this.currentIndex.set(
+				clamp(this.currentIndex.value + 1, 0, this.tabs.length - 1),
+				true,
+			);
+			this.tabs[this.currentIndex.value].hoverIn();
+		} else if (e.key === 'ArrowLeft') {
+			this.tabs[this.currentIndex.value].hoverOut();
+			this.currentIndex.set(
+				clamp(this.currentIndex.value - 1, 0, this.tabs.length - 1),
+				true,
+			);
+			this.tabs[this.currentIndex.value].hoverIn();
 		}
 	}
 }

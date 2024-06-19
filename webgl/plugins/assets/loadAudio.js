@@ -9,7 +9,7 @@ export default function loadAudio(url, opts) {
 	return new Promise((resolve, reject) => {
 		const { onLoad, type = null } = opts;
 
-		const listener = opts.audioListener || webgl.$audioListener;
+		const listener = webgl.$audioListener;
 
 		const sound =
 			type == 'positional' ? new PositionalAudio(listener) : new Audio(listener);

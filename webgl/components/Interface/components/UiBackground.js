@@ -44,7 +44,7 @@ export class UiBackground extends BaseComponent {
 	resize() {}
 
 	show() {
-		thtis.base.visible = true;
+		this.base.visible = true;
 	}
 
 	hide() {

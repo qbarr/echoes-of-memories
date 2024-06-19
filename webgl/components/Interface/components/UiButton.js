@@ -9,24 +9,33 @@ const defaultOptions = {
 		name: 'UiButton',
 		font: 'VCR_OSD_MONO',
 		content: '',
-		// align: 'center',
+		align: 'center',
 		color: new Color(0xffffff),
 		strokeColor: new Color(0x000000),
-		strokeWidth: 0.5,
+		strokeWidth: 0,
 		scale: 1,
 		letterSpacing: 0,
 		centerMesh: { x: true, y: false },
 		width: null,
 	},
+	backgroundColor: new Color(0xffd700).offsetHSL(0, 0.1, 0.1),
 	hoveredColor: new Color(0x000000),
 	componentWidth: 600,
+	forceHover: false,
+	justifyContent: 'center',
 };
+
+const NOOP = () => {};
 
 export class UiButton extends BaseComponent {
 	constructor(props = {}) {
 		props = {
 			...defaultOptions,
 			...props,
+			text: {
+				...defaultOptions.text,
+				...props.text,
+			},
 		};
 
 		super(props);
@@ -57,11 +66,10 @@ export class UiButton extends BaseComponent {
 			...this.props,
 			text: {
 				...this.props.text,
-				// width: this.props.componentWidth,
 			},
 		});
 
-		this.backgroundWidth = map(this.UiText.width, 0, vw, 0, 160);
+		this.backgroundWidth = map(this.UiText.width, 0, vw, 0, 160) + 2;
 		// this.backgroundWidth = map(this.props.componentWidth, 0, vw, 0, 160);
 	}
 
@@ -69,12 +77,12 @@ export class UiButton extends BaseComponent {
 		const height = 1 * this.props.text.scale;
 		this.backgroundGeo = new PlaneGeometry(this.backgroundWidth, 4, 16, 16);
 		this.backgroundMat = new MeshBasicMaterial({
-			color: new Color(0xffd700),
+			color: this.backgroundColor,
 			transparent: true,
 			opacity: 0.9,
 		});
 		this.background = new Mesh(this.backgroundGeo, this.backgroundMat);
-		this.background.position.set(0, 1.5, -1);
+		this.background.position.set(0, 1.5, -0.1);
 		this.base.add(this.background);
 	}
 
@@ -96,27 +104,31 @@ export class UiButton extends BaseComponent {
 	}
 
 	afterInit() {
-		const scene = this.scene;
-
-		this.webgl.$raycast.add(this.background, {
-			onClick: this.props.onClick ? this.props.onClick : this.onClick,
+		this.raycastObject = this.webgl.$raycast.add(this.background, {
+			onClick: this.onClick,
 			onEnter: this.onEnter,
 			onLeave: this.onLeave,
-			forcedScene: scene,
+			forcedScene: this.scene,
 		});
 
-		this.onLeave();
+		if (!this.props.forceHover) this.onLeave();
 	}
 
-	onClick() {
-		console.log('click');
+	onClick(e) {
+		if (!this?.parent?.base.visible) return;
+
+		if (this.props.callback) this.props.callback.call(this, e);
 	}
 
 	onEnter() {
+		if (!this?.parent?.base.visible) return;
+		if (this.props.forceHover) return;
 		this.hoverIn();
 	}
 
 	onLeave() {
+		if (!this?.parent?.base.visible) return;
+		if (this.props.forceHover) return;
 		this.hoverOut();
 	}
 
@@ -130,5 +142,16 @@ export class UiButton extends BaseComponent {
 		this.background.visible = false;
 		this.UiText.text.editColor(this.color.clone());
 		document.body.style.cursor = 'auto';
+	}
+
+	show() {
+		// console.log('[UI BUTTON] SHOW', this.raycastObject);
+		this.raycastObject.enable();
+	}
+
+	hide() {
+		// console.log('[UI BUTTON] HIDE', this.raycastObject);
+		this.raycastObject.disable();
+		this.onLeave();
 	}
 }

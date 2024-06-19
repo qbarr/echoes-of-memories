@@ -13,6 +13,12 @@ export default class BedroomScene extends BaseScene {
 
 		this.$project = $theatre.get('Bedroom');
 
+		this.spawnSettings = {
+			lat: -10.7703,
+			lon: 96.22936,
+			pos: [-8.67082, 0, 4.88725],
+		};
+
 		const datas = scenesDatas.bedroom;
 		this.datas = datas;
 		const scene = $assets.objects.bedroom.model.scene;
@@ -70,6 +76,7 @@ export default class BedroomScene extends BaseScene {
 		console.log(datas);
 
 		this._allMeshes = [];
+		this._specialObjects = {};
 		const _objects = [];
 
 		scene.traverse((child) => {
@@ -83,6 +90,10 @@ export default class BedroomScene extends BaseScene {
 				this._allMeshes.push(child);
 				if (Class) {
 					const obj = new Class({ name: child.name, mesh: child, data });
+					if (data.isSpecial) {
+						this._specialObjects[child.name] = obj;
+						obj.specialObjects = this._specialObjects;
+					}
 					_objects.push(obj);
 				}
 			}
@@ -92,29 +103,23 @@ export default class BedroomScene extends BaseScene {
 		this.base.add(scene);
 
 		$hooks.afterStart.watchOnce(this.createSheets.bind(this));
-
-		$composer.$hooks.beforeRenderEmissive.watch(this.onBeforeRender.bind(this));
-		$composer.$hooks.afterRenderEmissive.watch(this.onAfterRender.bind(this));
+		$composer.$hooks.beforeRenderEmissive.watch(this.onBeforeRenderEmissive.bind(this)); // prettier-ignore
+		$composer.$hooks.afterRenderEmissive.watch(this.onAfterRenderEmissive.bind(this)); // prettier-ignore
 	}
 
-	onBeforeRender() {
+	onBeforeRenderEmissive() {
 		for (let i = 0; i < this._allMeshes.length; i++) {
 			const mesh = this._allMeshes[i];
 			const data = this.datas[mesh.name];
-			// console.log(mesh.name, data?.emissiveMaterial, 'before');
-			if (data?.emissiveMaterial) {
-				mesh.material = data.emissiveMaterial;
-			}
+			if (data?.emissiveMaterial) mesh.material = data.emissiveMaterial;
 		}
 	}
 
-	onAfterRender() {
+	onAfterRenderEmissive() {
 		for (let i = 0; i < this._allMeshes.length; i++) {
 			const mesh = this._allMeshes[i];
 			const data = this.datas[mesh.name];
-			if (data?.material) {
-				mesh.material = data.material;
-			}
+			if (data?.material) mesh.material = data.material;
 		}
 	}
 
@@ -141,6 +146,13 @@ export default class BedroomScene extends BaseScene {
 	}
 
 	async start() {}
+
+	setCameraToSpawn() {
+		const { $povCamera } = this.webgl;
+		$povCamera.setPosition(this.spawnSettings.pos);
+		$povCamera.controls.lat.set(this.spawnSettings.lat);
+		$povCamera.controls.lon.set(this.spawnSettings.lon);
+	}
 
 	// async leave() {
 	// 	const { $composer, $scenes } = this.webgl;

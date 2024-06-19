@@ -71,7 +71,10 @@ export class TheatreSheet {
 					lat: cam.controls.lat,
 					lon: cam.controls.lon,
 				},
-				{ position: { nudgeMultiplier: 0.1 } },
+				{
+					nudgeMultiplier: 0.1,
+					lat: { range: [-70, 50] },
+				},
 			);
 
 			if (Object.keys(initialValues).length) o.setInitialValues(initialValues);
@@ -249,6 +252,10 @@ export class TheatreSheet {
 		return res;
 	}
 
+	detachAudio() {
+		this.sequence.detachAudio();
+	}
+
 	// registerSubtitles(subtitles) {
 	// 	this._subtitles = deepCopy(subtitles);
 	// 	this._lastSubtitle = null;
@@ -375,6 +382,7 @@ export class TheatreSheet {
 		const sheetGui = projectGui.addFolder({ title: this.id });
 		sheetGui.addGrid(2, [
 			['Play', this.play.bind(this)],
+			// ['PlayBackward', this.playBackward().bind(this)],
 			['Pause', this.pause.bind(this)],
 			['Stop', this.stop.bind(this)],
 			['Reset', () => this.seek(0)],

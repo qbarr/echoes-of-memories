@@ -12,18 +12,14 @@ export class Credits extends BaseUiView {
 		this.vw = vw;
 		this.vh = vh;
 
-		this.name = 'Credits';
-		this.background = this.add(UiBackground, {
-			opacity: 0.825,
-		});
-		this.background.base.position.set(0, 0, -1);
+		// this.name = 'Credits';
 
 		this.content = [
 			{
 				title: 'UNE CREATION DE',
 				names: [
 					'AYOUB......MOULMAAZ',
-					'ALEX......GATTEFOSE',
+					'ALEX.....GATTEFOSSE',
 					'JESSICA.....POULAIN',
 					'ULYSSE......GRAVIER',
 					'GAELLE.......SOARES',
@@ -41,14 +37,14 @@ export class Credits extends BaseUiView {
 			{
 				title: 'DEVELOPPEURS',
 				names: [
-					'ALEX......GATTEFOSE',
+					'ALEX.....GATTEFOSSE',
 					'ULYSSE......GRAVIER',
 					'QUENTIN.....BARROCA',
 				],
 			},
 			{
 				title: 'DOUBLEURS',
-				names: ['BEN.........VICTOR NIVERD', 'ADAMN...ALEXIS ThOMASSIAN'],
+				names: ['BEN.........VICTOR NIVERD', 'ADAMN...ALEXIS THOMASSIAN'],
 			},
 			{
 				title: 'REMERCIEMENTS',
@@ -78,8 +74,10 @@ export class Credits extends BaseUiView {
 		this.createTitle();
 		this.createGroups();
 		this.createNavigation();
+		this.createBackButton();
 
 		this.setCurretGroup = this.setCurretGroup.bind(this);
+		this.goToPause = this.goToPause.bind(this);
 
 		this.setCurretGroup(0);
 	}
@@ -90,14 +88,11 @@ export class Credits extends BaseUiView {
 				name: 'UiCreditsTitle',
 				content: 'ECHOES OF MEMORIES',
 				color: new Color(0xffd700).offsetHSL(0, 0.3, 0.1),
-				letterSpacing: -3,
-				scale: 1,
 			},
-			// componentWidth: this.vw / 2.4,
-			componentWidth: 750,
 			justifyContent: 'left',
 		});
-		this.title.base.position.add(new Vector3(1, 18, 0));
+
+		this.translate(this.title, { x: -6.5, y: 18 });
 	}
 
 	createNavigation() {
@@ -106,7 +101,7 @@ export class Credits extends BaseUiView {
 			tabs: this.tabs,
 			activeTab: 0,
 		});
-		this.navigation.base.position.add(new Vector3(22, -22, 0));
+		this.translate(this.navigation, { x: -34.5, y: -22 });
 
 		this.navigation.currentIndex.watch((i) => {
 			this.setCurretGroup(i);
@@ -123,33 +118,23 @@ export class Credits extends BaseUiView {
 				text: {
 					name: 'UiCreditsTab' + i,
 					content: $.title,
-					color: new Color(0xffffff),
-					scale: 1,
 				},
-				componentWidth: 700,
 				justifyContent: 'left',
 			});
-			group.title.base.position.add(new Vector3(-1.5, 8, 0));
+			this.translate(group.title, { x: -6.5, y: 10 });
 
 			if ($.names) {
 				group.names = [];
 
 				$.names.forEach((_, j) => {
-					const name = this.add(
-						UiText,
-						{
-							text: {
-								name: 'UiCreditsTab' + i + 'Name' + j,
-								content: _,
-								color: new Color(0xffffff),
-								scale: 1,
-							},
-							componentWidth: 700,
-							justifyContent: 'left',
+					const name = this.add(UiText, {
+						text: {
+							name: 'UiCreditsTab' + i + 'Name' + j,
+							content: _,
 						},
-						// group,
-					);
-					name.base.position.add(new Vector3(-1, 2 - j * 3.8, 0));
+						justifyContent: 'left',
+					});
+					this.translate(name, { x: -6, y: 4 - j * 3.8 });
 					group.names.push(name);
 				});
 
@@ -159,14 +144,30 @@ export class Credits extends BaseUiView {
 	}
 
 	setCurretGroup(i) {
-		// console.log('SET CURRENT GROUP', i);
-
 		this.groups.forEach((group, j) => {
 			group.title.base.visible = i === j;
 			group.names.forEach((name) => {
 				name.base.visible = i === j;
 			});
 		});
+	}
+
+	createBackButton() {
+		this.backButton = this.add(UiButton, {
+			text: {
+				name: 'UiBackButtonCredit',
+				content: 'RETOUR',
+			},
+			justifyContent: 'left',
+			callback: this.goToPause,
+		});
+
+		this.translate(this.backButton, { x: 48, y: -22 });
+	}
+
+	goToPause() {
+		console.log('lqksjd');
+		this.scene.$setState('pause');
 	}
 
 	afterInit() {

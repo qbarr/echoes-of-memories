@@ -5,13 +5,18 @@ export class TV extends BaseInteractiveObject {
 	init() {
 		this.isSimpleObject = true;
 		this.isAlreadySit = false;
+		this.hasReadInstructions = false;
 
 		this.onKeyDown = this.awaitPlayOut.bind(this);
 	}
 
-	createSheets() {
+	async createSheets() {
 		this.$sheetSitDown = this.$project.getSheet('Seat-Down');
 		this.$sheetSitDown.$addCamera();
+
+		this.$sheetReadInstructions = this.$project.getSheet('Read-Instructions');
+		await this.$sheetReadInstructions.attachAudio('tv-room/instructions');
+		this.$sheetReadInstructions.$addCamera();
 
 		this.$sheetIn = this.$project.getSheet('Read-Instructions-In');
 		this.$sheetIn.$addCamera();
@@ -34,14 +39,18 @@ export class TV extends BaseInteractiveObject {
 			this.isAlreadySit = true;
 		}
 
-		await this.$sheetIn.play();
-		$povCamera.$setState('focus');
+		if (this.hasReadInstructions) {
+			await this.$sheetIn.play();
+			$povCamera.$setState('focus');
 
-		this.dp = deferredPromise();
-		window.addEventListener('keydown', this.onKeyDown);
-		await this.dp;
+			this.dp = deferredPromise();
+			window.addEventListener('keydown', this.onKeyDown);
+			await this.dp;
+		} else {
+			await this.$sheetReadInstructions.play();
+			this.hasReadInstructions = true;
+		}
 
-		console.log('HERE');
 		this.enableInteraction();
 		lecteur.enableInteraction();
 
@@ -53,9 +62,5 @@ export class TV extends BaseInteractiveObject {
 			this.$sheetOut.play().then(this.dp.resolve);
 			window.removeEventListener('keydown', this.onKeyDown);
 		}
-	}
-
-	reset() {
-		super.reset();
 	}
 }

@@ -11,8 +11,7 @@ const defaultOptions = {
 		// align: 'center',
 		align: 'left',
 		color: new Color(0xffffff),
-		strokeColor: new Color(0x000000),
-		strokeWidth: 0.5,
+		strokeWidth: 0,
 		scale: 1,
 		letterSpacing: 0,
 		centerMesh: { x: true, y: false },
@@ -26,9 +25,12 @@ export class UiText extends BaseComponent {
 		props = {
 			...defaultOptions,
 			...props,
+			text: {
+				...defaultOptions.text,
+				...props.text,
+			},
 		};
 		super(props);
-		// console.log('UiText props:', props.componentWidth, props.text.width);
 
 		this.base = new Object3D();
 	}
@@ -54,8 +56,6 @@ export class UiText extends BaseComponent {
 		const tx = (this.props.componentWidth - this.width) / 2;
 		const mappedAlignLeft = map(tx, 0, vw, 0, 160);
 
-		// console.log('JUSTIFY', this.width, this.props.componentWidth);
-
 		switch (this.props.justifyContent) {
 			case 'left':
 				this.base.position.set(-mappedAlignLeft, 0, 0);
@@ -64,13 +64,5 @@ export class UiText extends BaseComponent {
 				this.base.position.set(mappedAlignLeft, 0, 0);
 				break;
 		}
-	}
-
-	show() {
-		thtis.base.visible = true;
-	}
-
-	hide() {
-		this.base.visible = false;
 	}
 }

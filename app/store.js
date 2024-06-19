@@ -4,7 +4,8 @@ import { reactive } from 'vue';
 
 export default () => {
 	const store = reactive({
-		isPaused: false,
+		isPaused: true,
+		// isPaused: false,
 		pointerLocked: false,
 
 		subtitles: {

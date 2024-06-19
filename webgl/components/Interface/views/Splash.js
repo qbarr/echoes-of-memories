@@ -10,10 +10,10 @@ export class Splash extends BaseUiView {
 		const { x: vw, y: vh } = $viewport.size.value;
 		const { right, width } = this.camera.base;
 
-		this.background = this.add(UiBackground, {
-			opacity: 1,
-		});
-		this.background.base.position.set(0, 0, -1);
+		// this.background = this.add(UiBackground, {
+		// 	opacity: 1,
+		// });
+		// this.background.base.position.set(0, 0, -1);
 
 		this.title = this.add(UiButton, {
 			text: {
@@ -28,6 +28,7 @@ export class Splash extends BaseUiView {
 			componentWidth: 900,
 			justifyContent: 'center',
 		});
+		this.title.base.position.set(0, 0, -1);
 	}
 
 	afterInit() {

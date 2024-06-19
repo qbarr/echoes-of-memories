@@ -1,10 +1,25 @@
-import { raf } from '#utils/raf/raf.js';
+import { raf } from '#utils/raf';
 import { w } from '#utils/state';
 import { AudioListener } from 'three';
+import { BgmAudio } from './BgmAudio';
+import { SfxAudio } from './SfxAudio';
+import { BaseAudio } from './BaseAudio';
 
 export function audioPlugin(webgl, opts = {}) {
 	const listener = new AudioListener();
-	const current = w(null);
+
+	const volume = w(0.2);
+	volume.watchImmediate((v) => listener.setMasterVolume(v));
+
+	const isMuted = w(false);
+	isMuted.watchImmediate((v) => (v ? mute() : unmute()));
+
+	const activeSamples = new Map(); // audios that are currently playing
+
+	const sfxs = {};
+	const bgms = {};
+	const singles = {};
+	const all = { sfxs, bgms, singles };
 
 	const api = {
 		get current() {
@@ -14,7 +29,7 @@ export function audioPlugin(webgl, opts = {}) {
 
 		visible: true,
 		currentId: null,
-		masterVolume: 0.2,
+		masterVolume: w(1),
 
 		progress: 0,
 		startAt: 0,
@@ -23,334 +38,253 @@ export function audioPlugin(webgl, opts = {}) {
 		duration: 0,
 
 		listener,
+		isMuted,
+
+		actives: activeSamples,
+
+		get sfxs() { return sfxs }, // prettier-ignore
+		get bgms() { return bgms }, // prettier-ignore
+		get singles() { return singles }, // prettier-ignore
+		get all() { return all }, // prettier-ignore
 
 		play,
 		pause,
 		stop,
-		playMany,
-		pauseMany,
-		stopMany,
-		setSoundVolume,
 		mute,
 		unmute,
-		setMasterVolume,
-		getMasterVolume,
-		setCurrent,
-
-		getSound,
 	};
 
-	/// #if __DEBUG__
-	function devTools() {
-		const $gui = webgl.$app.$gui;
-		// const gui = webgl.$gui.addFolder({ title: '🔊 Audio' });
-		api.gui = webgl.$gui.addFolder({ title: '🔊 Audio', index: 6 });
-		const { audios } = webgl.$assets;
+	function init() {
+		// const scene = webgl.$getCurrentScene();
+		// const camera = scene.getCurrentCamera().base;
 
-		// current.value = Object.values(audios)[0];
-		// api.currentId = Object.keys(audios)[0];
-		// api.gui
-		// 	.addBinding(api, 'masterVolume', {
-		// 		label: 'Master Volume',
-		// 		min: 0,
-		// 		max: 1,
-		// 	})
-		// 	.on('change', () => listener.setMasterVolume(api.masterVolume));
-		// let CELLS_PER_ROW = 2;
-		// const cells = [
-		// 	{ title: 'Mute', action: mute },
-		// 	{ title: 'Unmu te', action: unmute },
-		// 	{
-		// 		title: 'Play',
-		// 		action: () => {
-		// 			api.force_pause = false;
-		// 			play({ id: api.currentId });
-		// 		},
-		// 	},
-		// 	{
-		// 		title: 'Pause',
-		// 		action: () => {
-		// 			api.force_pause = true;
-		// 			pause({ id: api.currentId });
-		// 		},
-		// 	},
-		// ];
-		// const rows = Math.ceil(cells.length / CELLS_PER_ROW);
-		// CELLS_PER_ROW = Math.min(CELLS_PER_ROW, cells.length);
-
-		// // api.gui
-		// // 	.addBlade({
-		// // 		view: 'list',
-		// // 		label: 'Sounds',
-		// // 		options: Object.entries(audios).map(([id, sound]) => ({
-		// // 			text: id,
-		// // 			value: id,
-		// // 		})),
-		// // 		value: api.currentId,
-		// // 	})
-		// // 	.on('change', ({ value }) => {
-		// // 		setCurrent({ id: value, audio: audios[value] });
-		// // 	});
-		// api.gui.addMonitor(api, 'currentId', { label: 'Current Sound' });
-		// api.gui
-		// 	.addBlade({
-		// 		view: 'buttongrid',
-		// 		size: [CELLS_PER_ROW, rows],
-		// 		cells: (x, y) => cells[y * CELLS_PER_ROW + x],
-		// 		label: 'Actions',
-		// 	})
-		// 	.on('click', ({ index }) => {
-		// 		const { action } = cells[index[1] * CELLS_PER_ROW + index[0]];
-		// 		action();
-		// 	});
-
-		// api.progress_debug = api.gui.addBinding(api, 'progress', {
-		// 	label: 'Audio progress',
-		// 	view: 'slider',
-		// 	readonly: true,
-		// 	value: api.progress,
+		// scene.$hooks.onCameraChange.watch((camera) => {
+		// 	listener?.parent?.remove(listener);
+		// 	camera.cam.add(listener);
 		// });
 
-		// api.timeline_debug = api.gui
-		// 	.addBinding(api, 'progress', {
-		// 		label: 'Timeline',
-		// 		view: 'slider',
-		// 		value: api.progress,
-		// 		min: 0,
-		// 		max: current.value.audio.buffer.duration * 1000,
-		// 	})
-		// 	.on('change', (tl) => {
-		// 		changeTimelineDebug(tl.value);
-		// 	});
-	}
-	/// #endif
-
-	function init() {
-		__DEBUG__ && devTools();
-
-		const scene = webgl.$getCurrentScene();
-		const camera = scene.getCurrentCamera().base;
-
-		scene.$hooks.onCameraChange.watch((camera) => {
-			listener?.parent?.remove(listener);
-			camera.cam.add(listener);
-		});
-
-		camera.add(listener);
-		raf.add(update);
-	}
-
-	function updateDebugPogressValue() {
-		api.progress = 0;
-		// api.progress_debug.max = current.value.audio.buffer.duration * 1000;
-		// api.progress_debug.value = api.progress;
-		// api.timeline_debug.max = current.value.audio.buffer.duration * 1000;
-		// api.timeline_debug.value = api.progress;
-	}
-
-	function changeTimelineDebug(value) {
-		if (current.value.audio.isPlaying) {
-			pause({ id: api.currentId });
-		}
-
-		const time = Math.floor(value);
-		current.value.audio.offset = time;
-		api.progress = time;
-	}
-
-	function setCurrent({ id, audio }) {
-		if (current.value?.audio?.isPlaying) {
-			stop({ id: api.currentId });
-		}
-
-		if (current.value?.subtitles) {
-			webgl.$subtitles.flush();
-		}
-
-		api.currentId = id;
-		current.set(audio);
-		api.progress = 0;
-
-		// updateDebugPogressValue();
-
-		return current.value;
-	}
-
-	function getAssetAudio(_id) {
-		const id = _id.split('/').pop();
-		let subID = _id.split('/').shift();
-		if (subID === id) subID = null;
+		// camera.add(listener);
+		// raf.add(update);
 
 		const { audios } = webgl.$assets;
-		const audio = subID ? audios[subID][id] : audios[id];
 
+		const _sfxs = {};
+		const _bgms = {};
+		const _singles = {};
+
+		for (const k in audios) {
+			const parent = audios[k];
+
+			for (const kk in parent) {
+				const a = parent[kk];
+				const { audio, type } = a;
+
+				const parseId = kk.split('_')[0];
+
+				if (type === 'bgm') {
+					if (!_bgms[k]) _bgms[k] = [];
+					_bgms[k].push({ audio, id: `${k}/${kk}`, parent: k, _id: kk });
+				} else if (type === 'sfx') {
+					if (!_sfxs[parseId]) _sfxs[parseId] = [];
+					_sfxs[parseId].push({ audio, id: `${k}/${kk}`, parent: k, _id: kk });
+				} else {
+					_singles[parseId] = { audio, id: `${k}/${kk}`, parent: k, _id: kk };
+				}
+			}
+		}
+
+		for (const key in _sfxs) {
+			const v = _sfxs[key];
+			const id = v[0].id.split('_')[0];
+			sfxs[id] = new SfxAudio(
+				v.id,
+				v.map((v) => v.audio),
+			);
+		}
+
+		for (const key in _bgms) {
+			const v = _bgms[key];
+			const id = v[0].id.split('_')[0];
+			bgms[id] = new BgmAudio(
+				id,
+				v.map((v) => v.audio),
+			);
+		}
+
+		for (const key in _singles) {
+			const v = _singles[key];
+			singles[v.id] = new BaseAudio(v.id, v.audio);
+		}
+
+		__DEBUG__ && devtools();
+	}
+
+	function get(id) {
+		const audio = sfxs[id] || bgms[id] || singles[id];
+		if (!audio) {
+			console.warn(`Audio with id ${id} not found`);
+			return;
+		}
 		return audio;
 	}
 
-	function play({ id }) {
-		const { $assets, $subtitles } = webgl;
-		const { audios } = $assets;
-
-		const audio = getAssetAudio(id);
-
-		setCurrent({ id, audio: audio });
-
-		try {
-			api.startedAt = performance.now();
-			audio.audio.play();
-
-			if (audio.subtitles && !$subtitles.tempSubtitles.length) {
-				$subtitles.setCurrent({ id });
-			}
-		} catch (e) {
-			console.error('Error playing sound', id, e);
-		}
+	function play(id, opts = {}) {
+		const audio = get(id);
+		if (!audio) return;
+		audio.play(opts);
+		return audio;
 	}
 
-	function pause({ id }) {
-		try {
-			const { audio } = getAssetAudio(id);
-			audio.pause();
-			api.pausedAt = performance.now();
-			api.totalElapsed += api.pausedAt - api.startedAt;
-		} catch (e) {
-			console.error('Error stopping sound', id, e);
-		}
+	function pause(fromVisibility = false) {
+		const cb = fromVisibility ? 'pauseFromVisibility' : 'pause';
+		activeSamples.forEach((sample) => sample[cb]());
+	}
+	function pauseSound(id) {
+		const sample = activeSamples.get(id);
+		if (!sample) return;
+		sample.pause();
 	}
 
-	function stop({ id }) {
-		try {
-			const { audio } = getAssetAudio(id);
-			audio.stop();
-		} catch (e) {
-			console.error('Error stopping sound', id, e);
-		}
+	function resume(fromVisibility = false) {
+		const cb = fromVisibility ? 'resumeFromVisibility' : 'resume';
+		activeSamples.forEach((sample) => sample[cb]());
+	}
+	function resumeSound(id) {
+		const sample = activeSamples.get(id);
+		if (!sample) return;
+		!sample.forcePause && sample.resume();
 	}
 
-	function playMany({ ids = [] }) {
-		try {
-			ids.forEach((id) => play({ id }));
-		} catch (e) {
-			console.error('Error playing audios', ids, e);
-		}
+	function stop() {
+		activeSamples.forEach((sample) => sample.stop());
 	}
-
-	function pauseMany({ ids = [] }) {
-		try {
-			ids.forEach((id) => pause({ id }));
-		} catch (e) {
-			console.error('Error stopping audios', ids, e);
-		}
-	}
-
-	function stopMany({ ids = [] }) {
-		try {
-			ids.forEach((id) => stop({ id }));
-		} catch (e) {
-			console.error('Error stopping audios', ids, e);
-		}
-	}
-
-	function setSoundVolume({ id, volume }) {
-		try {
-			const { audio } = getAssetAudio(id);
-			audio.setVolume(volume);
-		} catch (e) {
-			console.error('Error setting sound volume', id, e);
-		}
+	function stopSound(id) {
+		const sample = activeSamples.get(id);
+		if (!sample) return;
+		sample.stop();
 	}
 
 	function mute() {
-		const v = getMasterVolume();
-		listener.setMasterVolume(v ? v : 0);
+		listener.setMasterVolume(0);
 	}
 
 	function unmute() {
-		const v = getMasterVolume();
-		listener.setMasterVolume(v ? v : 1);
+		listener.setMasterVolume(volume.value);
 	}
 
-	function getMasterVolume() {
-		return api.masterVolume;
+	function setVolume(_volume) {
+		volume.set(_volume);
+		// listener.setMasterVolume(volume.value);
 	}
 
-	function setMasterVolume(volume) {
-		api.masterVolume = volume;
-		listener.setMasterVolume(volume);
+	// function onCameraChange(camera) {
+	// 	listener.parent && listener.parent.remove(listener);
+	// 	camera.cam.add(listener);
+	// }
+
+	function checkViewportVisible(visible) {
+		if (visible && !isMuted.value) resume(true);
+		else pause(true);
 	}
 
-	function getSound({ id }) {
-		try {
-			return webgl.$assets.audios[id].audio;
-		} catch (e) {
-			console.error(`Error getting ${id} sound`, e);
-		}
-	}
-
-	function onCameraChange(camera) {
-		listener.parent && listener.parent.remove(listener);
-		camera.cam.add(listener);
-	}
-
-	function isViewportVisible(visible) {
-		api.visible = visible;
-
-		if (visible) {
-			unmute();
-			if (current.value && api.progress > 0 && !api.force_pause) {
-				play({ id: api.currentId });
-			}
-		} else {
-			mute();
-			if (current.value && api.progress > 0) {
-				pause({ id: api.currentId });
-			}
-		}
-	}
-
-	function reset() {
-		api.progress = 0;
-		api.startedAt = 0;
-		api.pausedAt = 0;
-		api.totalElapsed = 0;
-		api.duration = 0;
-	}
+	function reset() {}
 
 	function update() {
-		if (!api.visible) return;
-
-		const { current } = api;
-		if (!current) return;
-
-		const currentTime = current.audio.context.currentTime;
-		const startedAt = current.audio._startedAt;
-		const duration = (Math.floor(current.audio.buffer.duration * 100) / 100) * 1000;
-
-		if (current.audio.isPlaying) {
-			const startedAt = current.audio._startedAt;
-			api.duration = (Math.floor(current.audio.buffer.duration * 100) / 100) * 1000;
-
-			const currentTime = performance.now() - api.startedAt;
-			const progress = api.totalElapsed + currentTime;
-
-			api.progress = Math.ceil(progress);
-			// api.progress_debug.value = api.progress;
-
-			if (current.subtitles) {
-				webgl.$subtitles.getContentByTime({
-					id: current.value,
-					time: api.progress,
-				});
-			}
-		}
-
-		if (api.progress > 0 && api.progress >= api.duration) {
-			reset();
-			stop({ id: api.currentId });
-
-			webgl.$subtitles.flush();
-		}
+		// if (!api.visible) return;
+		// const { current } = api;
+		// if (!current) return;
+		// const currentTime = current.audio.context.currentTime;
+		// const startedAt = current.audio._startedAt;
+		// const duration = (Math.floor(current.audio.buffer.duration * 100) / 100) * 1000;
+		// if (current.audio.isPlaying) {
+		// 	const startedAt = current.audio._startedAt;
+		// 	api.duration = (Math.floor(current.audio.buffer.duration * 100) / 100) * 1000;
+		// 	const currentTime = performance.now() - api.startedAt;
+		// 	const progress = api.totalElapsed + currentTime;
+		// 	api.progress = Math.ceil(progress);
+		// 	// api.progress_debug.value = api.progress;
+		// 	if (current.subtitles) {
+		// 		webgl.$subtitles.getContentByTime({
+		// 			id: current.value,
+		// 			time: api.progress,
+		// 		});
+		// 	}
+		// }
+		// if (api.progress > 0 && api.progress >= api.duration) {
+		// 	reset();
+		// 	stop({ id: api.currentId });
+		// 	webgl.$subtitles.flush();
+		// }
 	}
+
+	/// #if __DEBUG__
+	function devtools() {
+		const gui = webgl.$app.$gui.addFolder({ title: '🔊 Audio', index: 6 });
+
+		gui.addBinding(volume, 'value', { label: 'Volume', min: 0, max: 1, step: 0.01 });
+		gui.addBinding(isMuted, 'value', { label: 'Mute' });
+
+		gui.addSeparator();
+
+		gui.addGrid(3, [
+			['Pause', pause],
+			['Resume', resume],
+			['Stop', stop],
+		]);
+
+		gui.addSeparator();
+
+		const sfxGui = gui.addFolder({ title: 'SFX' });
+		const _sfxs = Object.keys(sfxs);
+
+		sfxGui.addGrid(
+			2,
+			_sfxs.map((id) => [id, () => play(id)]),
+		);
+
+		const bgmGui = gui.addFolder({ title: 'BGM' });
+		const _bgms = Object.keys(bgms);
+
+		_bgms.forEach((bgm) => {
+			const audio = bgms[bgm];
+			const folder = bgmGui.addFolder({ title: bgm });
+
+			console.log(audio);
+
+			folder.addBinding(audio.volume, 'value', {
+				label: 'Volume',
+				min: 0,
+				max: 1,
+				step: 0.01,
+			});
+			for (let i = 0; i < audio.layers.length; i++) {
+				const layer = audio.layers[i];
+				const v = { volume: layer.getVolume() };
+				folder
+					.addBinding(v, 'volume', {
+						label: `Layer ${i + 1}`,
+						min: 0,
+						max: 1,
+						step: 0.01,
+					})
+					.on('change', () => audio.mix(i, v.volume));
+			}
+			folder.addGrid(2, [
+				['Play', () => audio.play()],
+				['Pause', () => audio.pause()],
+				// ['Resume', () => audio.resume()],
+			]);
+		});
+
+		const singleGui = gui.addFolder({ title: 'Single' });
+		const _singles = Object.keys(singles);
+
+		singleGui.addGrid(
+			2,
+			_singles.map((id) => [id, () => play(id)]),
+		);
+	}
+	/// #endif
 
 	return {
 		install: () => {
@@ -362,7 +296,7 @@ export function audioPlugin(webgl, opts = {}) {
 			const { afterSetup, afterStart } = $hooks;
 
 			afterSetup.watch(() => {
-				$viewport && $viewport.visible.watch(isViewportVisible);
+				$viewport && $viewport.visible.watch(checkViewportVisible);
 			});
 			afterStart.watchOnce(init);
 		},

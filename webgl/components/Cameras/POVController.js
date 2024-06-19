@@ -140,8 +140,8 @@ function POVController(
 	}
 
 	function updatePOVMode(dt) {
-		lerpedLat = damp(lerpedLat, lat.value, 0.4, dt);
-		lerpedLon = rDamp(lerpedLon, lon.value, 0.4, dt);
+		lerpedLat = damp(lerpedLat, lat.value, 0.3, dt);
+		lerpedLon = rDamp(lerpedLon, lon.value, 0.3, dt);
 
 		const phi = MathUtils.degToRad(90 - lerpedLat);
 		const theta = MathUtils.degToRad(lerpedLon);
