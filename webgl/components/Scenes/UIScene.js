@@ -1,21 +1,14 @@
 import BaseScene from '#webgl/core/BaseScene';
-import {
-	AdditiveBlending,
-	Mesh,
-	MeshBasicMaterial,
-	PlaneGeometry,
-	ShaderMaterial,
-} from 'three';
 import { UICamera } from '../Cameras/UICamera';
 
 import { Subtitles } from '../Interface/Subtitles';
-
-import { Pause as PauseScreen } from '../Interface/views/Pause';
-import { Warning as WarningScreen } from '../Interface/views/Warning';
-import { Splash as SplashScreen } from '../Interface/views/Splash';
 import { Credits as CreditsScreen } from '../Interface/views/Credits';
 import { Hud as HudScreen } from '../Interface/views/Hud';
+import { Pause as PauseScreen } from '../Interface/views/Pause';
 import { Settings as SettingsScreen } from '../Interface/views/Settings';
+import { Splash as SplashScreen } from '../Interface/views/Splash';
+import { Warning as WarningScreen } from '../Interface/views/Warning';
+
 import { w } from '#utils/state/index.js';
 
 export default class UIScene extends BaseScene {
