@@ -14,7 +14,7 @@ export function audioPlugin(webgl, opts = {}) {
 
 		visible: true,
 		currentId: null,
-		masterVolume: 0.2,
+		masterVolume: w(1),
 
 		progress: 0,
 		startAt: 0,
@@ -271,11 +271,12 @@ export function audioPlugin(webgl, opts = {}) {
 	}
 
 	function getMasterVolume() {
-		return api.masterVolume;
+		return api.masterVolume.value;
 	}
 
 	function setMasterVolume(volume) {
-		api.masterVolume = volume;
+		console.log(api.masterVolume);
+		api.masterVolume.set(volume);
 		listener.setMasterVolume(volume);
 	}
 

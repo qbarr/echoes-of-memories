@@ -76,6 +76,8 @@ export default class CliniqueScene extends BaseScene {
 		const uiScene = $scenes.ui.component;
 		uiScene.subtitles.setColor('white');
 
+		console.log('uiScene', uiScene);
+
 		$povCamera.onSceneSwitch(this);
 
 		setTimeout(async () => {

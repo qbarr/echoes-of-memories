@@ -9,6 +9,7 @@ uniform float uAmount;
 uniform float uAngle;
 uniform float uDarkness;
 uniform float uStripesScale;
+uniform float uPauseSaturation;
 
 varying vec2 vUv;
 uniform vec2 uVignette;
@@ -52,6 +53,11 @@ void main() {
 
 	// Darkness
 	gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.), uDarkness);
+
+
+	// Saturate
+	gl_FragColor.rgb = mix(vec3(dot(gl_FragColor.rgb, vec3(0.299, 0.587, 0.114))), gl_FragColor.rgb, 1. - uPauseSaturation);
+
 
 	// Interface
 	vec4 interfaceColor = texture2D(tInterface, uv);

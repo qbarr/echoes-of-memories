@@ -1,10 +1,10 @@
 import { getCurrentInstance, onUnmounted } from 'vue';
-import { raftimer } from '@mm56/utils/raf';
+import { raftimer } from '#utils/raf';
 
 const rafTimerDefaults = {
 	autostart: true,
 	standalone: true,
-	selfdestruct: true
+	selfdestruct: true,
 };
 
 export function useTimers() {
@@ -39,17 +39,17 @@ export function useTimers() {
 	}
 
 	function wait(delay, useRaf) {
-		return new Promise(resolve => timer(delay, resolve, useRaf));
+		return new Promise((resolve) => timer(delay, resolve, useRaf));
 	}
 
 	function clearTimers() {
 		for (let i = 0, l = timers.length; i < l; i++) {
-			const timer = timers[ i ];
+			const timer = timers[i];
 			if (timer.dispose) timer.dispose();
 			else clearTimeout(timer);
 		}
 		for (let i = 0, l = intervals.length; i < l; i++) {
-			clearInterval(intervals[ i ]);
+			clearInterval(intervals[i]);
 		}
 		intervals.length = 0;
 		timers.length = 0;

@@ -107,6 +107,7 @@ export class StatesMachine {
 			await curr.enter({
 				machine: this,
 				from: prev,
+				to: curr,
 				isCanceled: () => this.isCanceled(curr),
 			});
 			curr._isCanceled = false;

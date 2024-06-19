@@ -47,7 +47,8 @@ const PROJECTS_LIST = [
 	'TV-Room',
 	'Global',
 	'Transition-Memories',
-	'Flashback'
+	'Flashback',
+	'Interface',
 ];
 
 function getProject(id) {

@@ -7,6 +7,7 @@ export function subtitlesPlugin(webgl, opts = {}) {
 	const currentPart = w(null);
 
 	const api = {
+		enabled: w(true),
 		tempSubtitles,
 		currentPart,
 		flush,

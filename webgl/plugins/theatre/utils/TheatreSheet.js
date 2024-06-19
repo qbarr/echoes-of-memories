@@ -314,11 +314,12 @@ export class TheatreSheet {
 	}
 
 	playBackward(args = {}) {
-		console.log(this)
-		this.seek(20)
-		this.play({ ...args, direction: 'alternateReverse' });
+		this._hasBeenCanceled = false;
+		const done = this.sequence.play({ direction: 'reverse' });
+		done.then(() => this.unlisten());
+		this.listen();
+		return done;
 	}
-
 
 	pause() {
 		this.sequence.pause();
@@ -378,6 +379,7 @@ export class TheatreSheet {
 		const sheetGui = projectGui.addFolder({ title: this.id });
 		sheetGui.addGrid(2, [
 			['Play', this.play.bind(this)],
+			// ['PlayBackward', this.playBackward().bind(this)],
 			['Pause', this.pause.bind(this)],
 			['Stop', this.stop.bind(this)],
 			['Reset', () => this.seek(0)],

@@ -13,6 +13,7 @@ export const convertComposerDatasForTheatre = (values) => {
 				stripes: { value: uniforms.uStripesScale, range: [0, 1] },
 				vignette: { value: uniforms.uVignette, range: [0, 1] },
 				darkness: { value: uniforms.uDarkness, range: [0, 1] },
+				pauseSaturation: { value: uniforms.uPauseSaturation, range: [0, 1] },
 			},
 		},
 		crt: {
@@ -58,7 +59,7 @@ export const convertComposerDatasForTheatre = (values) => {
 				angle: { value: $rgbShift.angle, range: [0, Math.PI] },
 			},
 		},
-	}
+	};
 
 	return values.map((key) => api[key]).filter(Boolean);
 };

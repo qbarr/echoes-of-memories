@@ -12,11 +12,12 @@ export class Pause extends BaseUiView {
 		this.vw = vw;
 		this.vh = vh;
 
-		this.background = this.add(UiBackground);
-		this.background.base.position.set(0, 0, -1);
-
 		this.createTitle();
 		this.createButton();
+
+		this.goToGame = this.goToGame.bind(this);
+		this.goToSettings = this.goToSettings.bind(this);
+		this.goToCredits = this.goToCredits.bind(this);
 	}
 
 	createTitle() {
@@ -24,56 +25,72 @@ export class Pause extends BaseUiView {
 			text: {
 				name: 'UiPauseTitle',
 				content: '-----PAUSE-----',
-				// align: 'left',
 				color: new Color(0xffd700).offsetHSL(0, 0.3, 0.1),
-				letterSpacing: -3,
-				// scale: 1.35,
-				scale: 1,
 			},
-			// componentWidth: this.vw / 2.4,
-			componentWidth: 700,
 			justifyContent: 'left',
 		});
-		this.title.base.position.add(new Vector3(3, 6, 0));
+		this.title.base.position.add(new Vector3(-7, 6, 0));
 	}
 
 	createButton() {
 		const { left } = this.camera.base;
 		const padding = 8;
 
-		this.buttons = [
-			{
-				text: 'REPRENDRE',
-				component: null,
+		this.backButton = this.add(UiButton, {
+			text: {
+				name: 'UiBackButton',
+				content: 'REPRENDRE',
 			},
-			{
-				text: 'PARAMETRES',
-				component: null,
-			},
-		];
-
-		this.buttons.forEach((button, i) => {
-			button.component = this.add(UiButton, {
-				text: {
-					name: 'UIButton' + i,
-					content: button.text,
-					// align: 'left',
-					color: new Color(0xffffff),
-					hoveredColor: new Color(0x000000),
-					scale: 0.85,
-					// scale: 1,
-					// width: 400,
-				},
-				backgroundColor: new Color(0xffd700).offsetHSL(0, 0.3, 0.1),
-				// componentWidth: this.vw / 2.4,
-				componentWidth: 700,
-				justifyContent: 'left',
-			});
-			button.component.base.position.add(new Vector3(0, -i * 5, 0));
+			justifyContent: 'left',
+			callback: this.goToGame,
 		});
+		this.settingsButton = this.add(UiButton, {
+			text: {
+				name: 'UiSettingsButton',
+				content: 'PARAMETRES',
+			},
+			justifyContent: 'left',
+			callback: this.goToSettings,
+		});
+		this.creditsButton = this.add(UiButton, {
+			text: {
+				name: 'UiCreditsButton',
+				content: 'CREDITS',
+			},
+			justifyContent: 'left',
+			callback: this.goToCredits,
+		});
+
+		this.translate(this.backButton, { x: -7, y: 0 });
+		this.translate(this.settingsButton, { x: -7, y: -5 });
+		this.translate(this.creditsButton, { x: -7, y: -10 });
 	}
 
 	afterInit() {
 		this.hide();
+		this.bindEvents();
+	}
+
+	bindEvents() {
+		document.addEventListener('keydown', this.onKeyDown.bind(this));
+	}
+
+	onKeyDown(event) {
+		const { id: currentState } = this.scene.$statesMachine.currentState;
+		if (event.key === 'Escape' && currentState === 'hud') {
+			this.scene.$setState('pause');
+		}
+	}
+
+	goToGame() {
+		this.scene.$setState('hud');
+	}
+
+	goToSettings() {
+		this.scene.$setState('settings');
+	}
+
+	goToCredits() {
+		this.scene.$setState('credits');
 	}
 }
