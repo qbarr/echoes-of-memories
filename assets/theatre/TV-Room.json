@@ -1050,7 +1050,7 @@
                       -0.55
                     ],
                     "type": "bezier",
-                    "value": 1.299999999999999
+                    "value": 1.25
                   },
                   {
                     "id": "BdkPJqlayl",
@@ -1082,7 +1082,7 @@
                       0.03
                     ],
                     "type": "bezier",
-                    "value": -5.139529999999996
+                    "value": -5.3
                   },
                   {
                     "id": "C_QV9f7OXh",
@@ -1885,6 +1885,7 @@
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "sjdtXOBLTFpSPeUC",
     "r2DElABti5eIXyQG",
     "CujeZ-J7Ce5HEttP",
     "WEZfX-lGxzscqsSX",

@@ -53,6 +53,9 @@ export class Subtitles extends BaseComponent {
 		this.hide();
 
 		$subtitles.currentPart.watch(this.onPartChange.bind(this));
+		$subtitles.enabled.watchImmediate((enabled) => {
+			enabled ? this.show() : this.hide();
+		});
 	}
 
 	// Pas super propre, à revoir aussi lol
@@ -89,6 +92,8 @@ export class Subtitles extends BaseComponent {
 	}
 
 	onPartChange(part) {
+		if (!this.webgl.$subtitles.enabled.value) return;
+
 		this.hide();
 
 		if (part?.length) {
@@ -109,6 +114,7 @@ export class Subtitles extends BaseComponent {
 	}
 
 	show() {
+		if (!this.webgl.$subtitles.currentPart.value) return;
 		this.background.visible = true;
 		this.text.base.visible = true;
 	}

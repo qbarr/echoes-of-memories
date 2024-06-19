@@ -5,7 +5,7 @@ export class Collier extends BaseInteractiveObject {
 		this.isInteractiveObject = true;
 		this.isSpecial = true;
 
-		// this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
+		this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
 	}
 
 	async createSheets() {
@@ -25,12 +25,12 @@ export class Collier extends BaseInteractiveObject {
 		await this.$gotoSheet.play();
 
 		this.scene.setCameraToSpawn();
-		// this.hide(); // !! A DECOMMENTER
+		this.hide(); // !! A DECOMMENTER
 
 		$raycast.enable();
 
 		$povCamera.$setState('free');
-		this.enableInteraction(); // !! A COMMENTER
+		// this.enableInteraction(); // !! A COMMENTER
 
 		this.specialObjects.testament.show();
 	}

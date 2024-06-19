@@ -5,7 +5,7 @@ export class Lettre extends BaseInteractiveObject {
 		this.isInteractiveObject = true;
 		this.isSpecial = true;
 
-		// this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
+		this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
 	}
 
 	async createSheets() {
@@ -27,10 +27,10 @@ export class Lettre extends BaseInteractiveObject {
 		// ! FIN DE L'XP ICI
 
 		// !! A COMMENTER
-		this.scene.setCameraToSpawn();
-		$raycast.enable();
+		// this.scene.setCameraToSpawn();
+		// $raycast.enable();
 
-		$povCamera.$setState('free');
-		this.enableInteraction();
+		// $povCamera.$setState('free');
+		// this.enableInteraction();
 	}
 }
