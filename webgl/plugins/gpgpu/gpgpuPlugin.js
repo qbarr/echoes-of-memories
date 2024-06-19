@@ -91,6 +91,7 @@ export function gpgpuPlugin(webgl) {
 			gpgpu.attributesTexture.image.data[i4 + 2] = baseGeometry.instance.attributes.death.array[i];
 			gpgpu.attributesTexture.image.data[i4 + 3] = 0;
 		}
+
 	}
 
 	function fillDustParticles(gpgpu, baseGeometry, count) {
@@ -188,17 +189,21 @@ export function gpgpuPlugin(webgl) {
 
 
 	function precomputeMemories() {
+		console.log(webgl.$assets.objects)
 		const meal = webgl.$assets.objects.flashbacks.meal.scene;
+		// let instances = []
 		let instances = meal.children.map((child) => {
+			if (!child.isMesh) return
 			child.updateWorldMatrix(true, false);
 			child.geometry.applyMatrix4(child.matrixWorld);
 			const death = []
+			console.log(child.name)
 			for (let i = 0; i < child.geometry.attributes.position.count; i ++) {
 				death.push(getDeathRange(child.name))
 			}
 			child.geometry.attributes.death = new BufferAttribute(new Float32Array(death), 1)
-
 			return child.geometry.clone()
+			// instances.push(child.geometry.clone())
 		})
 		instances = BufferGeometryUtils.mergeGeometries(instances)
 		precomputeParticles(instances, presetsShader.gpgpu.base, 15);
@@ -220,7 +225,8 @@ export function gpgpuPlugin(webgl) {
 			// }
 			// console.log(gpgpu.variables.particles.material.uniforms.uPercentRange.value)
 			if (elapsed < 10|| gpgpu.forceCompute.get()) gpgpu.computation.compute();
-			console.log(elapsed < 10|| gpgpu.forceCompute.get())
+
+			console.log(gpgpu.variables.particles.material.uniforms.uDeathRange.value)
 		});
 	}
 
@@ -243,81 +249,81 @@ export function gpgpuPlugin(webgl) {
 		// 	else this.screen.setSplashScreen();
 		// });
 		sheets.forEach((sheet) => {
-			// sheet.$float('Particles / ModelUniforms / uFlowFieldFrequencyModel',  modelUniforms.uFlowFieldFrequency, {
-			// 	range: [0, 1],
-			// });
-			// sheet.$float('Particles / ModelUniforms / uFlowFieldStrengthModel',  modelUniforms.uFlowFieldStrength, {
-			// 	range: [0, 10],
-			// });
-			// sheet.$float('Particles / ModelUniforms / uFlowFieldInfluenceModel',  modelUniforms.uFlowFieldInfluence, {
-			// 	range: [0, 1],
-			// });
-			// sheet.$float('Particles / ModelUniforms / uPercentRangeModel',  modelUniforms.uPercentRange, {
-			// 	range: [0, 10],
-			// });
-			// sheet.$float('Particles / ModelUniforms / uDeathRangeModel',  modelUniforms.uDeathRange, {
-			// 	range: [0, 1],
-			// });
-			// sheet.$bool('Particles / ModelUniforms / uMorphEndedModel',  modelUniforms.uMorphEnded)
+			sheet.$float('Particles / ModelUniforms / uFlowFieldFrequencyModel',  modelUniforms.uFlowFieldFrequency, {
+				range: [0, 1],
+			});
+			sheet.$float('Particles / ModelUniforms / uFlowFieldStrengthModel',  modelUniforms.uFlowFieldStrength, {
+				range: [0, 10],
+			});
+			sheet.$float('Particles / ModelUniforms / uFlowFieldInfluenceModel',  modelUniforms.uFlowFieldInfluence, {
+				range: [0, 1],
+			});
+			sheet.$float('Particles / ModelUniforms / uPercentRangeModel',  modelUniforms.uPercentRange, {
+				range: [0, 10],
+			});
+			sheet.$float('Particles / ModelUniforms / uDeathRangeModel',  modelUniforms.uDeathRange, {
+				range: [0, 1],
+			});
+			sheet.$bool('Particles / ModelUniforms / uMorphEndedModel',  modelUniforms.uMorphEnded)
 
-			// sheet.$float('Particles / DustUniforms / uFlowFieldFrequencyDust',  dustUniforms.uFlowFieldFrequency, {
-			// 	range: [0, 1],
-			// });
-			// sheet.$float('Particles / DustUniforms / uFlowFieldStrengthDust',  dustUniforms.uFlowFieldStrength, {
-			// 	range: [0, 10],
-			// });
-			// sheet.$float('Particles / DustUniforms / uFlowFieldInfluenceDust',  dustUniforms.uFlowFieldInfluence, {
-			// 	range: [0, 10],
-			// });
+			sheet.$float('Particles / DustUniforms / uFlowFieldFrequencyDust',  dustUniforms.uFlowFieldFrequency, {
+				range: [0, 1],
+			});
+			sheet.$float('Particles / DustUniforms / uFlowFieldStrengthDust',  dustUniforms.uFlowFieldStrength, {
+				range: [0, 10],
+			});
+			sheet.$float('Particles / DustUniforms / uFlowFieldInfluenceDust',  dustUniforms.uFlowFieldInfluence, {
+				range: [0, 10],
+			});
 
-			sheet.$group('Particles', [
-				{
-					id: 'modelUniforms',
-					child: {
-						uFlowFieldFrequencyModel: {
-							value: modelUniforms.uFlowFieldFrequency,
-							range: [0, 1],
-						},
-						uFlowFieldStrengthModel: {
-							value: modelUniforms.uFlowFieldStrength,
-							range: [0, 10],
-						},
-						uFlowFieldInfluenceModel: {
-							value: modelUniforms.uFlowFieldInfluence,
-							range: [0, 1],
-						},
-						uPercentRangeModel: {
-							value: modelUniforms.uPercentRange,
-							range: [0, 10],
-						},
-						uDeathRangeModel: {
-							value: modelUniforms.uDeathRange,
-							range: [0, 1]
-						},
-						uMorphEndedModel: {
-							value: modelUniforms.uMorphEnded,
-							type: 'boolean',
-						},
-					},
-				},
-				{
-					id: 'dustUniforms',
-					child: {
-						uFlowFieldFrequencyDust: {
-							value: dustUniforms.uFlowFieldFrequency,
-							range: [0, 1],
-						},
-						uFlowFieldStrengthDust: {
-							value: dustUniforms.uFlowFieldStrength,
-							range: [0, 10],
-						},
-						uFlowFieldInfluenceDust: {
-							value: dustUniforms.uFlowFieldInfluence,
-							range: [0, 1],
-						},
-					},
-				},
-			]);
+			// sheet.$group('Particles', [
+			// 	{
+			// 		id: 'modelUniforms',
+			// 		child: {
+			// 			uFlowFieldFrequencyModel: {
+			// 				value: modelUniforms.uFlowFieldFrequency,
+			// 				range: [0, 1],
+			// 			},
+			// 			uFlowFieldStrengthModel: {
+			// 				value: modelUniforms.uFlowFieldStrength,
+			// 				range: [0, 10],
+			// 			},
+			// 			uFlowFieldInfluenceModel: {
+			// 				value: modelUniforms.uFlowFieldInfluence,
+			// 				range: [0, 1],
+			// 			},
+			// 			uPercentRangeModel: {
+			// 				value: modelUniforms.uPercentRange,
+			// 				range: [0, 10],
+			// 			},
+			// 			uDeathRangeModel: {
+			// 				value: modelUniforms.uDeathRange,
+			// 				range: [0, 1]
+			// 			},
+			// 			uMorphEndedModel: {
+			// 				value: modelUniforms.uMorphEnded,
+			// 				type: 'boolean',
+			// 			},
+			// 		},
+			// 	},
+			// 	{
+			// 		id: 'dustUniforms',
+			// 		child: {
+			// 			uFlowFieldFrequencyDust: {
+			// 				value: dustUniforms.uFlowFieldFrequency,
+			// 				range: [0, 1],
+			// 			},
+			// 			uFlowFieldStrengthDust: {
+			// 				value: dustUniforms.uFlowFieldStrength,
+			// 				range: [0, 10],
+			// 			},
+			// 			uFlowFieldInfluenceDust: {
+			// 				value: dustUniforms.uFlowFieldInfluence,
+			// 				range: [0, 1],
+			// 			},
+			// 		},
+			// 	},
+			// ]);
 		});
 	}
 

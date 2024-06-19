@@ -33,7 +33,7 @@ export class FamilyPhoto extends BaseInteractiveObject {
 		// console.log(this.webgl.$povCamera.controls)
 		// console.log(source.subtitles.content)
 
-		this.$sheet = mealSheet;
+		this.$flashbackSheet = mealSheet;
 	}
 
 
@@ -41,7 +41,7 @@ export class FamilyPhoto extends BaseInteractiveObject {
 		super.onClick();
 		this.disableInteraction();
 
-		await this.$sheet.play();
+		await this.$flashbackSheet.play();
 	}
 
 	async onClick() {
@@ -52,6 +52,7 @@ export class FamilyPhoto extends BaseInteractiveObject {
 		$raycast.disable();
 		$povCamera.$setState('cinematic');
 		await this.$gotoSheet.play();
+		await this.$flashbackSheet.play();
 
 		this.scene.setCameraToSpawn();
 		// this.hide(); // !! A DECOMMENTER
