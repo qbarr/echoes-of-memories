@@ -34,7 +34,7 @@ async function leave({ machine, to }) {
 	if (to.id == 'hud') {
 		if ($pauseScreenEnter) {
 			$pauseScreenEnter.play({ direction: 'reverse' });
-			await wait(500);
+			await wait(600);
 		}
 	}
 

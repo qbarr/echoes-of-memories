@@ -130,13 +130,9 @@ function POVController(
 	function update() {
 		const dt = webgl.$time.dt;
 
-		if (state.is(states.FLASHBACK)
-			|| state.is(states.FLASHBACK_FREE)
-		) updateFlashbackMode(dt);
-
-
+		if (state.is(states.FLASHBACK) || state.is(states.FLASHBACK_FREE))
+			updateFlashbackMode(dt);
 		else updatePOVMode(dt);
-
 	}
 
 	function updatePOVMode(dt) {
@@ -155,7 +151,6 @@ function POVController(
 		updateLookAt(lookat);
 		lookat.release();
 	}
-
 
 	function handleMoveRotate(x, y) {
 		const dt = webgl.$time.dt * 0.001;

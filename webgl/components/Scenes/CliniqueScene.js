@@ -19,7 +19,7 @@ export default class CliniqueScene extends BaseScene {
 		this._scene3D = $assets.objects.clinique.model;
 		const scene = this._scene3D.scene;
 		this.$mixer = useAnimationsMixer(this._scene3D, {
-			rename: (v) => v.replace('Action', ''),
+			rename: (v) => v.replace('Action', '').split('.')[0],
 		});
 
 		const textures = $assets.textures['clinique'];
