@@ -17,7 +17,7 @@ uniform float uDitherStrength;
 
 // Passes
 uniform sampler2D tMap;
-// uniform sampler2D tBloom;
+uniform sampler2D tBloom;
 uniform sampler2D tDepth;
 
 varying vec2 vUv;
@@ -52,7 +52,8 @@ void main() {
 
 	// Composite
 	vec4 tex = texture2D(tMap, uv);
-	// tex += texture2D(tBloom, uv);
+	if (CRT_DISABLED == 1)
+		tex += texture2D(tBloom, uv);
 
 	// TODO: replace by blue noise texture
 	tex.rgb = mix(tex.rgb, dither(tex.rgb), uDitherStrength);

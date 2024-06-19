@@ -92,29 +92,23 @@ export default class BedroomScene extends BaseScene {
 		this.base.add(scene);
 
 		$hooks.afterStart.watchOnce(this.createSheets.bind(this));
-
-		$composer.$hooks.beforeRenderEmissive.watch(this.onBeforeRender.bind(this));
-		$composer.$hooks.afterRenderEmissive.watch(this.onAfterRender.bind(this));
+		$composer.$hooks.beforeRenderEmissive.watch(this.onBeforeRenderEmissive.bind(this)); // prettier-ignore
+		$composer.$hooks.afterRenderEmissive.watch(this.onAfterRenderEmissive.bind(this)); // prettier-ignore
 	}
 
-	onBeforeRender() {
+	onBeforeRenderEmissive() {
 		for (let i = 0; i < this._allMeshes.length; i++) {
 			const mesh = this._allMeshes[i];
 			const data = this.datas[mesh.name];
-			// console.log(mesh.name, data?.emissiveMaterial, 'before');
-			if (data?.emissiveMaterial) {
-				mesh.material = data.emissiveMaterial;
-			}
+			if (data?.emissiveMaterial) mesh.material = data.emissiveMaterial;
 		}
 	}
 
-	onAfterRender() {
+	onAfterRenderEmissive() {
 		for (let i = 0; i < this._allMeshes.length; i++) {
 			const mesh = this._allMeshes[i];
 			const data = this.datas[mesh.name];
-			if (data?.material) {
-				mesh.material = data.material;
-			}
+			if (data?.material) mesh.material = data.material;
 		}
 	}
 

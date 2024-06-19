@@ -5,6 +5,7 @@ export function useShaderProps(webgl) {
 		uTime: { type: 'f', value: 0 },
 		uResolution: { type: 'v4', value: new Vector4() },
 		SRGB_TRANSFER: { type: 'i', value: 0 },
+		CRT_DISABLED: { type: 'i', value: 0 },
 	});
 
 	const d = (webgl.defines = {

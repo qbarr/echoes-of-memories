@@ -34,9 +34,11 @@ export default createWebgl({
 			load('msdf/VCR_OSD_MONO'),
 
 			// Sounds
-			load('positions'),
-			load('vocals'),
-			load('sfx'),
+			load('common/sfx'),
+			load('adam/sfx'),
+			load('ben/sfx'),
+			load('intro'),
+			load('outro'),
 
 			// Subtitles
 			load('subtitles'),

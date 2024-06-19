@@ -71,7 +71,10 @@ export class TheatreSheet {
 					lat: cam.controls.lat,
 					lon: cam.controls.lon,
 				},
-				{ position: { nudgeMultiplier: 0.1 } },
+				{
+					nudgeMultiplier: 0.1,
+					lat: { range: [-70, 50] },
+				},
 			);
 
 			if (Object.keys(initialValues).length) o.setInitialValues(initialValues);

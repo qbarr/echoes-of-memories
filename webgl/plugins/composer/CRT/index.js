@@ -14,6 +14,8 @@ export const useCRTPass = (composer) => {
 	const { buffers, filters, uniforms, defines } = composer;
 
 	const enabled = w(true);
+	enabled.watchImmediate((v) => (uniforms.CRT_DISABLED.value = v ? 0 : 1));
+
 	const scanLines = w(new Vector2(0.25, 0.23)); // Opacity, Flicker
 	const padding = w(new Vector2(0.2, 0)); // x, y
 	const fishEye = w(new Vector2(0.1, 0.24)); // x, y
