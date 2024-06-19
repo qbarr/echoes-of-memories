@@ -144,13 +144,13 @@ export class Settings extends BaseUiView {
 	onAudioSettingDown() {
 		const { $audio } = this.webgl;
 		const { levels } = this.audioController;
-		let vol = $audio.getMasterVolume();
+		let vol = $audio.masterVolume.value;
 
 		if (vol <= 1 && vol >= 0) {
 			vol -= 0.125;
 			vol = clamp(vol, 0, 1);
 			// console.log('onAudioSettingDown', vol);
-			$audio.setMasterVolume(vol);
+			$audio.masterVolume.set(vol);
 
 			const level = this.findClosestLevel(vol, levels);
 			level.m.scale.setScalar(0.3);
@@ -160,7 +160,7 @@ export class Settings extends BaseUiView {
 	onAudioSettingUp() {
 		const { $audio } = this.webgl;
 		const { levels } = this.audioController;
-		let vol = $audio.getMasterVolume();
+		let vol = $audio.masterVolume.value;
 
 		if (vol <= 1 && vol >= 0) {
 			const level = this.findClosestLevel(vol, levels);
@@ -168,7 +168,7 @@ export class Settings extends BaseUiView {
 			vol += 0.125;
 			vol = clamp(vol, 0, 1);
 			// console.log('onAudioSettingUp', vol);
-			$audio.setMasterVolume(vol);
+			$audio.masterVolume.set(vol);
 
 			level.m.scale.setScalar(1);
 		}
