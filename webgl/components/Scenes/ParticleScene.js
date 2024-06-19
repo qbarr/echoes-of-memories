@@ -55,10 +55,6 @@ export default class ParticleScene extends BaseScene {
 		const { $gpgpu } = this.webgl;
 		this.mouse = new Vector2(0, 0);
 		this.offset = new Vector2(0, 0);
-		this.particles = this.add(Particles, {
-			gpgpu: $gpgpu.computedsGPGPU.get()[0],
-			options: {},
-		});
 		window.addEventListener('mousemove', this.onMouseMove.bind(this));
 	}
 
@@ -93,7 +89,11 @@ export default class ParticleScene extends BaseScene {
 		// this.introAnimate();
 		const { $povCamera, $app, $gpgpu } = this.webgl;
 		$povCamera.onSceneSwitch(this);
-		$gpgpu.computedsGPGPU.get()[0].forceCompute.set(true);
+		this.particles = this.add(Particles, {
+			gpgpu: $gpgpu.list.get()[0],
+			options: {},
+		});
+		$gpgpu.list.get().forEach((g) => g.forceCompute.set(true));
 		// this.camera = $povCamera;
 		// this.camera.add(MainCamera);
 	}
@@ -118,10 +118,11 @@ export default class ParticleScene extends BaseScene {
 
 		// const { $time } = this.webgl;
 		// if (!this.) return
-
 		return
-		this.offset.x = lerp(this.offset.x, -this.mouse.x * .1, .01)
-		// console.log(this.offset.x
+		const sdt = this.webgl.$time.stableDt;
+		const t = this.webgl.$time.elapsed;
+
+		this.offset.x = damp(this.offset.x, -this.mouse.x * .1, .05, sdt)
 		const point = Vector3.get().set(0, 0, 0)
 		const axis = Vector3.get().set(0, 1, 0)
 		this.rotateAroundPoint(this.camera.base, point, axis, this.offset.x, false)
@@ -129,8 +130,6 @@ export default class ParticleScene extends BaseScene {
 		axis.release()
 		// console.log(this.camera.base)
 		return
-		const sdt = this.webgl.$time.stableDt;
-		const t = this.webgl.$time.elapsed;
 
 		if (
 			this.state.mouseInfluence <= 0 &&

@@ -36,7 +36,6 @@ void main()
     float friction = _attribute.y;
     float deathRange = _attribute.z;
 
-
     bool isDead = (uDeathRange > deathRange);
 
     //  if (isDead) {
@@ -55,7 +54,7 @@ void main()
     // Alive
     else
     {
-        bool isMorphing = true;
+        bool isMorphing = uPercentRange > range;
         float strength = simplexNoise4d(vec4(base.xyz * 0.2, time + 1.0));
 
 

@@ -22,8 +22,8 @@ const getDeathRange = (name) => {
 };
 
 export function gpgpuPlugin(webgl) {
-	const computedsGPGPU = w([]);
-	const api = { create, createPooling, computedsGPGPU, render };
+	const list = w([]);
+	const api = { create, createPooling, list, render };
 	let index = 0;
 	api.pool = createPooling(100);
 	api.pool.alloc(5);
@@ -129,7 +129,7 @@ export function gpgpuPlugin(webgl) {
 			dustParticles: null,
 		};
 		initBase(shader, gpgpu);
-		computedsGPGPU.set([...computedsGPGPU.get(), gpgpu]);
+		list.set([...list.get(), gpgpu]);
 		return gpgpu;
 	}
 
@@ -205,25 +205,22 @@ export function gpgpuPlugin(webgl) {
 	}
 
 	function render() {
-		computedsGPGPU.get().forEach((gpgpu) => {
+		list.get().forEach((gpgpu) => {
 			const elapsed = webgl.$time.elapsed * 0.001;
 			gpgpu.variables.particles.material.uniforms.uTime.value = elapsed;
 			gpgpu.variables.particles.material.uniforms.uDeltaTime.value =
 				webgl.$time.dt * 0.001;
-
 			// if(elapsed >= 5 && !gpgpu.savedRenderTargets.particles) {
 
 			// 	gpgpu.savedRenderTargets.particles = gpgpu.computation.getCurrentRenderTarget(gpgpu.variables.particles)
 
 			// 	// renderTargetTextureToJPG(gpgpu.savedRenderTargets.particles)
 			// 	//
-			// 	// gpgpu.variables.particles.material.uniforms.uParticles.value = gpgpu.savedRenderTargets.particles.texture
-			// 	// gpgpu.computation.doRenderTarget(gpgpu.variables.particles.material, gpgpu.variables.particles.renderTargets[0])
 
-			// 	// }, 5000);
 			// }
-
-			gpgpu.computation.compute();
+			// console.log(gpgpu.variables.particles.material.uniforms.uPercentRange.value)
+			if (elapsed < 10|| gpgpu.forceCompute.get()) gpgpu.computation.compute();
+			console.log(elapsed < 10|| gpgpu.forceCompute.get())
 		});
 	}
 
@@ -240,7 +237,39 @@ export function gpgpuPlugin(webgl) {
 		const modelUniforms = gpgpu.variables.particles.material.uniforms;
 		const dustUniforms = gpgpu.variables.dustParticles.material.uniforms;
 
+
+		// this.$sheet.$bool('Screen / Tape Played', { value: false }).onChange((v) => {
+		// 	if (!v) this.screen.setInstructionsScreen();
+		// 	else this.screen.setSplashScreen();
+		// });
 		sheets.forEach((sheet) => {
+			// sheet.$float('Particles / ModelUniforms / uFlowFieldFrequencyModel',  modelUniforms.uFlowFieldFrequency, {
+			// 	range: [0, 1],
+			// });
+			// sheet.$float('Particles / ModelUniforms / uFlowFieldStrengthModel',  modelUniforms.uFlowFieldStrength, {
+			// 	range: [0, 10],
+			// });
+			// sheet.$float('Particles / ModelUniforms / uFlowFieldInfluenceModel',  modelUniforms.uFlowFieldInfluence, {
+			// 	range: [0, 1],
+			// });
+			// sheet.$float('Particles / ModelUniforms / uPercentRangeModel',  modelUniforms.uPercentRange, {
+			// 	range: [0, 10],
+			// });
+			// sheet.$float('Particles / ModelUniforms / uDeathRangeModel',  modelUniforms.uDeathRange, {
+			// 	range: [0, 1],
+			// });
+			// sheet.$bool('Particles / ModelUniforms / uMorphEndedModel',  modelUniforms.uMorphEnded)
+
+			// sheet.$float('Particles / DustUniforms / uFlowFieldFrequencyDust',  dustUniforms.uFlowFieldFrequency, {
+			// 	range: [0, 1],
+			// });
+			// sheet.$float('Particles / DustUniforms / uFlowFieldStrengthDust',  dustUniforms.uFlowFieldStrength, {
+			// 	range: [0, 10],
+			// });
+			// sheet.$float('Particles / DustUniforms / uFlowFieldInfluenceDust',  dustUniforms.uFlowFieldInfluence, {
+			// 	range: [0, 10],
+			// });
+
 			sheet.$group('Particles', [
 				{
 					id: 'modelUniforms',
@@ -312,7 +341,28 @@ export function gpgpuPlugin(webgl) {
 	// 	link.download = 'texture.jpg';
 	// 	link.click();
 	// }
+	/// #if __DEBUG__
+	function devTools() {
+		const modelUniforms = list.get()[0].variables.particles.material.uniforms;
+		const gui = webgl.$gui.addFolder({ title: '🎉 GPGPU', index: 7 });
 
+		const add = (
+			obj,
+			{ value = 'value', label, min = 0, max = 1, step = 0.01 } = {},
+			_gui = gui,
+		) => {
+			gui.addBinding(obj, value, { label, min, max, step });
+		};
+
+		add(modelUniforms.uFlowFieldFrequency, { label: 'uFlowFieldFrequency' });
+		add(modelUniforms.uFlowFieldStrength, { label: 'uFlowFieldStrength' });
+		add(modelUniforms.uFlowFieldInfluence, { label: 'uFlowFieldInfluence' });
+		add(modelUniforms.uPercentRange, { label: 'uPercentRange', min: 0, max: 10 });
+		add(modelUniforms.uDeathRange, { label: 'uDeathRange' });
+		add(modelUniforms.uMorphEnded, { label: 'uMorphEnded'  });
+
+	}
+	/// #endif
 	function renderTargetTextureToJPG(renderTarget) {
 		const width = renderTarget.width;
 		const height = renderTarget.height;
@@ -363,7 +413,9 @@ export function gpgpuPlugin(webgl) {
 			webgl.$hooks.beforeStart.watchOnce(precomputeMemories);
 			webgl.$hooks.afterStart.watchOnce(() => {
 				setTimeout(() => {
-					createSheets(computedsGPGPU.get()[0]);
+					createSheets(list.get()[0]);
+					__DEBUG__ && devTools();
+
 				}, 500);
 			});
 		},

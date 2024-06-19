@@ -4,6 +4,7 @@ uniform sampler2D tEmissive;
 uniform sampler2D tDepth;
 uniform float uThreshold;
 uniform float uSmoothing;
+uniform float uDarkness;
 
 varying vec2 vUv;
 
@@ -16,4 +17,5 @@ void main() {
 	float alpha = smoothstep(uThreshold, uThreshold + uSmoothing, v);
 
 	gl_FragColor = mix(vec4(0.), texel, alpha);
+	gl_FragColor = mix(gl_FragColor, vec4(0.), uDarkness);
 }
