@@ -43,10 +43,12 @@ export class BaseInteractiveObject extends BaseComponent {
 
 	hide() {
 		this.base.visible = false;
+		this.disableInteraction();
 	}
 
 	show() {
 		this.base.visible = true;
+		this.enableInteraction();
 	}
 
 	reset() {
@@ -58,10 +60,6 @@ export class BaseInteractiveObject extends BaseComponent {
 		this.log('INTERACTION:click');
 		this.webgl.$lastClickedObject.set(this);
 		this._onClick?.();
-
-		// TODO: Go to this object
-		// TODO: Subtitles
-		// TODO: Transition
 	}
 	onHold() {
 		this.log('INTERACTION:hold');
