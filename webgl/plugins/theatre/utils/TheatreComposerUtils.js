@@ -5,6 +5,8 @@ export const convertComposerDatasForTheatre = (values) => {
 	const { $composer } = webgl;
 	const { $bokeh, $lut, $unrealBloom, $crt, $rgbShift, $depth, uniforms } = $composer;
 
+	values = Array.isArray(values) ? values : [values];
+
 	const api = {
 		global: {
 			id: 'global',
@@ -72,5 +74,6 @@ export const convertComposerDatasForTheatre = (values) => {
 		},
 	};
 
-	return values.map((key) => api[key]).filter(Boolean);
+	if (values[0] === '*') return Object.values(api);
+	else return values.map((key) => api[key]).filter(Boolean);
 };

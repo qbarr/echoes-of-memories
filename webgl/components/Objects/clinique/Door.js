@@ -43,6 +43,7 @@ export class Door extends BaseInteractiveObject {
 
 		await this.$sheet.play();
 
-		$scenes.set('tv-room');
+		await $scenes.set('tv-room');
+		$scenes.current.start();
 	}
 }

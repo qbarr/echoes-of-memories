@@ -22,6 +22,8 @@ export default class CliniqueScene extends BaseScene {
 			rename: (v) => v.replace('Action', '').split('.')[0],
 		});
 
+		console.log(this.$mixer);
+
 		const textures = $assets.textures['clinique'];
 
 		const _textures = {

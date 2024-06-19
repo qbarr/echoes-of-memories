@@ -4,6 +4,7 @@ export class Lettre extends BaseInteractiveObject {
 	init() {
 		this.isInteractiveObject = true;
 		this.isSpecial = true;
+		this.audioId = 'flashbacks/war'
 
 		this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
 	}
@@ -13,6 +14,24 @@ export class Lettre extends BaseInteractiveObject {
 
 		this.$gotoSheet = this.$project.getSheet('Lettre > Go To');
 		this.$gotoSheet.$addCamera();
+
+		const flashbackProject = $theatre.get('Flashback');
+		const warSheet = flashbackProject.getSheet('flashback_war');
+		warSheet.attachAudio(this.audioId);
+
+		const transitionProject = $theatre.get('Transition-Memories');
+		const transitionSheet = transitionProject.getSheet('transition');
+
+		warSheet.$bool('SwitchSceneParticles', { value: false }).onChange((v) => {
+			if (v) this.webgl.$scenes.switch('flashback3')
+			else this.webgl.$scenes.switch('bedroom')
+		});
+		warSheet.$addCamera()
+		warSheet.$composer(['global', 'lut', 'crt']);
+		this.$flashbackSheet = warSheet;
+
+		this.$outroSheet = flashbackProject.getSheet('outro');
+		this.$outroSheet.$composer(['*']);
 	}
 
 	async onClick() {
@@ -23,6 +42,7 @@ export class Lettre extends BaseInteractiveObject {
 		$raycast.disable();
 		$povCamera.$setState('cinematic');
 		await this.$gotoSheet.play();
+		await this.$flashbackSheet.play();
 
 		// ! FIN DE L'XP ICI
 

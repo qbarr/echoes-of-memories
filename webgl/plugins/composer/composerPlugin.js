@@ -135,8 +135,9 @@ export function composerPlugin(webgl) {
 			$afterImage.enabled.set(false);
 			$sketchLines.enabled.set(true);
 			uniforms.SRGB_TRANSFER.value = 0;
-		} else if (name === 'particle') {
+		} else if (name.includes('flashback')) {
 			$crt.enabled.set(true);
+			$lut.set('neutral');
 			// $lut.set('particle');
 			$afterImage.enabled.set(true);
 			$sketchLines.enabled.set(false);

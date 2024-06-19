@@ -195,13 +195,13 @@ export class Particles extends BaseComponent {
 		});
 		particles.points = new Points(particles.geometry, particles.material);
 		particles.points.frustumCulled = false;
+
 		this.dustMaterial = particles.material;
 		this.addObject3D(particles.points);
 		this.gpgpu = gpgpu;
 	}
 
 	update() {
-
 		const elapsed = this.webgl.$time.elapsed;
 		const modelParticlesTexture = this.gpgpu.computation.getCurrentRenderTarget(
 			this.gpgpu.variables.particles,

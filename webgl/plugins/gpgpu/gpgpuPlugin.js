@@ -3,23 +3,9 @@ import { w } from '#utils/state/index.js';
 import { BufferAttribute, Uniform, Vector2 } from 'three';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer.js';
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
+import { getDeathRanges } from './deathRanges';
 
-const getDeathRange = (name) => {
-	switch (name) {
-		case 'background':
-			return 0.2;
-		case 'chaise':
-			return 0.4;
-		case 'sol':
-			return 0.4;
-		case 'table':
-			return 0.6;
-		case 'parents':
-			return 0.8;
-		case 'ben':
-			return 1;
-	}
-};
+
 
 export function gpgpuPlugin(webgl) {
 	const list = w([]);
@@ -92,6 +78,7 @@ export function gpgpuPlugin(webgl) {
 				baseGeometry.instance.attributes.death.array[i];
 			gpgpu.attributesTexture.image.data[i4 + 3] = 0;
 		}
+
 	}
 
 	function fillDustParticles(gpgpu, baseGeometry, count) {
@@ -188,23 +175,36 @@ export function gpgpuPlugin(webgl) {
 	}
 
 	function precomputeMemories() {
-		const meal = webgl.$assets.objects.flashbacks.meal.scene;
-		let instances = meal.children.map((child) => {
-			child.updateWorldMatrix(true, false);
-			child.geometry.applyMatrix4(child.matrixWorld);
-			const death = [];
-			for (let i = 0; i < child.geometry.attributes.position.count; i++) {
-				death.push(getDeathRange(child.name));
-			}
-			child.geometry.attributes.death = new BufferAttribute(
-				new Float32Array(death),
-				1,
-			);
+		const flashbacks = [
+			'meal',
+			'truck',
+			'war',
+		]
+		// let instances = []
+		console.log(webgl.$assets.objects.flashbacks)
+		flashbacks.forEach((flashback, index) => {
+			const scene = webgl.$assets.objects.flashbacks[flashback].scene;
+			let instances = scene.children.map((child, i) => {
+				if (!child.isMesh) return
+				child.updateWorldMatrix(true, false);
 
-			return child.geometry.clone();
-		});
-		instances = BufferGeometryUtils.mergeGeometries(instances);
-		precomputeParticles(instances, presetsShader.gpgpu.base, 15);
+				child.geometry.applyMatrix4(child.matrixWorld);
+				const death = [];
+				for (let i = 0; i < child.geometry.attributes.position.count; i++) {
+					death.push(getDeathRanges(child.name, index));
+				}
+				child.geometry.attributes.death = new BufferAttribute(
+					new Float32Array(death),
+					1,
+				);
+
+				return child.geometry.clone();
+			});
+
+			instances = BufferGeometryUtils.mergeGeometries(instances);
+			precomputeParticles(instances, presetsShader.gpgpu.base, 15);
+		})
+
 	}
 
 	function render() {
@@ -226,24 +226,24 @@ export function gpgpuPlugin(webgl) {
 		});
 	}
 
-	function createSheets(gpgpu) {
+	function createSheets() {
 		const project = webgl.$theatre.get('Flashback');
 		if (!project) return;
 
 		const sheets = [
 			project.getSheet('flashback_photo'),
 			project.getSheet('flashback_crucifix'),
-			project.getSheet('flashback_bague'),
+			project.getSheet('flashback_war'),
 		];
-
-		const modelUniforms = gpgpu.variables.particles.material.uniforms;
-		const dustUniforms = gpgpu.variables.dustParticles.material.uniforms;
 
 		// this.$sheet.$bool('Screen / Tape Played', { value: false }).onChange((v) => {
 		// 	if (!v) this.screen.setInstructionsScreen();
 		// 	else this.screen.setSplashScreen();
 		// });
-		sheets.forEach((sheet) => {
+		sheets.forEach((sheet, index) => {
+			const gpgpu = list.get()[index];
+			const modelUniforms = gpgpu.variables.particles.material.uniforms;
+			const dustUniforms = gpgpu.variables.dustParticles.material.uniforms;
 			// sheet.$float('Particles / ModelUniforms / uFlowFieldFrequencyModel',  modelUniforms.uFlowFieldFrequency, {
 			// 	range: [0, 1],
 			// });
@@ -344,23 +344,26 @@ export function gpgpuPlugin(webgl) {
 	// }
 	/// #if __DEBUG__
 	function devTools() {
-		const modelUniforms = list.get()[0].variables.particles.material.uniforms;
-		const gui = webgl.$gui.addFolder({ title: '🎉 GPGPU', index: 7 });
+		list.get().forEach((gpgpu, i) => {
+			const modelUniforms = list.get()[0].variables.particles.material.uniforms;
+			const gui = webgl.$gui.addFolder({ title: `🎉 GPGPU${i} flashback${i}`, index: 7 });
 
-		const add = (
-			obj,
-			{ value = 'value', label, min = 0, max = 1, step = 0.01 } = {},
-			_gui = gui,
-		) => {
-			gui.addBinding(obj, value, { label, min, max, step });
-		};
+			const add = (
+				obj,
+				{ value = 'value', label, min = 0, max = 1, step = 0.01 } = {},
+				_gui = gui,
+			) => {
+				gui.addBinding(obj, value, { label, min, max, step });
+			};
 
-		add(modelUniforms.uFlowFieldFrequency, { label: 'uFlowFieldFrequency' });
-		add(modelUniforms.uFlowFieldStrength, { label: 'uFlowFieldStrength' });
-		add(modelUniforms.uFlowFieldInfluence, { label: 'uFlowFieldInfluence' });
-		add(modelUniforms.uPercentRange, { label: 'uPercentRange', min: 0, max: 10 });
-		add(modelUniforms.uDeathRange, { label: 'uDeathRange' });
-		add(modelUniforms.uMorphEnded, { label: 'uMorphEnded' });
+			add(modelUniforms.uFlowFieldFrequency, { label: 'uFlowFieldFrequency' });
+			add(modelUniforms.uFlowFieldStrength, { label: 'uFlowFieldStrength' });
+			add(modelUniforms.uFlowFieldInfluence, { label: 'uFlowFieldInfluence' });
+			add(modelUniforms.uPercentRange, { label: 'uPercentRange', min: 0, max: 10 });
+			add(modelUniforms.uDeathRange, { label: 'uDeathRange' });
+			add(modelUniforms.uMorphEnded, { label: 'uMorphEnded' });
+		})
+
 	}
 	/// #endif
 	function renderTargetTextureToJPG(renderTarget) {
@@ -413,7 +416,7 @@ export function gpgpuPlugin(webgl) {
 			webgl.$hooks.beforeStart.watchOnce(precomputeMemories);
 			webgl.$hooks.afterStart.watchOnce(() => {
 				setTimeout(() => {
-					createSheets(list.get()[0]);
+					createSheets();
 					__DEBUG__ && devTools();
 				}, 500);
 			});

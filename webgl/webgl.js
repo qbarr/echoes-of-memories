@@ -1,12 +1,14 @@
 import BedroomScene from './components/Scenes/BedroomScene';
 import CliniqueScene from './components/Scenes/CliniqueScene';
-import ParticleScene from './components/Scenes/ParticleScene';
 import TVRoomScene from './components/Scenes/TVRoomScene';
 import UIScene from './components/Scenes/UIScene';
 
 import { w } from '#utils/state/index.js';
 import { POVCamera } from './components/Cameras/POVCamera';
 import { createWebgl, webgl } from './core';
+import FlashbackMealScene from './components/Scenes/flashbacks/FlashbackMealScene';
+import FlashbackTruckScene from './components/Scenes/flashbacks/FlashbackTruckScene';
+import FlashbackWarScene from './components/Scenes/flashbacks/FlashbackWarScene';
 
 export default createWebgl({
 	async setup() {
@@ -21,7 +23,9 @@ export default createWebgl({
 		$scenes.create('tv-room', TVRoomScene);
 		$scenes.create('bedroom', BedroomScene);
 		$scenes.create('ui', UIScene);
-		$scenes.create('particle', ParticleScene);
+		$scenes.create('flashback1', FlashbackMealScene);
+		$scenes.create('flashback2', FlashbackTruckScene);
+		$scenes.create('flashback3', FlashbackWarScene);
 
 		webgl.$lastClickedObject = w(null);
 	},
@@ -68,6 +72,8 @@ export default createWebgl({
 			// Flashback
 			load('flashbacks/audios'),
 			load('flashbacks/meal/model'),
+			load('flashbacks/truck/model'),
+			load('flashbacks/war/model'),
 			load('flashbacks/subtitles'),
 
 			// Theatre
