@@ -114,8 +114,6 @@ export class POVCamera extends BaseCamera {
 		this.resizeSignal = dbs.watchImmediate(this.resize, this);
 	}
 
-
-
 	setPosition(pos) {
 		Array.isArray(pos) ? this.target.fromArray(pos) : this.target.copy(pos);
 		this.target.y = HEIGHT;
@@ -144,6 +142,7 @@ export class POVCamera extends BaseCamera {
 		const scene = $getCurrentScene();
 		const currentCam = scene.getCurrentCamera();
 
+		console.log($store.isPaused);
 		if (
 			!this.$pointerLocked &&
 			!$store.isPaused &&

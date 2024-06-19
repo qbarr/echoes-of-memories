@@ -9,7 +9,7 @@ export class Vinyles extends BaseInteractiveObject {
 	async createSheets() {
 		const { $theatre } = this.webgl;
 
-		this.$gotoSheet = this.$project.getSheet('Go_To_Vinyles');
+		this.$gotoSheet = this.$project.getSheet('Vinyles > Go To');
 		this.$gotoSheet.$addCamera();
 	}
 

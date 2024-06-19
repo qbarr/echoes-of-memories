@@ -116,18 +116,19 @@ export class UiButton extends BaseComponent {
 
 	onClick(e) {
 		if (!this?.parent?.base.visible) return;
-
-		if (this.props.callback) this.props.callback.call(this, e);
+		this.props.callback?.call(this, e);
 	}
 
 	onEnter() {
 		if (!this?.parent?.base.visible) return;
+		document.body.style.cursor = 'pointer';
 		if (this.props.forceHover) return;
 		this.hoverIn();
 	}
 
 	onLeave() {
 		if (!this?.parent?.base.visible) return;
+		document.body.style.cursor = 'auto';
 		if (this.props.forceHover) return;
 		this.hoverOut();
 	}
@@ -135,13 +136,13 @@ export class UiButton extends BaseComponent {
 	hoverIn() {
 		this.background.visible = true;
 		this.UiText.text.editColor(this.hoveredColor.clone());
-		document.body.style.cursor = 'pointer';
+		// document.body.style.cursor = 'pointer';
 	}
 
 	hoverOut() {
 		this.background.visible = false;
 		this.UiText.text.editColor(this.color.clone());
-		document.body.style.cursor = 'auto';
+		// document.body.style.cursor = 'auto';
 	}
 
 	show() {
@@ -153,5 +154,6 @@ export class UiButton extends BaseComponent {
 		// console.log('[UI BUTTON] HIDE', this.raycastObject);
 		this.raycastObject.disable();
 		this.onLeave();
+		document.body.style.cursor = 'auto';
 	}
 }

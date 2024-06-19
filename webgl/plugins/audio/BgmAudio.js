@@ -7,21 +7,22 @@ export class BgmAudio extends BaseAudio {
 		audios = Array.isArray(audios) ? audios : [audios];
 		// Use the first audio as the main audio
 		const audio = audios[0];
-		super(id, audio);
+		super(id, audio, 'bgm');
 
 		this.layers = audios;
-		this.gainNodes = [];
-	}
+		this.layersVolume = this.layers.map(() => 0);
+		this.layersVolume[0] = 1;
 
-	play(opts = {}) {
-		if (this.actives.length > 0) return this.resume();
 		for (let i = 0; i < this.layers.length; i++) {
 			const layer = this.layers[i];
 			const sample = AudioSample.get();
 			this.actives.push(sample);
-			sample.play(layer, { ...opts, loop: true });
-			if (i > 1) sample.setVolume(0);
+			sample.setAudio(layer);
+			sample.setVolume(this.layersVolume[i], true);
+			sample.play(null, { loop: true }).then((s) => s.pause());
 		}
+
+		this.play = this.resume.bind(this);
 	}
 
 	// Override
@@ -29,24 +30,30 @@ export class BgmAudio extends BaseAudio {
 	reset() {} //
 
 	pause() {
-		this.actives.forEach((audio) => audio.pause());
+		this.actives.forEach((audio) => audio.pause(true, { fade: 1000 }));
 		return this;
 	}
 
 	resume() {
-		this.actives.forEach((audio) => audio.resume());
+		this.actives.forEach((audio) => audio.resume({ fade: 1000 }));
 		return this;
 	}
 
 	mixLayers(volumes) {
 		for (let i = 0; i < this.layers.length; i++) {
-			const vol = clamp(volumes[i], 0, 1);
-			this.actives[i].setVolume(vol);
+			const vol = clamp(volumes[i], 0, 1) * this.volume.value;
+			this.actives[i].setVolume(vol, true);
 		}
 	}
 
 	mix(i, volume) {
-		volume = clamp(volume, 0, 1);
-		this.actives[i].setVolume(volume);
+		volume = clamp(volume, 0, 1) * this.volume.value;
+		this.actives[i].setVolume(volume, true);
+	}
+
+	setVolume(volume) {
+		this.volume.value = volume;
+		if (!this.actives.length) return;
+		this.mixLayers(this.layersVolume);
 	}
 }

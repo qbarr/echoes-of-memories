@@ -4,14 +4,14 @@ export class Collier extends BaseInteractiveObject {
 	init() {
 		this.isInteractiveObject = true;
 		this.isSpecial = true;
-		this.audioId = 'flashbacks/truck';
-		// this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
+
+		this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
 	}
 
 	async createSheets() {
 		const { $theatre } = this.webgl;
 
-		this.$gotoSheet = this.$project.getSheet('Go_To_Collier');
+		this.$gotoSheet = this.$project.getSheet('Collier > Go To');
 		this.$gotoSheet.$addCamera();
 
 		const flashbackProject = $theatre.get('Flashback');
@@ -41,12 +41,12 @@ export class Collier extends BaseInteractiveObject {
 		await this.$flashbackSheet.play();
 
 		this.scene.setCameraToSpawn();
-		// this.hide(); // !! A DECOMMENTER
+		this.hide(); // !! A DECOMMENTER
 
 		$raycast.enable();
 
 		$povCamera.$setState('free');
-		this.enableInteraction(); // !! A COMMENTER
+		// this.enableInteraction(); // !! A COMMENTER
 
 		this.specialObjects.testament.show();
 	}

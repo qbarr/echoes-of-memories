@@ -3,13 +3,13 @@ import { BaseInteractiveObject } from '../base/BaseInteractiveObject';
 export class Nounours extends BaseInteractiveObject {
 	init() {
 		this.isSimpleObject = true;
-		this.audioId = null;
+		this.audioId = 'bedroom/nounours';
 	}
 
 	async createSheets() {
 		const { $theatre } = this.webgl;
 
-		this.$gotoSheet = this.$project.getSheet('Go_To_Nounours');
+		this.$gotoSheet = this.$project.getSheet('Nounours > Go To');
 		this.$gotoSheet.$addCamera();
 	}
 
@@ -24,10 +24,16 @@ export class Nounours extends BaseInteractiveObject {
 
 		await this.$gotoSheet.play();
 
-		this.scene.setCameraToSpawn();
-		$raycast.enable();
+		$povCamera.$setState('focus');
 
-		$povCamera.$setState('free');
-		this.enableInteraction();
+		this.webgl.$audio.play(this.audioId, {
+			onComplete: () => {
+				this.scene.setCameraToSpawn();
+				$raycast.enable();
+
+				$povCamera.$setState('free');
+				this.enableInteraction();
+			},
+		});
 	}
 }

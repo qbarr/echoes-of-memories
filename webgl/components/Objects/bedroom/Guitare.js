@@ -9,7 +9,7 @@ export class Guitare extends BaseInteractiveObject {
 	async createSheets() {
 		const { $theatre } = this.webgl;
 
-		this.$gotoSheet = this.$project.getSheet('Go_To_Guitare');
+		this.$gotoSheet = this.$project.getSheet('Guitare > Go To');
 		this.$gotoSheet.$addCamera();
 	}
 

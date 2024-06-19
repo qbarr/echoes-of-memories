@@ -156,7 +156,6 @@ export class TheatreSheet {
 		// 	// and force update the values
 		// 	const props = val(Object.object.props);
 		// 	const values = {};
-		// 	console.log('props', props);
 		// 	for (const p in props) {
 		// 		const prop = props[p];
 
@@ -228,12 +227,10 @@ export class TheatreSheet {
 				if (subID === id) subID = null;
 				const { audios } = this.$webgl.$assets;
 				const audio = subID ? audios[subID][id] : audios[id];
-				console.log(audios)
 				return this.attachAudio(audio);
 			}
 		} else {
 			if (source.subtitles) {
-				console.log(source.subtitles, source)
 				this.$list('subtitles', source.subtitles.content).onChange((subtitle) =>
 					this.$webgl.$subtitles.currentPart.set(subtitle),
 				);
@@ -246,7 +243,11 @@ export class TheatreSheet {
 
 			source = source.audio ?? source;
 
-			res = this._attachAudioBuffer(source);
+			res = await this._attachAudioBuffer(source);
+
+			this.$webgl.$audio.volume.watchImmediate((v) => {
+				res.gainNode.gain.setValueAtTime(v, res.audioContext.currentTime);
+			});
 		}
 
 		return res;
@@ -281,7 +282,6 @@ export class TheatreSheet {
 	// 		}
 	// 		if (this._lastSubtitle === subtitle) continue;
 	// 		if (time >= subtitle.start && time <= subtitle.end) {
-	// 			// console.log('subtitle', subtitle.content);
 	// 			this._lastSubtitle = subtitle;
 	// 			this.$webgl.$subtitles.currentPart.set(subtitle.content);
 	// 		}
@@ -319,7 +319,6 @@ export class TheatreSheet {
 	}
 
 	playBackward(args = {}) {
-		console.log(this);
 		this.seek(20);
 		this.play({ ...args, direction: 'alternateReverse' });
 	}

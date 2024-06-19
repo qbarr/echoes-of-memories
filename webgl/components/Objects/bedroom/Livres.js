@@ -9,7 +9,7 @@ export class Livres extends BaseInteractiveObject {
 	async createSheets() {
 		const { $theatre } = this.webgl;
 
-		this.$gotoSheet = this.$project.getSheet('Go_To_Livres');
+		this.$gotoSheet = this.$project.getSheet('Livres > Go To');
 		this.$gotoSheet.$addCamera();
 	}
 

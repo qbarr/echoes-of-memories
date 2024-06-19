@@ -1,5 +1,5 @@
 import { raf } from '#utils/raf';
-import { w } from '#utils/state';
+import { storageSync, w } from '#utils/state';
 import { AudioListener } from 'three';
 import { BgmAudio } from './BgmAudio';
 import { SfxAudio } from './SfxAudio';
@@ -8,8 +8,13 @@ import { BaseAudio } from './BaseAudio';
 export function audioPlugin(webgl, opts = {}) {
 	const listener = new AudioListener();
 
-	const volume = w(0.2);
-	volume.watchImmediate((v) => listener.setMasterVolume(v));
+	console.log(webgl.$app.$storage);
+	const { $storage } = webgl.$app;
+	const volume = w($storage.getItem('volume') ?? 0.2);
+	volume.watchImmediate((v) => {
+		listener.setMasterVolume(v);
+		$storage.setItem('volume', v);
+	});
 
 	const isMuted = w(false);
 	isMuted.watchImmediate((v) => (v ? mute() : unmute()));
@@ -29,7 +34,9 @@ export function audioPlugin(webgl, opts = {}) {
 
 		visible: true,
 		currentId: null,
-		masterVolume: w(1),
+
+		volume,
+		setVolume,
 
 		progress: 0,
 		startAt: 0,
@@ -258,8 +265,8 @@ export function audioPlugin(webgl, opts = {}) {
 				step: 0.01,
 			});
 			for (let i = 0; i < audio.layers.length; i++) {
-				const layer = audio.layers[i];
-				const v = { volume: layer.getVolume() };
+				const volume = audio.layersVolume[i];
+				const v = { volume };
 				folder
 					.addBinding(v, 'volume', {
 						label: `Layer ${i + 1}`,

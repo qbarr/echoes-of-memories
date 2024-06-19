@@ -1,12 +1,16 @@
 import { wait } from '#utils/async';
 
 async function enter({ machine, from, to }) {
-	const { $scenes } = this.$webgl;
+	const { $scenes, $canvas } = this.$webgl;
+	const { $store } = this.$app;
 	const scene = $scenes.ui.component;
 
 	const { $pauseScreenEnter, $pauseScreenToMenu } = scene;
 
 	console.log('[PAUSE] ENTER', scene, scene.$pauseScreenEnter);
+
+	$store.isPaused = true;
+	document.exitPointerLock();
 
 	if (from.id == 'settings' || from.id == 'credits') {
 		// $pauseScreenEnter.play();

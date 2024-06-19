@@ -1,7 +1,8 @@
 import { wait } from '#utils/async';
 
 async function enter({ machine, from }) {
-	const { $theatre, $scenes } = this.$webgl;
+	const { $theatre, $scenes, $canvas } = this.$webgl;
+	const { $store } = this.$app;
 	const scene = $scenes.ui.component;
 
 	if (!from || from.id === 'pause') {
@@ -9,7 +10,15 @@ async function enter({ machine, from }) {
 		scene.hudScreen.show();
 	}
 
+	document.body.style.cursor = 'auto';
+	$store.isPaused = false;
+
 	scene.hudScreen.show();
+
+	const currentCam = scene.getCurrentCamera();
+	if (!$store.pointerLocked && currentCam.name !== 'Debug Camera') {
+		$store.hasInteractedOnce && $canvas.requestPointerLock();
+	}
 }
 
 function update() {}
