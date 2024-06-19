@@ -3,13 +3,16 @@ import { AudioSample } from './AudioSample';
 import { w } from '#utils/state/index.js';
 
 export class BaseAudio {
-	constructor(id, audio) {
+	constructor(id, audio, type) {
 		this.id = id;
 		this.audio = audio;
 		this.isDeferred = false;
 		this.actives = [];
+
 		this.volume = w(1);
+		// if (type !== 'bgm') {
 		this.volume.watchImmediate((v) => this.setVolume(v));
+		// }
 	}
 
 	play(opts = {}) {

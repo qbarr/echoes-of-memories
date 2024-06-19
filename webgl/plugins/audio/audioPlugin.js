@@ -258,8 +258,8 @@ export function audioPlugin(webgl, opts = {}) {
 				step: 0.01,
 			});
 			for (let i = 0; i < audio.layers.length; i++) {
-				const layer = audio.layers[i];
-				const v = { volume: layer.getVolume() };
+				const volume = audio.layersVolume[i];
+				const v = { volume };
 				folder
 					.addBinding(v, 'volume', {
 						label: `Layer ${i + 1}`,

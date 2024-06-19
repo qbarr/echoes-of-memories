@@ -1,6 +1,10 @@
+import { raftween } from '#utils/anim/raftween.js';
 import { wait } from '#utils/async/wait.js';
+import { damp } from '#utils/maths/map.js';
 import { poolify } from '#utils/optims/poolify.js';
+import { raf } from '#utils/raf/raf.js';
 import { webgl } from '#webgl/core/index.js';
+import { wraftween } from '#webgl/utils/wraftween.js';
 
 let uid = 0;
 export class AudioSample {
@@ -11,8 +15,30 @@ export class AudioSample {
 		this.isPlaying = false;
 		this.forcePause = false;
 
+		this.currentVolume = 0;
+		this.volume = 0;
+		this.targetVolume = 1;
+		this.tween = null;
+
 		this.bufferStartTime = 0;
 		this.bufferPauseTime = 0;
+
+		this.tween = null;
+	}
+
+	createVolTween({ volume, duration, onComplete = () => {} }) {
+		this.tween?.destroy();
+		this.tween = wraftween({
+			onUpdate: () => {
+				this.setVolume(this.volume);
+			},
+			onComplete,
+		}).to(this, {
+			volume: volume ?? this.targetVolume,
+			duration,
+			easing: 'outSwift',
+		});
+		return this.tween;
 	}
 
 	setAudio(audio) {
@@ -32,25 +58,25 @@ export class AudioSample {
 		}
 
 		if (opts.delay) await wait(opts.delay);
-		if (opts.volume) this.setVolume(opts.volume);
 		if (opts.onStart) opts.onStart();
-
-		this.audio.play();
-		this.bufferStartTime = 0;
-		this.isPlaying = true;
-		webgl.$audio.actives.set(this.uid, this);
-		const origOnEnded = this.audio.onEnded;
+		if (opts.fade) {
+			this.volume = 0;
+			this.targetVolume = opts.volume ?? 1;
+			this.createVolTween({ duration: opts.fade });
+		} else if (opts.volume) {
+			this.volume = opts.volume;
+			this.targetVolume = opts.volume;
+			this.setVolume(opts.volume);
+		}
 
 		this.audio.setLoop(!!opts.loop);
-		this.audio.onEndLoop;
+
+		const origOnEnded = this.audio.onEnded;
 		this.audio.onEnded = () => {
 			if (opts.loop) {
 				if (opts.onEndLoop) opts.onEndLoop();
 				if (opts.loopCount) opts.loopCount--;
-				console.log('loopCount', opts.loopCount);
-				console.log(!opts.loopCount || opts.loopCount < 0);
 				if (!opts.loopCount || opts.loopCount < 0) return;
-				console.log('here');
 
 				if (opts.loopDelay) {
 					this.play({
@@ -75,6 +101,11 @@ export class AudioSample {
 			}
 		};
 
+		this.audio.play();
+		this.bufferStartTime = 0;
+		this.isPlaying = true;
+		webgl.$audio.actives.set(this.uid, this);
+
 		return this;
 	}
 
@@ -89,21 +120,38 @@ export class AudioSample {
 		return this;
 	}
 
-	pause(force = true) {
+	async pause(force = true, { fade = 0 } = {}) {
 		if (!this.isPlaying) return;
 		this.bufferPauseTime = this.audio.context.currentTime - this.bufferStartTime;
 		this.forcePause = force;
-		this.audio.pause();
-		this.isPlaying = false;
+		if (fade) {
+			this.targetVolume = 0;
+			this.volume = this.currentVolume;
+			this.createVolTween({
+				duration: fade,
+				onComplete: () => {
+					this.audio.pause();
+					this.isPlaying = false;
+				},
+			});
+		} else {
+			this.audio.pause();
+			this.isPlaying = false;
+		}
+
 		return this;
 	}
 
-	resume() {
+	resume({ fade = 0 } = {}) {
 		if (this.isPlaying) return;
 		this.bufferStartTime = this.audio.context.currentTime - this.bufferPauseTime;
 		this.forcePause = false;
-		this.audio.play();
+		if (fade) {
+			this.targetVolume = this.currentVolume;
+			this.createVolTween({ duration: fade });
+		}
 		this.isPlaying = true;
+		this.audio.play();
 		return this;
 	}
 
@@ -138,8 +186,9 @@ export class AudioSample {
 		return this;
 	}
 
-	setVolume(volume) {
+	setVolume(volume, keep = false) {
 		this.audio.setVolume(volume);
+		if (keep) this.currentVolume = volume;
 		return this;
 	}
 

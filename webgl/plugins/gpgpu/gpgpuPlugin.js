@@ -7,17 +7,17 @@ import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js'
 const getDeathRange = (name) => {
 	switch (name) {
 		case 'background':
-			return .2
+			return 0.2;
 		case 'chaise':
-			return .4
+			return 0.4;
 		case 'sol':
-			return .4
+			return 0.4;
 		case 'table':
-			return .6
+			return 0.6;
 		case 'parents':
-			return .8
+			return 0.8;
 		case 'ben':
-			return 1
+			return 1;
 	}
 };
 
@@ -88,7 +88,8 @@ export function gpgpuPlugin(webgl) {
 
 			gpgpu.attributesTexture.image.data[i4 + 0] = indexRange; // assign a range to each particle
 			gpgpu.attributesTexture.image.data[i4 + 1] = friction;
-			gpgpu.attributesTexture.image.data[i4 + 2] = baseGeometry.instance.attributes.death.array[i];
+			gpgpu.attributesTexture.image.data[i4 + 2] =
+				baseGeometry.instance.attributes.death.array[i];
 			gpgpu.attributesTexture.image.data[i4 + 3] = 0;
 		}
 	}
@@ -118,8 +119,8 @@ export function gpgpuPlugin(webgl) {
 		gpgpu.instance = baseGeometry.instance;
 		//dirty mais nsm
 		const additiveDustParticles = 50000;
-		fillPositionTexture(gpgpu, baseGeometry)
-		fillDustParticles(gpgpu, baseGeometry,additiveDustParticles)
+		fillPositionTexture(gpgpu, baseGeometry);
+		fillDustParticles(gpgpu, baseGeometry, additiveDustParticles);
 
 		//
 		gpgpu.timePauseCompute = timePauseCompute;
@@ -186,21 +187,23 @@ export function gpgpuPlugin(webgl) {
 		return gpgpu;
 	}
 
-
 	function precomputeMemories() {
 		const meal = webgl.$assets.objects.flashbacks.meal.scene;
 		let instances = meal.children.map((child) => {
 			child.updateWorldMatrix(true, false);
 			child.geometry.applyMatrix4(child.matrixWorld);
-			const death = []
-			for (let i = 0; i < child.geometry.attributes.position.count; i ++) {
-				death.push(getDeathRange(child.name))
+			const death = [];
+			for (let i = 0; i < child.geometry.attributes.position.count; i++) {
+				death.push(getDeathRange(child.name));
 			}
-			child.geometry.attributes.death = new BufferAttribute(new Float32Array(death), 1)
+			child.geometry.attributes.death = new BufferAttribute(
+				new Float32Array(death),
+				1,
+			);
 
-			return child.geometry.clone()
-		})
-		instances = BufferGeometryUtils.mergeGeometries(instances)
+			return child.geometry.clone();
+		});
+		instances = BufferGeometryUtils.mergeGeometries(instances);
 		precomputeParticles(instances, presetsShader.gpgpu.base, 15);
 	}
 
@@ -219,8 +222,8 @@ export function gpgpuPlugin(webgl) {
 
 			// }
 			// console.log(gpgpu.variables.particles.material.uniforms.uPercentRange.value)
-			if (elapsed < 10|| gpgpu.forceCompute.get()) gpgpu.computation.compute();
-			console.log(elapsed < 10|| gpgpu.forceCompute.get())
+			if (elapsed < 10 || gpgpu.forceCompute.get()) gpgpu.computation.compute();
+			// console.log(elapsed < 10|| gpgpu.forceCompute.get())
 		});
 	}
 
@@ -231,12 +234,11 @@ export function gpgpuPlugin(webgl) {
 		const sheets = [
 			project.getSheet('flashback_photo'),
 			project.getSheet('flashback_crucifix'),
-			project.getSheet('flashback_bague')
-		]
+			project.getSheet('flashback_bague'),
+		];
 
 		const modelUniforms = gpgpu.variables.particles.material.uniforms;
 		const dustUniforms = gpgpu.variables.dustParticles.material.uniforms;
-
 
 		// this.$sheet.$bool('Screen / Tape Played', { value: false }).onChange((v) => {
 		// 	if (!v) this.screen.setInstructionsScreen();
@@ -292,7 +294,7 @@ export function gpgpuPlugin(webgl) {
 						},
 						uDeathRangeModel: {
 							value: modelUniforms.uDeathRange,
-							range: [0, 1]
+							range: [0, 1],
 						},
 						uMorphEndedModel: {
 							value: modelUniforms.uMorphEnded,
@@ -359,8 +361,7 @@ export function gpgpuPlugin(webgl) {
 		add(modelUniforms.uFlowFieldInfluence, { label: 'uFlowFieldInfluence' });
 		add(modelUniforms.uPercentRange, { label: 'uPercentRange', min: 0, max: 10 });
 		add(modelUniforms.uDeathRange, { label: 'uDeathRange' });
-		add(modelUniforms.uMorphEnded, { label: 'uMorphEnded'  });
-
+		add(modelUniforms.uMorphEnded, { label: 'uMorphEnded' });
 	}
 	/// #endif
 	function renderTargetTextureToJPG(renderTarget) {
@@ -415,7 +416,6 @@ export function gpgpuPlugin(webgl) {
 				setTimeout(() => {
 					createSheets(list.get()[0]);
 					__DEBUG__ && devTools();
-
 				}, 500);
 			});
 		},
