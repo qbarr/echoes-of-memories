@@ -72,6 +72,8 @@ export default {
 	// É
 	'flashbacks/audios': audio('audios/flashbacks/*'),
 	'flashbacks/meal/model': glb('scenes/flashbacks/meal'),
+	'flashbacks/truck/model': glb('scenes/flashbacks/truck'),
+	'flashbacks/war/model': glb('scenes/flashbacks/war'),
 	'flashbacks/subtitles': json('subtitles/flashbacks/*', { type: 'subtitles' }),
 
 	// Audios

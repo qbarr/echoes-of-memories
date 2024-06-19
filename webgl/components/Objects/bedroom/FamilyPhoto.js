@@ -21,7 +21,7 @@ export class FamilyPhoto extends BaseInteractiveObject {
 		const transitionSheet = transitionProject.getSheet('transition');
 
 		mealSheet.$bool('SwitchSceneParticles', { value: false }).onChange((v) => {
-			if (v) this.webgl.$scenes.switch('particle');
+			if (v) this.webgl.$scenes.switch('flashback1');
 			else this.webgl.$scenes.switch('bedroom');
 		});
 		mealSheet.$addCamera();
@@ -29,7 +29,8 @@ export class FamilyPhoto extends BaseInteractiveObject {
 		mealSheet
 			.$list('stateMachine', Object.values($povCamera.controls.states))
 			.onChange((v) => {
-				$povCamera.$setState('flashback_free');
+				const state = v?.toLowerCase() || null
+				$povCamera.$setState(state);
 			});
 		// console.log(this.webgl.$povCamera.controls)
 		// console.log(source.subtitles.content)

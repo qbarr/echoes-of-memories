@@ -49,7 +49,6 @@ for (let k in coords) {
 const lerp = (a, b, n) => a + n * (b - a);
 
 export default class ParticleScene extends BaseScene {
-	mixins = ['debugCamera'];
 
 	init() {
 		const { $gpgpu } = this.webgl;
@@ -87,13 +86,7 @@ export default class ParticleScene extends BaseScene {
 
 	async enter() {
 		// this.introAnimate();
-		const { $povCamera, $app, $gpgpu } = this.webgl;
-		$povCamera.onSceneSwitch(this);
-		this.particles = this.add(Particles, {
-			gpgpu: $gpgpu.list.get()[0],
-			options: {},
-		});
-		$gpgpu.list.get().forEach((g) => g.forceCompute.set(true));
+
 		// this.camera = $povCamera;
 		// this.camera.add(MainCamera);
 	}

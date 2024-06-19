@@ -23,7 +23,7 @@ export class Lettre extends BaseInteractiveObject {
 		const transitionSheet = transitionProject.getSheet('transition');
 
 		warSheet.$bool('SwitchSceneParticles', { value: false }).onChange((v) => {
-			if (v) this.webgl.$scenes.switch('particle')
+			if (v) this.webgl.$scenes.switch('flashback3')
 			else this.webgl.$scenes.switch('bedroom')
 		});
 		warSheet.$addCamera()

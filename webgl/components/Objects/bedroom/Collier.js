@@ -4,6 +4,7 @@ export class Collier extends BaseInteractiveObject {
 	init() {
 		this.isInteractiveObject = true;
 		this.isSpecial = true;
+		this.audioId = 'flashbacks/truck';
 
 		this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
 	}
@@ -22,7 +23,7 @@ export class Collier extends BaseInteractiveObject {
 		const transitionSheet = transitionProject.getSheet('transition');
 
 		truckSheet.$bool('SwitchSceneParticles', { value: false }).onChange((v) => {
-			if (v) this.webgl.$scenes.switch('particle')
+			if (v) this.webgl.$scenes.switch('flashback2')
 			else this.webgl.$scenes.switch('bedroom')
 		});
 		truckSheet.$addCamera()
