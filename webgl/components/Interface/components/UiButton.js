@@ -116,6 +116,7 @@ export class UiButton extends BaseComponent {
 
 	onClick(e) {
 		if (!this?.parent?.base.visible) return;
+
 		this.props.callback?.call(this, e);
 	}
 
@@ -134,6 +135,9 @@ export class UiButton extends BaseComponent {
 	}
 
 	hoverIn() {
+		const { $audio } = this.webgl;
+		$audio.play('common/select', { volume: 3 });
+
 		this.background.visible = true;
 		this.UiText.text.editColor(this.hoveredColor.clone());
 		// document.body.style.cursor = 'pointer';
