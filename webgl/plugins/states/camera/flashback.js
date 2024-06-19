@@ -6,6 +6,7 @@ async function enter({ machine }) {
 
 	// crosshair.setVisible(false);
 	camera.controls.setMode('flashback');
+	camera.controls.goFlashbackMode();
 }
 
 function update() {}

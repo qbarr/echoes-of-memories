@@ -201,6 +201,7 @@ function POVController(
 	}
 
 	function goFreeMode() {
+		console.log('goFreeMode');
 		state.set(states.FREE);
 	}
 
@@ -217,6 +218,7 @@ function POVController(
 	}
 
 	function goCinematicMode() {
+		console.log('goCinematicMode');
 		state.set(states.CINEMATIC);
 	}
 

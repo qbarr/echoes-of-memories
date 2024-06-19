@@ -50,15 +50,6 @@ export class Settings extends BaseUiView {
 			text: null,
 			downButton: null,
 			upButton: null,
-			// levels: [
-			// 	{ s: 1, v: 0.125, m: null },
-			// 	{ s: 1, v: 0.25, m: null },
-			// 	{ s: 1, v: 0.375, m: null },
-			// 	{ s: 1, v: 0.5, m: null },
-			// 	{ s: 1, v: 0.625, m: null },
-			// 	{ s: 1, v: 0.75, m: null },
-			// 	{ s: 1, v: 0.875, m: null },
-			// ],
 			levels: vols.map((v) => ({ s: 1, v, m: null })),
 		};
 

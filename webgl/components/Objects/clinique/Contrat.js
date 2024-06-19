@@ -17,14 +17,13 @@ export class Contrat extends BaseInteractiveObject {
 		super.onClick();
 		this.disableInteraction();
 
-		const { $povCamera: camera } = this.webgl;
+		const { $povCamera } = this.webgl;
 
-		camera.$setState('focus');
-		// camera.controls.focusOn(this.base.position);
+		$povCamera.$setState('focus');
 
 		await this.$sheet.play();
 
-		camera.$setState('free');
+		$povCamera.$setState('free');
 	}
 
 	async createSheets() {

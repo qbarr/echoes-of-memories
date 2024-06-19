@@ -19,8 +19,10 @@ export default class CliniqueScene extends BaseScene {
 		this._scene3D = $assets.objects.clinique.model;
 		const scene = this._scene3D.scene;
 		this.$mixer = useAnimationsMixer(this._scene3D, {
-			rename: (v) => v.replace('Action', ''),
+			rename: (v) => v.replace('Action', '').split('.')[0],
 		});
+
+		console.log(this.$mixer);
 
 		const textures = $assets.textures['clinique'];
 
@@ -90,6 +92,7 @@ export default class CliniqueScene extends BaseScene {
 	}
 
 	async start(force) {
+		console.log('here ?');
 		if (this._hasStarted && !force) return;
 		if (this._hasStarted) {
 			this.$sheet.stop();
@@ -100,6 +103,7 @@ export default class CliniqueScene extends BaseScene {
 		const { cassette, porte } = this.interactiveObjects;
 		const { $povCamera } = this.webgl;
 
+		console.log($povCamera.$setState);
 		$povCamera.$setState('cinematic');
 
 		cassette.reset();

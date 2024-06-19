@@ -1,16 +1,21 @@
-import { damp, lerp } from '#utils/maths/map.js';
+import { clamp, damp, lerp } from '#utils/maths/map.js';
 import { getWebGL } from '#webgl/core/index.js';
 import { Vector3 } from 'three';
 import { ImprovedNoise } from 'three/addons/math/ImprovedNoise.js';
 
+import { w } from '#utils/state/index.js';
+
 export default class Wobble {
 	constructor({
+		walksSettings = {},
 		position = new Vector3(),
 		frequency = new Vector3(),
 		amplitude = new Vector3(),
 		scale = 1,
 	} = {}) {
 		this.webgl = getWebGL();
+
+		this.walksSettings = walksSettings;
 
 		this.position = position;
 		this.origin = new Vector3();
@@ -19,9 +24,38 @@ export default class Wobble {
 		this.frequency = frequency;
 		this.amplitude = amplitude;
 		this.scale = scale;
+		console.log('scale', scale);
 		this.baseLerpSpeed = this.targetLerpSpeed = 0.02;
 
 		this.forcedY = this.position.clone().y;
+
+		this.rawStates = ['DEFAULT', 'WALK', 'SHAKE'];
+		this.states = this.rawStates.reduce((acc, key) => {
+			acc[key] = key;
+			return acc;
+		}, {});
+		this.state = w(this.states.DEFAULT);
+		// this.state = w(this.states.WALK);
+		this.state.is = (s) => this.state.value.toLowerCase() === s.toLowerCase();
+	}
+
+	setMode(_mode) {
+		const mode = _mode.toLowerCase();
+		if (mode === 'default') goFreeMode();
+		else if (mode === 'walk') goWalkMode();
+		else if (mode === 'shake') gotToShakeMode();
+	}
+
+	goDefaultMode() {
+		this.state.set(this.states.DEFAULT);
+	}
+
+	goWalkMode() {
+		this.state.set(this.states.WALK);
+	}
+
+	gotToShakeMode() {
+		this.state.set(this.states.SHAKE);
 	}
 
 	/// #if __DEBUG__
@@ -46,7 +80,14 @@ export default class Wobble {
 	}
 
 	update(time) {
-		// console.log(this.scale);
+		if (this.state.is(this.states.DEFAULT)) this.defaultWobble(time);
+
+		if (this.state.is(this.states.WALK)) this.walkWobble(time);
+	}
+
+	defaultWobble(time) {
+		if (!this.state.is('default')) return;
+
 		this.baseLerpSpeed = lerp(this.baseLerpSpeed, this.targetLerpSpeed, 0.01);
 
 		this.target.x =
@@ -61,5 +102,27 @@ export default class Wobble {
 
 		const { stableDt: dt } = this.webgl.$time;
 		this.position?.damp(this.target, this.baseLerpSpeed, dt);
+	}
+
+	walkWobble(time) {
+		if (!this.state.is('walk')) return;
+
+		// this.baseLerpSpeed = lerp(this.baseLerpSpeed, 1, 0.01);
+
+		// console.log(this.baseLerpSpeed);
+
+		const { velocityLength } = this.walksSettings;
+		// const v = clamp(velocityLength * 0.05, 0, 50);
+		const v = clamp(velocityLength, 1, 50) * 0.1;
+
+		// console.log(v);
+
+		this.target.x = this.target.z = 0;
+		this.target.y = Math.sin(time * 10) * v;
+
+		this.target.add(this.position);
+
+		const { stableDt: dt } = this.webgl.$time;
+		this.position?.damp(this.target, 0.1, dt);
 	}
 }

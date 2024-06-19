@@ -5,8 +5,11 @@ async function enter({ machine }) {
 	const uiScene = $scenes.ui.component;
 	const { crosshair } = uiScene;
 
+	console.log('[CINEMATIC STATE]');
+
 	crosshair.setVisible(false);
 	camera.controls.setMode('cinematic');
+	camera.controls.goCinematicMode();
 }
 function update() {}
 async function leave({ machine }) {}

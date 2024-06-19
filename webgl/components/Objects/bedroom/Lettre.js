@@ -29,6 +29,9 @@ export class Lettre extends BaseInteractiveObject {
 		warSheet.$addCamera()
 		warSheet.$composer(['global', 'lut', 'crt']);
 		this.$flashbackSheet = warSheet;
+
+		this.$outroSheet = flashbackProject.getSheet('outro');
+		this.$outroSheet.$composer(['*']);
 	}
 
 	async onClick() {

@@ -11,6 +11,7 @@ export function audioPlugin(webgl, opts = {}) {
 	console.log(webgl.$app.$storage);
 	const { $storage } = webgl.$app;
 	const volume = w($storage.getItem('volume') ?? 0.2);
+	console.log('AUDIO PLUGIN INIT', volume.value);
 	volume.watchImmediate((v) => {
 		listener.setMasterVolume(v);
 		$storage.setItem('volume', v);
@@ -181,7 +182,7 @@ export function audioPlugin(webgl, opts = {}) {
 
 	function setVolume(_volume) {
 		volume.set(_volume);
-		// listener.setMasterVolume(volume.value);
+		listener.setMasterVolume(volume.value);
 	}
 
 	// function onCameraChange(camera) {
@@ -255,8 +256,6 @@ export function audioPlugin(webgl, opts = {}) {
 		_bgms.forEach((bgm) => {
 			const audio = bgms[bgm];
 			const folder = bgmGui.addFolder({ title: bgm });
-
-			console.log(audio);
 
 			folder.addBinding(audio.volume, 'value', {
 				label: 'Volume',
