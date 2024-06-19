@@ -10,7 +10,7 @@ async function enter({ machine, from }) {
 		scene.hudScreen.show();
 	}
 
-	document.body.style.cursor = 'default';
+	document.body.style.cursor = 'auto';
 	$store.isPaused = false;
 
 	scene.hudScreen.show();

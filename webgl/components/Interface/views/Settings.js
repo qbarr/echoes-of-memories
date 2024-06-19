@@ -1,9 +1,11 @@
-import { watch } from 'vue';
-import { Object3D, Color, Vector3, MeshBasicMaterial, PlaneGeometry, Mesh } from 'three';
+import { Color, Mesh, MeshBasicMaterial, PlaneGeometry, Vector3 } from 'three';
 
-import { UiBackground, UiText, UiButton } from '../components';
+import { clamp } from '#utils/maths/map.js';
 import { BaseUiView } from '#webgl/core/BaseUiView.js';
-import { clamp, map } from '#utils/maths/map.js';
+import { UiButton, UiText } from '../components';
+
+const levelsCount = 8;
+const vols = new Array(levelsCount).fill(1).map((_, i) => i / (levelsCount - 1));
 
 export class Settings extends BaseUiView {
 	init() {
@@ -12,6 +14,8 @@ export class Settings extends BaseUiView {
 
 		this.vw = vw;
 		this.vh = vh;
+
+		this.index = 0;
 
 		this.onAudioSettingDown = this.onAudioSettingDown.bind(this);
 		this.onAudioSettingUp = this.onAudioSettingUp.bind(this);
@@ -36,11 +40,6 @@ export class Settings extends BaseUiView {
 	}
 
 	createSettings() {
-		const { left } = this.camera.base;
-		const padding = 8;
-
-		const { masterVolume } = this.webgl.$audio;
-
 		this.createAudioController();
 		this.createSubtitlesController();
 		this.createBackButton();
@@ -51,15 +50,16 @@ export class Settings extends BaseUiView {
 			text: null,
 			downButton: null,
 			upButton: null,
-			levels: [
-				{ s: 1, v: 0.125, m: null },
-				{ s: 1, v: 0.25, m: null },
-				{ s: 1, v: 0.375, m: null },
-				{ s: 1, v: 0.5, m: null },
-				{ s: 1, v: 0.625, m: null },
-				{ s: 1, v: 0.75, m: null },
-				{ s: 1, v: 0.875, m: null },
-			],
+			// levels: [
+			// 	{ s: 1, v: 0.125, m: null },
+			// 	{ s: 1, v: 0.25, m: null },
+			// 	{ s: 1, v: 0.375, m: null },
+			// 	{ s: 1, v: 0.5, m: null },
+			// 	{ s: 1, v: 0.625, m: null },
+			// 	{ s: 1, v: 0.75, m: null },
+			// 	{ s: 1, v: 0.875, m: null },
+			// ],
+			levels: vols.map((v) => ({ s: 1, v, m: null })),
 		};
 
 		this.audioController.text = this.add(UiText, {
@@ -72,6 +72,8 @@ export class Settings extends BaseUiView {
 		this.audioController.text.base.position.add(new Vector3(0, 0, 0));
 
 		this.audioController.levels.forEach((level, i) => {
+			if (i === levelsCount - 1) return;
+
 			const mat = new MeshBasicMaterial({ color: 0xffffff });
 			const geo = new PlaneGeometry(2, 4);
 			const mesh = new Mesh(geo, mat);
@@ -100,7 +102,10 @@ export class Settings extends BaseUiView {
 
 		this.translate(this.audioController.text, { x: -7.5 });
 		this.translate(this.audioController.downButton, { x: -6 });
-		this.translate(this.audioController.upButton, { x: 16 });
+		this.translate(this.audioController.upButton, { x: levelsCount * 2.15 - 1 });
+
+		this.index = this.findClosestIndexByVolume();
+		this.updateVolume();
 	}
 
 	createSubtitlesController() {
@@ -142,56 +147,55 @@ export class Settings extends BaseUiView {
 	}
 
 	onAudioSettingDown() {
-		const { $audio } = this.webgl;
 		const { levels } = this.audioController;
-		let vol = $audio.masterVolume.value;
-
-		if (vol <= 1 && vol >= 0) {
-			vol -= 0.125;
-			vol = clamp(vol, 0, 1);
-			// console.log('onAudioSettingDown', vol);
-			$audio.masterVolume.set(vol);
-
-			const level = this.findClosestLevel(vol, levels);
-			level.m.scale.setScalar(0.3);
+		const index = clamp(this.index - 1, 0, levels.length - 1);
+		if (index !== this.index) {
+			this.index = index;
+			this.updateVolume();
 		}
 	}
 
 	onAudioSettingUp() {
-		const { $audio } = this.webgl;
 		const { levels } = this.audioController;
-		let vol = $audio.masterVolume.value;
-
-		if (vol <= 1 && vol >= 0) {
-			const level = this.findClosestLevel(vol, levels);
-
-			vol += 0.125;
-			vol = clamp(vol, 0, 1);
-			// console.log('onAudioSettingUp', vol);
-			$audio.masterVolume.set(vol);
-
-			level.m.scale.setScalar(1);
+		const index = clamp(this.index + 1, 0, levels.length - 1);
+		if (index !== this.index) {
+			this.index = index;
+			this.updateVolume();
 		}
 	}
 
-	findClosestLevel(value, levels) {
-		let closest = levels[0];
-		levels.forEach((item) => {
-			if (Math.abs(value - item.v) < Math.abs(value - closest.v)) {
-				closest = item;
+	updateVolume() {
+		const { $audio } = this.webgl;
+		const { levels } = this.audioController;
+
+		levels.forEach((level, i) => {
+			level.m && level.m.scale.setScalar(i < this.index ? 1 : 0.3);
+		});
+
+		const level = levels[this.index];
+
+		$audio.setVolume(level.v);
+	}
+
+	findClosestIndexByVolume() {
+		const { $audio } = this.webgl;
+		const { levels } = this.audioController;
+
+		const volume = $audio.volume.get();
+		let index = 0;
+		levels.forEach((level, i) => {
+			if (Math.abs(level.v - volume) < Math.abs(levels[index].v - volume)) {
+				index = i;
 			}
 		});
-		return closest;
+		return index;
 	}
 
 	onSubSettingClick() {
-		console.log('onSubSettingClick', this?.parent?.base.visible);
 		// if (!this?.parent?.base.visible) return;
 
 		const { $subtitles } = this.webgl;
 		const { UiText } = this.subtitlesController.button;
-
-		console.log('onSubSettingClick', $subtitles.enabled);
 
 		$subtitles.enabled.set(!$subtitles.enabled.value);
 		$subtitles.enabled.value ? UiText.text.edit('ON') : UiText.text.edit('OFF');

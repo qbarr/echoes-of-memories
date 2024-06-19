@@ -77,7 +77,6 @@ export class Pause extends BaseUiView {
 
 	onKeyDown(event) {
 		const { id: currentState } = this.scene.$statesMachine.currentState;
-		console.log('currentState:', currentState);
 		if (event.code === 'KeyP' && currentState === 'hud')
 			this.scene.$setState('pause');
 	}

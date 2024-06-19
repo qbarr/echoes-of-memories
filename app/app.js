@@ -4,6 +4,7 @@ import { createApp } from './core/createApp';
 import { addRouteGuard } from './plugins/router/guard';
 
 import App from './App.vue';
+import subStorage from '#utils/state/subStorage.js';
 
 createApp({
 	component: App,
@@ -17,7 +18,8 @@ createApp({
 		// );
 		// console.log(response);
 	},
-	init: async () => {
+	init: async (_, app) => {
+		app.$storage = subStorage('EchoesOfMemories');
 		addRouteGuard();
 	},
 });
