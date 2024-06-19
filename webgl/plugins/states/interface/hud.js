@@ -17,7 +17,7 @@ async function enter({ machine, from }) {
 
 	const currentCam = scene.getCurrentCamera();
 	if (!$store.pointerLocked && currentCam.name !== 'Debug Camera') {
-		$canvas.requestPointerLock();
+		$store.hasInteractedOnce && $canvas.requestPointerLock();
 	}
 }
 

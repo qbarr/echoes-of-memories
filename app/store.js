@@ -7,6 +7,7 @@ export default () => {
 		// isPaused: true,
 		isPaused: false,
 		pointerLocked: false,
+		hasInteractedOnce: false,
 
 		subtitles: {
 			colors: {

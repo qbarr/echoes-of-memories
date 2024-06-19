@@ -11,7 +11,7 @@ export class Lettre extends BaseInteractiveObject {
 	async createSheets() {
 		const { $theatre } = this.webgl;
 
-		this.$gotoSheet = this.$project.getSheet('Go_To_Lettre');
+		this.$gotoSheet = this.$project.getSheet('Lettre > Go To');
 		this.$gotoSheet.$addCamera();
 	}
 

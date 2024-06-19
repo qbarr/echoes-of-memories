@@ -11,7 +11,7 @@ export class Collier extends BaseInteractiveObject {
 	async createSheets() {
 		const { $theatre } = this.webgl;
 
-		this.$gotoSheet = this.$project.getSheet('Go_To_Collier');
+		this.$gotoSheet = this.$project.getSheet('Collier > Go To');
 		this.$gotoSheet.$addCamera();
 	}
 

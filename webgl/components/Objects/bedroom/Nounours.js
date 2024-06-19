@@ -11,10 +11,6 @@ export class Nounours extends BaseInteractiveObject {
 
 		this.$gotoSheet = this.$project.getSheet('Nounours > Go To');
 		this.$gotoSheet.$addCamera();
-
-		this.$speakSheet = this.$project.getSheet('Nounours > Speak');
-		this.$speakSheet.attachAudio(this.audioId);
-		this.$speakSheet.$addCamera();
 	}
 
 	async onClick() {
@@ -30,12 +26,14 @@ export class Nounours extends BaseInteractiveObject {
 
 		$povCamera.$setState('focus');
 
-		await this.$speakSheet.play();
+		this.webgl.$audio.play(this.audioId, {
+			onComplete: () => {
+				this.scene.setCameraToSpawn();
+				$raycast.enable();
 
-		this.scene.setCameraToSpawn();
-		$raycast.enable();
-
-		$povCamera.$setState('free');
-		this.enableInteraction();
+				$povCamera.$setState('free');
+				this.enableInteraction();
+			},
+		});
 	}
 }

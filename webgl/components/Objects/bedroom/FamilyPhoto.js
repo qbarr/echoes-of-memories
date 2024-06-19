@@ -3,15 +3,14 @@ import { BaseInteractiveObject } from '../base/BaseInteractiveObject';
 export class FamilyPhoto extends BaseInteractiveObject {
 	init() {
 		this.isInteractiveObject = true;
-		this.audio = null;
+		this.isSpecial = true;
 		this.audioId = 'flashbacks/meal';
 	}
 
 	async createSheets() {
 		const { $theatre, $povCamera } = this.webgl;
-		this.isSpecial = true;
 
-		this.$gotoSheet = this.$project.getSheet('Go_To_Photo');
+		this.$gotoSheet = this.$project.getSheet('Photo > Go To');
 		this.$gotoSheet.$addCamera();
 
 		const flashbackProject = $theatre.get('Flashback');
@@ -27,15 +26,16 @@ export class FamilyPhoto extends BaseInteractiveObject {
 		});
 		mealSheet.$addCamera();
 		mealSheet.$composer(['global', 'lut', 'crt']);
-		mealSheet.$list('stateMachine', Object.values($povCamera.controls.states)).onChange((v) => {
-			$povCamera.$setState('flashback_free');
-		})
+		mealSheet
+			.$list('stateMachine', Object.values($povCamera.controls.states))
+			.onChange((v) => {
+				$povCamera.$setState('flashback_free');
+			});
 		// console.log(this.webgl.$povCamera.controls)
 		// console.log(source.subtitles.content)
 
 		this.$sheet = mealSheet;
 	}
-
 
 	async onClick() {
 		super.onClick();

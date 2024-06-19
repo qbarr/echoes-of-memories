@@ -21,5 +21,10 @@ createApp({
 	init: async (_, app) => {
 		app.$storage = subStorage('EchoesOfMemories');
 		addRouteGuard();
+		document.addEventListener(
+			'mousedown',
+			() => (app.$store.hasInteractedOnce = true),
+			{ once: true },
+		);
 	},
 });

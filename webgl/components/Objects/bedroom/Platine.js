@@ -9,7 +9,7 @@ export class Platine extends BaseInteractiveObject {
 	async createSheets() {
 		const { $theatre } = this.webgl;
 
-		this.$gotoSheet = this.$project.getSheet('Go_To_Platine');
+		this.$gotoSheet = this.$project.getSheet('Platine > Go To');
 		this.$gotoSheet.$addCamera();
 	}
 

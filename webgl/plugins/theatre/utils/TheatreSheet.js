@@ -243,7 +243,11 @@ export class TheatreSheet {
 
 			source = source.audio ?? source;
 
-			res = this._attachAudioBuffer(source);
+			res = await this._attachAudioBuffer(source);
+
+			this.$webgl.$audio.volume.watchImmediate((v) => {
+				res.gainNode.gain.setValueAtTime(v, res.audioContext.currentTime);
+			});
 		}
 
 		return res;

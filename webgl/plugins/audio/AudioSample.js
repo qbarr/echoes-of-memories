@@ -96,6 +96,7 @@ export class AudioSample {
 			} else {
 				this.stop();
 				if (opts.onEnd) opts.onEnd();
+				if (opts.onComplete) opts.onComplete();
 				if (opts._onEnd) opts._onEnd();
 				origOnEnded.call(this.audio);
 			}
