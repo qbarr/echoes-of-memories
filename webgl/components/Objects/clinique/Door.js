@@ -11,6 +11,16 @@ export class Door extends BaseInteractiveObject {
 		this.base.add(m);
 	}
 
+	// Overrided
+	onEnter() {
+		const { $hooks, $composer, $scenes, $povCamera } = this.webgl;
+		$hooks.afterFrame.watchOnce(() => {
+			$composer.addOutline(this.mesh);
+			$scenes.ui.component.crosshair.hoverDoor();
+			$povCamera.onInteractiveEnter();
+		});
+	}
+
 	init() {
 		this.isSimpleObject = true;
 		this.audioId = 'clinique/door';
@@ -44,6 +54,6 @@ export class Door extends BaseInteractiveObject {
 		await this.$sheet.play();
 
 		await $scenes.set('tv-room');
-		$scenes.current.start();
+		$scenes.current.component.start();
 	}
 }

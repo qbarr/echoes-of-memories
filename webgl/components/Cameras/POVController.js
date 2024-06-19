@@ -82,7 +82,7 @@ function POVController(
 	const cam = Class.cam;
 	const base = Class.base;
 
-	const { lat, lon } = vec3ToSphericalPos(target, cam);
+	const { lat, lon } = vec3ToSphericalPos(target, base);
 
 	let lerpedLat = lat.value;
 	let lerpedLon = lon.value;
@@ -141,7 +141,7 @@ function POVController(
 
 		const phi = MathUtils.degToRad(90 - lerpedLat);
 		const theta = MathUtils.degToRad(lerpedLon);
-		target.setFromSphericalCoords(1, phi, theta).add(cam.position);
+		target.setFromSphericalCoords(1, phi, theta).add(base.position).add(cam.position);
 
 		updateLookAt();
 	}
