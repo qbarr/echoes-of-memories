@@ -1,8 +1,20 @@
 import { BaseInteractiveObject } from '../Objects/base/BaseInteractiveObject';
 
-import { FamilyPhoto, Guitare } from '../Objects/bedroom';
+import {
+	Collier,
+	FamilyPhoto,
+	Guitare,
+	Lettre,
+	Livres,
+	Platine,
+	Vinyles,
+	Nounours,
+	Peinture,
+	Couverture,
+} from '../Objects/bedroom';
+
 import { Cassette, Contrat, Door } from '../Objects/clinique';
-import { Desk, Screen } from '../Objects/tv-room';
+import { Desk, Lecteur, Screen, TV } from '../Objects/tv-room';
 
 const datas = {
 	clinique: {
@@ -20,23 +32,23 @@ const datas = {
 		sol: {},
 		VHS: {},
 		ecran: { class: Screen },
-		tv: { class: BaseInteractiveObject },
-		lecteur: { class: BaseInteractiveObject },
+		tv: { class: TV },
+		lecteur: { class: Lecteur },
 		keyboard: {},
 	},
 	bedroom: {
 		objets: {},
 		mursetsol: {},
-		crucifix: { class: BaseInteractiveObject },
-		platine: { class: BaseInteractiveObject },
-		vinyles: { class: BaseInteractiveObject },
-		photodefamille: { class: FamilyPhoto },
-		testament: { class: BaseInteractiveObject },
+		crucifix: { class: Collier, isSpecial: true },
+		platine: { class: Platine },
+		vinyles: { class: Vinyles },
+		photodefamille: { class: FamilyPhoto, isSpecial: true },
+		testament: { class: Lettre, isSpecial: true },
 		guitare: { class: Guitare },
-		nounours: { class: BaseInteractiveObject },
-		livres: { class: BaseInteractiveObject },
-		peinture: { class: BaseInteractiveObject },
-		couverture: { class: BaseInteractiveObject },
+		nounours: { class: Nounours },
+		livres: { class: Livres },
+		peinture: { class: Peinture },
+		couverture: { class: Couverture },
 		posters: {},
 		drowninggirl: {},
 	},

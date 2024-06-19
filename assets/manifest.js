@@ -49,12 +49,11 @@ export default {
 	interface: img('interface/*.*'),
 	luts: lut('luts/*.[png|jpg]'),
 
-	boat: glb('scenes/boat'),
-
 	// Clinique
 	'clinique/model': glb('scenes/clinique/model'),
 	'clinique/textures': ktx2('scenes/clinique/*', { flipY: false }),
 	'clinique/audios': audio('audios/clinique/*'),
+	// 'clinique/bgm': audio('audios/bgm/clinique/*', { type: 'bgm' }),
 	'clinique/subtitles': json('subtitles/clinique/*', { type: 'subtitles' }),
 
 	// TV Room
@@ -67,6 +66,7 @@ export default {
 	'bedroom/model': glb('scenes/bedroom/model'),
 	'bedroom/textures': ktx2('scenes/bedroom/*', { flipY: false }),
 	'bedroom/audios': audio('audios/bedroom/*'),
+	// 'bedroom/bgm': audio('audios/bgm/bedroom/*', { type: 'bgm' }),
 	'bedroom/subtitles': json('subtitles/bedroom/*', { type: 'subtitles' }),
 
 	// Flashback
@@ -75,9 +75,14 @@ export default {
 	// 'flashback/subtitles': json('subtitles/flashback/*', { type: 'subtitles' }),
 
 	// Audios
-	positions: audio('audios/positional/*', { type: 'positional' }),
-	vocals: audio('audios/vocals/*', { type: 'vocal' }),
-	sfx: audio('audios/sfx/*', { type: 'sfx' }),
+	// positions: audio('audios/positional/*', { type: 'positional' }),
+	// vocals: audio('audios/vocals/*', { type: 'vocal' }),
+	'common/sfx': audio('audios/sfx/common/*', { type: 'sfx' }),
+	'adam/sfx': audio('audios/sfx/adam/*', { type: 'sfx' }),
+	'ben/sfx': audio('audios/sfx/ben/*', { type: 'sfx' }),
+
+	intro: audio('audios/intro'),
+	outro: audio('audios/outro'),
 
 	// Subtitles
 	subtitles: json('subtitles/export/*', { type: 'subtitles' }),

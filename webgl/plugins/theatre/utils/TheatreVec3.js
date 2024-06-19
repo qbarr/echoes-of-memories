@@ -10,6 +10,7 @@ export class TheatreVec3 extends TheatreBaseObject {
 
 		this._name = name;
 		this._value = value;
+		this._initialValue = this._value;
 		this._sheet = sheet;
 
 		this._isWritable = !!value.isWritableSignal;
@@ -31,10 +32,6 @@ export class TheatreVec3 extends TheatreBaseObject {
 		sheet.register(this);
 
 		return this;
-	}
-
-	get value() {
-		return this._value;
 	}
 
 	update({ value }) {

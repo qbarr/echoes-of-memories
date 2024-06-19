@@ -31,7 +31,7 @@ export class Contrat extends BaseInteractiveObject {
 		this.$sheet = this.$project.getSheet('contrat');
 		await this.$sheet.attachAudio(this.audioId);
 		this.dummy = this.baseDummy.clone();
-		this.$sheet.$object('Contrat', { value: this.dummy }, { nudgeMultiplier: 0.01 });
+		this.$sheet.$object('Contrat', this.dummy, { nudgeMultiplier: 0.01 });
 	}
 
 	reset() {

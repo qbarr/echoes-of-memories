@@ -11,6 +11,7 @@ export class TheatreTarget extends TheatreBaseObject {
 
 		this._name = name;
 		this._value = value;
+		this._initialValue = this._value;
 		this._sheet = sheet;
 
 		this._onUpdate = opts.onUpdate ?? NOOP;
@@ -38,10 +39,6 @@ export class TheatreTarget extends TheatreBaseObject {
 		sheet.register(this);
 
 		return this;
-	}
-
-	get value() {
-		return this._value;
 	}
 
 	update({ position, rotation }) {

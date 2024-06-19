@@ -38,6 +38,7 @@ export default class UIScene extends BaseScene {
 
 		// HUD
 		this.hudScreen = this.add(HudScreen);
+		this.crosshair = this.hudScreen.crosshair;
 
 		// Views
 		this.splashScreen = this.add(SplashScreen, { name: 'SplashScreen' });

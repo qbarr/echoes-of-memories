@@ -114,8 +114,10 @@ export class POVCamera extends BaseCamera {
 		this.resizeSignal = dbs.watchImmediate(this.resize, this);
 	}
 
-	goTo({ x, y, z }) {
-		this.target.set(x, HEIGHT - y, z);
+	setPosition(pos) {
+		Array.isArray(pos) ? this.target.fromArray(pos) : this.target.copy(pos);
+		this.target.y = HEIGHT;
+		this.target.w = 0.2;
 	}
 
 	onPointerLockChange(ev) {

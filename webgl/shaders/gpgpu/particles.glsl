@@ -8,6 +8,7 @@ uniform float uFlowFieldStrength;
 uniform float uFlowFieldFrequency;
 
 uniform float uPercentRange;
+uniform float uDeathRange;
 
 uniform bool uIsMorphing;
 uniform bool uMorphEnded;
@@ -29,20 +30,27 @@ void main()
 
     float range = _attribute.x;
     float friction = _attribute.y;
+    float deathRange = _attribute.z;
     float particleSize = fract(particle.a * .1);
+
 
 
     // Dead
     if(particle.a >= 1.0)
     {
+        bool isDead = (range > uDeathRange);
         particle.a = mod(particle.a, 1.0);
         particle.xyz = base.xyz;
+
+        // if(isDead) {
+        //     particle.a = 0.;
+        // }
     }
 
     // Alive
     else
     {
-        bool isMorphing = (range < uPercentRange);
+        bool isMorphing = true;
         float strength = simplexNoise4d(vec4(base.xyz * 0.2, time + 1.0));
 
         float influence = (uFlowFieldInfluence - 0.5) * (- 2.0);

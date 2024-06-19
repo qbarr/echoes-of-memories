@@ -1,16 +1,27 @@
 <template>
 	<section>
-		<!-- <GLText text="Home" tag="h1" /> -->
+		<button class="btn btn-primary" @click="onCLick">START</button>
 	</section>
 </template>
 
 <script setup>
-	import GLText from '#app/components/GLText/GLText.vue'
+import { app } from '#app/core';
+import { shallowRef } from 'vue';
+
+function onCLick(e) {
+	e.preventDefault();
+	e.target.blur();
+	// app.$webgl.$scenes.set('clinique');
+	app.$webgl.$scenes.current.component.start(true);
+}
 </script>
 
 <style lang="scss" scoped>
-	h1 {
-		font-size: 10rem;
-		font-family: PPNeueBit-Bold;
-	}
+button {
+	position: fixed;
+	bottom: 5px;
+	left: 5px;
+	z-index: 1000;
+	display: block;
+}
 </style>

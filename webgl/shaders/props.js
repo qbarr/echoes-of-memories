@@ -4,9 +4,13 @@ export function useShaderProps(webgl) {
 	const u = (webgl.uniforms = {
 		uTime: { type: 'f', value: 0 },
 		uResolution: { type: 'v4', value: new Vector4() },
+		SRGB_TRANSFER: { type: 'i', value: 0 },
+		CRT_DISABLED: { type: 'i', value: 0 },
 	});
 
-	const d = (webgl.defines = {});
+	const d = (webgl.defines = {
+		IS_MOBILE: 0,
+	});
 
 	const { beforeSetup, afterSetup, beforeUpdate } = webgl.$hooks;
 

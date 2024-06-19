@@ -16,23 +16,17 @@ const DUMMY_DIR = new Vector2();
 const DUMMY_RT = new WebGLRenderTarget(1, 1, { depthBuffer: false });
 
 const DEFAULT_PARAMS = {
-	threshold: 0.6,
+	threshold: 0.41,
 	smoothing: 0.6,
-	strength: 1.21,
-	radius: 1.04,
-	spread: 0.78,
+	strength: 1.5,
+	radius: 1.8,
+	spread: 1.15,
 };
 
 const MAX_ITERATIONS = 3;
 
 export const useUnrealBloomPass = (composer, { iterations = MAX_ITERATIONS } = {}) => {
 	/* Params */
-	// const sk = 'webgl:composer:UnrealBloom:';
-	// const threshold = storageSync(sk + 'threshold', w(DEFAULT_PARAMS.threshold));
-	// const smoothing = storageSync(sk + 'smoothing', w(DEFAULT_PARAMS.smoothing));
-	// const strength = storageSync(sk + 'strength', w(DEFAULT_PARAMS.strength));
-	// const radius = storageSync(sk + 'radius', w(DEFAULT_PARAMS.radius));
-	// const spread = storageSync(sk + 'spread', w(DEFAULT_PARAMS.spread));
 	const threshold = w(DEFAULT_PARAMS.threshold);
 	const smoothing = w(DEFAULT_PARAMS.smoothing);
 	const strength = w(DEFAULT_PARAMS.strength);
@@ -51,6 +45,8 @@ export const useUnrealBloomPass = (composer, { iterations = MAX_ITERATIONS } = {
 		strength,
 		radius,
 		spread,
+
+		enabled,
 
 		iterations: w(iterations),
 
@@ -148,8 +144,8 @@ export const useUnrealBloomPass = (composer, { iterations = MAX_ITERATIONS } = {
 	// Unreal bloom composite material
 	const bloomFactors = [1, 0.6, 0.2];
 	const bloomTintColors = [
-		new Vector3(0, 1, 0),
-		new Vector3(1, 0, 1),
+		new Vector3(1, 1, 1),
+		new Vector3(1, 1, 1),
 		new Vector3(1, 1, 1),
 	];
 

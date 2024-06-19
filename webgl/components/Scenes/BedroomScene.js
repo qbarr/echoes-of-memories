@@ -7,11 +7,20 @@ export default class BedroomScene extends BaseScene {
 	mixins = ['debugCamera'];
 
 	init() {
-		const { $assets, $theatre } = this.webgl;
+		const { $assets, $theatre, $hooks, $composer } = this.webgl;
+
+		this._hasStarted = false;
 
 		this.$project = $theatre.get('Bedroom');
 
+		this.spawnSettings = {
+			lat: -10.7703,
+			lon: 96.22936,
+			pos: [-8.67082, 0, 4.88725],
+		};
+
 		const datas = scenesDatas.bedroom;
+		this.datas = datas;
 		const scene = $assets.objects.bedroom.model.scene;
 
 		// Get raycastables and remove them from the scene
@@ -27,8 +36,13 @@ export default class BedroomScene extends BaseScene {
 
 		const textures = $assets.textures['bedroom'];
 
+		const _emissiveMaterials = {
+			objets: new MeshBasicMaterial({ map: textures['objects_emissive'] }),
+			mursetsol: new MeshBasicMaterial({ map: textures['floor_wall_emissive'] }),
+		};
+
 		// Get textures for meshes
-		const _textures = {
+		const _materials = {
 			mursetsol: new MeshBasicMaterial({ map: textures['floor_wall_map'] }),
 			objets: new MeshBasicMaterial({ map: textures['objects_map'] }),
 		};
@@ -45,13 +59,24 @@ export default class BedroomScene extends BaseScene {
 			'couverture',
 			'posters',
 			'drowninggirl',
-		].forEach((k) => (_textures[k] = _textures.objets));
-
-		// Assign textures to datas
-		Object.keys(datas).forEach((k) => {
-			Object.assign(datas[k], { texture: _textures[k] });
+		].forEach((k) => {
+			_materials[k] = _materials.objets;
+			_emissiveMaterials[k] = _emissiveMaterials.objets;
 		});
 
+		// Assign emissive materials to datas
+		// Assign textures to datas
+		Object.keys(datas).forEach((k) => {
+			Object.assign(datas[k], {
+				material: _materials[k],
+				emissiveMaterial: _emissiveMaterials[k],
+			});
+		});
+
+		console.log(datas);
+
+		this._allMeshes = [];
+		this._specialObjects = {};
 		const _objects = [];
 
 		scene.traverse((child) => {
@@ -60,10 +85,15 @@ export default class BedroomScene extends BaseScene {
 
 			const data = datas[child.name];
 			if (data) {
-				const { class: Class, texture } = data;
-				child.material = texture;
+				const { class: Class, material } = data;
+				child.material = material;
+				this._allMeshes.push(child);
 				if (Class) {
 					const obj = new Class({ name: child.name, mesh: child, data });
+					if (data.isSpecial) {
+						this._specialObjects[child.name] = obj;
+						obj.specialObjects = this._specialObjects;
+					}
 					_objects.push(obj);
 				}
 			}
@@ -72,21 +102,56 @@ export default class BedroomScene extends BaseScene {
 
 		this.base.add(scene);
 
-		this.createSheets();
+		$hooks.afterStart.watchOnce(this.createSheets.bind(this));
+		$composer.$hooks.beforeRenderEmissive.watch(this.onBeforeRenderEmissive.bind(this)); // prettier-ignore
+		$composer.$hooks.afterRenderEmissive.watch(this.onAfterRenderEmissive.bind(this)); // prettier-ignore
 	}
 
-	async createSheets() {}
+	onBeforeRenderEmissive() {
+		for (let i = 0; i < this._allMeshes.length; i++) {
+			const mesh = this._allMeshes[i];
+			const data = this.datas[mesh.name];
+			if (data?.emissiveMaterial) mesh.material = data.emissiveMaterial;
+		}
+	}
+
+	onAfterRenderEmissive() {
+		for (let i = 0; i < this._allMeshes.length; i++) {
+			const mesh = this._allMeshes[i];
+			const data = this.datas[mesh.name];
+			if (data?.material) mesh.material = data.material;
+		}
+	}
+
+	async createSheets() {
+		this.$sheet = this.$project.getSheet('Enter');
+		await this.$sheet.attachAudio('bedroom/enter');
+		this.$sheet.$addCamera();
+		this.$sheet.$composer(['global', 'lut', 'bloom', 'bokeh', 'crt', 'depth']);
+	}
 
 	async enter() {
-		this.log('enter');
-		const { $povCamera } = this.webgl;
+		this._hasStarted = true;
+
+		const { $povCamera, $app, $scenes } = this.webgl;
 		$povCamera.onSceneSwitch(this);
 
-		// position: [ -8.34592, 2.24563, 7.35179 ],
-		// quaternion: [  ],
-		// euler: [ -0.2965, -0.8265, -0.2210 ],
+		const uiScene = $scenes.ui.component;
+		uiScene.subtitles.setColor($app.$store.subtitles.colors.yellow);
 
-		// this.camera.setPosition([-8.67082, 0, 4.88725]);
+		/// #if __DEBUG__
+		$povCamera.$setState('free');
+		$povCamera.setPosition([-8.67082, 0, 4.88725]);
+		/// #endif
+	}
+
+	async start() {}
+
+	setCameraToSpawn() {
+		const { $povCamera } = this.webgl;
+		$povCamera.setPosition(this.spawnSettings.pos);
+		$povCamera.controls.lat.set(this.spawnSettings.lat);
+		$povCamera.controls.lon.set(this.spawnSettings.lon);
 	}
 
 	// async leave() {
@@ -112,8 +177,4 @@ export default class BedroomScene extends BaseScene {
 	// 		})
 	// 	})
 	// }
-
-	update() {
-
-	}
 }

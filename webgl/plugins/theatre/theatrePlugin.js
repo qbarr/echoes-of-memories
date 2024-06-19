@@ -2,25 +2,36 @@ import { deferredPromise } from '#utils/async/deferredPromise.js';
 import { w } from '#utils/state';
 import { storageSync } from '#utils/state/signalExtStorageSync.js';
 import { getWebGL } from '#webgl/core';
-import { waveformViewerExtension } from './extensions/peaks/waveformViewerExtension';
 
 import { TheatreProject } from './utils/TheatreProject';
+
+if (!__DEVELOPMENT__) {
+	console.log('Clearing localStorage');
+	localStorage.removeItem('EOM:theatrejs.persistent');
+	localStorage.removeItem('EOM:theatrejs');
+}
 
 /// #if __DEBUG__
 import studio from '@theatre/studio';
 studio.initialize({
 	persistenceKey: 'EOM:theatrejs',
-	usePersistentStorage: true,
+	usePersistentStorage: __DEVELOPMENT__,
 });
 
-const waveformViewer = waveformViewerExtension();
-studio.extend(waveformViewer);
-
 const studioActive = storageSync('webgl:theatre:studioActive', w(false));
+const keepLastSelection = storageSync('webgl:theatre:keepLastSelection', w(false));
 
 let studioSelectedSheet = null;
+let firstLoad = true;
 studio.onSelectionChange(([selection]) => {
+	if (firstLoad && !keepLastSelection.value) {
+		firstLoad = false;
+		studio.setSelection([]);
+		return;
+	}
+
 	if (selection === null || selection === undefined) {
+		// studioSelectedSheet?.resetValues();
 		studioSelectedSheet?.setActive(false);
 		studioSelectedSheet = null;
 		return;
@@ -87,9 +98,9 @@ export function theatrePlugin(webgl) {
 		get studio() {
 			return studio;
 		},
-		get waveformViewer() {
-			return waveformViewer;
-		},
+		// get waveformViewer() {
+		// 	return waveformViewer;
+		// },
 		/// #endif
 	};
 
@@ -143,7 +154,9 @@ export function theatrePlugin(webgl) {
 	let projectsGui;
 	function devtools() {
 		const gui = webgl.$app.$gui.mainPage.addFolder({ title: '🎭 Theatre' });
+
 		gui.addBinding(studioActive, 'value', { label: 'Enable Studio' });
+		gui.addBinding(keepLastSelection, 'value', { label: 'Keep last selection' });
 
 		studioActive.watchImmediate((v) => {
 			const { setSelection, ui, __experimental } = studio;

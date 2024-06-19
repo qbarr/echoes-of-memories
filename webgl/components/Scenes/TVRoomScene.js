@@ -15,6 +15,8 @@ export default class TVRoomScene extends BaseScene {
 
 		this.$project = $theatre.get('TV-Room');
 
+		this._hasStarted = false;
+
 		const scene = $assets.objects['tv-room'].model.scene;
 		const textures = $assets.textures['tv-room'];
 
@@ -46,18 +48,26 @@ export default class TVRoomScene extends BaseScene {
 
 		const _objects = [];
 		this.interactiveObjects = {};
+		this.cassette = null;
+		this.screen = null;
 
 		scene.traverse((child) => {
 			if (!child.isMesh || !child.material) return;
 			if (child.name.includes('raycastable')) return;
 
 			const data = datas[child.name];
+			if (child.name === 'VHS') {
+				this.cassette = child;
+				this.cassette.visible = false;
+			}
+
 			if (data) {
 				const { class: Class, texture } = data;
 				child.material = texture;
 				if (Class) {
 					const obj = new Class({ name: child.name, mesh: child, data });
 					this.interactiveObjects[child.name] = obj;
+					if (child.name === 'ecran') this.screen = obj;
 					_objects.push(obj);
 				}
 			}
@@ -78,34 +88,41 @@ export default class TVRoomScene extends BaseScene {
 	}
 
 	async enter() {
-		this.log('enter');
-		const { $povCamera, $raycast, $scenes } = this.webgl;
+		this._hasStarted = false;
+
+		const { $povCamera, $scenes, $app } = this.webgl;
 		$povCamera.onSceneSwitch(this);
 
+		/// #if __DEBUG__
+		$povCamera.setPosition([-1.45968, 1.22633, -3.15793]);
+		$povCamera.$setState('free');
+		/// #endif
+
 		const uiScene = $scenes.ui.component;
-		uiScene.subtitles.setColor('white');
-
-		setTimeout(async () => {
-			$raycast.disable();
-
-			const { tv, lecteur } = this.interactiveObjects;
-			tv.disableInteraction();
-			lecteur.disableInteraction();
-
-			$povCamera.$setState('cinematic');
-
-			await this.$sheet.play();
-
-			$raycast.enable();
-			// lecteur.enableInteraction();
-			// tv.enableInteraction();
-			$povCamera.$setState('focus');
-		}, 2000);
+		uiScene.subtitles.setColor($app.$store.subtitles.colors.white);
 	}
 
 	async leave() {
 		this.log('leave');
 	}
 
-	update() {}
+	async start() {
+		const { $povCamera, $raycast } = this.webgl;
+
+		this._hasStarted = true;
+
+		const { tv, lecteur, desk } = this.interactiveObjects;
+		tv.disableInteraction();
+		lecteur.disableInteraction();
+		desk.disableInteraction();
+
+		$povCamera.$setState('cinematic');
+
+		await this.$sheet.play();
+
+		desk.enableInteraction();
+		// lecteur.enableInteraction();
+		// tv.enableInteraction();
+		$povCamera.$setState('focus');
+	}
 }

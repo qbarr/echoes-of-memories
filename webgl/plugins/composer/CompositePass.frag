@@ -1,11 +1,9 @@
 precision highp float;
 
+#include <colorspace_pars_fragment>
 #include <props>
 #include <packing>
 #include <common>
-
-uniform float time;
-uniform vec4 resolution;
 
 // Dither
 uniform vec2 uDitherOffset;
@@ -54,7 +52,8 @@ void main() {
 
 	// Composite
 	vec4 tex = texture2D(tMap, uv);
-	tex += texture2D(tBloom, uv);
+	if (CRT_DISABLED == 1)
+		tex += texture2D(tBloom, uv);
 
 	// TODO: replace by blue noise texture
 	tex.rgb = mix(tex.rgb, dither(tex.rgb), uDitherStrength);
@@ -81,4 +80,7 @@ void main() {
 
 	// gl_FragColor.rgb *= stripes;
 	gl_FragColor.a = 1.0;
+	if (SRGB_TRANSFER == 1) {
+		gl_FragColor = sRGBTransferOETF(gl_FragColor);
+	}
 }

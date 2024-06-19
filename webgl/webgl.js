@@ -1,14 +1,12 @@
-import { AudioListener } from 'three';
-
-import ParticleScene from './components/Scenes/ParticleScene';
 import BedroomScene from './components/Scenes/BedroomScene';
 import CliniqueScene from './components/Scenes/CliniqueScene';
-import UIScene from './components/Scenes/UIScene';
+import ParticleScene from './components/Scenes/ParticleScene';
 import TVRoomScene from './components/Scenes/TVRoomScene';
+import UIScene from './components/Scenes/UIScene';
 
+import { w } from '#utils/state/index.js';
 import { POVCamera } from './components/Cameras/POVCamera';
 import { createWebgl, webgl } from './core';
-import { w } from '#utils/state/index.js';
 
 export default createWebgl({
 	async setup() {
@@ -36,9 +34,11 @@ export default createWebgl({
 			load('msdf/VCR_OSD_MONO'),
 
 			// Sounds
-			load('positions'),
-			load('vocals'),
-			load('sfx'),
+			load('common/sfx'),
+			load('adam/sfx'),
+			load('ben/sfx'),
+			load('intro'),
+			load('outro'),
 
 			// Subtitles
 			load('subtitles'),
@@ -46,8 +46,6 @@ export default createWebgl({
 			load('interface'),
 			load('noises'),
 			load('luts'),
-
-			load('boat'),
 
 			// Clinique
 			load('clinique/model'),

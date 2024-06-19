@@ -11,25 +11,37 @@ const lastCoords = { lon: 0, lat: 0 };
 
 const lerp = (x, y, a) => x * (1 - a) + y * a;
 
-function cartesianToSpherical(x, y, z) {
-	const radius = Math.sqrt(x * x + y * y + z * z);
-	const phi = Math.acos(y / radius);
-	const theta = Math.atan2(z, x);
-
-	return { radius, phi, theta };
+const ONE_TOUR = 180;
+const TWO_TOUR = 360;
+function rLerp(start, end, t) {
+	const s = Math.sign(end);
+	const delta = ((end - start + TWO_TOUR + ONE_TOUR) % TWO_TOUR) - ONE_TOUR;
+	return (start + delta * t + s * TWO_TOUR) % TWO_TOUR;
 }
 
-function lookAtSpherical(cameraPos, targetPos) {
-	// Calculate direction vector from camera to target
-	const directionX = targetPos.x - cameraPos.x;
-	const directionY = targetPos.y - cameraPos.y;
-	const directionZ = targetPos.z - cameraPos.z;
-
-	// Convert direction vector to spherical coordinates
-	const sphericalCoords = cartesianToSpherical(directionX, directionY, directionZ);
-
-	return sphericalCoords;
+function rDamp(a, b, smoothing, dt) {
+	return rLerp(a, b, 1 - Math.exp(-smoothing * 0.05 * dt));
 }
+
+// function cartesianToSpherical(x, y, z) {
+// 	const radius = Math.sqrt(x * x + y * y + z * z);
+// 	const phi = Math.acos(y / radius);
+// 	const theta = Math.atan2(z, x);
+
+// 	return { radius, phi, theta };
+// }
+
+// function lookAtSpherical(cameraPos, targetPos) {
+// 	// Calculate direction vector from camera to target
+// 	const directionX = targetPos.x - cameraPos.x;
+// 	const directionY = targetPos.y - cameraPos.y;
+// 	const directionZ = targetPos.z - cameraPos.z;
+
+// 	// Convert direction vector to spherical coordinates
+// 	const sphericalCoords = cartesianToSpherical(directionX, directionY, directionZ);
+
+// 	return sphericalCoords;
+// }
 
 function vec3ToSphericalPos(v, cam) {
 	const position1 = cam.position;
@@ -62,7 +74,7 @@ function POVController(
 	{
 		element = document,
 		enabled = false,
-		speed = 1,
+		speed = 1.5,
 		target = new Vector3(),
 		debug = false,
 	} = {},
@@ -124,8 +136,8 @@ function POVController(
 	}
 
 	function updatePOVMode(dt) {
-		lerpedLat = damp(lerpedLat, lat.value, 0.4, dt);
-		lerpedLon = damp(lerpedLon, lon.value, 0.4, dt);
+		lerpedLat = damp(lerpedLat, lat.value, 0.3, dt);
+		lerpedLon = rDamp(lerpedLon, lon.value, 0.3, dt);
 
 		const phi = MathUtils.degToRad(90 - lerpedLat);
 		const theta = MathUtils.degToRad(lerpedLon);
@@ -152,6 +164,8 @@ function POVController(
 		const horizontalLookRatio = Math.PI / (horizontalMax - horizontalMin);
 
 		lon.value -= tempVec2b.x * horizontalLookRatio;
+		lon.value = mod(lon.value, 360);
+
 		lat.value -= tempVec2b.y * verticalLookRatio;
 		lat.value = clamp(lat.value, -70, 50);
 
@@ -173,6 +187,7 @@ function POVController(
 	}
 
 	function setMode(mode) {
+		mode = mode.toLowerCase();
 		if (mode === 'free') goFreeMode();
 		else if (mode === 'cinematic') goCinematicMode();
 		else if (mode === 'flashback') goFlashbackMode();

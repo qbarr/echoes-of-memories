@@ -1,12 +1,13 @@
 import createFilter from '#webgl/utils/createFilter';
-import { Vector2, Vector3 } from 'three';
+import { Vector2 } from 'three';
 
 import { prng } from '#utils/maths/prng.js';
-import { w } from '#utils/state';
+import { s, w } from '#utils/state';
 
+import CompositePass from './CompositePass.frag?hotshader';
+import { useAfterImagePass } from './AfterImage';
 import { useBokehPass } from './Bokeh';
 import { useCRTPass } from './CRT';
-import CompositePass from './CompositePass.frag?hotshader';
 import { useDepthPass } from './Depth';
 import { useLutPass } from './LUT';
 import { useRGBShiftPass } from './RGBShift';
@@ -28,6 +29,8 @@ export function composerPlugin(webgl) {
 
 	let currentScene = null;
 
+	const $hooks = { beforeRenderEmissive: s(), afterRenderEmissive: s() };
+
 	const api = {
 		buffers,
 		filters,
@@ -35,6 +38,8 @@ export function composerPlugin(webgl) {
 
 		uniforms,
 		defines,
+
+		$hooks,
 
 		update,
 		render,
@@ -58,18 +63,20 @@ export function composerPlugin(webgl) {
 		const { textures } = $assets;
 
 		buffers.base = $fbo.createBuffer({ name: 'Base' });
+		buffers.emissive = $fbo.createBuffer({ name: 'Emissive' });
 		buffers.interface = $fbo.createBuffer({ name: 'Interface' });
 		buffers.composite = $fbo.createBuffer({ name: 'Composite' });
 
 		Object.assign(uniforms, {
 			...webgl.uniforms,
 			tMap: { value: buffers.base.texture, type: 't' },
+			tEmissive: { value: buffers.emissive.texture, type: 't' },
 			tInterface: { value: buffers.interface.texture, type: 't' },
 			tComposite: { value: buffers.composite.texture, type: 't' },
 
 			// Dither uniforms
 			uDitherOffset: { value: new Vector2() },
-			uDitherStrength: { value: 1 },
+			uDitherStrength: { value: 0.2 },
 
 			// Darkness
 			uDarkness: { value: 0 },
@@ -80,8 +87,6 @@ export function composerPlugin(webgl) {
 
 			// Vignette
 			uVignette: { value: new Vector2(0.171, 0) },
-			// uDitherStrength: { value: 1 },
-			uDitherStrength: { value: 0.2 },
 		});
 
 		Object.assign(defines, { ...webgl.defines });
@@ -95,8 +100,9 @@ export function composerPlugin(webgl) {
 		passes.push(useSketchLinesPass(api));
 		passes.push(useBokehPass(api));
 		passes.push(useRGBShiftPass(api));
-		passes.push(useCRTPass(api));
+		passes.push(useAfterImagePass(api));
 		passes.push(useUnrealBloomPass(api));
+		passes.push(useCRTPass(api));
 		passes.push(useLutPass(api));
 
 		webgl.$scenes._current.watchImmediate(onSceneSwitch);
@@ -110,15 +116,31 @@ export function composerPlugin(webgl) {
 	function onSceneSwitch(scene) {
 		currentScene = scene;
 		const { name } = scene;
+		const { $crt, $lut, $afterImage, $sketchLines, uniforms } = api;
 		if (name === 'bedroom') {
-			api.$crt.enabled.set(true);
-			api.$lut.set('bedroom');
+			$crt.enabled.set(true);
+			$lut.set('bedroom');
+			$afterImage.enabled.set(false);
+			$sketchLines.enabled.set(true);
+			uniforms.SRGB_TRANSFER.value = 0;
 		} else if (name === 'clinique') {
-			api.$crt.enabled.set(false);
-			api.$lut.set('clinique');
+			$crt.enabled.set(false);
+			$lut.set('clinique');
+			$afterImage.enabled.set(false);
+			$sketchLines.enabled.set(true);
+			uniforms.SRGB_TRANSFER.value = 0;
 		} else if (name === 'tv-room') {
-			api.$crt.enabled.set(false);
-			api.$lut.set('tv-room');
+			$crt.enabled.set(false);
+			$lut.set('tv-room');
+			$afterImage.enabled.set(false);
+			$sketchLines.enabled.set(true);
+			uniforms.SRGB_TRANSFER.value = 0;
+		} else if (name === 'particle') {
+			$crt.enabled.set(true);
+			// $lut.set('particle');
+			$afterImage.enabled.set(true);
+			$sketchLines.enabled.set(false);
+			uniforms.SRGB_TRANSFER.value = 1;
 		}
 	}
 
@@ -141,6 +163,15 @@ export function composerPlugin(webgl) {
 		$scenes.ui.component.triggerRender();
 		uniforms.tInterface.value = buffers.interface.texture;
 
+		// Render emissive pass
+		$hooks.beforeRenderEmissive.emit();
+		renderer.setRenderTarget(buffers.emissive);
+		renderer.clear();
+		scene.triggerRender();
+		renderer.clearDepth();
+		uniforms.tEmissive.value = buffers.emissive.texture;
+		$hooks.afterRenderEmissive.emit();
+
 		// Render depth pass
 		api.$depth.render(scene);
 
@@ -161,14 +192,17 @@ export function composerPlugin(webgl) {
 		// Render Bokeh pass
 		api.$bokeh.render();
 
+		// Render after image pass
+		api.$afterImage.render(scene);
+
 		// Render RGB shift pass
 		api.$rgbShift.render();
 
-		// Render VHS pass
-		api.$crt.render();
-
 		// Render Unreal Bloom pass
 		api.$unrealBloom.render();
+
+		// Render VHS pass
+		api.$crt.render();
 
 		// Render composite pass
 		renderer.setRenderTarget(buffers.composite);

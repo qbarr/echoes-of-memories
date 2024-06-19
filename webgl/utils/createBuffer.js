@@ -1,7 +1,7 @@
 import { getWebGL } from '#webgl/core';
 import {
 	LinearFilter,
-	NoColorSpace,
+	LinearSRGBColorSpace,
 	RGBAFormat,
 	SRGBColorSpace,
 	WebGLRenderTarget,
@@ -24,7 +24,7 @@ export default function createBuffer({
 	height,
 	scale = 1,
 	srgb = false,
-	colorSpace = NoColorSpace,
+	colorSpace = LinearSRGBColorSpace,
 	generateMipmaps = false,
 	manualResize = false,
 	...opts

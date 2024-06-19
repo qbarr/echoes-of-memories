@@ -1,6 +1,7 @@
 precision highp float;
 
 uniform sampler2D tMap;
+uniform sampler2D tAfterImage;
 uniform sampler2D tDepth;
 uniform sampler2D tInterface;
 uniform sampler2D tSketchLines;
@@ -50,6 +51,10 @@ void main() {
 	stripes += step(size, uv.y); // top
 	stripes -= step(1. - size, uv.y); // bottom
 	gl_FragColor.rgb *= stripes;
+
+	// After image
+	// vec4 afterImage = texture2D(tAfterImage, uv);
+	// gl_FragColor.rgb += afterImage.rgb;
 
 	// Darkness
 	gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.), uDarkness);

@@ -293,11 +293,13 @@ export function assetsPlugin(webgl) {
 		return files.load(url, {
 			type: opts.type,
 			onLoad: (audio) => {
+				const type = opts.type ?? (id.includes('bgm') ? 'bgm' : 'audio');
+				const _audio = { audio, type };
 				if (subID) {
 					audios[subID] = audios[subID] ?? {};
-					audios[subID][id] = { audio };
+					audios[subID][id] = _audio;
 				} else {
-					audios[id] = { audio };
+					audios[id] = _audio;
 				}
 			},
 		});
