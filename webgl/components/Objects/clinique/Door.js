@@ -18,6 +18,7 @@ export class Door extends BaseInteractiveObject {
 		this.animationProgress = w(0);
 
 		this.scene.$mixer.play(this.actionId);
+		this.scene.$mixer.normSeek(0.15);
 	}
 
 	async createSheets() {
@@ -28,7 +29,7 @@ export class Door extends BaseInteractiveObject {
 		this.$sheet.$addCamera();
 		this.$sheet
 			.$float('animation_progress', this.animationProgress, {
-				range: [0, 0.999],
+				range: [0.15, 0.999],
 			})
 			.onChange((v) => this.scene.$mixer.normSeek(v));
 	}
@@ -42,6 +43,7 @@ export class Door extends BaseInteractiveObject {
 
 		await this.$sheet.play();
 
-		$scenes.set('tv-room');
+		await $scenes.set('tv-room');
+		$scenes.current.start();
 	}
 }

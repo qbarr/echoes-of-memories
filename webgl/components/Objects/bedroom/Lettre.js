@@ -13,6 +13,10 @@ export class Lettre extends BaseInteractiveObject {
 
 		this.$gotoSheet = this.$project.getSheet('Lettre > Go To');
 		this.$gotoSheet.$addCamera();
+
+		const $transiProj = $theatre.getProject('Transition-Memories');
+		this.$outroSheet = $transiProj.getSheet('outro');
+		this.$outroSheet.$composer(['*']);
 	}
 
 	async onClick() {
