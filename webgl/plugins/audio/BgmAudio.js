@@ -21,6 +21,7 @@ export class BgmAudio extends BaseAudio {
 			sample.setVolume(this.layersVolume[i], true);
 			sample.play(null, { loop: true }).then((s) => s.pause());
 		}
+		this.volume.set(0.1);
 
 		this.play = this.resume.bind(this);
 	}
