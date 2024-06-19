@@ -7,6 +7,7 @@ import { useTimers } from '#app/composables/useTimers/useTimers';
 import { w } from '#utils/state';
 
 import { watch } from 'vue';
+import { wait } from '#utils/async/wait.js';
 
 const defaultOptions = {
 	content: '<THIS HINT SHOULD BE HELPFULL FOR THE USER>',
@@ -22,7 +23,9 @@ export class UiHint extends BaseComponent {
 
 		this.base = new Object3D();
 
-		this.timer = useTimers();
+		// this.timer = useTimers();
+		this.blinks = [];
+		this.isBlinking = false;
 
 		this.anitmating = false;
 		this.activeState = w(true);
@@ -87,8 +90,9 @@ export class UiHint extends BaseComponent {
 
 		this.text.base.visible = true;
 
-		if (!this.blinking) {
-			this.edit({ t: defaultOptions.content });
+		if (!this.isBlinking) {
+			this.blink({ duration: 1000 });
+			// this.edit({ t: defaultOptions.content });
 		}
 	}
 
@@ -99,17 +103,33 @@ export class UiHint extends BaseComponent {
 		this.text.base.visible = false;
 	}
 
+	update() {
+		if (!this.blinks.length) return;
+		this.blinks.forEach(this.updateBlink.bind(this));
+	}
+
+	updateBlink(params) {
+		if (!this.isBlinking) return;
+		const { dt } = this.webgl.$time;
+
+		params.remining = Math.max(params.remining - dt, 0);
+		if (params.remining === 0) {
+			params.bool ? this.show() : this.hide();
+			params.remining = params.timestamp;
+		}
+	}
+
 	async blink({ duration = 1000 }) {
-		this.blinking = true;
-		this.timer.setInterval(() => {
-			this.show();
-		}, '75');
-		this.timer.setInterval(() => {
-			this.hide();
-		}, '200');
-		await this.timer.wait(duration);
-		this.timer.clearTimers();
-		this.blinking = true;
+		this.isBlinking = true;
+
+		this.blinks[0] = { bool: true, timestamp: 75, remining: 75 };
+		this.blinks[1] = { bool: false, timestamp: 200, remining: 200 };
+
+		await wait(duration);
+
+		this.blinks.length = 0;
+		this.show();
+		this.isBlinking = false;
 	}
 
 	// async animateIn() {
@@ -139,10 +159,11 @@ export class UiHint extends BaseComponent {
 		// }
 		this.hide();
 		this.text.edit(t);
-		await this.timer.wait(200);
+		await wait(200);
 		if (!bypassAnim) {
 			await this.blink({ duration: 1000 });
+		} else {
+			this.show();
 		}
-		this.show();
 	}
 }

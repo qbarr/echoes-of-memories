@@ -6,8 +6,10 @@ import {
 	MeshBasicMaterial,
 	Object3D,
 	PerspectiveCamera,
+	Vector2,
 	Vector3,
 	Vector4,
+	Group,
 } from 'three';
 
 import Wobble from './Wobble.js';
@@ -17,7 +19,7 @@ import { TheatreSheet } from '#webgl/plugins/theatre/utils/index.js';
 import { scenesDatas } from '../Scenes/datas.js';
 import { types } from '@theatre/core';
 
-import { damp, lerp } from '#utils/maths/map.js';
+import { damp, dampPrecise, lerp } from '#utils/maths/map.js';
 
 const HEIGHT = 3;
 const DEFAULT_CAM = {
@@ -38,10 +40,16 @@ export class POVCamera extends BaseCamera {
 		this.base = new Object3D();
 		this.target = new Vector4(0, 0, 0, 0.2);
 
+		this.walkSettings = {
+			prev: new Vector2(),
+			current: new Vector2(),
+			velocity: new Vector2(),
+		};
+
 		this.wobble_intentisty = { value: 0.0004 };
 		this.wobble_frequency = { value: new Vector3(0.6, 0.6, 0.6) };
 		this.wobble_amplitude = { value: new Vector3(0.2, 0.1, 0.1) };
-		this.wobble_scale = { value: 1 };
+		this.wobble_scale = { value: 20 };
 
 		this.$statesMachine = this.webgl.$statesMachine.create('Camera', {
 			filter: 'camera',
@@ -80,6 +88,8 @@ export class POVCamera extends BaseCamera {
 	}
 
 	afterInit() {
+		const { $getCurrentScene } = this.webgl;
+		const scene = $getCurrentScene();
 		const ratio = window.innerWidth / window.innerHeight;
 
 		// this.webgl.$hooks.afterStart.watchOnce(this.afterStart.bind(this));
@@ -105,6 +115,7 @@ export class POVCamera extends BaseCamera {
 			frequency: this.wobble_frequency.value,
 			amplitude: this.wobble_amplitude.value,
 			scale: this.wobble_scale.value,
+			walksSettings: this.walkSettings,
 		});
 
 		document.addEventListener('click', this.onClick); // TODO: temp
@@ -142,7 +153,6 @@ export class POVCamera extends BaseCamera {
 		const scene = $getCurrentScene();
 		const currentCam = scene.getCurrentCamera();
 
-		console.log($store.isPaused);
 		if (
 			!this.$pointerLocked &&
 			!$store.isPaused &&
@@ -160,9 +170,28 @@ export class POVCamera extends BaseCamera {
 		this.wobble.setTargetLerpSpeed(0.02);
 	}
 
+	walkAnimation(dt) {
+		const { position: camPostion } = this.cam;
+		const { walkSettings } = this;
+
+		walkSettings.prev.copy(walkSettings.current);
+		walkSettings.current.set(camPostion.x, camPostion.z);
+
+		walkSettings.velocity
+			.subVectors(walkSettings.current, walkSettings.prev)
+			.multiplyScalar(4 * dt);
+
+		walkSettings.velocityLength = walkSettings.velocity.lengthSq();
+
+		if (walkSettings.velocityLength > 0.1 && this.wobble.state.is('default')) {
+			this.wobble.goWalkMode();
+		} else if (walkSettings.velocityLength < 0.1 && this.wobble.state.is('walk')) {
+			this.wobble.goDefaultMode();
+		}
+	}
+
 	update() {
 		const { dt, elapsed } = this.webgl.$time;
-		// console.log(this.$statesMachine?.currentState?.id);
 
 		this.wobble.update(elapsed * this.wobble_intentisty.value);
 		if (this.$statesMachine?.currentState?.id !== 'FLASHBACK_FREE') {
@@ -173,6 +202,7 @@ export class POVCamera extends BaseCamera {
 			this.controls.update();
 		}
 
+		this.walkAnimation(dt);
 		this.cam.updateProjectionMatrix();
 	}
 

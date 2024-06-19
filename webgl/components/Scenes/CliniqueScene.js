@@ -90,6 +90,7 @@ export default class CliniqueScene extends BaseScene {
 	}
 
 	async start(force) {
+		console.log('here ?');
 		if (this._hasStarted && !force) return;
 		if (this._hasStarted) {
 			this.$sheet.stop();
@@ -100,6 +101,7 @@ export default class CliniqueScene extends BaseScene {
 		const { cassette, porte } = this.interactiveObjects;
 		const { $povCamera } = this.webgl;
 
+		console.log($povCamera.$setState);
 		$povCamera.$setState('cinematic');
 
 		cassette.reset();

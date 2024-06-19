@@ -1,5 +1,13 @@
 import BaseComponent from '#webgl/core/BaseComponent';
-import { Object3D, Color, Vector3 } from 'three';
+import {
+	Object3D,
+	Color,
+	Vector3,
+	Box3,
+	BufferGeometry,
+	MeshBasicMaterial,
+	Mesh,
+} from 'three';
 import { MSDFTextMesh } from '../../Text';
 import { map } from '#utils/maths/map.js';
 

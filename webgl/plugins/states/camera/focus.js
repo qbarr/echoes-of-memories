@@ -7,6 +7,7 @@ async function enter({ machine }) {
 
 	crosshair.setVisible(true);
 	camera.controls.setMode('focus');
+	camera.controls.goFocusMode();
 }
 function update() {}
 async function leave({ machine }) {}

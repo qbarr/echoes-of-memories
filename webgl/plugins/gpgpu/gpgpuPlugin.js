@@ -223,7 +223,6 @@ export function gpgpuPlugin(webgl) {
 			// }
 			// console.log(gpgpu.variables.particles.material.uniforms.uPercentRange.value)
 			if (elapsed < 10 || gpgpu.forceCompute.get()) gpgpu.computation.compute();
-			// console.log(elapsed < 10|| gpgpu.forceCompute.get())
 		});
 	}
 
