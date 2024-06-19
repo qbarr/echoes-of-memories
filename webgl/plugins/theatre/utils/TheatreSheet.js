@@ -250,6 +250,10 @@ export class TheatreSheet {
 		return res;
 	}
 
+	detachAudio() {
+		this.sequence.detachAudio();
+	}
+
 	// registerSubtitles(subtitles) {
 	// 	this._subtitles = deepCopy(subtitles);
 	// 	this._lastSubtitle = null;
