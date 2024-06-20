@@ -2,6 +2,7 @@ import BaseScene from '#webgl/core/BaseScene';
 
 import { MeshBasicMaterial, Sprite, SpriteMaterial, Vector3 } from 'three';
 import { scenesDatas } from './datas';
+import { wait } from '#utils/async/wait.js';
 
 export default class BedroomScene extends BaseScene {
 	mixins = ['debugCamera'];
@@ -147,7 +148,11 @@ export default class BedroomScene extends BaseScene {
 	}
 
 	async start() {
-		this.$bgm.play({ fade: 4000 });
+		this.$sheet.play();
+		this.$bgm.play();
+
+		await wait(500);
+		this.webgl.$audio.play('common/short-glitch');
 	}
 
 	setCameraToSpawn() {
