@@ -9,7 +9,6 @@ async function enter({ machine }) {
 	crosshair.setVisible(true);
 	hint.show();
 	camera.controls.setMode('free');
-	camera.controls.goFreeMode();
 	$raycast.enable();
 }
 function update() {}

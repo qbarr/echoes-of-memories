@@ -22,7 +22,9 @@ export class Nounours extends BaseInteractiveObject {
 		$raycast.disable();
 		$povCamera.$setState('cinematic');
 
+		$povCamera.isSfxActive = true;
 		await this.$gotoSheet.play();
+		$povCamera.isSfxActive = false;
 
 		$povCamera.$setState('focus');
 

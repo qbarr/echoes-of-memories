@@ -86,7 +86,7 @@ export class BaseUiView extends BaseComponent {
 	}
 
 	resize() {
-		console.log(`[BaseUiView] Resize ${this.name} View`);
+		// console.log(`[BaseUiView] Resize ${this.name} View`);
 	}
 
 	show() {

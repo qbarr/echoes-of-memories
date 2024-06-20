@@ -21,6 +21,7 @@ import { types } from '@theatre/core';
 
 import { damp, dampPrecise, lerp } from '#utils/maths/map.js';
 import { w } from '#utils/state/index.js';
+import { throttle } from '#utils/async/throttle.js';
 
 const HEIGHT = 3;
 const DEFAULT_CAM = {
@@ -31,6 +32,11 @@ const DEFAULT_TARGET = {
 	position: new Vector3(4, 1, 0), // on clinique room
 };
 
+const audiosID = {
+	clinique: 'clinique',
+	'tv-room': 'clinique',
+	bedroom: 'chambre',
+};
 export class POVCamera extends BaseCamera {
 	init() {
 		this.$pointerLocked = false;
@@ -57,6 +63,9 @@ export class POVCamera extends BaseCamera {
 			camera: this,
 		});
 		this.$setState = this.$statesMachine.setState.bind(this.$statesMachine);
+
+		this.isSfxActive = false;
+		this.triggerStepSFX = throttle(this.triggerStepSFX.bind(this), 600);
 	}
 
 	/// #if __DEBUG__
@@ -121,7 +130,7 @@ export class POVCamera extends BaseCamera {
 			walksSettings: this.walkSettings,
 		});
 
-		document.addEventListener('click', this.onClick); // TODO: temp
+		document.addEventListener('click', this.onClick);
 		document.addEventListener('pointerlockchange', this.onPointerLockChange);
 
 		const dbs = this.webgl.$renderer.drawingBufferSize;
@@ -173,8 +182,17 @@ export class POVCamera extends BaseCamera {
 		this.wobble.setTargetLerpSpeed(0.02);
 	}
 
+	triggerStepSFX() {
+		if (!this.isSfxActive) return;
+
+		const { $scenes, $audio } = this.webgl;
+		const suffix = audiosID[$scenes.current.name];
+		console.log('suffix', suffix);
+		$audio.play('common/pas-' + suffix);
+	}
+
 	walkAnimation(dt) {
-		const { position: camPostion } = this.cam;
+		const { position: camPostion } = this.base;
 		const { walkSettings } = this;
 
 		walkSettings.prev.copy(walkSettings.current);
@@ -182,19 +200,20 @@ export class POVCamera extends BaseCamera {
 
 		walkSettings.velocity
 			.subVectors(walkSettings.current, walkSettings.prev)
-			.multiplyScalar(2 * dt);
+			.multiplyScalar(dt);
+
+		if (walkSettings.velocity.lengthSq() > 0.1) this.triggerStepSFX();
 
 		walkSettings.velocityLength = walkSettings.velocity.lengthSq();
 
-		if (walkSettings.velocityLength > 0.1 && this.wobble.state.is('default')) {
-			this.wobble.goWalkMode();
-		} else if (walkSettings.velocityLength < 0.1 && this.wobble.state.is('walk')) {
-			this.wobble.goDefaultMode();
-		}
+		if (walkSettings.velocityLength > 0.1) this.wobble.goWalkMode();
+		else this.wobble.goDefaultMode();
 	}
 
 	update() {
 		const { dt, elapsed } = this.webgl.$time;
+
+		// this.triggerStepSFX();
 
 		this.wobble.update(elapsed * this.wobble_intentisty.value);
 

@@ -122,7 +122,7 @@ export default class BedroomScene extends BaseScene {
 	}
 
 	async createSheets() {
-		this.$bgm = this.webgl.$audio.play('bedroom/bgm', { volume: 2 });
+		this.$bgm = this.webgl.$audio.play('bedroom/bgm', { volume: 0.1 });
 		this.$bgm.pause({ fade: 0 });
 
 		this.$sheet = this.$project.getSheet('Enter');
@@ -147,7 +147,7 @@ export default class BedroomScene extends BaseScene {
 	}
 
 	async start() {
-		this.$bgm.play();
+		this.$bgm.play({ fade: 4000 });
 	}
 
 	setCameraToSpawn() {
@@ -157,15 +157,17 @@ export default class BedroomScene extends BaseScene {
 		$povCamera.controls.lon.set(this.spawnSettings.lon);
 	}
 
-	// async leave() {
-	// 	const { $composer, $scenes } = this.webgl;
+	async leave() {
+		this.$bgm.stop({ fade: 2000 });
 
-	// 	const animations = await Promise.all([
-	// 		$composer.$crt.glitch(),
-	// 		$composer.$lut.animateSaturation(0),
-	// 		this.animateOpacity(1),
-	// 	])
-	// }
+		// 	const { $composer, $scenes } = this.webgl;
+
+		// 	const animations = await Promise.all([
+		// 		$composer.$crt.glitch(),
+		// 		$composer.$lut.animateSaturation(0),
+		// 		this.animateOpacity(1),
+		// 	])
+	}
 
 	// async animateOpacity(to) {
 	// 	return new Promise((resolve) => {

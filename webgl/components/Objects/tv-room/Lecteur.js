@@ -42,6 +42,7 @@ export class Lecteur extends BaseInteractiveObject {
 
 		await wait(500);
 
-		$scenes.set('bedroom');
+		await $scenes.set('bedroom');
+		$scenes.current.component.start();
 	}
 }

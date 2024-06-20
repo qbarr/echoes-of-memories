@@ -84,12 +84,11 @@ export default class TVRoomScene extends BaseScene {
 
 		await this.$sheet.attachAudio('tv-room/enter');
 		this.$sheet.$addCamera();
-		this.$sheet.$composer(['global', 'bloom']);
+		this.$sheet.$composer(['global']);
 	}
 
 	async enter() {
 		this._hasStarted = false;
-		console.log('here');
 
 		const { $povCamera, $scenes, $app } = this.webgl;
 		$povCamera.onSceneSwitch(this);

@@ -116,8 +116,8 @@ export default class WaveformViewer {
 		if (this.initialized || !this.options) return;
 		this.initialized = true;
 		Peaks.init(this.options, (err, peaks) => {
-			console.log('err: ', err);
-			console.log('peaks: ', peaks);
+			// console.log('err: ', err);
+			// console.log('peaks: ', peaks);
 			this.$waitingView.style.display = 'none';
 		});
 	}

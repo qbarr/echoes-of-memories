@@ -79,13 +79,11 @@ export default class Wobble {
 	}
 
 	update(time) {
-		// if (this.state.is(this.states.DEFAULT)) this.defaultWobble(time);
-		// if (this.state.is(this.states.WALK)) this.walkWobble(time);
+		if (this.state.is(this.states.DEFAULT)) this.updateDefaultWobble(time);
+		// if (this.state.is(this.states.WALK)) this.updateWalkWobble(time);
 	}
 
-	defaultWobble(time) {
-		if (!this.state.is('default')) return;
-
+	updateDefaultWobble(time) {
 		this.baseLerpSpeed = lerp(this.baseLerpSpeed, this.targetLerpSpeed, 0.01);
 
 		this.target.x =
@@ -102,9 +100,7 @@ export default class Wobble {
 		this.position?.damp(this.target, this.baseLerpSpeed, dt);
 	}
 
-	walkWobble(time) {
-		if (!this.state.is('walk')) return;
-
+	updateWalkWobble(time) {
 		// this.baseLerpSpeed = lerp(this.baseLerpSpeed, 1, 0.01);
 
 		// console.log(this.baseLerpSpeed);
@@ -118,9 +114,11 @@ export default class Wobble {
 		this.target.x = this.target.z = 0;
 		this.target.y = Math.sin(time * 10) * v;
 
+		console.log(this.target.y);
+
 		this.target.add(this.position);
 
 		const { stableDt: dt } = this.webgl.$time;
-		this.position?.damp(this.target, 0.1, dt);
+		this.position.damp(this.target, 0.1, dt);
 	}
 }

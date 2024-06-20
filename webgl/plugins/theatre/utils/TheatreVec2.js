@@ -18,7 +18,6 @@ export class TheatreVec2 extends TheatreBaseObject {
 		delete opts.onUpdate;
 
 		const v = this._isWritable ? value.value : value;
-		console.log(value, v);
 		const obj = sheet.instance.object(name, {
 			value: types.compound({
 				x: types.number(v.x, opts),

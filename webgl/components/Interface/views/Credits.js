@@ -166,7 +166,6 @@ export class Credits extends BaseUiView {
 	}
 
 	goToPause() {
-		console.log('lqksjd');
 		this.scene.$setState('pause');
 	}
 

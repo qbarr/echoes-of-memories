@@ -22,7 +22,9 @@ export class Desk extends BaseInteractiveObject {
 
 		$povCamera.$setState('cinematic');
 
+		$povCamera.isSfxActive = true;
 		await this.$sheet.play();
+		$povCamera.isSfxActive = false;
 
 		tv.enableInteraction();
 

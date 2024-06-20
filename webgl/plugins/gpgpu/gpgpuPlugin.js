@@ -5,8 +5,6 @@ import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRe
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 import { getDeathRanges } from './deathRanges';
 
-
-
 export function gpgpuPlugin(webgl) {
 	const list = w([]);
 	const api = { create, createPooling, list, render };
@@ -78,7 +76,6 @@ export function gpgpuPlugin(webgl) {
 				baseGeometry.instance.attributes.death.array[i];
 			gpgpu.attributesTexture.image.data[i4 + 3] = 0;
 		}
-
 	}
 
 	function fillDustParticles(gpgpu, baseGeometry, count) {
@@ -175,16 +172,13 @@ export function gpgpuPlugin(webgl) {
 	}
 
 	function precomputeMemories() {
-		const flashbacks = [
-			'meal',
-			'truck',
-			'war',
-		]
+		const flashbacks = ['meal', 'truck', 'war'];
 		// let instances = []
+		// console.log(webgl.$assets.objects.flashbacks)
 		flashbacks.forEach((flashback, index) => {
 			const scene = webgl.$assets.objects.flashbacks[flashback].scene;
 			let instances = scene.children.map((child, i) => {
-				if (!child.isMesh) return
+				if (!child.isMesh) return;
 				child.updateWorldMatrix(true, false);
 				child.geometry.applyMatrix4(child.matrixWorld);
 				const death = [];
@@ -201,8 +195,7 @@ export function gpgpuPlugin(webgl) {
 
 			instances = BufferGeometryUtils.mergeGeometries(instances);
 			precomputeParticles(instances, presetsShader.gpgpu.base, 15);
-		})
-
+		});
 	}
 
 	function render() {
@@ -345,7 +338,10 @@ export function gpgpuPlugin(webgl) {
 	function devTools() {
 		list.get().forEach((gpgpu, i) => {
 			const modelUniforms = list.get()[0].variables.particles.material.uniforms;
-			const gui = webgl.$gui.addFolder({ title: `🎉 GPGPU${i} flashback${i}`, index: 7 });
+			const gui = webgl.$gui.addFolder({
+				title: `🎉 GPGPU${i} flashback${i}`,
+				index: 7,
+			});
 
 			const add = (
 				obj,
@@ -361,8 +357,7 @@ export function gpgpuPlugin(webgl) {
 			add(modelUniforms.uPercentRange, { label: 'uPercentRange', min: 0, max: 10 });
 			add(modelUniforms.uDeathRange, { label: 'uDeathRange' });
 			add(modelUniforms.uMorphEnded, { label: 'uMorphEnded' });
-		})
-
+		});
 	}
 	/// #endif
 	function renderTargetTextureToJPG(renderTarget) {
