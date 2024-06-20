@@ -10,7 +10,7 @@ export default class CliniqueScene extends BaseScene {
 	mixins = ['debugCamera'];
 
 	init() {
-		const { $assets, $theatre, $audio } = this.webgl;
+		const { $assets, $theatre, $audio, $hooks, $composer } = this.webgl;
 
 		this._hasStarted = false;
 
@@ -24,7 +24,7 @@ export default class CliniqueScene extends BaseScene {
 
 		const textures = $assets.textures['clinique'];
 
-		const _textures = {
+		const _materials = {
 			pipesacrak: new MeshBasicMaterial({ map: textures['atlas_map'] }),
 			murs: new MeshBasicMaterial({ map: textures['murs_map'] }),
 			tableaux: new MeshBasicMaterial({ map: textures['door_tableaux_map'] }),
@@ -32,14 +32,22 @@ export default class CliniqueScene extends BaseScene {
 			cassette: new MeshBasicMaterial({ map: textures['cassettepostit_map'] }),
 			contrat: new MeshBasicMaterial({ map: textures['contrat_map'] }),
 		};
-		_textures.ecrans = _textures.computers;
-		_textures.porte = _textures.tableaux;
+		_materials.ecrans = _materials.computers;
+		_materials.porte = _materials.tableaux;
+
+		const _emissiveMaterials = {
+			contrat: new MeshBasicMaterial({ map: textures['contrat_emissive'] }),
+		};
 
 		const datas = scenesDatas.clinique;
+		this.datas = datas;
 		Object.keys(datas).forEach((k) => {
-			Object.assign(datas[k], { texture: _textures[k] });
+			Object.assign(datas[k], { material: _materials[k] });
+			if (_emissiveMaterials[k])
+				Object.assign(datas[k], { emissiveMaterial: _emissiveMaterials[k] });
 		});
 
+		this._allMeshes = [];
 		const _objects = [];
 		this.interactiveObjects = {};
 
@@ -47,8 +55,9 @@ export default class CliniqueScene extends BaseScene {
 			if (!child.isMesh || !child.material) return;
 
 			if (datas[child.name]) {
-				const { class: Class, texture } = datas[child.name];
-				child.material = texture;
+				const { class: Class, material } = datas[child.name];
+				child.material = material;
+				this._allMeshes.push(child);
 				if (Class) {
 					const obj = new Class({ name: child.name, mesh: child });
 					this.interactiveObjects[child.name] = obj;
@@ -60,11 +69,29 @@ export default class CliniqueScene extends BaseScene {
 		_objects.forEach((o) => this.add(o));
 		this.base.add(scene);
 
-		this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
+		$hooks.afterStart.watchOnce(this.createSheets.bind(this));
+		$composer.$hooks.beforeRenderEmissive.watch(this.onBeforeRenderEmissive.bind(this)); // prettier-ignore
+		$composer.$hooks.afterRenderEmissive.watch(this.onAfterRenderEmissive.bind(this)); // prettier-ignore
+	}
+
+	onBeforeRenderEmissive() {
+		for (let i = 0; i < this._allMeshes.length; i++) {
+			const mesh = this._allMeshes[i];
+			const data = this.datas[mesh.name];
+			if (data?.emissiveMaterial) mesh.material = data.emissiveMaterial;
+		}
+	}
+
+	onAfterRenderEmissive() {
+		for (let i = 0; i < this._allMeshes.length; i++) {
+			const mesh = this._allMeshes[i];
+			const data = this.datas[mesh.name];
+			if (data?.material) mesh.material = data.material;
+		}
 	}
 
 	async createSheets() {
-		this.$bgm = this.webgl.$audio.play('clinique/bgm', { volume: 2 });
+		this.$bgm = this.webgl.$audio.play('clinique/bgm', { volume: 1.4 });
 		this.$bgm.pause({ fade: 0 });
 
 		this.$sheet = this.$project.getSheet('intro');
@@ -90,6 +117,7 @@ export default class CliniqueScene extends BaseScene {
 
 	async leave() {
 		this.log('leave');
+		this.$bgm.stop({ fade: 2000 });
 	}
 
 	async start(force) {
@@ -112,7 +140,7 @@ export default class CliniqueScene extends BaseScene {
 		porte.disableInteraction();
 
 		this.$sheet.reset();
-		this.$bgm.play();
+		this.$bgm.play({ fade: 4000 });
 
 		await this.$sheet.play();
 
