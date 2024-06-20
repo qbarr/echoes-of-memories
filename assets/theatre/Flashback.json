@@ -239,6 +239,45 @@
                     "value": -4.87152
                   },
                   {
+                    "id": "EXivW3Ffqt",
+                    "position": 32.867,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -0.9715199999999978
+                  },
+                  {
+                    "id": "Pm8sRsuJ9o",
+                    "position": 44.2,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -4.404876394556655
+                  },
+                  {
+                    "id": "WHfdVPCleL",
+                    "position": 59.233,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -4.148162724767232
+                  },
+                  {
                     "id": "53HLrBC7X6",
                     "position": 77.3,
                     "connectedRight": true,
@@ -321,6 +360,45 @@
                     ],
                     "type": "bezier",
                     "value": 2.11164
+                  },
+                  {
+                    "id": "2du9ptirjx",
+                    "position": 32.867,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 5.0116400000000025
+                  },
+                  {
+                    "id": "rnkor2w4dV",
+                    "position": 52,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 1.256108983274689
+                  },
+                  {
+                    "id": "nLu4DTrp5b",
+                    "position": 65.667,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 3.1525278277536777
                   },
                   {
                     "id": "AzAT9U44lP",
@@ -407,8 +485,8 @@
                     "value": 5.27936
                   },
                   {
-                    "id": "QsQBYHtmjp",
-                    "position": 77.3,
+                    "id": "PaNE7UujBw",
+                    "position": 40.2,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -417,7 +495,33 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": 5.27936
+                    "value": -2.6206400000000043
+                  },
+                  {
+                    "id": "SgyyFa6OO6",
+                    "position": 52,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 2.324290285796682
+                  },
+                  {
+                    "id": "s3RU1Qq3hF",
+                    "position": 69.9,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -1.7624005611462255
                   },
                   {
                     "id": "YnMcl_w9HF",
@@ -431,6 +535,19 @@
                     ],
                     "type": "bezier",
                     "value": 4.88725
+                  },
+                  {
+                    "id": "QsQBYHtmjp",
+                    "position": 82.533,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 5.27936
                   }
                 ]
               },
@@ -1974,7 +2091,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Pardon vous voulez m'envoyer où ?"
+                    "value": "Pardon vous voulez m'envoyer ou ?"
                   },
                   {
                     "id": "zWi-mrFUU0",
@@ -2039,7 +2156,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Ah... je vois"
+                    "value": "Ah... Je vois"
                   },
                   {
                     "id": "EzA9Y_mqAr",
@@ -2143,7 +2260,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Vous croyez vraiment que ça va m'aider ?"
+                    "value": "Vous croyez vraiment que ca va m'aider ?"
                   },
                   {
                     "id": "ojRa4MfRDB",
@@ -2757,7 +2874,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Ouai, c'est ça"
+                    "value": "Ouai, c'est ca"
                   },
                   {
                     "id": "kXDYsTS9-T",
@@ -2783,7 +2900,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Moi, c'est Adan"
+                    "value": "Moi, c'est Adam"
                   },
                   {
                     "id": "2XjhFU5b5X",
@@ -2809,7 +2926,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "C'est bien lui... ça fait si longtemps..."
+                    "value": "C'est bien lui... ca fait si longtemps..."
                   },
                   {
                     "id": "bbrH93g04i",
@@ -2900,7 +3017,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Il m'a toujours porte change"
+                    "value": "Il m'a toujours porte chance"
                   },
                   {
                     "id": "BPW3REVTlp",
@@ -2943,7 +3060,7 @@
                   },
                   {
                     "id": "uftrjuXdYe",
-                    "position": 80.767,
+                    "position": 81.1,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -2952,7 +3069,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "C'est ce jour la, dans ce camion, que j'ai rencontre Adan pour la premiere fois"
+                    "value": "C'est ce jour la, dans ce camion, que j'ai rencontre Adam pour la premiere fois"
                   },
                   {
                     "id": "_oTs_cM_ow",
@@ -3201,6 +3318,58 @@
                     "value": 14.87036
                   },
                   {
+                    "id": "auWE-1uynS",
+                    "position": 30,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 18.370360000000005
+                  },
+                  {
+                    "id": "TJGj3TQ378",
+                    "position": 39.467,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -10.252499605849202
+                  },
+                  {
+                    "id": "GS8Wu2B0Qg",
+                    "position": 50.833,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -10.079981737595649
+                  },
+                  {
+                    "id": "2spLVpunsi",
+                    "position": 64.767,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -5.289094893878898
+                  },
+                  {
                     "id": "EXajdnyn1X",
                     "position": 77.033,
                     "connectedRight": true,
@@ -3311,6 +3480,71 @@
                     "value": 5.49756
                   },
                   {
+                    "id": "6V8td8PKyJ",
+                    "position": 27.6,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 10.497559999999995
+                  },
+                  {
+                    "id": "c6-yNa4Kgd",
+                    "position": 43.467,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 15.343734105207382
+                  },
+                  {
+                    "id": "u5SXC3DZ-o",
+                    "position": 50.467,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 6.637513164439809
+                  },
+                  {
+                    "id": "JaLnf8j_Wq",
+                    "position": 55.5,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 5.505356571155701
+                  },
+                  {
+                    "id": "v6fLYyYkVY",
+                    "position": 60.533,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 11.304684243178338
+                  },
+                  {
                     "id": "RvdhQbakro",
                     "position": 77.033,
                     "connectedRight": true,
@@ -3419,6 +3653,58 @@
                     ],
                     "type": "bezier",
                     "value": -4.68782
+                  },
+                  {
+                    "id": "xO8M3rjCcG",
+                    "position": 30,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -7.187819999999992
+                  },
+                  {
+                    "id": "T7mqmcYeR6",
+                    "position": 39.467,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -11.871498737429672
+                  },
+                  {
+                    "id": "8jxukVYxMA",
+                    "position": 50.833,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 3.834961995730256
+                  },
+                  {
+                    "id": "e3IpcwizSe",
+                    "position": 60.533,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -10.144693529307082
                   },
                   {
                     "id": "crP9Uqjqn3",
@@ -4553,7 +4839,7 @@
                   },
                   {
                     "id": "7ebJF6kxmm",
-                    "position": 18.6,
+                    "position": 18.767,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -4562,7 +4848,20 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Adan ! Adan t'es ou ?"
+                    "value": "Adam ! Adam t'es ou ?"
+                  },
+                  {
+                    "id": "Wu_qawdJ4P",
+                    "position": 21.667,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "__NONE__"
                   },
                   {
                     "id": "dgIfmyM7lX",
@@ -4575,7 +4874,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Non non non non non, Adan Adan ! Reste avec moi okay ?! "
+                    "value": "Non non non non non, Adam Adam ! Reste avec moi okay ?! "
                   },
                   {
                     "id": "LTeK0ZH1qs",
@@ -4605,7 +4904,7 @@
                   },
                   {
                     "id": "ZAqHjEEf_o",
-                    "position": 36.4,
+                    "position": 36.233,
                     "connectedRight": true,
                     "handles": [
                       0.5,
@@ -4653,7 +4952,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Garde tes forces et reste avec moi Adan s'il te plait"
+                    "value": "Garde tes forces et reste avec moi Adam s'il te plait"
                   },
                   {
                     "id": "mSro7iUwFX",
@@ -4679,7 +4978,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Adan, Adan reveille toi ! C'est pas le moment de partir je t'en pris !"
+                    "value": "Adam, Adam reveille toi ! C'est pas le moment de partir je t'en pris !"
                   },
                   {
                     "id": "tC86_FhV85",
@@ -4708,6 +5007,19 @@
                     "value": "Arretez ça ! Je vous en supplie ! C'est trop dur"
                   },
                   {
+                    "id": "7yqI_m7Y3L",
+                    "position": 64.3,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "__NONE__"
+                  },
+                  {
                     "id": "V7o81SXPYn",
                     "position": 66.7,
                     "connectedRight": true,
@@ -4718,7 +5030,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "J'ai dis stop ! Sortez moi de la !"
+                    "value": "J'ai dit stop ! Sortez moi de la !"
                   },
                   {
                     "id": "i6z0EhS6DJ",
@@ -5176,7 +5488,7 @@
                   },
                   {
                     "id": "irpFBayYfu",
-                    "position": 20.733,
+                    "position": 17.933,
                     "connectedRight": true,
                     "handles": [
                       0.515,
@@ -5186,6 +5498,32 @@
                     ],
                     "type": "bezier",
                     "value": 3.82847
+                  },
+                  {
+                    "id": "EskPyQifcs",
+                    "position": 35.467,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 1.4284699999999984
+                  },
+                  {
+                    "id": "6KtSsfYxgg",
+                    "position": 53.933,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -3.1069000817936865
                   },
                   {
                     "id": "o_w4n7wQUW",
@@ -5273,7 +5611,7 @@
                   },
                   {
                     "id": "QQ-_xyf2Z7",
-                    "position": 20.733,
+                    "position": 17.933,
                     "connectedRight": true,
                     "handles": [
                       0.515,
@@ -5285,17 +5623,69 @@
                     "value": 1.39631
                   },
                   {
-                    "id": "3clRJE0Ytv",
-                    "position": 71.9,
+                    "id": "240rb60cmt",
+                    "position": 28.633,
                     "connectedRight": true,
                     "handles": [
-                      0.515,
-                      0.955,
+                      0.5,
+                      1,
                       0.5,
                       0
                     ],
                     "type": "bezier",
-                    "value": 1.39631
+                    "value": 2.096309999999997
+                  },
+                  {
+                    "id": "asm_m3FOgt",
+                    "position": 43.533,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 2.95150791868431
+                  },
+                  {
+                    "id": "f3Lyi00EnP",
+                    "position": 59.067,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.785,
+                      0.135
+                    ],
+                    "type": "bezier",
+                    "value": 3.373935583289479
+                  },
+                  {
+                    "id": "NFm_v6W_sN",
+                    "position": 67.533,
+                    "connectedRight": true,
+                    "handles": [
+                      0.15,
+                      0.86,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 36.277829166249504
+                  },
+                  {
+                    "id": "Ad5dW6pv4e",
+                    "position": 71.933,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 3.961204964925214
                   },
                   {
                     "id": "ow52Whwena",
@@ -5591,7 +5981,7 @@
                   },
                   {
                     "id": "pMuxDbzKZ-",
-                    "position": 20.733,
+                    "position": 14.467,
                     "connectedRight": true,
                     "handles": [
                       0.515,
@@ -5601,6 +5991,45 @@
                     ],
                     "type": "bezier",
                     "value": -1.31378
+                  },
+                  {
+                    "id": "-TEvDKeqb2",
+                    "position": 28.633,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -1.0137799999999986
+                  },
+                  {
+                    "id": "NG__etAnkC",
+                    "position": 43.533,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 3.424252182219511
+                  },
+                  {
+                    "id": "w46BBNrwm2",
+                    "position": 64.433,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 3.7627450171614996
                   },
                   {
                     "id": "PZ9cNzZS8Q",
@@ -6709,6 +7138,9 @@
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "e8m9k1bg1JrK5zsB",
+    "nKWyfXdZw-iZ1Dny",
+    "_H22YFP13EgpJN1r",
     "LyvyhVM8KwfO1klX",
     "KTeZGUPNRweWPnD7",
     "SrdHlTdM4TnqraAX",

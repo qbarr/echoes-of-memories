@@ -120,7 +120,7 @@ export function composerPlugin(webgl) {
 
 		if (name === 'bedroom') {
 			$crt.enabled.set(true);
-			$lut.set('bedroom');
+			$lut.set('clinique-2');
 			$afterImage.enabled.set(false);
 			$sketchLines.enabled.set(true);
 			uniforms.SRGB_TRANSFER.value = 0;
@@ -151,7 +151,7 @@ export function composerPlugin(webgl) {
 			$sketchLines.enabled.set(false);
 			uniforms.SRGB_TRANSFER.value = 1;
 
-			if(name === 'flashback1') {
+			if (name === 'flashback1') {
 				$unrealBloom.threshold.set(0.62);
 			}
 		}

@@ -146,8 +146,16 @@ function POVController(
 		updateLookAt();
 	}
 
+	const lookAtsFlashback = {
+		flashback1: [-2, 0, 0],
+		flashback2: [0, 1, 0],
+		flashback3: [0, 0, 0],
+	};
+
 	function updateFlashbackMode(dt) {
-		const lookat = Vector3.get().set(0, 0, 0);
+		const scene = webgl.$scenes.current;
+		if (!lookAtsFlashback[scene.name]) return;
+		const lookat = Vector3.get().fromArray(lookAtsFlashback[scene.name]);
 		updateLookAt(lookat);
 		lookat.release();
 	}
