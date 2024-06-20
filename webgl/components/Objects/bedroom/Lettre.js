@@ -4,9 +4,9 @@ export class Lettre extends BaseInteractiveObject {
 	init() {
 		this.isInteractiveObject = true;
 		this.isSpecial = true;
-		this.audioId = 'flashbacks/war'
+		this.audioId = 'flashbacks/war';
 
-		this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
+		// this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
 	}
 
 	async createSheets() {
@@ -23,15 +23,22 @@ export class Lettre extends BaseInteractiveObject {
 		const transitionSheet = transitionProject.getSheet('transition');
 
 		warSheet.$bool('SwitchSceneParticles', { value: false }).onChange((v) => {
-			if (v) this.webgl.$scenes.switch('flashback3')
-			else this.webgl.$scenes.switch('bedroom')
+			if (v) this.webgl.$scenes.switch('flashback3');
+			else this.webgl.$scenes.switch('bedroom');
 		});
-		warSheet.$addCamera()
+		warSheet.$addCamera();
 		warSheet.$composer(['global', 'lut', 'crt']);
 		this.$flashbackSheet = warSheet;
 
-		this.$outroSheet = flashbackProject.getSheet('outro');
+		this.$outroSheet = transitionProject.getSheet('outro');
 		this.$outroSheet.$composer(['*']);
+		this.$outroSheet.$addCamera();
+		this.$outroSheet.$bool('SwitchSceneOutro', { value: false }).onChange((v) => {
+			if (v) this.webgl.$scenes.switch('tv-room');
+			else this.webgl.$scenes.switch('bedroom');
+		});
+		this.$letterLecture = transitionProject.getSheet('letter');
+		// await this.$letterLecture.attachAudio('outro/letter');
 	}
 
 	async onClick() {
@@ -45,6 +52,8 @@ export class Lettre extends BaseInteractiveObject {
 		await this.$flashbackSheet.play();
 
 		// ! FIN DE L'XP ICI
+
+		await this.$outroSheet.play();
 
 		// !! A COMMENTER
 		// this.scene.setCameraToSpawn();

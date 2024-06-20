@@ -141,8 +141,8 @@ export default class BedroomScene extends BaseScene {
 		uiScene.subtitles.setColor($app.$store.subtitles.colors.yellow);
 
 		/// #if __DEBUG__
-		$povCamera.$setState('free');
-		$povCamera.setPosition([-8.67082, 0, 4.88725]);
+		// $povCamera.$setState('free');
+		// $povCamera.setPosition([-8.67082, 0, 4.88725]);
 		/// #endif
 	}
 
