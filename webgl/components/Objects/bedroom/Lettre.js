@@ -22,10 +22,14 @@ export class Lettre extends BaseInteractiveObject {
 		const transitionProject = $theatre.get('Transition-Memories');
 		const transitionSheet = transitionProject.getSheet('transition');
 
-		warSheet.$bool('SwitchSceneParticles', { value: false }).onChange((v) => {
-			if (v) this.webgl.$scenes.switch('flashback3');
-			else this.webgl.$scenes.switch('bedroom');
-		});
+		// warSheet.$bool('SwitchSceneParticles', { value: false }).onChange((v) => {
+		// 	if (v) this.webgl.$scenes.switch('flashback3');
+		// 	else this.webgl.$scenes.switch('tv-room');
+		// });
+
+		warSheet.$list('SwitchScenes', ['bedroom', 'tv-room', 'flashback3']).onChange((v) => {
+			this.webgl.$scenes.switch(v);
+		})
 		warSheet.$addCamera();
 		warSheet.$composer(['global', 'lut', 'crt']);
 		warSheet
