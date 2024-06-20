@@ -52,7 +52,7 @@ export default class UIScene extends BaseScene {
 		this.$setState = this.$statesMachine.setState.bind(this.$statesMachine);
 		this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
 
-		this.$setState('hud');
+		this.$setState('splash');
 	}
 
 	createSheets() {
@@ -60,6 +60,11 @@ export default class UIScene extends BaseScene {
 			id: 'SplashScreen',
 			name: 'Enter',
 		});
+		this.$splashScreenLeave = this.splashScreen.createSheet({
+			id: 'SplashScreen',
+			name: 'Leave',
+		});
+
 		this.$warningScreenEnter = this.warningScreen.createSheet({
 			id: 'WarningScreen',
 			name: 'Enter',

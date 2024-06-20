@@ -17,33 +17,31 @@ export class Warning extends BaseUiView {
 
 		this.title = this.add(UiText, {
 			text: {
+				name: 'UiTextWarningTitle',
 				content: 'ATTENTION',
-				align: 'left',
 				color: new Color(0xffd700).offsetHSL(0, 0.3, 0.1),
-				letterSpacing: -3,
-				scale: 1.35,
 			},
-			componentWidth: vw / 2,
+			componentWidth: 700,
 			justifyContent: 'center',
 		});
 
 		this.p = this.add(UiText, {
 			text: {
-				// content: 'Le contenu suivant contient des moments dérangeants qui peuvent être violents pour les spectateurs. Soyez vigilants.',
+				name: 'UiTextWarningP',
 				content:
-					'LE CONTENU SUIVANT CONTIENT DES MOMENTS DÉRANGEANTS QUI PEUVENT ÊTRE VIOLENTS POUR LES SPECTATEURS.\n SOYEZ VIGILANTS.',
-				align: 'left',
-				color: new Color(0xffd700).offsetHSL(0, 0.3, 0.1),
-				letterSpacing: -3,
-				scale: 0.85,
-				width: vw / 2.3,
+					'LE CONTENU SUIVANT CONTIENT DES MOMENTS DERANGEANTS QUI PEUVENT ETRE VIOLENTS POUR LES SPECTATEURS.\n SOYEZ VIGILANTS.',
+				width: vw / 2.5,
+				justifyContent: 'center',
 			},
-			componentWidth: vw / 2,
 			justifyContent: 'center',
 		});
 
-		this.title.base.position.add(new Vector3(0, 8, 0));
-		this.p.base.position.add(new Vector3(0, -9, 0));
+		this.translate(this.title, { y: 10 });
+		this.translate(this.p, { x: 3, y: -12 });
+
+		setTimeout(() => {
+			this.parent.$setState('hud');
+		}, 9000);
 	}
 
 	afterInit() {

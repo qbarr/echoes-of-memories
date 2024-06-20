@@ -28,6 +28,10 @@ export class Splash extends BaseUiView {
 	}
 
 	onStart() {
-		this.webgl.$statesMachine.setState('hud');
+		this.parent.$setState('warning');
+
+		setTimeout(() => {
+			this.webgl.$audio.play('intro/warning');
+		}, 300);
 	}
 }
