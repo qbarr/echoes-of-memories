@@ -9,10 +9,13 @@ async function enter({ machine, from }) {
 
 	const scene = $scenes.ui.component;
 
+	console.log('splash enter', scene);
+	console.log('splash enter', scene.$splashScreenEnter);
+
 	const { $splashScreenEnter } = scene;
 
-	if ($splashScreenEnter) $splashScreenEnter.play();
-	await wait(500);
+	$splashScreenEnter.play();
+	// await wait(500);
 	scene.splashScreen.show();
 }
 

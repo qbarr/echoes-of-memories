@@ -235,15 +235,17 @@ export class TheatreSheet {
 				return this.attachAudio(audio);
 			}
 		} else {
-			if (source.subtitles && disableSubtitles) {
-				this.$list('subtitles', source.subtitles.content).onChange((subtitle) =>
-					this.$webgl.$subtitles.currentPart.set(subtitle),
-				);
-				this._hasSubtitles = true;
-				// this._subtitles = source.subtitles;
-				// this._subtitles.onChange = (subtitle) => {
-				// 	this.$webgl.$subtitles.currentPart.set(subtitle?.content);
-				// };
+			if (!disableSubtitles) {
+				if (source.subtitles) {
+					this.$list('subtitles', source.subtitles.content).onChange(
+						(subtitle) => this.$webgl.$subtitles.currentPart.set(subtitle),
+					);
+					this._hasSubtitles = true;
+					// this._subtitles = source.subtitles;
+					// this._subtitles.onChange = (subtitle) => {
+					// 	this.$webgl.$subtitles.currentPart.set(subtitle?.content);
+					// };
+				}
 			}
 
 			source = source.audio ?? source;

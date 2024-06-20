@@ -62,6 +62,7 @@ export class Door extends BaseInteractiveObject {
 	}
 
 	reset() {
+		super.reset();
 		this.scene.$mixer.normSeek(0.2);
 	}
 }

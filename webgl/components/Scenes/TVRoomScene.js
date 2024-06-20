@@ -124,6 +124,7 @@ export default class TVRoomScene extends BaseScene {
 		desk.enableInteraction();
 		// lecteur.enableInteraction();
 		// tv.enableInteraction();
+		$raycast.enable();
 		$povCamera.$setState('focus');
 	}
 

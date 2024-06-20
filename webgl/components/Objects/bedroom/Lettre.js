@@ -8,7 +8,7 @@ export class Lettre extends BaseInteractiveObject {
 		this.isSpecial = true;
 		this.audioId = 'flashbacks/war';
 
-		// this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
+		this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
 	}
 
 	async createSheets() {
@@ -72,7 +72,7 @@ export class Lettre extends BaseInteractiveObject {
 
 		// await this.$outroSheet.play();
 
-		await this.webgl.$letterSheet.play({ rate: 5 });
+		await this.webgl.$letterSheet.play();
 		wraftween({
 			onUpdate: (v) => this.webgl.$letterTextIndex.emit(),
 		})

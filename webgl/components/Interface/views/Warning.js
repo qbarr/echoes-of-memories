@@ -38,10 +38,6 @@ export class Warning extends BaseUiView {
 
 		this.translate(this.title, { y: 10 });
 		this.translate(this.p, { x: 3, y: -12 });
-
-		setTimeout(() => {
-			this.parent.$setState('hud');
-		}, 9000);
 	}
 
 	afterInit() {

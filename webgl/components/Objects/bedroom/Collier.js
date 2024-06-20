@@ -7,7 +7,7 @@ export class Collier extends BaseInteractiveObject {
 		this.isSpecial = true;
 		this.audioId = 'flashbacks/truck';
 
-		// this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
+		this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
 	}
 
 	async createSheets() {
@@ -32,7 +32,7 @@ export class Collier extends BaseInteractiveObject {
 		truckSheet
 			.$list('stateMachine', Object.values($povCamera.controls.states))
 			.onChange((v) => {
-				const state = v?.toLowerCase() || null
+				const state = v?.toLowerCase() || null;
 				$povCamera.$setState(state);
 			});
 		this.$flashbackSheet = truckSheet;
@@ -50,11 +50,10 @@ export class Collier extends BaseInteractiveObject {
 		await this.$gotoSheet.play();
 		$povCamera.isSfxActive = false;
 
-
 		wait(10000).then(() => {
 			this.hide(); // !! A DECOMMENTER
 			this.specialObjects.testament.show();
-		})
+		});
 
 		await this.$flashbackSheet.play();
 
@@ -64,6 +63,5 @@ export class Collier extends BaseInteractiveObject {
 
 		$povCamera.$setState('free');
 		// this.enableInteraction(); // !! A COMMENTER
-
 	}
 }

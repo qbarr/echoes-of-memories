@@ -129,7 +129,7 @@ export default class CliniqueScene extends BaseScene {
 		this._hasStarted = true;
 
 		const { cassette, porte } = this.interactiveObjects;
-		const { $povCamera, $audio } = this.webgl;
+		const { $povCamera, $audio, $raycast } = this.webgl;
 
 		$povCamera.$setState('cinematic');
 		$povCamera.isSfxActive = false; // force to disable sfx
@@ -137,12 +137,13 @@ export default class CliniqueScene extends BaseScene {
 		cassette.reset();
 		cassette.show();
 
-		// cassette.disableInteraction();
+		// cassette.enableInteraction();
 		porte.disableInteraction();
 
 		this.$sheet.reset();
 		this.$bgm.play({ fade: 4000 });
 
+		$raycast.enable();
 		await this.$sheet.play();
 
 		cassette.enableInteraction();

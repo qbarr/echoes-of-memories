@@ -51,8 +51,6 @@ export default class UIScene extends BaseScene {
 		});
 		this.$setState = this.$statesMachine.setState.bind(this.$statesMachine);
 		this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
-
-		this.$setState('splash');
 	}
 
 	createSheets() {
@@ -82,6 +80,8 @@ export default class UIScene extends BaseScene {
 			id: 'PauseScreen',
 			name: 'ToHud',
 		});
+
+		this.$setState('splash');
 	}
 
 	async enter() {

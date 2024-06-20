@@ -23,6 +23,7 @@ export class UiHint extends BaseComponent {
 
 		this.base = new Object3D();
 
+		this.base.visible = false;
 		// this.timer = useTimers();
 		this.blinks = [];
 		this.isBlinking = false;
