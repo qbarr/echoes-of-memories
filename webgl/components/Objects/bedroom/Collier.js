@@ -1,3 +1,4 @@
+import { wait } from '#utils/async/wait.js';
 import { BaseInteractiveObject } from '../base/BaseInteractiveObject';
 
 export class Collier extends BaseInteractiveObject {
@@ -6,7 +7,7 @@ export class Collier extends BaseInteractiveObject {
 		this.isSpecial = true;
 		this.audioId = 'flashbacks/truck';
 
-		this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
+		// this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
 	}
 
 	async createSheets() {
@@ -49,16 +50,20 @@ export class Collier extends BaseInteractiveObject {
 		await this.$gotoSheet.play();
 		$povCamera.isSfxActive = false;
 
+
+		wait(10000).then(() => {
+			this.hide(); // !! A DECOMMENTER
+			this.specialObjects.testament.show();
+		})
+
 		await this.$flashbackSheet.play();
 
-		this.scene.setCameraToSpawn();
-		this.hide(); // !! A DECOMMENTER
+		// this.scene.setCameraToSpawn();
 
 		$raycast.enable();
 
 		$povCamera.$setState('free');
 		// this.enableInteraction(); // !! A COMMENTER
 
-		this.specialObjects.testament.show();
 	}
 }

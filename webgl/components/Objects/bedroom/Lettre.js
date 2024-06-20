@@ -52,20 +52,20 @@ export class Lettre extends BaseInteractiveObject {
 	}
 
 	async onClick() {
+
 		super.onClick();
 		this.disableInteraction();
 
 		const { $povCamera, $raycast } = this.webgl;
 		$raycast.disable();
 		$povCamera.$setState('cinematic');
+
 		$povCamera.isSfxActive = true;
 		await this.$gotoSheet.play();
 		$povCamera.isSfxActive = false;
 		await this.$flashbackSheet.play();
 
 		// ! FIN DE L'XP ICI
-
-		await this.$outroSheet.play();
 
 		// !! A COMMENTER
 		// this.scene.setCameraToSpawn();

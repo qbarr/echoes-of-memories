@@ -142,17 +142,23 @@ export default class BedroomScene extends BaseScene {
 		uiScene.subtitles.setColor($app.$store.subtitles.colors.yellow);
 
 		/// #if __DEBUG__
-		// $povCamera.$setState('free');
-		// $povCamera.setPosition([-8.67082, 0, 4.88725]);
+		$povCamera.setPosition([-8.67082, 0, 4.88725]);
+		$povCamera.$setState('free');
 		/// #endif
+
 	}
 
 	async start() {
+		const { $povCamera } = this.webgl;
+		$povCamera.setPosition([-8.67082, 0, 4.88725]);
+		$povCamera.$setState('free');
+
 		this.$sheet.play();
 		this.$bgm.play();
 
 		await wait(500);
 		this.webgl.$audio.play('common/short-glitch');
+
 	}
 
 	setCameraToSpawn() {

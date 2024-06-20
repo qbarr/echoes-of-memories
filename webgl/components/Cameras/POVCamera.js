@@ -56,7 +56,7 @@ export class POVCamera extends BaseCamera {
 		this.wobble_intentisty = w(0.0004);
 		this.wobble_frequency = w(new Vector3(0, 0.3, 0));
 		this.wobble_amplitude = w(new Vector3(0, 0.1, 0));
-		this.wobble_scale = w(5);
+		this.wobble_scale = w(1);
 
 		this.$statesMachine = this.webgl.$statesMachine.create('Camera', {
 			filter: 'camera',

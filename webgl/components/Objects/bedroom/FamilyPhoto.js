@@ -1,3 +1,4 @@
+import { wait } from '#utils/async/wait.js';
 import { BaseInteractiveObject } from '../base/BaseInteractiveObject';
 
 export class FamilyPhoto extends BaseInteractiveObject {
@@ -57,13 +58,16 @@ export class FamilyPhoto extends BaseInteractiveObject {
 		await this.$gotoSheet.play();
 		$povCamera.isSfxActive = false;
 
+		wait(10000).then(() => {
+			this.hide(); // !! A DECOMMENTER
+			this.specialObjects.crucifix.show();
+		})
+
 		await this.$flashbackSheet.play();
 
 		// this.scene.setCameraToSpawn();
-		this.hide(); // !! A DECOMMENTER
 
 		$raycast.enable();
 		$povCamera.$setState('free');
-		this.specialObjects.crucifix.show();
 	}
 }
