@@ -53,6 +53,8 @@ export class Door extends BaseInteractiveObject {
 
 		await this.$sheet.play();
 
+		this.scene.$bgm.stop();
+
 		await $scenes.set('tv-room');
 		$scenes.current.component.start();
 	}

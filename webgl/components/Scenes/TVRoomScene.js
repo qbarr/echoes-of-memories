@@ -112,6 +112,7 @@ export default class TVRoomScene extends BaseScene {
 		this._hasStarted = true;
 
 		const { tv, lecteur, desk } = this.interactiveObjects;
+
 		tv.disableInteraction();
 		lecteur.disableInteraction();
 		desk.disableInteraction();

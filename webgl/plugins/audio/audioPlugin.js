@@ -37,7 +37,6 @@ export function audioPlugin(webgl, opts = {}) {
 		currentId: null,
 
 		volume,
-		setVolume,
 
 		progress: 0,
 		startAt: 0,
@@ -58,9 +57,16 @@ export function audioPlugin(webgl, opts = {}) {
 		play,
 		pause,
 		stop,
-		stopSound,
+		resume,
+
 		mute,
 		unmute,
+
+		pauseSound,
+		resumeSound,
+		stopSound,
+
+		setVolume,
 	};
 
 	function init() {

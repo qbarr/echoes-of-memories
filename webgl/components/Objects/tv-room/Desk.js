@@ -12,10 +12,13 @@ export class Desk extends BaseInteractiveObject {
 
 	async onClick() {
 		super.onClick();
-		this.disableInteraction();
 
 		const { tv, lecteur } = this.scene.interactiveObjects;
 		const { $povCamera } = this.webgl;
+
+		tv.disableInteraction();
+		lecteur.disableInteraction();
+		this.disableInteraction();
 
 		$povCamera.$setState('cinematic');
 

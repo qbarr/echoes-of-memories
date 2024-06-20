@@ -24,19 +24,20 @@ export class BgmAudio extends BaseAudio {
 		this.volume.set(0.1);
 
 		this.play = this.resume.bind(this);
+		this.stop = this.pause.bind(this);
 	}
 
 	// Override
-	stop() {} //
 	reset() {} //
 
-	pause() {
-		this.actives.forEach((audio) => audio.pause(true, { fade: 1000 }));
+	pause({ fade } = {}) {
+		this.actives.forEach((audio) => audio.pause(true, { fade: fade ?? 1000 }));
 		return this;
 	}
 
-	resume() {
-		this.actives.forEach((audio) => audio.resume({ fade: 1000 }));
+	resume({ fade, volume } = {}) {
+		if (volume) this.setVolume(volume);
+		this.actives.forEach((audio) => audio.resume({ fade: fade ?? 1000 }));
 		return this;
 	}
 

@@ -1,5 +1,7 @@
 precision highp float;
 
+#include <props>
+
 uniform sampler2D tBlur1;
 uniform sampler2D tBlur2;
 uniform sampler2D tBlur3;
@@ -29,7 +31,7 @@ void main() {
 	FragColor = uBloomStrength * bloom;
 	FragColor.a = length(FragColor.rgb);
 
-	vec2 uvVignette = vUv;
+	vec2 uvVignette = gl_FragCoord.xy / uResolution.xy;
 	vec2 position = uvVignette - 0.5;
 	position.y *= pow(abs(position.y), -uVignette.y);
 	float len = length(position);

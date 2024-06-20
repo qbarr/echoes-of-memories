@@ -14,6 +14,9 @@ export class Cassette extends BaseInteractiveObject {
 	}
 
 	async onClick() {
+		console.log(this.scene.$sheet.isActive);
+		if (this.scene.$sheet.isActive) return;
+
 		super.onClick();
 
 		this.disableInteraction();
