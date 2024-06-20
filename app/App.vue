@@ -13,8 +13,36 @@
 <script setup>
 // import { CrossCursor } from './components/CrossCursor.vue';
 import { shallowRef } from 'vue';
+import { app } from './core';
 
 const isDebug = shallowRef(__DEBUG__ ?? false);
+
+// document.addEventListener('click', onClick); // TODO: temp
+
+// const { $store, $webgl } = $app;
+
+// function preventDebug(ev) {
+// 	const isStudioActive = $webgl.$theatre.studioActive.value;
+// 	return (
+// 		ev.target.closest('.debug') ||
+// 		ev.target.closest('#theatrejs-studio-root') ||
+// 		isStudioActive
+// 	);
+// }
+
+// function onClick(ev) {
+// 	/// #if __DEBUG__
+// 	if (preventDebug(ev)) return;
+// 	/// #endif
+
+// 	const { $getCurrentScene, $canvas } = $webgl;
+// 	const scene = $getCurrentScene();
+// 	const currentCam = scene.getCurrentCamera();
+
+// 	if (!this.$pointerLocked && !$store.isPaused && currentCam.name !== 'Debug Camera') {
+// 		$canvas.requestPointerLock();
+// 	}
+// }
 </script>
 
 <style lang="scss">

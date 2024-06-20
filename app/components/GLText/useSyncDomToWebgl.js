@@ -80,8 +80,6 @@ export function useSyncDomWebGL($$ref, object) {
 		// 	map(bounding.y, 0, dbs.value.y, 1, -1)
 		// )
 
-		console.log('position', position.value);
-
 		// Update object position
 		object?.position.copy(position.value);
 	}
@@ -95,8 +93,6 @@ export function useSyncDomWebGL($$ref, object) {
 			(bounding.width / vpw) * 2 * viewportRatio,
 			(bounding.height / vph) * 2,
 		);
-
-		console.log('scale', scale.value);
 
 		// object.updateGeo({ width: bounding.width });
 

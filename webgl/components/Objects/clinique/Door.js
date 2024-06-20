@@ -51,7 +51,9 @@ export class Door extends BaseInteractiveObject {
 		const { $povCamera: camera, $scenes } = this.webgl;
 		camera.$setState('cinematic');
 
+		camera.isSfxActive = true;
 		await this.$sheet.play();
+		camera.isSfxActive = false;
 
 		// this.scene.$bgm.stop();
 

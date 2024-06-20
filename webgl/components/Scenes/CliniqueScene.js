@@ -132,6 +132,7 @@ export default class CliniqueScene extends BaseScene {
 		const { $povCamera, $audio } = this.webgl;
 
 		$povCamera.$setState('cinematic');
+		$povCamera.isSfxActive = false; // force to disable sfx
 
 		cassette.reset();
 		cassette.show();

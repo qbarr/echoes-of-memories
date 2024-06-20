@@ -60,8 +60,6 @@ export class TheatreEvents {
 		// 	}
 		// });
 
-		console.log(list);
-
 		const obj = sheet.object('Events', {
 			events: types.compound(list),
 		});

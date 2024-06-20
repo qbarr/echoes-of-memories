@@ -8,10 +8,8 @@ import { BaseAudio } from './BaseAudio';
 export function audioPlugin(webgl, opts = {}) {
 	const listener = new AudioListener();
 
-	console.log(webgl.$app.$storage);
 	const { $storage } = webgl.$app;
 	const volume = w($storage.getItem('volume') ?? 0.2);
-	console.log('AUDIO PLUGIN INIT', volume.value);
 	volume.watchImmediate((v) => {
 		listener.setMasterVolume(v);
 		$storage.setItem('volume', v);
@@ -175,9 +173,7 @@ export function audioPlugin(webgl, opts = {}) {
 	}
 	function stopSound(id) {
 		const sample = get(id);
-		console.log('STOP SOUND', id, sample);
 		if (!sample) return;
-		console.log('STOP SOUND', sample);
 		sample.stop();
 	}
 

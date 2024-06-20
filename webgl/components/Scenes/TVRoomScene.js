@@ -89,7 +89,6 @@ export default class TVRoomScene extends BaseScene {
 
 	async enter() {
 		this._hasStarted = false;
-		console.log('here');
 
 		const { $povCamera, $scenes, $app } = this.webgl;
 		$povCamera.onSceneSwitch(this);

@@ -23,10 +23,10 @@ export class Collier extends BaseInteractiveObject {
 		const transitionSheet = transitionProject.getSheet('transition');
 
 		truckSheet.$bool('SwitchSceneParticles', { value: false }).onChange((v) => {
-			if (v) this.webgl.$scenes.switch('flashback2')
-			else this.webgl.$scenes.switch('bedroom')
+			if (v) this.webgl.$scenes.switch('flashback2');
+			else this.webgl.$scenes.switch('bedroom');
 		});
-		truckSheet.$addCamera()
+		truckSheet.$addCamera();
 		truckSheet.$composer(['global', 'lut', 'crt']);
 		this.$flashbackSheet = truckSheet;
 	}
@@ -38,7 +38,11 @@ export class Collier extends BaseInteractiveObject {
 		const { $povCamera, $raycast } = this.webgl;
 		$raycast.disable();
 		$povCamera.$setState('cinematic');
+
+		$povCamera.isSfxActive = true;
 		await this.$gotoSheet.play();
+		$povCamera.isSfxActive = false;
+
 		await this.$flashbackSheet.play();
 
 		this.scene.setCameraToSpawn();

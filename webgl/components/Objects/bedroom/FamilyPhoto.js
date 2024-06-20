@@ -29,7 +29,7 @@ export class FamilyPhoto extends BaseInteractiveObject {
 		mealSheet
 			.$list('stateMachine', Object.values($povCamera.controls.states))
 			.onChange((v) => {
-				const state = v?.toLowerCase() || null
+				const state = v?.toLowerCase() || null;
 				$povCamera.$setState(state);
 			});
 		// console.log(this.webgl.$povCamera.controls)
@@ -52,17 +52,18 @@ export class FamilyPhoto extends BaseInteractiveObject {
 		const { $povCamera, $raycast } = this.webgl;
 		$raycast.disable();
 		$povCamera.$setState('cinematic');
+
+		$povCamera.isSfxActive = true;
 		await this.$gotoSheet.play();
+		$povCamera.isSfxActive = false;
+
 		await this.$flashbackSheet.play();
 
 		this.scene.setCameraToSpawn();
-		// this.hide(); // !! A DECOMMENTER
+		this.hide(); // !! A DECOMMENTER
 
 		$raycast.enable();
-
 		$povCamera.$setState('free');
-		this.enableInteraction(); // !! A COMMENTER
-
 		this.specialObjects.crucifix.show();
 	}
 }

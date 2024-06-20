@@ -7,8 +7,6 @@ async function enter({ machine, from, to }) {
 
 	const { $pauseScreenEnter, $pauseScreenToMenu } = scene;
 
-	console.log('[PAUSE] ENTER', scene, scene.$pauseScreenEnter);
-
 	$store.isPaused = true;
 	document.exitPointerLock();
 

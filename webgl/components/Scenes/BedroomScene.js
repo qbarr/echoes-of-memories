@@ -147,7 +147,6 @@ export default class BedroomScene extends BaseScene {
 	}
 
 	async start() {
-		console.log('start');
 		this.$bgm.play({ fade: 4000 });
 	}
 
