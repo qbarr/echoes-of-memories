@@ -80,6 +80,7 @@ export default class Wobble {
 	}
 
 	update(time) {
+		return
 		if (this.state.is(this.states.DEFAULT)) this.defaultWobble(time);
 
 		if (this.state.is(this.states.WALK)) this.walkWobble(time);

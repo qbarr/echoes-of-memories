@@ -6,11 +6,13 @@ export const getDeathRanges = (name, index) => {
 
 const getDeathRangesScene1 = (name) => {
 	switch (name) {
-		case 'background':
+		case 'armoire':
+			return 0.2;
+		case 'salon':
 			return 0.2;
 		case 'chaise':
 			return 0.4;
-		case 'sol':
+		case 'Circle':
 			return 0.4;
 		case 'table':
 			return 0.6;
@@ -30,7 +32,7 @@ const getDeathRangesScene2 = (name) => {
 		case 'wheels':
 			return 0.4;
 		case 'truck':
-			return 0.6;
+			return 0.85;
 		case 'characters':
 			return 1;
 	}

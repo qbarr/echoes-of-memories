@@ -181,13 +181,11 @@ export function gpgpuPlugin(webgl) {
 			'war',
 		]
 		// let instances = []
-		console.log(webgl.$assets.objects.flashbacks)
 		flashbacks.forEach((flashback, index) => {
 			const scene = webgl.$assets.objects.flashbacks[flashback].scene;
 			let instances = scene.children.map((child, i) => {
 				if (!child.isMesh) return
 				child.updateWorldMatrix(true, false);
-
 				child.geometry.applyMatrix4(child.matrixWorld);
 				const death = [];
 				for (let i = 0; i < child.geometry.attributes.position.count; i++) {
@@ -208,7 +206,7 @@ export function gpgpuPlugin(webgl) {
 	}
 
 	function render() {
-		list.get().forEach((gpgpu) => {
+		list.get().forEach((gpgpu, i) => {
 			const elapsed = webgl.$time.elapsed * 0.001;
 			gpgpu.variables.particles.material.uniforms.uTime.value = elapsed;
 			gpgpu.variables.particles.material.uniforms.uDeltaTime.value =
@@ -222,7 +220,8 @@ export function gpgpuPlugin(webgl) {
 
 			// }
 			// console.log(gpgpu.variables.particles.material.uniforms.uPercentRange.value)
-			if (elapsed < 10 || gpgpu.forceCompute.get()) gpgpu.computation.compute();
+			// if(i===0) console.log(elapsed, gpgpu.forceCompute.get())
+			if (elapsed < 5 || gpgpu.forceCompute.get()) gpgpu.computation.compute();
 		});
 	}
 

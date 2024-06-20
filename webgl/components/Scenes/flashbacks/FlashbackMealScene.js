@@ -5,12 +5,17 @@ export default class FlashbackMealScene extends BaseScene {
 	mixins = ['debugCamera'];
 
 	enter() {
-		const { $gpgpu, $povCamera, $app } = this.webgl;
+		const { $gpgpu, $povCamera, $app, $composer } = this.webgl;
 		$povCamera.onSceneSwitch(this);
 		this.particles = this.add(Particles, {
 			gpgpu: $gpgpu.list.get()[0],
 			options: {},
 		});
 		$gpgpu.list.get()[0].forceCompute.set(true)
+	}
+
+	leave() {
+		const { $gpgpu } = this.webgl;
+		$gpgpu.list.get()[0].forceCompute.set(false)
 	}
 }

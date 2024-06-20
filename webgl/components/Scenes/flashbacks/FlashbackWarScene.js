@@ -13,4 +13,9 @@ export default class FlashbackWarScene extends BaseScene {
 		});
 		$gpgpu.list.get()[2].forceCompute.set(true)
 	}
+
+	leave() {
+		const { $gpgpu } = this.webgl;
+		$gpgpu.list.get()[2].forceCompute.set(false)
+	}
 }

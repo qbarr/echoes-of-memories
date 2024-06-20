@@ -10,7 +10,7 @@ export class Lettre extends BaseInteractiveObject {
 	}
 
 	async createSheets() {
-		const { $theatre } = this.webgl;
+		const { $theatre, $povCamera } = this.webgl;
 
 		this.$gotoSheet = this.$project.getSheet('Lettre > Go To');
 		this.$gotoSheet.$addCamera();
@@ -28,6 +28,12 @@ export class Lettre extends BaseInteractiveObject {
 		});
 		warSheet.$addCamera()
 		warSheet.$composer(['global', 'lut', 'crt']);
+		warSheet
+			.$list('stateMachine', Object.values($povCamera.controls.states))
+			.onChange((v) => {
+				const state = v?.toLowerCase() || null
+				$povCamera.$setState(state);
+			});
 		this.$flashbackSheet = warSheet;
 
 		this.$outroSheet = flashbackProject.getSheet('outro');

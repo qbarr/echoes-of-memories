@@ -116,7 +116,7 @@ export function composerPlugin(webgl) {
 	function onSceneSwitch(scene) {
 		currentScene = scene;
 		const { name } = scene;
-		const { $crt, $lut, $afterImage, $sketchLines, uniforms } = api;
+		const { $crt, $lut, $afterImage, $sketchLines, uniforms, $unrealBloom } = api;
 		if (name === 'bedroom') {
 			$crt.enabled.set(true);
 			$lut.set('bedroom');
@@ -142,6 +142,10 @@ export function composerPlugin(webgl) {
 			$afterImage.enabled.set(true);
 			$sketchLines.enabled.set(false);
 			uniforms.SRGB_TRANSFER.value = 1;
+
+			if(name === 'flashback1') {
+				$unrealBloom.threshold.set(0.62);
+			}
 		}
 	}
 

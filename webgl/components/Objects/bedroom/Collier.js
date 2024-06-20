@@ -10,7 +10,7 @@ export class Collier extends BaseInteractiveObject {
 	}
 
 	async createSheets() {
-		const { $theatre } = this.webgl;
+		const { $theatre, $povCamera } = this.webgl;
 
 		this.$gotoSheet = this.$project.getSheet('Collier > Go To');
 		this.$gotoSheet.$addCamera();
@@ -28,6 +28,12 @@ export class Collier extends BaseInteractiveObject {
 		});
 		truckSheet.$addCamera()
 		truckSheet.$composer(['global', 'lut', 'crt']);
+		truckSheet
+			.$list('stateMachine', Object.values($povCamera.controls.states))
+			.onChange((v) => {
+				const state = v?.toLowerCase() || null
+				$povCamera.$setState(state);
+			});
 		this.$flashbackSheet = truckSheet;
 	}
 
