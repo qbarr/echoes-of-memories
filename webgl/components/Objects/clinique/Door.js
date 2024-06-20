@@ -60,4 +60,8 @@ export class Door extends BaseInteractiveObject {
 		await $scenes.set('tv-room');
 		$scenes.current.component.start();
 	}
+
+	reset() {
+		this.scene.$mixer.normSeek(0.2);
+	}
 }

@@ -66,6 +66,21 @@ export class POVCamera extends BaseCamera {
 
 		this.isSfxActive = false;
 		this.triggerStepSFX = throttle(this.triggerStepSFX.bind(this), 600);
+
+		this.webgl.$hooks.afterStart.watchOnce(this.createSheets.bind(this));
+	}
+
+	createSheets() {
+		const $project = this.webgl.$theatre.get('Common');
+
+		this.$generiqueSheet = $project.getSheet('Generique');
+		this.$generiqueSheet.$addCamera();
+		this.$generiqueSheet
+			.$list('Switch Scene', ['clinique', 'tv-room', 'bedroom'])
+			.onChange((v) => {
+				v && this.webgl.$scenes.switch(v, true);
+			});
+		this.$generiqueSheet.$composer(['*']);
 	}
 
 	/// #if __DEBUG__
@@ -187,7 +202,6 @@ export class POVCamera extends BaseCamera {
 
 		const { $scenes, $audio } = this.webgl;
 		const suffix = audiosID[$scenes.current.name];
-		console.log('suffix', suffix);
 		$audio.play('common/pas-' + suffix);
 	}
 

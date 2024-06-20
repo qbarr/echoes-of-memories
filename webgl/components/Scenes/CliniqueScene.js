@@ -107,8 +107,8 @@ export default class CliniqueScene extends BaseScene {
 		$povCamera.onSceneSwitch(this);
 
 		/// #if __DEBUG__
-		$povCamera.setPosition([1.6618, 3.09741, 5.98017]);
-		$povCamera.$setState('free');
+		// $povCamera.setPosition([1.6618, 3.09741, 5.98017]);
+		// $povCamera.$setState('free');
 		/// #endif
 
 		const uiScene = $scenes.ui.component;
@@ -147,5 +147,11 @@ export default class CliniqueScene extends BaseScene {
 
 		cassette.enableInteraction();
 		$povCamera.$setState('focus');
+	}
+
+	reset() {
+		const { cassette, porte } = this.interactiveObjects;
+		cassette.reset();
+		porte.reset();
 	}
 }

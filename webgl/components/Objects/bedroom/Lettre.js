@@ -1,3 +1,5 @@
+import { easings } from '#utils/anim/easings.js';
+import { wraftween } from '#webgl/utils/wraftween.js';
 import { BaseInteractiveObject } from '../base/BaseInteractiveObject';
 
 export class Lettre extends BaseInteractiveObject {
@@ -27,15 +29,17 @@ export class Lettre extends BaseInteractiveObject {
 		// 	else this.webgl.$scenes.switch('tv-room');
 		// });
 
-		warSheet.$list('SwitchScenes', ['bedroom', 'tv-room', 'flashback3']).onChange((v) => {
-			this.webgl.$scenes.switch(v);
-		})
+		warSheet
+			.$list('SwitchScenes', ['bedroom', 'tv-room', 'flashback3'])
+			.onChange((v) => {
+				this.webgl.$scenes.switch(v);
+			});
 		warSheet.$addCamera();
 		warSheet.$composer(['global', 'lut', 'crt']);
 		warSheet
 			.$list('stateMachine', Object.values($povCamera.controls.states))
 			.onChange((v) => {
-				const state = v?.toLowerCase() || null
+				const state = v?.toLowerCase() || null;
 				$povCamera.$setState(state);
 			});
 		this.$flashbackSheet = warSheet;
@@ -52,7 +56,6 @@ export class Lettre extends BaseInteractiveObject {
 	}
 
 	async onClick() {
-
 		super.onClick();
 		this.disableInteraction();
 
@@ -66,6 +69,24 @@ export class Lettre extends BaseInteractiveObject {
 		await this.$flashbackSheet.play();
 
 		// ! FIN DE L'XP ICI
+
+		// await this.$outroSheet.play();
+
+		await this.webgl.$letterSheet.play({ rate: 5 });
+		wraftween({
+			onUpdate: (v) => this.webgl.$letterTextIndex.emit(),
+		})
+			.to(this.webgl.$letterTextIndex, {
+				value: 0,
+				duration: 2000,
+				easing: easings.outSwift,
+			})
+			.start();
+		// this.webgl.$letterSheet.mute()
+
+		// await this.webgl.$letterSheet.play({ direction: 'reverse', rate: 5 });
+
+		// $povCamera.$setState('generique');
 
 		// !! A COMMENTER
 		// this.scene.setCameraToSpawn();

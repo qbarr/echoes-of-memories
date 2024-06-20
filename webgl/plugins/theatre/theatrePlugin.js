@@ -59,6 +59,7 @@ const PROJECTS_LIST = [
 	'Transition-Memories',
 	'Flashback',
 	'Interface',
+	'Common',
 ];
 
 function getProject(id) {

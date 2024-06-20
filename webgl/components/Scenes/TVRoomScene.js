@@ -126,4 +126,8 @@ export default class TVRoomScene extends BaseScene {
 		// tv.enableInteraction();
 		$povCamera.$setState('focus');
 	}
+
+	reset() {
+		this.screen.setInstructionsScreen();
+	}
 }
