@@ -89,13 +89,14 @@ export default class TVRoomScene extends BaseScene {
 
 	async enter() {
 		this._hasStarted = false;
+		console.log('here');
 
 		const { $povCamera, $scenes, $app } = this.webgl;
 		$povCamera.onSceneSwitch(this);
 
 		/// #if __DEBUG__
-		$povCamera.setPosition([-1.45968, 1.22633, -3.15793]);
-		$povCamera.$setState('free');
+		// $povCamera.setPosition([-1.45968, 1.22633, -3.15793]);
+		// $povCamera.$setState('free');
 		/// #endif
 
 		const uiScene = $scenes.ui.component;
@@ -112,6 +113,7 @@ export default class TVRoomScene extends BaseScene {
 		this._hasStarted = true;
 
 		const { tv, lecteur, desk } = this.interactiveObjects;
+
 		tv.disableInteraction();
 		lecteur.disableInteraction();
 		desk.disableInteraction();

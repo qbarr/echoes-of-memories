@@ -20,6 +20,7 @@ import { scenesDatas } from '../Scenes/datas.js';
 import { types } from '@theatre/core';
 
 import { damp, dampPrecise, lerp } from '#utils/maths/map.js';
+import { w } from '#utils/state/index.js';
 
 const HEIGHT = 3;
 const DEFAULT_CAM = {
@@ -46,10 +47,10 @@ export class POVCamera extends BaseCamera {
 			velocity: new Vector2(),
 		};
 
-		this.wobble_intentisty = { value: 0.0004 };
-		this.wobble_frequency = { value: new Vector3(0.6, 0.6, 0.6) };
-		this.wobble_amplitude = { value: new Vector3(0.2, 0.1, 0.1) };
-		this.wobble_scale = { value: 20 };
+		this.wobble_intentisty = w(0.0004);
+		this.wobble_frequency = w(new Vector3(0, 0.3, 0));
+		this.wobble_amplitude = w(new Vector3(0, 0.1, 0));
+		this.wobble_scale = w(5);
 
 		this.$statesMachine = this.webgl.$statesMachine.create('Camera', {
 			filter: 'camera',
@@ -95,10 +96,12 @@ export class POVCamera extends BaseCamera {
 		// this.webgl.$hooks.afterStart.watchOnce(this.afterStart.bind(this));
 
 		// Create POV Camera
-		this.cam = this.base = new PerspectiveCamera(DEFAULT_CAM.fov, ratio, 0.1, 100);
-		this.cam.position.copy(DEFAULT_CAM.position);
+		this.cam = new PerspectiveCamera(DEFAULT_CAM.fov, ratio, 0.1, 100);
 		this.cam.fov = DEFAULT_CAM.fov;
 		this.cam.updateProjectionMatrix();
+
+		this.base.add(this.cam);
+		this.base.position.copy(DEFAULT_CAM.position);
 
 		// POV Controller
 		this.controls = POVController(this, {
@@ -179,7 +182,7 @@ export class POVCamera extends BaseCamera {
 
 		walkSettings.velocity
 			.subVectors(walkSettings.current, walkSettings.prev)
-			.multiplyScalar(4 * dt);
+			.multiplyScalar(2 * dt);
 
 		walkSettings.velocityLength = walkSettings.velocity.lengthSq();
 
@@ -194,13 +197,11 @@ export class POVCamera extends BaseCamera {
 		const { dt, elapsed } = this.webgl.$time;
 
 		this.wobble.update(elapsed * this.wobble_intentisty.value);
-		if (this.$statesMachine?.currentState?.id !== 'FLASHBACK_FREE') {
-			this.base.position.damp(this.target, this.target.w, dt);
-		}
 
-		if (this.controls) {
-			this.controls.update();
-		}
+		if (this.$statesMachine?.currentState?.id !== 'FLASHBACK_FREE')
+			this.base.position.damp(this.target, this.target.w, dt);
+
+		this.controls?.update();
 
 		this.walkAnimation(dt);
 		this.cam.updateProjectionMatrix();

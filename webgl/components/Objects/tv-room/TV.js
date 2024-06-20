@@ -51,6 +51,7 @@ export class TV extends BaseInteractiveObject {
 			this.hasReadInstructions = true;
 		}
 
+		console.log('enable lecteur', lecteur);
 		this.enableInteraction();
 		lecteur.enableInteraction();
 

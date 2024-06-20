@@ -37,7 +37,6 @@ export function audioPlugin(webgl, opts = {}) {
 		currentId: null,
 
 		volume,
-		setVolume,
 
 		progress: 0,
 		startAt: 0,
@@ -58,8 +57,16 @@ export function audioPlugin(webgl, opts = {}) {
 		play,
 		pause,
 		stop,
+		resume,
+
 		mute,
 		unmute,
+
+		pauseSound,
+		resumeSound,
+		stopSound,
+
+		setVolume,
 	};
 
 	function init() {
@@ -167,8 +174,10 @@ export function audioPlugin(webgl, opts = {}) {
 		activeSamples.forEach((sample) => sample.stop());
 	}
 	function stopSound(id) {
-		const sample = activeSamples.get(id);
+		const sample = get(id);
+		console.log('STOP SOUND', id, sample);
 		if (!sample) return;
+		console.log('STOP SOUND', sample);
 		sample.stop();
 	}
 

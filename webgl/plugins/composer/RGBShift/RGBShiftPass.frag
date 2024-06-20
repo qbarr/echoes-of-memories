@@ -1,5 +1,7 @@
 precision highp float;
 
+#include <props>
+
 uniform sampler2D tMap;
 uniform sampler2D tAfterImage;
 uniform sampler2D tDepth;
@@ -34,7 +36,7 @@ void main() {
 	vec4 outlines = texture2D(tSketchLines, uv);
 	gl_FragColor.rgb += outlines.rgb;
 
-	vec2 uvVignette = uv;
+	vec2 uvVignette = gl_FragCoord.xy / uResolution.xy;
 	vec2 position = uvVignette - 0.5;
 	position.y *= pow(abs(position.y), -uVignette.y);
 	float len = length(position);
@@ -59,16 +61,13 @@ void main() {
 	// Darkness
 	gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.), uDarkness);
 
-
 	// Saturate
 	gl_FragColor.rgb = mix(vec3(dot(gl_FragColor.rgb, vec3(0.299, 0.587, 0.114))), gl_FragColor.rgb, 1. - uPauseSaturation);
-
 
 	// Interface
 	vec4 interfaceColor = texture2D(tInterface, uv);
 	interfaceColor.rgb *= 1.2;
 	gl_FragColor.rgb = mix(gl_FragColor.rgb, interfaceColor.rgb, interfaceColor.a);
-
 
 	// debug
 	// gl_FragColor += vec4(smoothstep(0.3, 1., pow(1. - depth, .6)));

@@ -11,7 +11,7 @@ export default class Wobble {
 		position = new Vector3(),
 		frequency = new Vector3(),
 		amplitude = new Vector3(),
-		scale = 1,
+		scale = 0.1,
 	} = {}) {
 		this.webgl = getWebGL();
 
@@ -24,7 +24,6 @@ export default class Wobble {
 		this.frequency = frequency;
 		this.amplitude = amplitude;
 		this.scale = scale;
-		console.log('scale', scale);
 		this.baseLerpSpeed = this.targetLerpSpeed = 0.02;
 
 		this.forcedY = this.position.clone().y;
@@ -80,10 +79,8 @@ export default class Wobble {
 	}
 
 	update(time) {
-		return
-		if (this.state.is(this.states.DEFAULT)) this.defaultWobble(time);
-
-		if (this.state.is(this.states.WALK)) this.walkWobble(time);
+		// if (this.state.is(this.states.DEFAULT)) this.defaultWobble(time);
+		// if (this.state.is(this.states.WALK)) this.walkWobble(time);
 	}
 
 	defaultWobble(time) {

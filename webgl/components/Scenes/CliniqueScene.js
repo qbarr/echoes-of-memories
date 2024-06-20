@@ -10,7 +10,7 @@ export default class CliniqueScene extends BaseScene {
 	mixins = ['debugCamera'];
 
 	init() {
-		const { $assets, $theatre } = this.webgl;
+		const { $assets, $theatre, $audio } = this.webgl;
 
 		this._hasStarted = false;
 
@@ -22,8 +22,6 @@ export default class CliniqueScene extends BaseScene {
 			rename: (v) => v.replace('Action', '').split('.')[0],
 		});
 
-		console.log(this.$mixer);
-
 		const textures = $assets.textures['clinique'];
 
 		const _textures = {
@@ -31,7 +29,7 @@ export default class CliniqueScene extends BaseScene {
 			murs: new MeshBasicMaterial({ map: textures['murs_map'] }),
 			tableaux: new MeshBasicMaterial({ map: textures['door_tableaux_map'] }),
 			computers: new MeshBasicMaterial({ map: textures['computers_map'] }),
-			cassette: new MeshBasicMaterial({ map: textures['cassette_map'] }),
+			cassette: new MeshBasicMaterial({ map: textures['cassettepostit_map'] }),
 			contrat: new MeshBasicMaterial({ map: textures['contrat_map'] }),
 		};
 		_textures.ecrans = _textures.computers;
@@ -66,6 +64,9 @@ export default class CliniqueScene extends BaseScene {
 	}
 
 	async createSheets() {
+		this.$bgm = this.webgl.$audio.play('clinique/bgm', { volume: 2 });
+		this.$bgm.pause({ fade: 0 });
+
 		this.$sheet = this.$project.getSheet('intro');
 		await this.$sheet.attachAudio('clinique/intro');
 		this.$sheet.$addCamera();
@@ -92,7 +93,6 @@ export default class CliniqueScene extends BaseScene {
 	}
 
 	async start(force) {
-		console.log('here ?');
 		if (this._hasStarted && !force) return;
 		if (this._hasStarted) {
 			this.$sheet.stop();
@@ -101,18 +101,19 @@ export default class CliniqueScene extends BaseScene {
 		this._hasStarted = true;
 
 		const { cassette, porte } = this.interactiveObjects;
-		const { $povCamera } = this.webgl;
+		const { $povCamera, $audio } = this.webgl;
 
-		console.log($povCamera.$setState);
 		$povCamera.$setState('cinematic');
 
 		cassette.reset();
 		cassette.show();
 
-		cassette.disableInteraction();
+		// cassette.disableInteraction();
 		porte.disableInteraction();
 
 		this.$sheet.reset();
+		this.$bgm.play();
+
 		await this.$sheet.play();
 
 		cassette.enableInteraction();

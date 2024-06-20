@@ -117,6 +117,7 @@ export function composerPlugin(webgl) {
 		currentScene = scene;
 		const { name } = scene;
 		const { $crt, $lut, $afterImage, $sketchLines, uniforms, $unrealBloom } = api;
+
 		if (name === 'bedroom') {
 			$crt.enabled.set(true);
 			$lut.set('bedroom');
@@ -135,6 +136,13 @@ export function composerPlugin(webgl) {
 			$afterImage.enabled.set(false);
 			$sketchLines.enabled.set(true);
 			uniforms.SRGB_TRANSFER.value = 0;
+
+			// bloom
+			$unrealBloom.threshold.set(0.51);
+			$unrealBloom.smoothing.set(0.74);
+			$unrealBloom.strength.set(1.3);
+			$unrealBloom.radius.set(1.39);
+			$unrealBloom.spread.set(1.09);
 		} else if (name.includes('flashback')) {
 			$crt.enabled.set(true);
 			$lut.set('neutral');

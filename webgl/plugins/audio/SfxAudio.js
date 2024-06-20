@@ -18,7 +18,7 @@ const createPool = (audio, size) => {
 export class SfxAudio extends BaseAudio {
 	constructor(id, audios, opts = {}) {
 		audios = Array.isArray(audios) ? audios : [audios];
-		audios = audios.map((audio) => createPool(audio, opts.poolSize || 10)).flat();
+		audios = audios.map((audio) => createPool(audio, opts.poolSize || 20)).flat();
 
 		// Use the first audio as the main audio
 		const audio = audios[0];

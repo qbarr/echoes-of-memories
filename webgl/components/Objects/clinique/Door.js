@@ -11,6 +11,16 @@ export class Door extends BaseInteractiveObject {
 		this.base.add(m);
 	}
 
+	// Overrided
+	onEnter() {
+		const { $hooks, $composer, $scenes, $povCamera } = this.webgl;
+		$hooks.afterFrame.watchOnce(() => {
+			$composer.addOutline(this.mesh);
+			$scenes.ui.component.crosshair.hoverDoor();
+			$povCamera.onInteractiveEnter();
+		});
+	}
+
 	init() {
 		this.isSimpleObject = true;
 		this.audioId = 'clinique/door';
@@ -18,7 +28,7 @@ export class Door extends BaseInteractiveObject {
 		this.animationProgress = w(0);
 
 		this.scene.$mixer.play(this.actionId);
-		this.scene.$mixer.normSeek(0.15);
+		this.scene.$mixer.normSeek(0.2);
 	}
 
 	async createSheets() {
@@ -29,7 +39,7 @@ export class Door extends BaseInteractiveObject {
 		this.$sheet.$addCamera();
 		this.$sheet
 			.$float('animation_progress', this.animationProgress, {
-				range: [0.15, 0.999],
+				range: [0.2, 0.999],
 			})
 			.onChange((v) => this.scene.$mixer.normSeek(v));
 	}
@@ -43,7 +53,9 @@ export class Door extends BaseInteractiveObject {
 
 		await this.$sheet.play();
 
+		this.scene.$bgm.stop();
+
 		await $scenes.set('tv-room');
-		$scenes.current.start();
+		$scenes.current.component.start();
 	}
 }

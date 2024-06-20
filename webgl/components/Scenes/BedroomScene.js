@@ -7,7 +7,7 @@ export default class BedroomScene extends BaseScene {
 	mixins = ['debugCamera'];
 
 	init() {
-		const { $assets, $theatre, $hooks, $composer } = this.webgl;
+		const { $assets, $theatre, $hooks, $composer, $audio } = this.webgl;
 
 		this._hasStarted = false;
 
@@ -73,8 +73,6 @@ export default class BedroomScene extends BaseScene {
 			});
 		});
 
-		console.log(datas);
-
 		this._allMeshes = [];
 		this._specialObjects = {};
 		const _objects = [];
@@ -124,6 +122,9 @@ export default class BedroomScene extends BaseScene {
 	}
 
 	async createSheets() {
+		this.$bgm = this.webgl.$audio.play('bedroom/bgm', { volume: 2 });
+		this.$bgm.pause({ fade: 0 });
+
 		this.$sheet = this.$project.getSheet('Enter');
 		await this.$sheet.attachAudio('bedroom/enter');
 		this.$sheet.$addCamera();
@@ -140,12 +141,14 @@ export default class BedroomScene extends BaseScene {
 		uiScene.subtitles.setColor($app.$store.subtitles.colors.yellow);
 
 		/// #if __DEBUG__
-		$povCamera.$setState('free');
-		$povCamera.setPosition([-8.67082, 0, 4.88725]);
+		// $povCamera.$setState('free');
+		// $povCamera.setPosition([-8.67082, 0, 4.88725]);
 		/// #endif
 	}
 
-	async start() {}
+	async start() {
+		this.$bgm.play();
+	}
 
 	setCameraToSpawn() {
 		const { $povCamera } = this.webgl;
