@@ -54,7 +54,6 @@ export class Credits extends BaseUiView {
 					'ADRIEN.....MELCHIOR',
 					'SERGE......BOCANCEA',
 					'FLORIAN....ZUMBRUNN',
-					'LOREEN.....CASATI',
 					'LYO........ROUDINE',
 				],
 			},
