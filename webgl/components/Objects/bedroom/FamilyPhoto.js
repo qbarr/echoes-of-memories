@@ -59,7 +59,7 @@ export class FamilyPhoto extends BaseInteractiveObject {
 
 		await this.$flashbackSheet.play();
 
-		this.scene.setCameraToSpawn();
+		// this.scene.setCameraToSpawn();
 		this.hide(); // !! A DECOMMENTER
 
 		$raycast.enable();
