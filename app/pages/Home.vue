@@ -1,12 +1,15 @@
 <template>
 	<section>
-		<button class="btn btn-primary" @click="onCLick">START</button>
+		<!-- <button class="btn btn-primary" @click="onCLick">START</button> -->
+		<Letter />
 	</section>
 </template>
 
 <script setup>
 import { app } from '#app/core';
 import { shallowRef } from 'vue';
+
+import Letter from '#app/components/Letter.vue';
 
 function onCLick(e) {
 	e.preventDefault();

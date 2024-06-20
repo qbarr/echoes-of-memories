@@ -58,7 +58,6 @@ export class BaseInteractiveObject extends BaseComponent {
 
 	onClick() {
 		this.log('INTERACTION:click');
-		this.webgl.$lastClickedObject.set(this);
 		this._onClick?.();
 	}
 	onHold() {

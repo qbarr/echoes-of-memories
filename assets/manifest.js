@@ -84,10 +84,14 @@ export default {
 	'ben/sfx': audio('audios/sfx/ben/*', { type: 'sfx' }),
 
 	intro: audio('audios/intro'),
-	outro: audio('audios/outro'),
+	// outro: audio('audios/outro'),
 
 	// Subtitles
 	subtitles: json('subtitles/export/*', { type: 'subtitles' }),
+
+	// outro
+	'outro/subtitles': json('subtitles/outro', { type: 'subtitles' }),
+	'outro/audios': audio('audios/outro'),
 
 	// Theatre projects' state
 	theatre: json('theatre/*'),

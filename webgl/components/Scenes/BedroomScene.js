@@ -193,4 +193,11 @@ export default class BedroomScene extends BaseScene {
 	// 		})
 	// 	})
 	// }
+
+	reset() {
+		const { crucifix, photodefamille, testament } = this._specialObjects;
+		crucifix.show();
+		photodefamille.show();
+		testament.show();
+	}
 }

@@ -13,6 +13,7 @@ import { TheatreVec2 } from './TheatreVec2';
 import { TheatreVec3 } from './TheatreVec3';
 import { TheatreList } from './TheatreList';
 import { createLogger } from '#utils/debug/logger.js';
+import { TheatreString } from './TheatreString';
 
 const NOOP = () => {};
 const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
@@ -61,6 +62,7 @@ export class TheatreSheet {
 		this.$composer = (values, opts = {}) => new TheatreComposer('Composer', values, opts, this); // prettier-ignore
 		this.$compound = (name, values, opts = {}) => new TheatreCompound(name, values, opts, this); // prettier-ignore
 		this.$events = (values) => new TheatreEvents('Events', values, this); // prettier-ignore
+		this.$string = (name, value, opts = {}) => new TheatreString(name, value, opts, this); // prettier-ignore
 		this.$list = (name, values, opts = {}) => new TheatreList(name, values, opts, this); // prettier-ignore
 		this.$addCamera = (initialValues = {}) => {
 			const cam = this.$webgl.$povCamera;
@@ -201,6 +203,9 @@ export class TheatreSheet {
 		loweredGain.connect(audioContext.destination);
 
 		const res = { audioGraph, audioContext, sequenceGain, loweredGain };
+
+		this._audio = res;
+
 		return res;
 	}
 
@@ -214,7 +219,7 @@ export class TheatreSheet {
 		return res;
 	}
 
-	async attachAudio(source, volume = 1) {
+	async attachAudio(source, { volume = 1, disableSubtitles = false } = {}) {
 		let res = null;
 		if (typeof source === 'string') {
 			// Check if it's a path to the file
@@ -230,7 +235,7 @@ export class TheatreSheet {
 				return this.attachAudio(audio);
 			}
 		} else {
-			if (source.subtitles) {
+			if (source.subtitles && disableSubtitles) {
 				this.$list('subtitles', source.subtitles.content).onChange((subtitle) =>
 					this.$webgl.$subtitles.currentPart.set(subtitle),
 				);
@@ -251,6 +256,13 @@ export class TheatreSheet {
 		}
 
 		return res;
+	}
+
+	mute() {
+		this._audio.loweredGain.gain.setValueAtTime(
+			0,
+			this._audio.audioContext.currentTime,
+		);
 	}
 
 	detachAudio() {

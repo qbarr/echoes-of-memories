@@ -3,12 +3,27 @@ import CliniqueScene from './components/Scenes/CliniqueScene';
 import TVRoomScene from './components/Scenes/TVRoomScene';
 import UIScene from './components/Scenes/UIScene';
 
-import { w } from '#utils/state/index.js';
+import { w } from '#utils/state';
 import { POVCamera } from './components/Cameras/POVCamera';
 import { createWebgl, webgl } from './core';
 import FlashbackMealScene from './components/Scenes/flashbacks/FlashbackMealScene';
 import FlashbackTruckScene from './components/Scenes/flashbacks/FlashbackTruckScene';
 import FlashbackWarScene from './components/Scenes/flashbacks/FlashbackWarScene';
+
+function createSheets(webgl) {
+	const { $theatre, $assets, $app } = webgl;
+	const $project = $theatre.get('Common');
+
+	const $letterSheet = $project.getSheet('Letter');
+	webgl.$letterSheet = $letterSheet;
+	$letterSheet.attachAudio('outro/letter', { disableSubtitles: true });
+	const indexes = $app.$store.letterContent.length;
+	webgl.$letterTextIndex = w(0);
+	$letterSheet.$float('content reveal', webgl.$letterTextIndex, {
+		range: [0, indexes + 1],
+		nudgeMultiplier: 1,
+	});
+}
 
 export default createWebgl({
 	async setup() {
@@ -26,8 +41,6 @@ export default createWebgl({
 		$scenes.create('flashback1', FlashbackMealScene);
 		$scenes.create('flashback2', FlashbackTruckScene);
 		$scenes.create('flashback3', FlashbackWarScene);
-
-		webgl.$lastClickedObject = w(null);
 	},
 
 	async preload() {
@@ -42,10 +55,13 @@ export default createWebgl({
 			load('adam/sfx'),
 			load('ben/sfx'),
 			load('intro'),
-			load('outro'),
+			// load('outro'),
 
 			// Subtitles
 			load('subtitles'),
+
+			load('outro/audios'),
+			load('outro/subtitles'),
 
 			load('interface'),
 			load('noises'),
@@ -89,6 +105,7 @@ export default createWebgl({
 	async start() {
 		const { $renderer } = webgl;
 		$renderer.resize();
+		createSheets(webgl);
 	},
 
 	update() {
