@@ -108,9 +108,7 @@ export class BaseUiView extends BaseComponent {
 
 		this.children.forEach((child) => {
 			child.visible = true;
-			if (child.hide) {
-				child.hide();
-			}
+			child.hide?.();
 		});
 
 		// console.log(`VIEW ${this.name} HIDE`);

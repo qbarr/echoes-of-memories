@@ -153,14 +153,14 @@ export default class BaseScene extends BaseComponent {
 		return this._cam.forced || this._cam.current;
 	}
 
-	async triggerEnter() {
-		this.beforeEnter && (await this.beforeEnter());
-		this.enter && (await this.enter());
+	async triggerEnter(props = {}) {
+		this.beforeEnter && (await this.beforeEnter(props));
+		this.enter && (await this.enter(props));
 
 		const children = this.children.dynamic;
 		for (let i = 0, l = children.length; i < l; i++) {
 			const child = children[i];
-			if (child) child.enter && (await child.enter());
+			if (child) child.enter && (await child.enter(props));
 			if (!child) continue;
 			// Dirty - adjust loop if the item is destroyed during update
 			if (child.isDestroyed) {
@@ -169,16 +169,16 @@ export default class BaseScene extends BaseComponent {
 			}
 		}
 
-		this.afterEnter && (await this.afterEnter());
+		this.afterEnter && (await this.afterEnter(props));
 	}
 
-	async triggerLeave() {
-		this.beforeLeave && (await this.beforeLeave());
+	async triggerLeave(props = {}) {
+		this.beforeLeave && (await this.beforeLeave(props));
 
 		const children = this.children.dynamic;
 		for (let i = 0, l = children.length; i < l; i++) {
 			const child = children[i];
-			if (child) child.leave && (await child.leave());
+			if (child) child.leave && (await child.leave(props));
 			if (!child) continue;
 			// Dirty - adjust loop if the item is destroyed during update
 			if (child.isDestroyed) {
@@ -187,8 +187,8 @@ export default class BaseScene extends BaseComponent {
 			}
 		}
 
-		this.leave && (await this.leave());
-		this.afterLeave && (await this.afterLeave());
+		this.leave && (await this.leave(props));
+		this.afterLeave && (await this.afterLeave(props));
 	}
 
 	render(forceCamera) {

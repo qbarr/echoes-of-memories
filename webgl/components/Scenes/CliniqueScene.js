@@ -91,7 +91,7 @@ export default class CliniqueScene extends BaseScene {
 	}
 
 	async createSheets() {
-		this.$bgm = this.webgl.$audio.play('clinique/bgm', { volume: 1.4 });
+		this.$bgm = this.webgl.$audio.play('clinique/bgm', { volume: 1 });
 		this.$bgm.pause({ fade: 0 });
 
 		this.$sheet = this.$project.getSheet('intro');

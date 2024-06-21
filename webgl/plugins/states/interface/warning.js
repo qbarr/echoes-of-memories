@@ -8,10 +8,11 @@ async function enter({ machine, from }) {
 function update() {}
 
 async function leave({ machine }) {
-	const { $theatre, $scenes, $povCamera: camera } = this.$webgl;
+	const { $theatre, $scenes, $composer } = this.$webgl;
 
 	const scene = $scenes.ui.component;
 	scene.warningScreen.hide();
+	$composer.$crt.enabled.set(false);
 }
 
 export default { enter, leave, update };

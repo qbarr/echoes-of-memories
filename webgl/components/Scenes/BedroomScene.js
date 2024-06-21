@@ -132,7 +132,7 @@ export default class BedroomScene extends BaseScene {
 		this.$sheet.$composer(['global', 'lut', 'bloom', 'bokeh', 'crt', 'depth']);
 	}
 
-	async enter() {
+	async enter({ from }) {
 		this._hasStarted = true;
 
 		const { $povCamera, $app, $scenes } = this.webgl;
@@ -141,24 +141,28 @@ export default class BedroomScene extends BaseScene {
 		const uiScene = $scenes.ui.component;
 		uiScene.subtitles.setColor($app.$store.subtitles.colors.yellow);
 
-		/// #if __DEBUG__
-		$povCamera.setPosition([-8.67082, 0, 4.88725]);
-		$povCamera.$setState('free');
-		/// #endif
+		console.log(from);
+		if (from?.name.includes('flashback')) this.$bgm.play({ fade: 2000 });
 
+		// /// #if __DEBUG__
+		// $povCamera.setPosition([-8.67082, 0, 4.88725]);
+		// $povCamera.$setState('free');
+		// /// #endif
 	}
 
 	async start() {
 		const { $povCamera } = this.webgl;
+
 		$povCamera.setPosition([-8.67082, 0, 4.88725]);
+		$povCamera.$setState('cinematic');
+
+		wait(500).then(() => {
+			this.$bgm.play({ fade: 4000 });
+			this.webgl.$audio.play('common/short-glitch');
+		});
+		await this.$sheet.play();
+
 		$povCamera.$setState('free');
-
-		this.$sheet.play();
-		this.$bgm.play();
-
-		await wait(500);
-		this.webgl.$audio.play('common/short-glitch');
-
 	}
 
 	setCameraToSpawn() {

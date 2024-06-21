@@ -53,8 +53,6 @@ export function scenesPlugin(webgl) {
 			render: Scene.triggerRender.bind(Scene),
 		});
 
-		// console.log(`Scene created: ${name}`, s);
-
 		api.list.push(s);
 
 		return s;
@@ -74,28 +72,29 @@ export function scenesPlugin(webgl) {
 		if (scene.isScene) scene = getSceneByComponent(scene);
 		if (!scene) return;
 
-		const curScene = current.value;
-		if (curScene === scene && !force) return;
+		const prevScene = api.current;
+		const nextScene = scene;
 
-		if (curScene) {
-			await curScene.leave();
+		if (prevScene === nextScene && !force) return;
 
-			curScene.isActive = false;
-			curScene.needsUpdate = false;
-			curScene.needsRender = false;
+		if (prevScene) {
+			await prevScene.leave({ to: nextScene });
 
-			curScene.component.detach();
+			prevScene.isActive = false;
+			prevScene.needsUpdate = false;
+			prevScene.needsRender = false;
+
+			prevScene.component.detach();
 		}
 
 		/// #if __DEBUG__
-		/// #code savedCurrentScene.set(scene.name);
+		/// #code savedCurrentScene.set(nextScene.name);
 		/// #endif
-		current.set(scene);
-		const nextScene = current.value;
+		current.set(nextScene);
 
 		nextScene.component.attach();
 
-		await nextScene.enter();
+		await nextScene.enter({ from: prevScene });
 		nextScene.isActive = true;
 		nextScene.needsUpdate = true;
 		nextScene.needsRender = true;

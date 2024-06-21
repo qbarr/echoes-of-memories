@@ -1,7 +1,7 @@
 import { wait } from '#utils/async';
 
 async function enter({ machine, from }) {
-	const { $app, $scenes } = this.$webgl;
+	const { $app, $scenes, $composer } = this.$webgl;
 	const { $store } = $app;
 
 	console.log('splash enter', $store.isPaused);
@@ -14,6 +14,8 @@ async function enter({ machine, from }) {
 
 	const { $splashScreenEnter } = scene;
 
+	$composer.$crt.enabled.set(true);
+
 	$splashScreenEnter.play();
 	// await wait(500);
 	scene.splashScreen.show();
@@ -22,7 +24,7 @@ async function enter({ machine, from }) {
 function update() {}
 
 async function leave({ machine }) {
-	const { $app, $scenes } = this.$webgl;
+	const { $app, $scenes, $composer } = this.$webgl;
 	const { $store } = $app;
 
 	$store.isPaused = false;
@@ -33,6 +35,8 @@ async function leave({ machine }) {
 
 	// $splashScreenEnter.play({ direction: 'reverse' });
 	// await wait(500);
+	// $composer.$crt.enabled.set(false);
+
 	scene.splashScreen.hide();
 }
 
