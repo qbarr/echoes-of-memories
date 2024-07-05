@@ -191,6 +191,52 @@
             "trackIdByPropPath": {
               "[\"global\",\"darkness\"]": "QkNbN4uPZb"
             }
+          },
+          "Camera": {
+            "trackData": {
+              "soNwFXC1X_": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Camera:[\"lat\"]",
+                "keyframes": [
+                  {
+                    "id": "hlU88LSJuo",
+                    "position": 0,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": -4.5
+                  }
+                ]
+              },
+              "WijuXsQ9TH": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Camera:[\"lon\"]",
+                "keyframes": [
+                  {
+                    "id": "QrIPAcKtam",
+                    "position": 0,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 94.5
+                  }
+                ]
+              }
+            },
+            "trackIdByPropPath": {
+              "[\"lat\"]": "soNwFXC1X_",
+              "[\"lon\"]": "WijuXsQ9TH"
+            }
           }
         }
       }
@@ -2249,6 +2295,8 @@
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "OsykWqLZuZvjQyaj",
+    "JYGXd2VDz3LplfkT",
     "JAzyUqtw1xipa2sM",
     "vaYLyLq7zYqKrjZT",
     "9kFML94s59xFfXY2",

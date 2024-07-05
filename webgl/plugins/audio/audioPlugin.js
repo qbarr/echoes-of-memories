@@ -9,7 +9,7 @@ export function audioPlugin(webgl, opts = {}) {
 	const listener = new AudioListener();
 
 	const { $storage } = webgl.$app;
-	const volume = w($storage.getItem('volume') ?? 0.2);
+	const volume = w($storage.getItem('volume') ?? 0.5);
 	volume.watchImmediate((v) => {
 		listener.setMasterVolume(v);
 		$storage.setItem('volume', v);

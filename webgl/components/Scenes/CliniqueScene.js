@@ -128,7 +128,7 @@ export default class CliniqueScene extends BaseScene {
 		}
 		this._hasStarted = true;
 
-		const { cassette, porte } = this.interactiveObjects;
+		const { cassette, porte, contrat } = this.interactiveObjects;
 		const { $povCamera, $audio, $raycast } = this.webgl;
 
 		$povCamera.$setState('cinematic');
@@ -138,6 +138,7 @@ export default class CliniqueScene extends BaseScene {
 		cassette.show();
 
 		// cassette.enableInteraction();
+		contrat.disableInteraction();
 		porte.disableInteraction();
 
 		this.$sheet.reset();
@@ -147,7 +148,7 @@ export default class CliniqueScene extends BaseScene {
 		await this.$sheet.play();
 
 		cassette.enableInteraction();
-		$povCamera.$setState('focus');
+		$povCamera.$setState('free');
 	}
 
 	reset() {
