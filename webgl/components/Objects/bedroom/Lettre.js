@@ -8,7 +8,7 @@ export class Lettre extends BaseInteractiveObject {
 		this.isSpecial = true;
 		this.audioId = 'flashbacks/war';
 
-		this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
+		// this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
 	}
 
 	async createSheets() {
@@ -59,7 +59,7 @@ export class Lettre extends BaseInteractiveObject {
 		super.onClick();
 		this.disableInteraction();
 
-		const { $povCamera, $raycast } = this.webgl;
+		const { $povCamera, $raycast, $letterSheet, $letterTextIndex } = this.webgl;
 		$raycast.disable();
 		$povCamera.$setState('cinematic');
 
@@ -72,21 +72,26 @@ export class Lettre extends BaseInteractiveObject {
 
 		// await this.$outroSheet.play();
 
-		await this.webgl.$letterSheet.play();
+		const uiScene = this.webgl.$scenes.ui.component;
+
+		await $letterSheet.play();
 		wraftween({
-			onUpdate: (v) => this.webgl.$letterTextIndex.emit(),
+			onUpdate: (v) => $letterTextIndex.emit(),
+			onComplete: () => {
+				uiScene.$setState('generique');
+				$povCamera.$setState('generique')
+			},
 		})
-			.to(this.webgl.$letterTextIndex, {
+			.to($letterTextIndex, {
 				value: 0,
 				duration: 2000,
 				easing: easings.outSwift,
 			})
-			.start();
-		// this.webgl.$letterSheet.mute()
+			.start()
 
-		// await this.webgl.$letterSheet.play({ direction: 'reverse', rate: 5 });
+		// $letterSheet.mute()
 
-		// $povCamera.$setState('generique');
+		// await $letterSheet.play({ direction: 'reverse', rate: 5 });
 
 		// !! A COMMENTER
 		// this.scene.setCameraToSpawn();

@@ -1,12 +1,13 @@
 async function enter({ machine }) {
 	const { $webgl, camera } = this;
-	const { $scenes } = $webgl;
+	const { $scenes, $raycast } = $webgl;
 
 	const uiScene = $scenes.ui.component;
 	const { crosshair } = uiScene;
 
 	crosshair.setVisible(true);
 	camera.controls.setMode('focus');
+	$raycast.enable();
 }
 function update() {}
 async function leave({ machine }) {}

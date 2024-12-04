@@ -31,6 +31,7 @@ export class Lecteur extends BaseInteractiveObject {
 		this.disableInteraction();
 
 		const { $povCamera, $scenes } = this.webgl;
+		$povCamera.controls.focus_threshold.set(5)
 		$povCamera.$setState('cinematic');
 
 		const { tv } = this.scene.interactiveObjects;

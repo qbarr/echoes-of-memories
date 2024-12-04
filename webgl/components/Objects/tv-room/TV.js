@@ -32,6 +32,7 @@ export class TV extends BaseInteractiveObject {
 		const { lecteur } = this.scene.interactiveObjects;
 		const { $povCamera } = this.webgl;
 
+		lecteur.disableInteraction();
 		$povCamera.$setState('cinematic');
 
 		if (!this.isAlreadySit) {
@@ -45,17 +46,22 @@ export class TV extends BaseInteractiveObject {
 
 			this.dp = deferredPromise();
 			window.addEventListener('keydown', this.onKeyDown);
+
+			this.webgl.$app.$store.isReadingInstructions = true;
+
 			await this.dp;
 		} else {
 			await this.$sheetReadInstructions.play();
 			this.hasReadInstructions = true;
 		}
 
-		console.log('enable lecteur', lecteur);
+		this.webgl.$app.$store.isReadingInstructions = false;
+
 		this.enableInteraction();
 		lecteur.enableInteraction();
 
-		$povCamera.$setState('free');
+		$povCamera.controls.focus_threshold.set(20)
+		$povCamera.$setState('focus');
 	}
 
 	awaitPlayOut(ev) {

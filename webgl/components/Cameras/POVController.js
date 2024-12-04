@@ -79,6 +79,8 @@ function POVController(
 		debug = false,
 	} = {},
 ) {
+	const focus_threshold = w(5);
+
 	const cam = Class.cam;
 	const base = Class.base;
 
@@ -98,7 +100,7 @@ function POVController(
 	const $project = webgl.$theatre.getProject('Clinique');
 	const introSheet = $project.getSheet('intro');
 
-	const rawStates = ['FREE', 'CINEMATIC', 'FLASHBACK', 'FOCUS', 'FLASHBACK_FREE'];
+	const rawStates = ['FREE', 'CINEMATIC', 'FLASHBACK', 'FOCUS', 'FLASHBACK_FREE', 'GENERIQUE'];
 	const states = rawStates.reduce((acc, key) => {
 		acc[key] = key;
 		return acc;
@@ -110,17 +112,20 @@ function POVController(
 
 	function updateLookAt(forcedLookAt) {
 		cam.lookAt(forcedLookAt ?? target);
+
+		if (!state.is(states.FOCUS)) {
+			lastCoords.lat = lat.value;
+			lastCoords.lon = lon.value;
+		}
+
 	}
 
 	function focusOn(_target) {
 		_target = _target.position ?? _target;
-		// console.log(_target);
 		// const sphericalCoords = lookAtSpherical(cam.position, _target);
-		// console.log(sphericalCoords);
 		// lat.value = sphericalCoords.phi;
 		// lon.value = sphericalCoords.theta;
 		// // const f = vec3ToSphericalPos(position, cam);
-		// // console.log(f);
 		// // lat.value = f.lat.value;
 		// // lon.value = f.lon.value;
 
@@ -130,8 +135,8 @@ function POVController(
 	function update() {
 		const dt = webgl.$time.dt;
 
-		if (state.is(states.FLASHBACK) || state.is(states.FLASHBACK_FREE))
-			updateFlashbackMode(dt);
+		if (state.is(states.FLASHBACK) || state.is(states.FLASHBACK_FREE)) updateFlashbackMode(dt);
+		else if (state.is(states.GENERIQUE)) updateGeneriqueMode(dt);
 		else updatePOVMode(dt);
 	}
 
@@ -141,6 +146,14 @@ function POVController(
 
 		const phi = MathUtils.degToRad(90 - lerpedLat);
 		const theta = MathUtils.degToRad(lerpedLon);
+		target.setFromSphericalCoords(1, phi, theta).add(base.position).add(cam.position);
+
+		updateLookAt();
+	}
+
+	function updateGeneriqueMode(dt) {
+		const phi = MathUtils.degToRad(90 - lat.value);
+		const theta = MathUtils.degToRad(lon.value);
 		target.setFromSphericalCoords(1, phi, theta).add(base.position).add(cam.position);
 
 		updateLookAt();
@@ -163,7 +176,7 @@ function POVController(
 	function handleMoveRotate(x, y) {
 		const dt = webgl.$time.dt * 0.001;
 		tempVec2a.set(x, y);
-		tempVec2b.add(tempVec2a, rotateStart).multiplyScalar(speed * dt);
+		tempVec2b.add(tempVec2a, rotateStart).multiplyScalar(speed * .016);
 
 		const el = element === document ? document.body : element;
 		const height = el === document.body ? window.innerHeight : el.clientHeight;
@@ -178,7 +191,8 @@ function POVController(
 		lat.value = clamp(lat.value, -70, 50);
 
 		if (state.is(states.FOCUS)) {
-			const threshold = 5;
+			const threshold = focus_threshold.value
+
 			lat.value = clamp(
 				lat.value,
 				lastCoords.lat - threshold,
@@ -196,23 +210,41 @@ function POVController(
 
 	function setMode(_mode) {
 		const mode = _mode.toLowerCase();
-		if (mode === 'free') goFreeMode();
-		else if (mode === 'cinematic') goCinematicMode();
-		else if (mode === 'flashback') goFlashbackMode();
-		else if (mode === 'focus') goFocusMode();
-		else if (mode === 'flashback_free') goFlashbackFreeMode();
+
+		switch (mode) {
+			case 'free':
+				goFreeMode();
+				break;
+			case 'cinematic':
+				goCinematicMode();
+				break;
+			case 'flashback':
+				goFlashbackMode();
+				break;
+			case 'focus':
+				goFocusMode();
+				break;
+			case 'flashback_free':
+				goFlashbackFreeMode();
+				break;
+			case 'generique':
+				goGeneriqueMode();
+				break;
+			default:
+				console.error('Unknown mode:', mode);
+				break;
+		}
 	}
 
 	function goFreeMode() {
-		// console.log('goFreeMode');
 		state.set(states.FREE);
 	}
 
 	function goFocusMode() {
-		webgl.$hooks.afterFrame.watchOnce(() => {
-			lastCoords.lat = lat.value;
-			lastCoords.lon = lon.value;
-		});
+		// webgl.$hooks.afterFrame.watchOnce(() => {
+		// 	lastCoords.lat = lat.value;
+		// 	lastCoords.lon = lon.value;
+		// });
 		state.set(states.FOCUS);
 	}
 
@@ -221,12 +253,15 @@ function POVController(
 	}
 
 	function goCinematicMode() {
-		// console.log('goCinematicMode');
 		state.set(states.CINEMATIC);
 	}
 
 	function goFlashbackMode() {
 		state.set(states.FLASHBACK);
+	}
+
+	function goGeneriqueMode() {
+		state.set(states.GENERIQUE);
 	}
 
 	const onMouseMove = (e) => {
@@ -276,6 +311,8 @@ function POVController(
 		target,
 		lat,
 		lon,
+
+		focus_threshold,
 
 		set enabled(v) {
 			enabled = v;

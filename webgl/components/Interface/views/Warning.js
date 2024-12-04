@@ -20,6 +20,9 @@ export class Warning extends BaseUiView {
 				name: 'UiTextWarningTitle',
 				content: 'ATTENTION',
 				color: new Color(0xffd700).offsetHSL(0, 0.3, 0.1),
+				align: 'center',
+				justifyContent: 'center',
+				centerMesh: { x: true, y: true },
 			},
 			componentWidth: 700,
 			justifyContent: 'center',
@@ -27,17 +30,20 @@ export class Warning extends BaseUiView {
 
 		this.p = this.add(UiText, {
 			text: {
+				scale: 0.65,
 				name: 'UiTextWarningP',
 				content:
-					'LE CONTENU SUIVANT CONTIENT DES MOMENTS DERANGEANTS QUI PEUVENT ETRE VIOLENTS POUR LES SPECTATEURS.\n SOYEZ VIGILANTS.',
-				width: vw / 2.5,
+					'LE CONTENU SUIVANT CONTIENT DES MOMENTS DERANGEANTS QUI PEUVENT ETRE VIOLENTS POUR LES SPECTATEURS.\n\n SOYEZ VIGILANTS.',
+				width: vw / 2,
 				justifyContent: 'center',
+				align: 'center',
+				centerMesh: { x: true, y: true },
 			},
 			justifyContent: 'center',
 		});
 
-		this.translate(this.title, { y: 10 });
-		this.translate(this.p, { x: 3, y: -12 });
+		this.translate(this.title, { y: 12 });
+		this.translate(this.p, { x: 0, y: -3 });
 	}
 
 	afterInit() {

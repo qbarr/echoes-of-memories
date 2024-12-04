@@ -52,6 +52,8 @@ export function audioPlugin(webgl, opts = {}) {
 		get singles() { return singles }, // prettier-ignore
 		get all() { return all }, // prettier-ignore
 
+		get,
+
 		play,
 		pause,
 		stop,

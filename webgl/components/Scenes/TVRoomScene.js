@@ -93,11 +93,6 @@ export default class TVRoomScene extends BaseScene {
 		const { $povCamera, $scenes, $app } = this.webgl;
 		$povCamera.onSceneSwitch(this);
 
-		/// #if __DEBUG__
-		// $povCamera.setPosition([-1.45968, 1.22633, -3.15793]);
-		// $povCamera.$setState('free');
-		/// #endif
-
 		const uiScene = $scenes.ui.component;
 		uiScene.subtitles.setColor($app.$store.subtitles.colors.white);
 	}
@@ -125,7 +120,7 @@ export default class TVRoomScene extends BaseScene {
 		// lecteur.enableInteraction();
 		// tv.enableInteraction();
 		$raycast.enable();
-		$povCamera.$setState('free');
+		$povCamera.$setState('focus');
 	}
 
 	reset() {

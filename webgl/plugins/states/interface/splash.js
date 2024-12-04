@@ -4,13 +4,10 @@ async function enter({ machine, from }) {
 	const { $app, $scenes, $composer } = this.$webgl;
 	const { $store } = $app;
 
-	console.log('splash enter', $store.isPaused);
 	$store.isPaused = true;
 
 	const scene = $scenes.ui.component;
 
-	console.log('splash enter', scene);
-	console.log('splash enter', scene.$splashScreenEnter);
 
 	const { $splashScreenEnter } = scene;
 

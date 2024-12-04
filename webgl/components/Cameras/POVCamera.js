@@ -33,9 +33,9 @@ const DEFAULT_TARGET = {
 };
 
 const audiosID = {
-	clinique: 'clinique',
+	'clinique': 'clinique',
 	'tv-room': 'clinique',
-	bedroom: 'chambre',
+	'bedroom': 'chambre',
 };
 export class POVCamera extends BaseCamera {
 	init() {
@@ -81,6 +81,12 @@ export class POVCamera extends BaseCamera {
 				v && this.webgl.$scenes.switch(v, true);
 			});
 		this.$generiqueSheet.$composer(['*']);
+
+		const uiScene = this.webgl.$scenes.ui.component;
+		const generiqueScreen = uiScene.generiqueScreen;
+		this.$generiqueSheet.$float('Generique Text Index', generiqueScreen.currentIndex, {
+			range: [-1, generiqueScreen.texts.length - 1],
+		}).onChange((v) => generiqueScreen.currentIndex.set(v, true));
 	}
 
 	/// #if __DEBUG__
@@ -231,8 +237,11 @@ export class POVCamera extends BaseCamera {
 
 		this.wobble.update(elapsed * this.wobble_intentisty.value);
 
-		if (this.$statesMachine?.currentState?.id !== 'FLASHBACK_FREE')
+		if (!this.$statesMachine?.currentState?.id.includes(['GENERIQUE'])) {
+			this.base.position.set(this.target.x, this.target.y, this.target.z);
+		} else if (!this.$statesMachine?.currentState?.id.includes(['FLASHBACK_FREE'])) {
 			this.base.position.damp(this.target, this.target.w, dt);
+		}
 
 		this.controls?.update();
 

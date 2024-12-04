@@ -12,7 +12,8 @@ if (!__DEVELOPMENT__) {
 }
 
 /// #if __DEBUG__
-/// #code import studio from '@theatre/studio';
+import studio from '@theatre/studio';
+
 studio.initialize({
 	persistenceKey: 'EOM:theatrejs',
 	usePersistentStorage: __DEVELOPMENT__,
@@ -98,9 +99,6 @@ export function theatrePlugin(webgl) {
 		get studio() {
 			return studio;
 		},
-		// get waveformViewer() {
-		// 	return waveformViewer;
-		// },
 		/// #endif
 	};
 

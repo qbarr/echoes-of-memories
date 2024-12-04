@@ -173,7 +173,9 @@ export default class BedroomScene extends BaseScene {
 	}
 
 	async leave() {
-		this.$bgm.stop({ fade: 2000 });
+		const { $povCamera } = this.webgl;
+		if (!$povCamera.controls.state.is($povCamera.controls.states.GENERIQUE))
+			this.$bgm.stop({ fade: 2000 });
 
 		// 	const { $composer, $scenes } = this.webgl;
 

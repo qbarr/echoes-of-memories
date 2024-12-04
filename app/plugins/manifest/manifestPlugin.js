@@ -13,7 +13,7 @@ export function manifestPlugin() {
 
 	async function load() {
 		manifest = (await import(':virtual:/manifest')).default;
-		__DEBUG__ && console.log('Manifest', manifest);
+		// __DEBUG__ && console.log('Manifest', manifest);
 	}
 
 	function get(id) {

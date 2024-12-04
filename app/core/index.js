@@ -8,7 +8,7 @@
 import { inject } from 'vue';
 
 let appInstance;
-let plugins = {};
+const plugins = {};
 
 export function useApp() {
 	return inject('app', plugins);
@@ -20,7 +20,7 @@ export function getApp() {
 
 export function setApp(app) {
 	appInstance = app;
-	plugins = app.config.globalProperties;
+	Object.assign(plugins, app.config.globalProperties);
 }
 
 export function getAppInstance() {

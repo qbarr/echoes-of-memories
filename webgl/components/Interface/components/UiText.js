@@ -16,7 +16,6 @@ const defaultOptions = {
 		name: 'UiText',
 		font: 'VCR_OSD_MONO',
 		content: '',
-		// align: 'center',
 		align: 'left',
 		color: new Color(0xffffff),
 		strokeWidth: 0,
@@ -46,7 +45,7 @@ export class UiText extends BaseComponent {
 	init() {
 		this.text = this.add(MSDFTextMesh, {
 			...this.props.text,
-			align: 'left',
+			align: this.props.text.align ?? 'left',
 		});
 		this.base.scale.setScalar(this.props.text.scale);
 

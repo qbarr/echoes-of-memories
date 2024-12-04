@@ -1,13 +1,14 @@
 import BaseScene from '#webgl/core/BaseScene';
 import { UICamera } from '../Cameras/UICamera';
 
-import { Subtitles } from '../Interface/Subtitles';
-import { Credits as CreditsScreen } from '../Interface/views/Credits';
-import { Hud as HudScreen } from '../Interface/views/Hud';
-import { Pause as PauseScreen } from '../Interface/views/Pause';
-import { Settings as SettingsScreen } from '../Interface/views/Settings';
-import { Splash as SplashScreen } from '../Interface/views/Splash';
-import { Warning as WarningScreen } from '../Interface/views/Warning';
+import { Subtitles } from '../Interface/Subtitles.js';
+import { Credits as CreditsScreen } from '../Interface/views/Credits.js';
+import { Hud as HudScreen } from '../Interface/views/Hud.js';
+import { Pause as PauseScreen } from '../Interface/views/Pause.js';
+import { Settings as SettingsScreen } from '../Interface/views/Settings.js';
+import { Splash as SplashScreen } from '../Interface/views/Splash.js';
+import { Warning as WarningScreen } from '../Interface/views/Warning.js';
+import { Generique as GeneriqueScreen } from '../Interface/views/Generique.js';
 
 import { w } from '#utils/state/index.js';
 
@@ -23,7 +24,7 @@ export default class UIScene extends BaseScene {
 
 		this.subtitles = this.add(Subtitles);
 
-		this.screens = ['SplashScreen', 'WarningScreen', 'PauseScreen'];
+		this.screens = ['SplashScreen', 'WarningScreen', 'PauseScreen', 'GeneriqueScreen'];
 		this.menus = ['CreditsScreen', 'SettingsScreen'];
 
 		this.currentScreen = w(null);
@@ -41,6 +42,9 @@ export default class UIScene extends BaseScene {
 		// Menu
 		this.creditsScreen = this.add(CreditsScreen, { name: 'CreditsScreen' });
 		this.settingsScreen = this.add(SettingsScreen, { name: 'SettingsScreen' });
+
+		// Generique
+		this.generiqueScreen = this.add(GeneriqueScreen, { name: 'GeneriqueScreen' });
 	}
 
 	afterInit() {

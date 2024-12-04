@@ -28,19 +28,28 @@ export class Splash extends BaseUiView {
 		this.hide();
 	}
 
-	onStart() {
-		this.parent.$setState('warning');
-
-		setTimeout(() => {
-			this.webgl.$audio.play('intro/warning', {
-				onEnd: async () => {
-					this.parent.$setState('hud');
-					this.webgl.$povCamera.$setState('cinematic');
-					await wait(1000);
-					await this.webgl.$scenes.set('clinique');
-					this.webgl.$scenes.current.component.start();
-				},
-			});
+	async onStart() {
+		setTimeout(async () => {
+			this.parent.$setState('hud');
+			this.webgl.$povCamera.$setState('cinematic');
+			await wait(1000);
+			await this.webgl.$scenes.set('bedroom');
+			this.webgl.$scenes.current.component.start();
 		}, 300);
+
+
+		// this.parent.$setState('warning');
+
+		// setTimeout(() => {
+		// 	this.webgl.$audio.play('intro/warning', {
+		// 		onEnd: async () => {
+		// 			this.parent.$setState('hud');
+		// 			this.webgl.$povCamera.$setState('cinematic');
+		// 			await wait(1000);
+		// 			await this.webgl.$scenes.set('clinique');
+		// 			this.webgl.$scenes.current.component.start();
+		// 		},
+		// 	});
+		// }, 300);
 	}
 }

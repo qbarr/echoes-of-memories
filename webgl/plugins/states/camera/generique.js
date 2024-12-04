@@ -1,19 +1,24 @@
 async function enter({ machine }) {
 	const { $webgl, camera } = this;
-	const { $scenes, $raycast } = $webgl;
+	const { $scenes, $raycast, $audio } = $webgl;
 
 	const uiScene = $scenes.ui.component;
 	const { crosshair } = uiScene;
 
 	crosshair.setVisible(false);
-	camera.controls.setMode('cinematic');
+	camera.controls.setMode('generique');
 	$raycast.disable();
 
 	$scenes.bedroom.component.reset();
 	$scenes.clinique.component.reset();
 	$scenes['tv-room'].component.reset();
 
-	camera.$generiqueSheet.play({ iterationCount: Infinity, rate: 0.75 });
+	const bgm = $audio.get('bedroom/bgm');
+	bgm.play({ fade: 3000, volume: 0.2, loop: true });
+
+	await camera.$generiqueSheet.play({ iterationCount: 1, rate: .75 });
+
+	bgm.stop({ fade: 3000 });
 }
 function update() {}
 async function leave({ machine }) {}

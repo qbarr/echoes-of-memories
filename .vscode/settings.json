@@ -62,7 +62,13 @@
 	"typescript.preferences.importModuleSpecifierEnding": "js",
 	"css.validate": false,
 	"scss.validate": false,
-	"stylelint.validate": ["css", "scss", "html", "ejs", "vue"],
+	"stylelint.validate": [
+		"css",
+		"scss",
+		"html",
+		"ejs",
+		"vue"
+	],
 	"javascript.preferences.autoImportFileExcludePatterns": [
 		"@vue/runtime-core",
 		"@vue/runtime-dom",
@@ -188,5 +194,6 @@
 		}
 	],
 	"todohighlight.keywordsPattern": "",
-	"vue3snippets.enable-compile-vue-file-on-did-save-code": true
+	"vue3snippets.enable-compile-vue-file-on-did-save-code": true,
+	"window.zoomLevel": 1
 }

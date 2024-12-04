@@ -117,6 +117,16 @@ export function composerPlugin(webgl) {
 		currentScene = scene;
 		const { name } = scene;
 		const { $crt, $lut, $afterImage, $sketchLines, uniforms, $unrealBloom } = api;
+		const { $povCamera } = webgl;
+
+		if ($povCamera.controls.state.is($povCamera.controls.states.GENERIQUE)) {
+			$crt.enabled.set(true);
+			$lut.set('clinique-2');
+			$afterImage.enabled.set(false);
+			$sketchLines.enabled.set(false);
+			uniforms.SRGB_TRANSFER.value = 0;
+			return
+		}
 
 		if (name === 'bedroom') {
 			$crt.enabled.set(true);

@@ -19,7 +19,7 @@ import useSplitText from '#app/composables/useSplitText/useSplitText.js';
 const { $webgl, $store } = app;
 
 const index = shallowRef(0);
-console.log($store.letterContent);
+// console.log($store.letterContent);
 const contents = $store.letterContent.map((str) => (str += '<br>'));
 
 const updateIndex = (value) => (index.value = Math.floor(value));
@@ -40,6 +40,7 @@ onBeforeUnmount(() => {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	pointer-events: none;
 }
 
 p {

@@ -27,6 +27,8 @@ export class Door extends BaseInteractiveObject {
 		this.actionId = 'porte';
 		this.animationProgress = w(0);
 
+		console.log(this.scene);
+
 		this.scene.$mixer.play(this.actionId);
 		this.scene.$mixer.normSeek(0.2);
 	}
@@ -63,6 +65,7 @@ export class Door extends BaseInteractiveObject {
 
 	reset() {
 		super.reset();
+		if (!this.scene) return
 		this.scene.$mixer.normSeek(0.2);
 	}
 }

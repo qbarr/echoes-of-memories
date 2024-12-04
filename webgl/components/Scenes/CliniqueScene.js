@@ -116,8 +116,9 @@ export default class CliniqueScene extends BaseScene {
 	}
 
 	async leave() {
-		this.log('leave');
-		this.$bgm.stop({ fade: 2000 });
+		const { $povCamera } = this.webgl;
+		if (!$povCamera.controls.state.is($povCamera.controls.states.GENERIQUE))
+			this.$bgm.stop({ fade: 2000 });
 	}
 
 	async start(force) {
@@ -148,7 +149,7 @@ export default class CliniqueScene extends BaseScene {
 		await this.$sheet.play();
 
 		cassette.enableInteraction();
-		$povCamera.$setState('free');
+		$povCamera.$setState('focus');
 	}
 
 	reset() {

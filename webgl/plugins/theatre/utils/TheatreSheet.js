@@ -75,7 +75,7 @@ export class TheatreSheet {
 				},
 				{
 					nudgeMultiplier: 0.1,
-					lat: { range: [-70, 50] },
+					lat: { range: [-80, 50] },
 				},
 			);
 
@@ -149,9 +149,19 @@ export class TheatreSheet {
 
 	// Je pète mon crâne
 	skip() {
+
+		// reset the sequence and set the rate to 100
+		// to force the update of all the objects values
+		// this.sequence.reset()
+		// this.play({ rate: 10 })
+		// this.sequence.rate = 100
+		// this.sequence.rate = 100
+
 		// go to the last frame
 		// and force update all the objects values to trigger the .onValuesChange
-		this.sequence.position = this.duration;
+		// this.sequence.position = this.duration
+
+
 
 		// this.objects.forEach((Object) => {
 		// 	// get last keyframes for each object
@@ -326,7 +336,12 @@ export class TheatreSheet {
 
 	play(args = {}) {
 		this._hasBeenCanceled = false;
-		const done = this.sequence.play(args);
+		const done = this.sequence.play({
+			/// #if __DEBUG__
+			/// #code rate: 20,
+			/// #endif
+			...args
+		});
 		done.then(() => this.unlisten());
 		this.listen();
 		return done;
@@ -346,9 +361,7 @@ export class TheatreSheet {
 		this.seek(0);
 		this.unlisten();
 
-		if (this.progress < 1) {
-			this._hasBeenCanceled = true;
-		}
+		if (this.progress < 1) this._hasBeenCanceled = true;
 	}
 
 	reset() {
