@@ -38,12 +38,20 @@ export class Screen extends BaseComponent {
 		return this.webgl.$assets.textures['tv-room']['instructions_map'];
 	}
 
+	getEndingScreen() {
+		return this.webgl.$assets.textures['tv-room']['gobelins_screen_map'];
+	}
+
 	setSplashScreen() {
 		this.uniforms.tMap.value = this.getSplashScreen();
 	}
 
 	setInstructionsScreen() {
 		this.uniforms.tMap.value = this.getInstructionsScreen();
+	}
+
+	setEndingScreen() {
+		this.uniforms.tMap.value = this.getEndingScreen();
 	}
 
 	// createSheets() {

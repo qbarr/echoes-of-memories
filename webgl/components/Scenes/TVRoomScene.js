@@ -84,7 +84,7 @@ export default class TVRoomScene extends BaseScene {
 
 		await this.$sheet.attachAudio('tv-room/enter');
 		this.$sheet.$addCamera();
-		this.$sheet.$composer(['global']);
+		this.$sheet.$addComposer(['global']);
 	}
 
 	async enter() {
@@ -119,8 +119,8 @@ export default class TVRoomScene extends BaseScene {
 		desk.enableInteraction();
 		// lecteur.enableInteraction();
 		// tv.enableInteraction();
-		$raycast.enable();
 		$povCamera.$setState('focus');
+		$raycast.enable();
 	}
 
 	reset() {

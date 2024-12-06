@@ -44,7 +44,7 @@ export class Credits extends BaseUiView {
 			},
 			{
 				title: 'DOUBLEURS',
-				names: ['BEN.........VICTOR NIVERD', 'ADAMN...ALEXIS THOMASSIAN'],
+				names: ['BEN.........VICTOR NIVERD', 'ADAM...ALEXIS THOMASSIAN'],
 			},
 			{
 				title: 'REMERCIEMENTS',

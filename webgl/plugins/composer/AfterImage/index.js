@@ -16,7 +16,7 @@ export const useAfterImagePass = (composer) => {
 	let saturationTween = null;
 	/* Params */
 	const enabled = w(true);
-	const strength = w(0.8);
+	const strength = w(0.97);
 
 	const api = {
 		enabled,
@@ -36,18 +36,19 @@ export const useAfterImagePass = (composer) => {
 		name: 'AfterImage',
 		depth: false,
 		stencil: false,
+		scale: .3
 	});
 	const buffer = $fbo.createBuffer({
 		name: 'AfterImage',
 		depth: false,
 		stencil: false,
+		scale: .3
 	});
 	composer.buffers.afterImage = buffer;
 
 	const filter = createFilter({
 		uniforms: {
 			...uniforms,
-			// ...pingPongBuffer.uniforms,
 			tMap: pingPongBuffer.uniform,
 			...wUniform('uStrength', strength),
 		},

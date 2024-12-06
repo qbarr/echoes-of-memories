@@ -80,13 +80,21 @@ export class POVCamera extends BaseCamera {
 			.onChange((v) => {
 				v && this.webgl.$scenes.switch(v, true);
 			});
-		this.$generiqueSheet.$composer(['*']);
+		this.$generiqueSheet.$addComposer(['*']);
 
 		const uiScene = this.webgl.$scenes.ui.component;
+		const TVRoomScene = this.webgl.$scenes['tv-room'].component;
 		const generiqueScreen = uiScene.generiqueScreen;
 		this.$generiqueSheet.$float('Generique Text Index', generiqueScreen.currentIndex, {
 			range: [-1, generiqueScreen.texts.length - 1],
 		}).onChange((v) => generiqueScreen.currentIndex.set(v, true));
+
+		this.$generiqueSheet.$bool('Generique Screen', { value: false })
+			.onChange((v) => {
+				v
+					? TVRoomScene.screen.setEndingScreen()
+					: TVRoomScene.screen.setInstructionsScreen()
+			});
 	}
 
 	/// #if __DEBUG__
@@ -165,6 +173,8 @@ export class POVCamera extends BaseCamera {
 	}
 
 	onPointerLockChange(ev) {
+		if (this.webgl.$app.$store.GAME_OVER) return;
+
 		if (!this.$pointerLocked) {
 			this.$pointerLocked = true;
 			this.webgl.$app.$store.pointerLocked = true;

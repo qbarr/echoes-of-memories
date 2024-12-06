@@ -1,6 +1,6 @@
 async function enter({ machine }) {
 	const { $webgl, camera } = this;
-	const { $scenes, $raycast, $audio } = $webgl;
+	const { $scenes, $raycast, $audio, $app } = $webgl;
 
 	const uiScene = $scenes.ui.component;
 	const { crosshair } = uiScene;
@@ -17,6 +17,8 @@ async function enter({ machine }) {
 	bgm.play({ fade: 3000, volume: 0.2, loop: true });
 
 	await camera.$generiqueSheet.play({ iterationCount: 1, rate: .75 });
+
+	$app.$store.GAME_OVER = true;
 
 	bgm.stop({ fade: 3000 });
 }

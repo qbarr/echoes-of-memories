@@ -8,7 +8,7 @@ export class Lettre extends BaseInteractiveObject {
 		this.isSpecial = true;
 		this.audioId = 'flashbacks/war';
 
-		// this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
+		this.webgl.$hooks.afterStart.watchOnce(this.hide.bind(this)); // !! A DECOMMENTER
 	}
 
 	async createSheets() {
@@ -35,7 +35,7 @@ export class Lettre extends BaseInteractiveObject {
 				this.webgl.$scenes.switch(v);
 			});
 		warSheet.$addCamera();
-		warSheet.$composer(['global', 'lut', 'crt']);
+		warSheet.$addComposer(['global', 'lut', 'crt']);
 		warSheet
 			.$list('stateMachine', Object.values($povCamera.controls.states))
 			.onChange((v) => {
@@ -45,7 +45,7 @@ export class Lettre extends BaseInteractiveObject {
 		this.$flashbackSheet = warSheet;
 
 		this.$outroSheet = transitionProject.getSheet('outro');
-		this.$outroSheet.$composer(['*']);
+		this.$outroSheet.$addComposer(['*']);
 		this.$outroSheet.$addCamera();
 		this.$outroSheet.$bool('SwitchSceneOutro', { value: false }).onChange((v) => {
 			if (v) this.webgl.$scenes.switch('tv-room');

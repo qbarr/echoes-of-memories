@@ -97,7 +97,7 @@ export default class CliniqueScene extends BaseScene {
 		this.$sheet = this.$project.getSheet('intro');
 		await this.$sheet.attachAudio('clinique/intro');
 		this.$sheet.$addCamera();
-		this.$sheet.$composer(['global', 'bokeh', 'lut', 'bloom', 'rgbShift']);
+		this.$sheet.$addComposer(['global', 'bokeh', 'lut', 'bloom', 'rgbShift']);
 	}
 
 	async enter() {
@@ -150,6 +150,7 @@ export default class CliniqueScene extends BaseScene {
 
 		cassette.enableInteraction();
 		$povCamera.$setState('focus');
+		$raycast.enable();
 	}
 
 	reset() {

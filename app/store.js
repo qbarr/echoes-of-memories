@@ -9,6 +9,8 @@ export default () => {
 		pointerLocked: false,
 		hasInteractedOnce: false,
 		isReadingInstructions: false,
+		GAME_OVER: false,
+		hasSeenNecklaceFlashback: false,
 
 		subtitles: {
 			colors: {

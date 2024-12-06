@@ -1,18 +1,4 @@
-import { BaseInteractiveObject } from '../Objects/base/BaseInteractiveObject';
-
-import {
-	Collier,
-	FamilyPhoto,
-	Guitare,
-	Lettre,
-	Livres,
-	Platine,
-	Vinyles,
-	Nounours,
-	Peinture,
-	Couverture,
-} from '../Objects/bedroom';
-
+import { Collier, Couverture, FamilyPhoto, Guitare, Lettre, Livres, Nounours, Peinture, Platine, Vinyles } from '../Objects/bedroom';
 import { Cassette, Contrat, Door } from '../Objects/clinique';
 import { Desk, Lecteur, Screen, TV } from '../Objects/tv-room';
 
@@ -40,21 +26,15 @@ const datas = {
 		objets: {},
 		mursetsol: {},
 		crucifix: { class: Collier, isSpecial: true },
-		// platine: { class: Platine },
-		platine: { class: null },
-		// vinyles: { class: Vinyles },
-		vinyles: { class: null },
+		platine: { class: Platine },
+		vinyles: { class: Vinyles },
 		photodefamille: { class: FamilyPhoto, isSpecial: true },
 		testament: { class: Lettre, isSpecial: true },
-		// guitare: { class: Guitare },
-		guitare: { class: null },
+		guitare: { class: Guitare },
 		nounours: { class: Nounours },
-		// livres: { class: Livres },
-		livres: { class: null },
-		// peinture: { class: Peinture },
-		peinture: { class: null },
-		// couverture: { class: Couverture },
-		couverture: { class: null },
+		livres: { class: Livres },
+		peinture: { class: Peinture },
+		couverture: { class: Couverture },
 		posters: {},
 		drowninggirl: {},
 	},

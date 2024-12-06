@@ -26,7 +26,7 @@ export class FamilyPhoto extends BaseInteractiveObject {
 			else this.webgl.$scenes.switch('bedroom');
 		});
 		mealSheet.$addCamera();
-		mealSheet.$composer(['global', 'lut', 'crt', 'bloom']);
+		mealSheet.$addComposer(['global', 'lut', 'crt', 'bloom']);
 		mealSheet
 			.$list('stateMachine', Object.values($povCamera.controls.states))
 			.onChange((v) => {

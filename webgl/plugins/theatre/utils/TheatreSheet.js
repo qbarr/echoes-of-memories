@@ -59,7 +59,7 @@ export class TheatreSheet {
 		this.$object = (name, value, opts = {}) => new TheatreObject(name, value, opts, this); // prettier-ignore
 		this.$target = (name, value, opts = {}) => new TheatreTarget(name, value, opts, this); // prettier-ignore
 		this.$group = (name, value, opts = {}) => new TheatreGroup(name, value, opts, this); // prettier-ignore
-		this.$composer = (values, opts = {}) => new TheatreComposer('Composer', values, opts, this); // prettier-ignore
+		this.$addComposer = (values, opts = {}) => new TheatreComposer('Composer', values, opts, this); // prettier-ignore
 		this.$compound = (name, values, opts = {}) => new TheatreCompound(name, values, opts, this); // prettier-ignore
 		this.$events = (values) => new TheatreEvents('Events', values, this); // prettier-ignore
 		this.$string = (name, value, opts = {}) => new TheatreString(name, value, opts, this); // prettier-ignore
@@ -337,9 +337,9 @@ export class TheatreSheet {
 	play(args = {}) {
 		this._hasBeenCanceled = false;
 		const done = this.sequence.play({
-			/// #if __DEBUG__
-			/// #code rate: 20,
-			/// #endif
+			// /// #if __DEBUG__
+			// /// #code rate: 20,
+			// /// #endif
 			...args
 		});
 		done.then(() => this.unlisten());

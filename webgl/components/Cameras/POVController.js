@@ -185,7 +185,7 @@ function POVController(
 		const horizontalLookRatio = Math.PI / (horizontalMax - horizontalMin);
 
 		lon.value -= tempVec2b.x * horizontalLookRatio;
-		lon.value = mod(lon.value, 360);
+		if (!state.is(states.FOCUS)) lon.value = mod(lon.value, 360);
 
 		lat.value -= tempVec2b.y * verticalLookRatio;
 		lat.value = clamp(lat.value, -70, 50);

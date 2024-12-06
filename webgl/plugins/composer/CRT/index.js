@@ -16,7 +16,7 @@ export const useCRTPass = (composer) => {
 	const enabled = w(true);
 	enabled.watchImmediate((v) => (uniforms.CRT_DISABLED.value = v ? 0 : 1));
 
-	const scanLines = w(new Vector2(0.25, 0.23)); // Opacity, Flicker
+	const scanLines = w(new Vector2(0.1, 0.23)); // Opacity, Flicker
 	const padding = w(new Vector2(0.2, 0)); // x, y
 	const fishEye = w(new Vector2(0.1, 0.24)); // x, y
 	const vignette = w(new Vector2(130, 0.8)); // Threshold, Smoothness
@@ -48,14 +48,8 @@ export const useCRTPass = (composer) => {
 	/* Private */
 	const { $threeRenderer, $fbo } = webgl;
 
-	const buffer = (buffers.crt = $fbo.createBuffer({
-		name: 'CRT',
-		depth: false,
-		alpha: false,
-		scale: 0.75,
-	}));
-
-	const filter = (filters.crt = createFilter({
+	const buffer = buffers.crt = $fbo.createBuffer({ name: 'CRT', depth: false, alpha: false, scale: 0.35 });
+	const filter = filters.crt = createFilter({
 		uniforms: {
 			...uniforms,
 			...wUniform('uScanLines', scanLines),
@@ -66,7 +60,7 @@ export const useCRTPass = (composer) => {
 		},
 		defines: { ...defines },
 		blending: NoBlending,
-	}));
+	});
 	CRTPass.use(filter.material);
 
 	// Object.assign(uniforms, {

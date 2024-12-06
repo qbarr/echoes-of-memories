@@ -8,6 +8,7 @@ uniform sampler2D tDepth;
 uniform sampler2D tInterface;
 uniform sampler2D tSketchLines;
 
+uniform int isInVHSMode;
 uniform float uAmount;
 uniform float uAngle;
 uniform float uDarkness;
@@ -25,10 +26,10 @@ void main() {
 	vec4 texel = texture2D(tMap, uv);
 
 	vec2 offset = uAmount * vec2(cos(uAngle), sin(uAngle));
-	vec4 cr = texture2D(tMap, uv + offset);
-	vec4 cb = texture2D(tMap, uv - offset);
+	float cr = texture2D(tMap, uv + offset).r;
+	float cg = texture2D(tMap, uv - offset).g;
 
-	vec4 shiftColor = vec4(cr.r, cb.g, texel.b, texel.a);
+	vec4 shiftColor = vec4(cr, cg, texel.b, texel.a);
 	vec4 color = mix(texel, shiftColor, smoothstep(0.3, 1., pow(1. - depth, .6)));
 
 	gl_FragColor = color;
@@ -65,9 +66,14 @@ void main() {
 	gl_FragColor.rgb = mix(vec3(dot(gl_FragColor.rgb, vec3(0.299, 0.587, 0.114))), gl_FragColor.rgb, 1. - uPauseSaturation);
 
 	// Interface
-	vec4 interfaceColor = texture2D(tInterface, uv);
-	interfaceColor.rgb *= 1.2;
-	gl_FragColor.rgb = mix(gl_FragColor.rgb, interfaceColor.rgb, interfaceColor.a);
+	vec4 texelInterface = texture2D(tInterface, uv);
+	if (isInVHSMode == 1) {
+		float texelInterface_r = texture2D(tInterface, uv + offset * .3).r;
+		float texelInterface_b = texture2D(tInterface, uv - offset * .3).g;
+		texelInterface = vec4(texelInterface_r, texelInterface_b, texelInterface.b, texelInterface.a);
+	}
+	texelInterface.rgb *= 1.2;
+	gl_FragColor.rgb = mix(gl_FragColor.rgb, texelInterface.rgb, texelInterface.a);
 
 	// debug
 	// gl_FragColor += vec4(smoothstep(0.3, 1., pow(1. - depth, .6)));

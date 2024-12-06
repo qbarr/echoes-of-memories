@@ -83,6 +83,7 @@ export default class BedroomScene extends BaseScene {
 			if (child.name.includes('raycastable')) return;
 
 			const data = datas[child.name];
+
 			if (data) {
 				const { class: Class, material } = data;
 				child.material = material;
@@ -129,7 +130,14 @@ export default class BedroomScene extends BaseScene {
 		this.$sheet = this.$project.getSheet('Enter');
 		await this.$sheet.attachAudio('bedroom/enter');
 		this.$sheet.$addCamera();
-		this.$sheet.$composer(['global', 'lut', 'bloom', 'bokeh', 'crt', 'depth']);
+		this.$sheet.$addComposer(['global', 'lut', 'bloom', 'bokeh', 'crt', 'depth']);
+
+		this.$respawnFadeoutSheet = this.$project.getSheet('RespawnFadeout');
+		this.$respawnFadeoutSheet.$addComposer(['global', 'crt']);
+		this.$respawnFadeoutSheet.$bool('TriggerCameraSpawn', { value: false })
+			.onChange((v) => {
+				if (v) this.setCameraToSpawn();
+			});
 	}
 
 	async enter({ from }) {
@@ -141,7 +149,6 @@ export default class BedroomScene extends BaseScene {
 		const uiScene = $scenes.ui.component;
 		uiScene.subtitles.setColor($app.$store.subtitles.colors.yellow);
 
-		console.log(from);
 		if (from?.name.includes('flashback')) this.$bgm.play({ fade: 2000 });
 
 		// /// #if __DEBUG__

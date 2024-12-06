@@ -10,6 +10,8 @@ const NOOP = (v) => v;
 const opts = { passive: false };
 const RAYCAST_ONLY_FIRST = true;
 
+let userHasMoved = false;
+
 export function raycastPlugin(webgl) {
 	/// #if __DEBUG__
 	const geometry = new BufferGeometry();
@@ -30,13 +32,14 @@ export function raycastPlugin(webgl) {
 		isHolding: false,
 		isPressed: false,
 
-		clickPosition: new Vector2(-Infinity, -Infinity),
-		position: new Vector2(-Infinity, -Infinity),
+		clickPosition: new Vector2(-1000, -1000),
+		position: new Vector2(-1000, -1000),
 	};
 
 	const raycaster = new Raycaster();
 
 	const needsUpdate = w(true);
+	const enabled = w(true);
 
 	const api = {
 		get count() {
@@ -86,8 +89,9 @@ export function raycastPlugin(webgl) {
 		$el[ev]('mouseup', onUp, opts);
 		$el[ev]('mouseleave', onUp, opts);
 
-		if (shouldListen) pointer.position.set(0, 0);
-		else pointer.position.set(-Infinity, -Infinity);
+		// if (shouldListen) pointer.position.set(0, 0);
+		// else
+		pointer.position.set(-1000, -1000);
 	}
 
 	function listen() {
@@ -149,6 +153,8 @@ export function raycastPlugin(webgl) {
 	}
 
 	function onMove({ clientX, clientY, touches = null }) {
+		userHasMoved = true;
+
 		const { x: width, y: height } = webgl.$viewport.size.value;
 
 		let x = 0;
@@ -343,6 +349,17 @@ export function raycastPlugin(webgl) {
 	}
 
 	function update() {
+		if (!enabled.value) {
+			if (intersects.length) {
+				// free all intersected objects
+				for (let i = 0; i < intersects; i++) {
+					const obj = intersects[i];
+					obj.onLeave();
+				}
+			}
+			return
+		}
+
 		const { $app, $scenes } = webgl;
 		const scene = $app.$store.isPaused ? $scenes.ui : $scenes.current;
 
@@ -364,8 +381,8 @@ export function raycastPlugin(webgl) {
 		if (idDebugCamera) return;
 		/// #endif
 
-		// pointer.position.set(0, 0);
-		!$app.$store.isPaused && pointer.position.set(0, 0);
+		if (!$app.$store.isPaused) pointer.position.set(0, 0);
+		if (!userHasMoved) pointer.position.set(-1000, -1000);
 
 		// Update raycaster globally
 		if (!cameraNeedsUpdate) {

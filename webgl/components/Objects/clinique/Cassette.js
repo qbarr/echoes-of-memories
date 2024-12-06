@@ -15,17 +15,19 @@ export class Cassette extends BaseInteractiveObject {
 
 	async onClick() {
 		if (this.scene.$sheet.isActive) return;
-		const { $povCamera: camera } = this.webgl;
+		const { $povCamera: camera, $raycast } = this.webgl;
 
 		super.onClick();
 
 		this.disableInteraction();
 		camera.$setState('focus');
+
 		await this.$sheet.play();
 		this.hide();
 
 		const { porte, contrat } = this.scene.interactiveObjects;
 
+		$raycast.enable();
 		camera.$setState('free');
 		porte.enableInteraction();
 		contrat.enableInteraction();

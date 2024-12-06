@@ -30,7 +30,7 @@ export class TV extends BaseInteractiveObject {
 		this.disableInteraction();
 
 		const { lecteur } = this.scene.interactiveObjects;
-		const { $povCamera } = this.webgl;
+		const { $povCamera, $raycast } = this.webgl;
 
 		lecteur.disableInteraction();
 		$povCamera.$setState('cinematic');
@@ -43,6 +43,7 @@ export class TV extends BaseInteractiveObject {
 		if (this.hasReadInstructions) {
 			await this.$sheetIn.play();
 			$povCamera.$setState('focus');
+			$raycast.disable();
 
 			this.dp = deferredPromise();
 			window.addEventListener('keydown', this.onKeyDown);
@@ -62,6 +63,7 @@ export class TV extends BaseInteractiveObject {
 
 		$povCamera.controls.focus_threshold.set(20)
 		$povCamera.$setState('focus');
+		$raycast.enable();
 	}
 
 	awaitPlayOut(ev) {

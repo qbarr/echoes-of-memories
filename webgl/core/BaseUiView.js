@@ -74,7 +74,7 @@ export class BaseUiView extends BaseComponent {
 		const sheet = this.$project.getSheet(id + name);
 		// await this.$onEnterSheet.attachAudio('sfx/glitch');
 
-		sheet.$composer(['global', 'bokeh', 'rgbShift', 'crt']);
+		sheet.$addComposer(['global', 'bokeh', 'rgbShift', 'crt']);
 
 		return sheet;
 	}

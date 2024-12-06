@@ -51,7 +51,7 @@ export function composerPlugin(webgl) {
 	function createSheets() {
 		const project = webgl.$theatre.getProject('Transition-Memories');
 		const sheet = project.getSheet('transition');
-		sheet.$composer(['global', 'lut', 'crt']);
+		sheet.$addComposer(['global', 'lut', 'crt']);
 		// sheet.$bool('SwitchSceneParticles', { value: false }).onChange((v) => {
 		// 	if (v) webgl.$scenes.switch('particle')
 		// 	else webgl.$scenes.switch('bedroom')
@@ -119,12 +119,20 @@ export function composerPlugin(webgl) {
 		const { $crt, $lut, $afterImage, $sketchLines, uniforms, $unrealBloom } = api;
 		const { $povCamera } = webgl;
 
+		// default bloom
+		$unrealBloom.threshold.set(0.41);
+		$unrealBloom.smoothing.set(0.6);
+		$unrealBloom.strength.set(1.5);
+		$unrealBloom.radius.set(1.8);
+		$unrealBloom.spread.set(1.15);
+
 		if ($povCamera.controls.state.is($povCamera.controls.states.GENERIQUE)) {
 			$crt.enabled.set(true);
 			$lut.set('clinique-2');
 			$afterImage.enabled.set(false);
 			$sketchLines.enabled.set(false);
 			uniforms.SRGB_TRANSFER.value = 0;
+			uniforms.isInVHSMode.value = 1;
 			return
 		}
 
@@ -134,18 +142,21 @@ export function composerPlugin(webgl) {
 			$afterImage.enabled.set(false);
 			$sketchLines.enabled.set(true);
 			uniforms.SRGB_TRANSFER.value = 0;
+			uniforms.isInVHSMode.value = 1;
 		} else if (name === 'clinique') {
 			$crt.enabled.set(false);
 			$lut.set('clinique');
 			$afterImage.enabled.set(false);
 			$sketchLines.enabled.set(true);
 			uniforms.SRGB_TRANSFER.value = 0;
+			uniforms.isInVHSMode.value = 0;
 		} else if (name === 'tv-room') {
 			$crt.enabled.set(false);
 			$lut.set('tv-room');
 			$afterImage.enabled.set(false);
 			$sketchLines.enabled.set(true);
 			uniforms.SRGB_TRANSFER.value = 0;
+			uniforms.isInVHSMode.value = 0;
 
 			// bloom
 			$unrealBloom.threshold.set(0.51);
@@ -160,10 +171,16 @@ export function composerPlugin(webgl) {
 			$afterImage.enabled.set(true);
 			$sketchLines.enabled.set(false);
 			uniforms.SRGB_TRANSFER.value = 1;
+			uniforms.isInVHSMode.value = 1;
 
-			if (name === 'flashback1') {
-				$unrealBloom.threshold.set(0.62);
-			}
+			// bloom
+			$unrealBloom.threshold.set(0.41);
+			$unrealBloom.smoothing.set(0.60);
+			$unrealBloom.strength.set(1.50);
+			$unrealBloom.radius.set(1.80);
+			$unrealBloom.spread.set(1.15);
+
+			if (name === 'flashback1') $unrealBloom.threshold.set(0.62);
 		}
 	}
 

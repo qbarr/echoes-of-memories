@@ -28,7 +28,7 @@ export class Collier extends BaseInteractiveObject {
 			else this.webgl.$scenes.switch('bedroom');
 		});
 		truckSheet.$addCamera();
-		truckSheet.$composer(['global', 'lut', 'crt']);
+		truckSheet.$addComposer(['global', 'lut', 'crt']);
 		truckSheet
 			.$list('stateMachine', Object.values($povCamera.controls.states))
 			.onChange((v) => {
@@ -42,7 +42,7 @@ export class Collier extends BaseInteractiveObject {
 		super.onClick();
 		this.disableInteraction();
 
-		const { $povCamera, $raycast } = this.webgl;
+		const { $povCamera, $raycast, $app } = this.webgl;
 		$raycast.disable();
 		$povCamera.$setState('cinematic');
 
@@ -53,6 +53,7 @@ export class Collier extends BaseInteractiveObject {
 		wait(10000).then(() => {
 			this.hide(); // !! A DECOMMENTER
 			this.specialObjects.testament.show();
+			$app.$store.hasSeenNecklaceFlashback = true;
 		});
 
 		await this.$flashbackSheet.play();

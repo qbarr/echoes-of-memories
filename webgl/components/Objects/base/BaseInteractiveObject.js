@@ -57,23 +57,23 @@ export class BaseInteractiveObject extends BaseComponent {
 	}
 
 	onClick() {
-		this.log('INTERACTION:click');
+		// this.log('INTERACTION:click');
 		this._onClick?.();
 	}
 	onHold() {
-		this.log('INTERACTION:hold');
+		// this.log('INTERACTION:hold');
 	}
 	onEnter() {
 		const { $hooks, $composer, $scenes, $povCamera } = this.webgl;
 		$hooks.afterFrame.watchOnce(() => {
-			this.log('INTERACTION:enter');
+			// this.log('INTERACTION:enter');
 			$composer.addOutline(this.mesh);
 			$scenes.ui.component.crosshair.toggleHover(true);
 			$povCamera.onInteractiveEnter();
 		});
 	}
 	onLeave() {
-		this.log('INTERACTION:leave');
+		// this.log('INTERACTION:leave');
 		const { $composer, $scenes, $povCamera } = this.webgl;
 		$composer.removeOutline(this.mesh);
 		$scenes.ui.component.crosshair.toggleHover(false);
@@ -90,13 +90,13 @@ export class BaseInteractiveObject extends BaseComponent {
 	}
 
 	onEnterPerimeter() {
-		this.log('PERIMETER:enter');
+		// this.log('PERIMETER:enter');
 	}
 	onLeavePerimeter() {
-		this.log('PERIMETER:leave');
+		// this.log('PERIMETER:leave');
 	}
 	onInsidePerimeter(distance, normDistance) {
-		// this.log('PERIMETER:inside', distance, normDistance);
+		this.log('PERIMETER:inside', distance, normDistance);
 	}
 
 	/// #if __DEBUG__
@@ -104,4 +104,47 @@ export class BaseInteractiveObject extends BaseComponent {
 		this.gui = _gui.addFolder({ title: this.name });
 	}
 	/// #endif
+}
+
+
+const ucfirst = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+export class BaseBedroomInteractiveObject extends BaseInteractiveObject {
+	async onClick() {
+		super.onClick();
+
+		this.disableInteraction();
+
+		const { $povCamera, $raycast, $audio } = this.webgl;
+
+		$raycast.disable();
+		$povCamera.$setState('cinematic');
+
+		$povCamera.isSfxActive = true;
+		await this.$gotoSheet.play();
+		$povCamera.isSfxActive = false;
+
+		$povCamera.controls.focus_threshold.set(20)
+		$povCamera.$setState('focus');
+		$raycast.disable();
+
+		await this.$audioSheet.play();
+		$audio.play('common/short-glitch', { volume: .5, delay: 400 });
+		await this.scene.$respawnFadeoutSheet.play()
+
+		$raycast.enable();
+
+		$povCamera.$setState('free');
+		this.enableInteraction();
+	}
+
+	async createSheets() {
+		const { $theatre } = this.webgl;
+
+		this.$gotoSheet = this.$project.getSheet(`${ucfirst(this.objectName)} > Go To`);
+		this.$gotoSheet.$addCamera();
+		// this.$gotoSheet.$addComposer([ 'global', 'crt' ]);
+
+		this.$audioSheet = this.$project.getSheet(`${ucfirst(this.objectName)} > Audio`);
+		this.$audioSheet.attachAudio(this.audioId);
+	}
 }

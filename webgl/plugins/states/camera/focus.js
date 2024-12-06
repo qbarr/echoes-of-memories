@@ -7,7 +7,7 @@ async function enter({ machine }) {
 
 	crosshair.setVisible(true);
 	camera.controls.setMode('focus');
-	$raycast.enable();
+	// $raycast.enable();
 }
 function update() {}
 async function leave({ machine }) {}

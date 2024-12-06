@@ -27,8 +27,6 @@ export class Door extends BaseInteractiveObject {
 		this.actionId = 'porte';
 		this.animationProgress = w(0);
 
-		console.log(this.scene);
-
 		this.scene.$mixer.play(this.actionId);
 		this.scene.$mixer.normSeek(0.2);
 	}
@@ -37,7 +35,7 @@ export class Door extends BaseInteractiveObject {
 		this.$sheet = this.$project.getSheet('Door');
 		await this.$sheet.attachAudio(this.audioId);
 		this.$sheet.$object('Door', this.base);
-		this.$sheet.$composer(['global']);
+		this.$sheet.$addComposer(['global']);
 		this.$sheet.$addCamera();
 		this.$sheet
 			.$float('animation_progress', this.animationProgress, {

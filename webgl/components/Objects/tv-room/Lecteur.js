@@ -13,7 +13,7 @@ export class Lecteur extends BaseInteractiveObject {
 		this.$sheet = this.$project.getSheet('Play-Tape');
 		await this.$sheet.attachAudio(this.audioId);
 		this.$sheet.$addCamera();
-		this.$sheet.$composer(['global', 'lut']);
+		this.$sheet.$addComposer(['global', 'lut']);
 		this.$sheet.$object('Cassette', this.cassette, { nudgeMultiplier: 0.01 });
 
 		this.$sheet.$bool('Screen / Tape Played', { value: false }).onChange((v) => {

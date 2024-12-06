@@ -98,7 +98,7 @@ void main() {
 	vec3 rgb = texel * scanl;
 	gl_FragColor = vec4(rgb, 1.0);
 
-	//vec4 afterImage = texture2D(tAfterImage, uv);
-	//gl_FragColor.rgb = mix(gl_FragColor.rgb, max(gl_FragColor.rgb, afterImage.rgb), afterImage.rgb);
+	vec4 afterImage = texture2D(tAfterImage, uv);
+	gl_FragColor.rgb = mix(gl_FragColor.rgb, max(gl_FragColor.rgb, afterImage.rgb), afterImage.rgb);
 	gl_FragColor.rgb *= vign;
 }

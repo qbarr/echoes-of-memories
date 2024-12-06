@@ -7,7 +7,7 @@ import { UiText } from '../components';
 export class Generique extends BaseUiView {
 	init() {
 		const content = [
-			'ECHOES OF MEMORIES.',
+			'ECHOES OF MEMORIES',
 
 			`DEVELOPPEURS\n\n
 			QUENTIN....BARROCA\n
@@ -21,7 +21,7 @@ export class Generique extends BaseUiView {
 
 			`DOUBLEURS\n\n
 			BEN........VICTOR NIVERD\n
-			ADAMN......ALEXIS THOMASSIAN\n`,
+			ADAM......ALEXIS THOMASSIAN\n`,
 
 			`REMERCIEMENTS\n\n
 			FLORIAN....ZUMBRUNN\n
