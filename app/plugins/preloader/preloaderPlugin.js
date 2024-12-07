@@ -1,5 +1,6 @@
-import PreloaderComponent from './component/Preloader.js'
 import { markRaw, reactive, watchPostEffect } from 'vue'
+import PreloaderComponent from './component/Preloader.js'
+import { prng } from '#utils/maths/prng.js'
 
 const LSKEY = __DEBUG__ ? 'debug-preloader-skip' : null
 
@@ -20,6 +21,7 @@ export function preloaderPlugin() {
   if (SKIP_ANIMATIONS) window.PRELOADER_SKIP_ANIMATIONS = true
 
   const beforeExitListeners = []
+  const afterExitListeners = []
 
   const finished = new Promise((resolve) => (resolveFinished = resolve))
 
@@ -41,12 +43,18 @@ export function preloaderPlugin() {
     task,
     createTask,
     setMinimumTaskCount,
-    beforeExit
+    beforeExit,
+    afterExit
   })
 
   function beforeExit(cb) {
     if (exiting) cb()
     else beforeExitListeners.push(cb)
+  }
+
+  function afterExit(cb) {
+    if (exiting) cb()
+    else afterExitListeners.push(cb)
   }
 
   function exitPreloader() {
@@ -64,6 +72,10 @@ export function preloaderPlugin() {
       .then(() => !SKIP_ANIMATIONS && el.exit && el.exit(done))
       // Destroy it once it has exited
       .then(destroy)
+      // Run afterExitListeners hook in sequence
+      // Reset listener array to clean a bit of memory
+      .then(() => afterExitListeners.reduce((chain, fn) => chain.then(fn), Promise.resolve()))
+      .then(() => (afterExitListeners.length = 0))
       .catch((err) => {
         console.error(err)
         destroy()
@@ -125,6 +137,7 @@ export function preloaderPlugin() {
   function createTask({ weight = 1 } = {}) {
     let taskFinished = false
     addTaskToCount(weight)
+
     return {
       get finished() {
         return taskFinished
@@ -137,8 +150,17 @@ export function preloaderPlugin() {
     }
   }
 
-  function task(promise, { weight = 1, graceful = true } = {}) {
+  function fakeTask(delay, weight = 1) {
+    const p = new Promise((resolve) => setTimeout(resolve, delay))
+    return task(p, { weight, isFromFakeTask: true })
+  }
+
+  function task(promise, { weight = 1, graceful = true, isFromFakeTask = false } = {}) {
+    // Create a task with a random weight to avoid progress bar to be too linear and too quick
+    if(!isFromFakeTask) fakeTask(prng.randomFloat(1000, 5000), prng.randomInt(1, 3))
+
     addTaskToCount(weight)
+
     return afterAppMount
       .then(() => (typeof promise === 'function' ? promise() : promise))
       .then((v) => {

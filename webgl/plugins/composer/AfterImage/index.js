@@ -15,8 +15,8 @@ export const useAfterImagePass = (composer) => {
 
 	let saturationTween = null;
 	/* Params */
-	const enabled = w(true);
-	const strength = w(0.97);
+	const enabled = w(false);
+	const strength = w(0.995);
 
 	const api = {
 		enabled,
@@ -32,18 +32,8 @@ export const useAfterImagePass = (composer) => {
 	const { $threeRenderer, $fbo } = webgl;
 
 	/* Init */
-	const pingPongBuffer = pingPongRT({
-		name: 'AfterImage',
-		depth: false,
-		stencil: false,
-		scale: .3
-	});
-	const buffer = $fbo.createBuffer({
-		name: 'AfterImage',
-		depth: false,
-		stencil: false,
-		scale: .3
-	});
+	const pingPongBuffer = pingPongRT({ name: 'AfterImage', depth: false, stencil: false });
+	const buffer = $fbo.createBuffer({ name: 'AfterImage', depth: false, stencil: false });
 	composer.buffers.afterImage = buffer;
 
 	const filter = createFilter({
@@ -87,7 +77,7 @@ export const useAfterImagePass = (composer) => {
 	function devtools(_gui) {
 		const gui = _gui.addFolder({ title: '🪞 After Image' });
 
-		const opts = { min: 0, max: 1, step: 0.01 };
+		const opts = { min: 0, max: 1, step: 0.001 };
 
 		gui.addBinding(enabled, 'value', { label: 'Enabled' });
 		gui.addBinding(strength, 'value', { label: 'Strength', ...opts });

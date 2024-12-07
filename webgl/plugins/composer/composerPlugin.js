@@ -129,7 +129,7 @@ export function composerPlugin(webgl) {
 		if ($povCamera.controls.state.is($povCamera.controls.states.GENERIQUE)) {
 			$crt.enabled.set(true);
 			$lut.set('clinique-2');
-			$afterImage.enabled.set(false);
+			// $afterImage.enabled.set(false);
 			$sketchLines.enabled.set(false);
 			uniforms.SRGB_TRANSFER.value = 0;
 			uniforms.isInVHSMode.value = 1;
@@ -139,21 +139,21 @@ export function composerPlugin(webgl) {
 		if (name === 'bedroom') {
 			$crt.enabled.set(true);
 			$lut.set('clinique-2');
-			$afterImage.enabled.set(false);
+			// $afterImage.enabled.set(false);
 			$sketchLines.enabled.set(true);
 			uniforms.SRGB_TRANSFER.value = 0;
 			uniforms.isInVHSMode.value = 1;
 		} else if (name === 'clinique') {
 			$crt.enabled.set(false);
 			$lut.set('clinique');
-			$afterImage.enabled.set(false);
+			// $afterImage.enabled.set(false);
 			$sketchLines.enabled.set(true);
 			uniforms.SRGB_TRANSFER.value = 0;
 			uniforms.isInVHSMode.value = 0;
 		} else if (name === 'tv-room') {
 			$crt.enabled.set(false);
 			$lut.set('tv-room');
-			$afterImage.enabled.set(false);
+			// $afterImage.enabled.set(false);
 			$sketchLines.enabled.set(true);
 			uniforms.SRGB_TRANSFER.value = 0;
 			uniforms.isInVHSMode.value = 0;
@@ -168,7 +168,7 @@ export function composerPlugin(webgl) {
 			$crt.enabled.set(true);
 			$lut.set('neutral');
 			// $lut.set('particle');
-			$afterImage.enabled.set(true);
+			// $afterImage.enabled.set(true);
 			$sketchLines.enabled.set(false);
 			uniforms.SRGB_TRANSFER.value = 1;
 			uniforms.isInVHSMode.value = 1;

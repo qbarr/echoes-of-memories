@@ -1557,6 +1557,45 @@
             "trackIdByPropPath": {
               "[\"value\"]": "Mh_bgYqbBP"
             }
+          },
+          "Generique Screen": {
+            "trackData": {
+              "u7J_l0tYmV": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Generique Screen:[\"value\"]",
+                "keyframes": [
+                  {
+                    "id": "_pAT0si7l2",
+                    "position": 0,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": false
+                  },
+                  {
+                    "id": "_4strUhfkR",
+                    "position": 48.933,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": true
+                  }
+                ]
+              }
+            },
+            "trackIdByPropPath": {
+              "[\"value\"]": "u7J_l0tYmV"
+            }
           }
         }
       }
@@ -1564,6 +1603,7 @@
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "NGgwWn3Tkwym7q60",
     "ItKq95w5VaZYbOqL",
     "EhzJHY2Fv5ivWHpD",
     "ipjaE_5lxXBPPgmt",

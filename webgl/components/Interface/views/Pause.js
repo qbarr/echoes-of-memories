@@ -9,8 +9,8 @@ export class Pause extends BaseUiView {
 		const { $viewport, $subtitles } = this.webgl;
 		const { x: vw, y: vh } = $viewport.size.value;
 
-		this.vw = vw;
-		this.vh = vh;
+		this.vw = vw * .75
+		this.vh = vh * .75
 
 		this.createTitle();
 		this.createButton();
@@ -28,6 +28,7 @@ export class Pause extends BaseUiView {
 				color: new Color(0xffd700).offsetHSL(0, 0.3, 0.1),
 			},
 			justifyContent: 'left',
+			width: this.vw
 		});
 		this.title.base.position.add(new Vector3(-7, 6, 0));
 	}
@@ -42,6 +43,7 @@ export class Pause extends BaseUiView {
 				content: 'REPRENDRE',
 			},
 			justifyContent: 'left',
+			width: this.vw,
 			callback: this.goToGame,
 		});
 		this.settingsButton = this.add(UiButton, {
@@ -50,6 +52,7 @@ export class Pause extends BaseUiView {
 				content: 'PARAMETRES',
 			},
 			justifyContent: 'left',
+			width: this.vw,
 			callback: this.goToSettings,
 		});
 		this.creditsButton = this.add(UiButton, {
@@ -58,6 +61,7 @@ export class Pause extends BaseUiView {
 				content: 'CREDITS',
 			},
 			justifyContent: 'left',
+			width: this.vw,
 			callback: this.goToCredits,
 		});
 
@@ -77,8 +81,10 @@ export class Pause extends BaseUiView {
 
 	onKeyDown(event) {
 		const { id: currentState } = this.scene.$statesMachine.currentState;
-		if (event.code === 'KeyP' && currentState === 'hud')
-			this.scene.$setState('pause');
+		if (event.code === 'KeyP') {
+			if (currentState === 'hud') this.scene.$setState('pause');
+			else this.scene.$setState('pp');
+		}
 	}
 
 	goToGame() {

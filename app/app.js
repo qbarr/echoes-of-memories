@@ -12,12 +12,12 @@ createApp({
 		await app.$manifest.load();
 	},
 	init: async (_, app) => {
+		const { $store, $preloader, $webgl } = app;
+
 		app.$storage = subStorage('EchoesOfMemories');
 		addRouteGuard();
-		document.addEventListener(
-			'mousedown',
-			() => (app.$store.hasInteractedOnce = true),
-			{ once: true },
-		);
+		document.addEventListener( 'mousedown', () => $store.hasInteractedOnce = true, { once: true });
+		// Enable raycasting after preloader exit
+		$preloader.afterExit(() => $webgl.$raycast.enable())
 	},
 });

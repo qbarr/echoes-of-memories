@@ -11,20 +11,25 @@ export class Splash extends BaseUiView {
 		const { x: vw, y: vh } = $viewport.size.value;
 		const { right, width } = this.camera.base;
 
+		let r = 0
+		if (vw / vh < 1) r = vw / vh
+		else r = vh / vw
+
 		this.onStart = this.onStart.bind(this);
 
 		this.title = this.add(UiButton, {
 			text: {
 				name: 'UiButtonSplash',
-				content: 'LANCER',
+				content: 'LANCER L\'EXPERIENCE',
 				center: { x: true, y: true },
 				align: 'center',
 				justifyContent: 'center',
+				scale: r
 			},
 			callback: this.onStart,
 		});
 
-		this.translate(this.title, { x: 0, y: 0 });
+		this.translate(this.title, { x: 0, y: -.5 });
 	}
 
 	afterInit() {

@@ -48,7 +48,7 @@ export const useCRTPass = (composer) => {
 	/* Private */
 	const { $threeRenderer, $fbo } = webgl;
 
-	const buffer = buffers.crt = $fbo.createBuffer({ name: 'CRT', depth: false, alpha: false, scale: 0.35 });
+	const buffer = buffers.crt = $fbo.createBuffer({ name: 'CRT', depth: false, alpha: false, scale: 0.45 });
 	const filter = filters.crt = createFilter({
 		uniforms: {
 			...uniforms,

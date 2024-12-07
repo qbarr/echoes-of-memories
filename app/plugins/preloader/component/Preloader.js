@@ -5,18 +5,42 @@ import { raf } from '#utils/raf'
 import './Preloader.scss'
 
 export default function Preloader(app, base) {
-  let bg = base.querySelector('.preloader-background')
-  if (!bg) {
-    bg = document.createElement('figure')
-    bg.classList.add('preloader-background')
-    base.appendChild(bg)
+  // let bg = base.querySelector('.preloader-background')
+  // if (!bg) {
+  //   bg = document.createElement('figure')
+  //   bg.classList.add('preloader-background')
+  //   base.appendChild(bg)
+  // }
+  // let counter = base.querySelector('.preloader-counter')
+  // if (!counter) {
+  //   counter = document.createElement('p')
+  //   counter.classList.add('preloader-counter')
+  //   base.appendChild(counter)
+  // }
+
+  const getNode = (name) => base.querySelector(`.preloader-${name}`)
+
+  const NODES = {
+    base,
+    title: getNode('title'),
+    loading: getNode('loading'),
+    progress: getNode('progress'),
+    rec: getNode('rec'),
   }
-  let counter = base.querySelector('.preloader-counter')
-  if (!counter) {
-    counter = document.createElement('p')
-    counter.classList.add('preloader-counter')
-    base.appendChild(counter)
+
+  const progressBars = Array.from(NODES.progress.querySelectorAll('span'))
+  const recMinutes = NODES.rec.querySelector('.rec-minutes')
+  const recSeconds = NODES.rec.querySelector('.rec-seconds')
+
+  let totalSeconds = 0;
+  function setTime() {
+    ++totalSeconds;
+    recMinutes.innerHTML = (parseInt(totalSeconds / 60)).toString().padStart(2, '0')
+    recSeconds.innerHTML = (totalSeconds % 60).toString().padStart(2, '0')
   }
+
+  setInterval(setTime, 650);
+
 
   const progressFinished = deferredPromise()
   let progressTarget = 0
@@ -43,10 +67,12 @@ export default function Preloader(app, base) {
     progressCurrent = newProgress
 
     // Update DOM counter
-    const num = Math.floor(progressCurrent * 100)
-      .toString()
-      .padStart(3, '0')
-    counter.textContent = num
+    progressBars.forEach((bar, i) => {
+      if (bar.classList.contains('is-loaded')) return
+
+      if (i < progressCurrent * progressBars.length)
+        bar.classList.add('is-loaded')
+    })
 
     // When progress is finished, we mark the progression as finished
     if (progressCurrent >= 1) progressFinished.resolve()
@@ -56,12 +82,22 @@ export default function Preloader(app, base) {
     // Wait for the incrementing counter to go to 100%
     await progressFinished
 
-    bg.style.transition = 'transform 1000ms cubic-bezier(0.910, 0.000, 0.195, 0.990)'
-    bg.style.transform = 'scaleY(0)'
-    await wait(400)
-    counter.style.transition = 'opacity 200ms'
-    counter.style.opacity = 0
-    await wait(100)
+    NODES.title.style.transition = 'opacity 600ms cubic-bezier(0.55, 0, 0.1, 1)'
+    NODES.loading.style.transition = 'opacity 600ms cubic-bezier(0.55, 0, 0.1, 1)'
+    NODES.progress.style.transition = 'opacity 600ms cubic-bezier(0.55, 0, 0.1, 1)'
+    NODES.rec.style.transition = 'opacity 600ms cubic-bezier(0.55, 0, 0.1, 1)'
+
+    await wait(2000)
+
+    wait(100).then(() => { NODES.loading.style.opacity = 0 })
+    wait(300).then(() => { NODES.title.style.opacity = 0 })
+    wait(400).then(() => { NODES.rec.style.opacity = 0 })
+
+    for (let i = 0; i < progressBars.length; i++) {
+      wait(45 * i).then(() => { progressBars[i].classList.remove('is-loaded') })
+    }
+
+    await wait(750)
 
     // Calling done tell the app when the page can be visible
     // It is NOT when the preloader is destroyed !

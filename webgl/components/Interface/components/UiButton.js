@@ -74,15 +74,15 @@ export class UiButton extends BaseComponent {
 	}
 
 	setupBackground() {
-		const height = 1 * this.props.text.scale;
-		this.backgroundGeo = new PlaneGeometry(this.backgroundWidth, 4, 16, 16);
+		const height = this.props.text.scale;
+		this.backgroundGeo = new PlaneGeometry(this.backgroundWidth * height, 4 * height, 16, 16);
 		this.backgroundMat = new MeshBasicMaterial({
 			color: this.backgroundColor,
 			transparent: true,
 			opacity: 0.9,
 		});
 		this.background = new Mesh(this.backgroundGeo, this.backgroundMat);
-		this.background.position.set(0, 1.5, -0.1);
+		this.background.position.set(0, 1.5 * height, -0.1);
 		this.base.add(this.background);
 	}
 
@@ -112,6 +112,13 @@ export class UiButton extends BaseComponent {
 		});
 
 		if (!this.props.forceHover) this.onLeave();
+
+		this.webgl.$renderer.drawingBufferSize.watch(this.resize.bind(this));
+	}
+
+	resize() {
+		this.setupText();
+		this.justifyContent();
 	}
 
 	onClick(e) {

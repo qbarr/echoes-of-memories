@@ -20,7 +20,7 @@
       },
       "sequence": {
         "subUnitsPerUnit": 30,
-        "length": 8.03,
+        "length": 8.12,
         "type": "PositionalSequence",
         "tracksByObject": {
           "subtitles": {
@@ -137,24 +137,24 @@
                   },
                   {
                     "id": "q2Kh3mR_vl",
-                    "position": 4.433,
+                    "position": 5.4,
                     "connectedRight": true,
                     "handles": [
                       0.45,
                       0.94,
-                      0.455,
-                      0.03
+                      0.42,
+                      0
                     ],
                     "type": "bezier",
                     "value": 77.4562494737929
                   },
                   {
                     "id": "k-7IWqQ7ei",
-                    "position": 7.1,
+                    "position": 8.033,
                     "connectedRight": true,
                     "handles": [
-                      0.515,
-                      0.955,
+                      0.311,
+                      0.958,
                       0.5,
                       0
                     ],
@@ -5028,6 +5028,7 @@
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "G205pzUoNOWAGFck",
     "M04zRkLc1GzCaPP5",
     "jbdl7i9eHJgAJve8",
     "lUWHP1SF_AeQ9j8l",

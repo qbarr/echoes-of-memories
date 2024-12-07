@@ -14,10 +14,7 @@ if (!__DEVELOPMENT__) {
 /// #if __DEBUG__
 import studio from '@theatre/studio';
 
-studio.initialize({
-	persistenceKey: 'EOM:theatrejs',
-	usePersistentStorage: __DEVELOPMENT__,
-});
+studio.initialize({ persistenceKey: 'EOM:theatrejs' });
 
 const studioActive = storageSync('webgl:theatre:studioActive', w(false));
 const keepLastSelection = storageSync('webgl:theatre:keepLastSelection', w(false));
