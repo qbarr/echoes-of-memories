@@ -28,7 +28,7 @@ export class Couverture extends BaseInteractiveObject {
 
 		this.disableInteraction();
 
-		const { $povCamera, $raycast } = this.webgl;
+		const { $povCamera, $raycast, $app } = this.webgl;
 
 		$raycast.disable();
 		$povCamera.$setState('cinematic');

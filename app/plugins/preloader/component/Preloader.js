@@ -70,7 +70,7 @@ export default function Preloader(app, base) {
     progressBars.forEach((bar, i) => {
       if (bar.classList.contains('is-loaded')) return
 
-      if (i < progressCurrent * progressBars.length)
+      if (i <= progressCurrent * progressBars.length)
         bar.classList.add('is-loaded')
     })
 
