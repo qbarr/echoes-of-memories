@@ -75,6 +75,7 @@ export class UiButton extends BaseComponent {
 
 	setupBackground() {
 		const height = this.props.text.scale;
+
 		this.backgroundGeo = new PlaneGeometry(this.backgroundWidth * height, 4 * height, 16, 16);
 		this.backgroundMat = new MeshBasicMaterial({
 			color: this.backgroundColor,

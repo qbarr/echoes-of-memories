@@ -17,7 +17,7 @@
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100svh;
     overflow: hidden;
     z-index: 400;
     opacity: 0.8;
@@ -43,7 +43,7 @@
     left: 0;
     top: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100svh;
     pointer-events: none;
     z-index: 300;
     opacity: 0.6;
@@ -73,7 +73,7 @@
     color: #ffdd00;
     font-size: 4rem;
     width: 100vw;
-    height: 100vh;
+    height: 100svh;
     background: #000000;
 
     display: flex;
@@ -88,9 +88,8 @@
     animation: rgbText 1500ms steps(8) 0s infinite;
     text-align: center;
     filter: blur(2px);
-
+    font-size: min(4rem, 14vw);
     display: flex;
-
 
     .preloader-dots {
       span {

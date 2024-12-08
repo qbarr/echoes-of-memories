@@ -2130,7 +2130,20 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Vous pensez que ça va me redresser ? Que ça va guerir ce que j'ai ?"
+                    "value": "Vous pensez que ça va me redresser ?"
+                  },
+                  {
+                    "id": "WliOhAhoEF",
+                    "position": 32.5,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "Que ça va guerir ce que j'ai ?"
                   },
                   {
                     "id": "-_XsHP4Kd9",
@@ -2156,7 +2169,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Ah... Je vois"
+                    "value": "(Ah... Je vois)"
                   },
                   {
                     "id": "EzA9Y_mqAr",
@@ -2208,7 +2221,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Oui... je me souviens bien de ce repas"
+                    "value": "(Oui... je me souviens bien de ce repas)"
                   },
                   {
                     "id": "BT8ivlV1AY",
@@ -2247,7 +2260,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Pourquoi est-ce que vous m'ecoutez jamais ?"
+                    "value": "Pourquoi est-ce que vous m'ecoutez jamais ?!"
                   },
                   {
                     "id": "pawfXXpOXz",
@@ -2273,7 +2286,20 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Vous croyez vraiment que me forcer a etre quelqu'un que je suis pas ça va arranger les choses ?"
+                    "value": "Vous croyez vraiment que me forcer a etre quelqu'un"
+                  },
+                  {
+                    "id": "1RZ4u117Sc",
+                    "position": 70,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "que je suis pas ça va arranger les choses ?!"
                   },
                   {
                     "id": "LnRmRBph0V",
@@ -2835,7 +2861,20 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Ce colier... Il appartenait a quelqu'un de tres cher a mon coeur"
+                    "value": "Ce collier..."
+                  },
+                  {
+                    "id": "eCXbzo9Ofz",
+                    "position": 1.4,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "Il appartenait a quelqu'un de tres cher a mon coeur"
                   },
                   {
                     "id": "727DXLJ8Zg",
@@ -2926,7 +2965,20 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Alors Ben, pourquoi t'as decide de rejoindre l'ecole militaire ?"
+                    "value": "Alors Ben,"
+                  },
+                  {
+                    "id": "hgnk5cQfjk",
+                    "position": 31.367,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "pourquoi t'as decide de rejoindre l'ecole militaire ?"
                   },
                   {
                     "id": "1tKjkgrd1P",
@@ -2939,7 +2991,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "C'est bien lui... ca fait si longtemps..."
+                    "value": "(C'est bien lui... ca fait si longtemps...)"
                   },
                   {
                     "id": "bbrH93g04i",
@@ -2952,7 +3004,20 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Euuuh mes parents pensaient que ça m'aiderait a... a surmonter certaines choses"
+                    "value": "Euuuh mes parents pensaient que ça m'aiderait a..."
+                  },
+                  {
+                    "id": "5YTt5Y1OFO",
+                    "position": 41.3,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "a surmonter certaines choses"
                   },
                   {
                     "id": "iWMtHspM9w",
@@ -3082,7 +3147,20 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "C'est ce jour la, dans ce camion, que j'ai rencontre Adam pour la premiere fois"
+                    "value": "C'est ce jour la, dans ce camion,"
+                  },
+                  {
+                    "id": "R9qDgztkPj",
+                    "position": 82.433,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "que j'ai rencontre Adam pour la premiere fois"
                   },
                   {
                     "id": "_oTs_cM_ow",
@@ -3095,7 +3173,33 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "On se connaissait pas encore, mais il y avait quelque chose dans son regard qui m'a tout de suite parle"
+                    "value": "On se connaissait pas encore,"
+                  },
+                  {
+                    "id": "-xoLUrNCqf",
+                    "position": 86.333,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "mais il y avait quelque chose dans"
+                  },
+                  {
+                    "id": "JUMyJWAAUB",
+                    "position": 87.567,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "son regard qui m'a tout de suite parle"
                   },
                   {
                     "id": "VpIAxHDul-",
@@ -4822,7 +4926,20 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Non non non non non, Adam Adam ! Reste avec moi okay ?! "
+                    "value": "Non non non non non, Adam Adam !"
+                  },
+                  {
+                    "id": "d53p_c5fh8",
+                    "position": 27.8,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": "Reste avec moi ok ?!"
                   },
                   {
                     "id": "LTeK0ZH1qs",
@@ -4861,7 +4978,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Non non, c'est pas possible"
+                    "value": "(Non non, c'est pas possible)"
                   },
                   {
                     "id": "PDipl5zdZB",
@@ -4952,7 +5069,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "Arretez ça ! Je vous en supplie ! C'est trop dur"
+                    "value": "(Arretez ça ! Je vous en supplie ! C'est trop dur)"
                   },
                   {
                     "id": "7yqI_m7Y3L",
@@ -4978,7 +5095,7 @@
                       0
                     ],
                     "type": "bezier",
-                    "value": "J'ai dit stop ! Sortez moi de la !"
+                    "value": "(J'ai dit stop ! Sortez moi de la !)"
                   },
                   {
                     "id": "i6z0EhS6DJ",
@@ -7086,6 +7203,7 @@
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "WL1rpE71RDjzSEX-",
     "PZYJXjI5d1PJF4EU",
     "vvVJQq8uzKwW9Q-R",
     "e8m9k1bg1JrK5zsB",

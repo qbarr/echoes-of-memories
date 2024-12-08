@@ -157,7 +157,7 @@ export function preloaderPlugin() {
 
   function task(promise, { weight = 1, graceful = true, isFromFakeTask = false } = {}) {
     // Create a task with a random weight to avoid progress bar to be too linear and too quick
-    if(!isFromFakeTask) fakeTask(prng.randomFloat(1000, 5000), prng.randomInt(1, 3))
+    if(!isFromFakeTask && !__DEVELOPMENT__) fakeTask(prng.randomFloat(1000, 5000), prng.randomInt(1, 3))
 
     addTaskToCount(weight)
 

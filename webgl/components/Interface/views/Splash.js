@@ -12,7 +12,7 @@ export class Splash extends BaseUiView {
 		const { right, width } = this.camera.base;
 
 		let r = 0
-		if (vw / vh < 1) r = vw / vh
+		if (vw / vh < 1) r = (vw / vh) * .75
 		else r = vh / vw
 
 		this.onStart = this.onStart.bind(this);
