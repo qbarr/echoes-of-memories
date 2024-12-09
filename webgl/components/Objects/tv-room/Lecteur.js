@@ -22,7 +22,7 @@ export class Lecteur extends BaseInteractiveObject {
 		});
 		this.$sheet.$vec2(
 			'Screen / Interference',
-			this.screen.uniforms.uInterferences.value,
+			this.screen.uniforms.uScreenInterferences.value,
 		);
 	}
 

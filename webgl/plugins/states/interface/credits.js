@@ -1,7 +1,7 @@
 import { wait } from '#utils/async';
 
 async function enter({ machine, from }) {
-	const { $theatre, $scenes } = this.$webgl;
+	const { $scenes } = this.$webgl;
 	const scene = $scenes.ui.component;
 
 	scene.creditsScreen.show();
@@ -10,12 +10,16 @@ async function enter({ machine, from }) {
 function update() {}
 
 async function leave({ machine, to }) {
-	const { $theatre, $scenes } = this.$webgl;
+	const { $scenes, $audio } = this.$webgl;
 	const scene = $scenes.ui.component;
+	const curScene = $scenes.current;
 
-	const { $pauseScreenEnter, $pauseScreenToMenu } = scene;
+	const { $pauseScreenToMenu } = scene;
 
 	if (to.id == 'pause') {
+		if (curScene.name !== 'bedroom') return scene.creditsScreen.hide();
+
+		$audio.play('common/short-glitch', { volume: 0.3 });
 		$pauseScreenToMenu.play();
 		await wait(500);
 	}

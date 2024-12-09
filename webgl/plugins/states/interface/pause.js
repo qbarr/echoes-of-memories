@@ -5,15 +5,12 @@ async function enter({ machine, from, to }) {
 	const { $store } = this.$app;
 	const scene = $scenes.ui.component;
 
-	const { $pauseScreenEnter, $pauseScreenToMenu } = scene;
+	const { $pauseScreenEnter } = scene;
 
 	$store.isPaused = true;
 	document.exitPointerLock();
 
-	if (from.id == 'settings' || from.id == 'credits') {
-		// $pauseScreenEnter.play();
-		// await wait(500);
-	} else {
+	if (from.id == 'hud') {
 		$audio.play('common/glitch', { loop: true, volume: 0.3 });
 		$pauseScreenEnter.play();
 		await wait(500);
@@ -27,24 +24,23 @@ function update() {}
 async function leave({ machine, to }) {
 	const { $scenes, $audio } = this.$webgl;
 	const scene = $scenes.ui.component;
+	const curScene = $scenes.current
 
-	const { $pauseScreenEnter, $pauseScreenToMenu } = scene;
+	const { $pauseScreenToHud, $pauseScreenToMenu } = scene;
 
 	if (to.id == 'hud') {
-		if ($pauseScreenEnter) {
-			$pauseScreenEnter.play({ direction: 'reverse' });
-			await wait(600);
-			$audio.stopSound('common/glitch');
-		}
-	}
-
-	if (to.id == 'settings' || to.id == 'credits') {
-		$pauseScreenToMenu.play();
-		$audio.play('common/short-glitch', { volume: 0.3 });
+		wait(500).then(() => $audio.stopSound('common/glitch'))
+		$pauseScreenToHud.play();
 		await wait(500);
-	}
+		scene.pauseScreen.hide();
+	} else {
+		if (curScene.name !== 'bedroom') return scene.pauseScreen.hide();
 
-	scene.pauseScreen.hide();
+		$audio.play('common/short-glitch', { volume: 0.3 });
+		$pauseScreenToMenu.play();
+		await wait(500);
+		scene.pauseScreen.hide();
+	}
 }
 
 export default { enter, leave, update };

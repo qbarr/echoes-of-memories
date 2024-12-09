@@ -36,8 +36,6 @@ export class UiNavigation extends BaseComponent {
 			...props,
 		};
 
-		// console.log('UiNavigation props:', props);
-
 		super(props);
 
 		this.name = 'UiNavigation';
@@ -56,6 +54,7 @@ export class UiNavigation extends BaseComponent {
 
 	init() {
 		this.setupTabs();
+		this.currentIndex.watchImmediate(this.updateTabs.bind(this));
 	}
 
 	setupTabs() {
@@ -68,13 +67,17 @@ export class UiNavigation extends BaseComponent {
 		this.props.tabs.forEach((tab, i) => {
 			const text = this.add(UiButton, {
 				text: {
+					scale: .75,
 					name: 'UiNav' + i,
 					content: tab,
 				},
 				index: i,
+				blurOnClick: false,
+				keepHoverWhenActive: true,
 				callback: this.navClick,
 			});
-			text.base.position.set(i * 4, 0, 0);
+			if (i === 0) text.base.position.set(.5 + i * 3.9 + .3, 0, 0);
+			else text.base.position.set(.5 + i * 3.9, 0, 0);
 			this.tabs.push(text);
 		});
 
@@ -85,30 +88,41 @@ export class UiNavigation extends BaseComponent {
 		const { object } = e;
 		const { index } = object.parent;
 
-		if (object && !isNaN(index)) {
-			this.currentIndex.set(index, true);
-		}
+		if (object && !isNaN(index)) this.currentIndex.set(index, true);
+	}
+
+	updateTabs(currentIndex) {
+		this.tabs.forEach((tab, i) => {
+			if (currentIndex === i) {
+				tab.props.forceHover = true;
+				tab.hoverIn()
+			} else {
+				tab.props.forceHover = false;
+				tab.blur()
+			}
+		});
 	}
 
 	addListeners() {
 		document.addEventListener('keydown', this.onKeyDown);
 	}
 
+	goPrev() {
+		this.currentIndex.set(
+			clamp(this.currentIndex.value - 1, 0, this.tabs.length - 1),
+		);
+	}
+
+	goNext() {
+		this.currentIndex.set(
+			clamp(this.currentIndex.value + 1, 0, this.tabs.length - 1),
+		);
+	}
+
 	onKeyDown(e) {
-		if (e.key === 'ArrowRight') {
-			this.tabs[this.currentIndex.value].hoverOut();
-			this.currentIndex.set(
-				clamp(this.currentIndex.value + 1, 0, this.tabs.length - 1),
-				true,
-			);
-			this.tabs[this.currentIndex.value].hoverIn();
-		} else if (e.key === 'ArrowLeft') {
-			this.tabs[this.currentIndex.value].hoverOut();
-			this.currentIndex.set(
-				clamp(this.currentIndex.value - 1, 0, this.tabs.length - 1),
-				true,
-			);
-			this.tabs[this.currentIndex.value].hoverIn();
-		}
+		if (!['ArrowRight', 'ArrowLeft'].includes(e.code)) return;
+
+		if (e.code === 'ArrowRight') this.goNext();
+		else this.goPrev();
 	}
 }

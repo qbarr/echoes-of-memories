@@ -19,7 +19,7 @@ createApp({
 		document.addEventListener( 'mousedown', () => $store.hasInteractedOnce = true, { once: true });
 		// Enable raycasting after preloader exit
 		$preloader.afterExit(() => {
-			if (!$device.type.mobile) $webgl.$raycast.enable()
+			if (!$device.type.mobile) $webgl.$raycast.realEnabled.set(true);
 		})
 	},
 });

@@ -338,7 +338,7 @@ export class TheatreSheet {
 		this._hasBeenCanceled = false;
 		const done = this.sequence.play({
 			// /// #if __DEBUG__
-			// /// #code rate: 20,
+			// /// #code rate: 30,
 			// /// #endif
 			...args
 		});

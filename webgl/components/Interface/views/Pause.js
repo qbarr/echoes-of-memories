@@ -7,10 +7,6 @@ import { BaseUiView } from '#webgl/core/BaseUiView.js';
 export class Pause extends BaseUiView {
 	init() {
 		const { $viewport, $subtitles } = this.webgl;
-		const { x: vw, y: vh } = $viewport.size.value;
-
-		this.vw = vw * .75
-		this.vh = vh * .75
 
 		this.createTitle();
 		this.createButton();
@@ -21,53 +17,57 @@ export class Pause extends BaseUiView {
 	}
 
 	createTitle() {
+		const { x: vw } = this.webgl.$viewport.size.value;
+
 		this.title = this.add(UiText, {
 			text: {
 				name: 'UiPauseTitle',
 				content: '-----PAUSE-----',
 				color: new Color(0xffd700).offsetHSL(0, 0.3, 0.1),
+				align: 'center',
 			},
-			justifyContent: 'left',
-			width: this.vw
+			componentWidth: vw * .3
 		});
-		this.title.base.position.add(new Vector3(-7, 6, 0));
+		this.translate(this.title, { x: 0, y: 16 });
 	}
 
 	createButton() {
-		const { left } = this.camera.base;
-		const padding = 8;
+		const { x: vw } = this.webgl.$viewport.size.value;
 
 		this.backButton = this.add(UiButton, {
 			text: {
 				name: 'UiBackButton',
 				content: 'REPRENDRE',
+				align: 'center',
 			},
-			justifyContent: 'left',
-			width: this.vw,
+			justifyContent: 'center',
+			componentWidth: vw * .3,
 			callback: this.goToGame,
 		});
 		this.settingsButton = this.add(UiButton, {
 			text: {
 				name: 'UiSettingsButton',
 				content: 'PARAMETRES',
+				align: 'center',
 			},
-			justifyContent: 'left',
-			width: this.vw,
+			justifyContent: 'center',
+			componentWidth: this.vw,
 			callback: this.goToSettings,
 		});
 		this.creditsButton = this.add(UiButton, {
 			text: {
 				name: 'UiCreditsButton',
 				content: 'CREDITS',
+				align: 'center',
 			},
-			justifyContent: 'left',
-			width: this.vw,
+			justifyContent: 'center',
+			componentWidth: this.vw,
 			callback: this.goToCredits,
 		});
 
-		this.translate(this.backButton, { x: -7, y: 0 });
-		this.translate(this.settingsButton, { x: -7, y: -5 });
-		this.translate(this.creditsButton, { x: -7, y: -10 });
+		this.translate(this.backButton, { x: 0, y: 0 });
+		this.translate(this.settingsButton, { x: 0, y: -5.5 });
+		this.translate(this.creditsButton, { x: 0, y: -11 });
 	}
 
 	afterInit() {
@@ -81,9 +81,16 @@ export class Pause extends BaseUiView {
 
 	onKeyDown(event) {
 		const { id: currentState } = this.scene.$statesMachine.currentState;
+		const { $povCamera } = this.webgl;
+
+		const _states = $povCamera.controls.states
+		const _is = $povCamera.controls.state.is;
+		if (_is(_states.GENERIQUE) || _is(_states.CINEMATIC)) return;
+		if (currentState !== 'hud' && currentState !== 'pause') return;
+
 		if (event.code === 'KeyP') {
 			if (currentState === 'hud') this.scene.$setState('pause');
-			else this.scene.$setState('pp');
+			else this.goToGame()
 		}
 	}
 

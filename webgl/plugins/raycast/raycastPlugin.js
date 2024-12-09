@@ -58,6 +58,7 @@ export function raycastPlugin(webgl) {
 			return raycaster;
 		},
 
+		realEnabled: enabled,
 		enable: () => needsUpdate.set(true),
 		disable: () => needsUpdate.set(false),
 

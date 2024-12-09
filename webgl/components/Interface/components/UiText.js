@@ -40,6 +40,9 @@ export class UiText extends BaseComponent {
 		super(props);
 
 		this.base = new Object3D();
+
+		this.width = 0;
+		this.height = 0;
 	}
 
 	init() {
@@ -50,6 +53,7 @@ export class UiText extends BaseComponent {
 		this.base.scale.setScalar(this.props.text.scale);
 
 		this.width = this.text.geo._layout.width;
+		this.height = this.text.geo._layout.height;
 	}
 
 	afterInit() {

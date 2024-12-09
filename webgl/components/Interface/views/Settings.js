@@ -1,4 +1,4 @@
-import { Color, Mesh, MeshBasicMaterial, PlaneGeometry, Vector3 } from 'three';
+import { Color, Mesh, MeshBasicMaterial, PlaneGeometry, Vector2, Vector3 } from 'three';
 
 import { clamp } from '#utils/maths/map.js';
 import { BaseUiView } from '#webgl/core/BaseUiView.js';
@@ -6,15 +6,10 @@ import { UiButton, UiText } from '../components';
 
 const levelsCount = 8;
 const vols = new Array(levelsCount).fill(1).map((_, i) => i / (levelsCount - 1));
+const GLOBAL_OFFSET = new Vector2(5, 0);
 
 export class Settings extends BaseUiView {
 	init() {
-		const { $viewport, $subtitles } = this.webgl;
-		const { x: vw, y: vh } = $viewport.size.value;
-
-		this.vw = vw;
-		this.vh = vh;
-
 		this.index = 0;
 
 		this.onAudioSettingDown = this.onAudioSettingDown.bind(this);
@@ -28,15 +23,19 @@ export class Settings extends BaseUiView {
 	}
 
 	createTitle() {
+		const { x: vw } = this.webgl.$viewport.size.value;
+
 		this.title = this.add(UiText, {
 			text: {
 				name: 'UiSettingsTitle',
 				content: '-----PARAMETRES-----',
 				color: new Color(0xffd700).offsetHSL(0, 0.3, 0.1),
+				align: 'center',
 			},
-			justifyContent: 'left',
+			componentWidth: vw * .3
 		});
-		this.title.base.position.add(new Vector3(-7, 6, 0));
+
+		this.translate(this.title, { x: 0, y: 16 });
 	}
 
 	createSettings() {
@@ -55,20 +54,24 @@ export class Settings extends BaseUiView {
 
 		this.audioController.text = this.add(UiText, {
 			text: {
+				scale: .75,
 				name: 'UiTextAudioController',
-				content: 'AUDIO......',
+				content: 'AUDIO...',
+				width: 700,
+				centerMesh: { x: false, y: false },
+				align: 'left',
 			},
-			justifyContent: 'left',
 		});
-		this.audioController.text.base.position.add(new Vector3(0, 0, 0));
 
 		this.audioController.levels.forEach((level, i) => {
 			if (i === levelsCount - 1) return;
 
 			const mat = new MeshBasicMaterial({ color: 0xffffff });
-			const geo = new PlaneGeometry(2, 4);
+			const geo = new PlaneGeometry(2, 4 * .75);
 			const mesh = new Mesh(geo, mat);
-			mesh.position.set(-2.5 + i * 2.5, 1.5, 0);
+			mesh.position.set(-2.5 + i * 2.5, 1.5 * .75, 0);
+			mesh.position.x -= 6;
+			mesh.position.x += GLOBAL_OFFSET.x
 			mesh.scale.setScalar(level.s);
 			this.base.add(mesh);
 			level.m = mesh;
@@ -76,24 +79,28 @@ export class Settings extends BaseUiView {
 
 		this.audioController.downButton = this.add(UiButton, {
 			text: {
+				scale: .75,
 				name: 'UiButtonAudioControllerDown',
 				content: '-',
 			},
 			forceHover: true,
+			blurOnClick: false,
 			callback: this.onAudioSettingDown,
 		});
 		this.audioController.upButton = this.add(UiButton, {
 			text: {
+				scale: .75,
 				name: 'UiButtonAudioControllerUp',
 				content: '+',
 			},
 			forceHover: true,
+			blurOnClick: false,
 			callback: this.onAudioSettingUp,
 		});
 
-		this.translate(this.audioController.text, { x: -7.5 });
-		this.translate(this.audioController.downButton, { x: -6 });
-		this.translate(this.audioController.upButton, { x: levelsCount * 2.15 - 1 });
+		this.translate(this.audioController.text, { x: -29 + GLOBAL_OFFSET.x });
+		this.translate(this.audioController.downButton, { x: -12 + GLOBAL_OFFSET.x });
+		this.translate(this.audioController.upButton, { x: levelsCount * 2.15 - 7 + GLOBAL_OFFSET.x });
 
 		this.index = this.findClosestIndexByVolume();
 		this.updateVolume();
@@ -107,34 +114,44 @@ export class Settings extends BaseUiView {
 
 		this.subtitlesController.text = this.add(UiText, {
 			text: {
+				scale: .75,
 				name: 'UiTextSubtitlesController',
-				content: 'SOUS-TITRES........',
+				content: 'SOUS-TITRES...',
+				width: 700,
+				centerMesh: { x: false, y: false },
+				align: 'left',
 			},
-			justifyContent: 'left',
 		});
 		this.subtitlesController.button = this.add(UiButton, {
 			text: {
+				scale: .75,
 				name: 'UiButtonSubtitlesController',
 				content: 'ON',
 			},
 			callback: this.onSubSettingClick,
+			blurOnClick: false,
 		});
 
-		this.translate(this.subtitlesController.text, { x: -6.6, y: -5 });
-		this.translate(this.subtitlesController.button, { x: 15, y: -5 });
+		this.translate(this.subtitlesController.text, { x: -29 + GLOBAL_OFFSET.x, y: -5 });
+		this.translate(this.subtitlesController.button, { x: 0 + GLOBAL_OFFSET.x, y: -5 });
 	}
 
 	createBackButton() {
+		const { x: vw } = this.webgl.$viewport.size.value;
+
 		this.backButton = this.add(UiButton, {
 			text: {
+				scale: .75,
 				name: 'UiBackButton',
 				content: 'RETOUR',
 			},
-			justifyContent: 'left',
+			justifyContent: 'right',
+			componentWidth: vw * .75 / 2,
 			callback: this.goToPause,
 		});
 
-		this.translate(this.backButton, { x: -8, y: -10 });
+		this.translate(this.backButton, { x: 0, y: -22 });
+
 	}
 
 	onAudioSettingDown() {

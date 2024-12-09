@@ -23,6 +23,7 @@ const defaultOptions = {
 	componentWidth: 600,
 	forceHover: false,
 	justifyContent: 'center',
+	blurOnClick: true,
 };
 
 const NOOP = () => {};
@@ -51,6 +52,7 @@ export class UiButton extends BaseComponent {
 		this.onClick = this.onClick.bind(this);
 		this.onEnter = this.onEnter.bind(this);
 		this.onLeave = this.onLeave.bind(this);
+
 	}
 
 	init() {
@@ -70,13 +72,15 @@ export class UiButton extends BaseComponent {
 		});
 
 		this.backgroundWidth = map(this.UiText.width, 0, vw, 0, 160) + 2;
+		console.log(this.UiText);
+
 		// this.backgroundWidth = map(this.props.componentWidth, 0, vw, 0, 160);
 	}
 
 	setupBackground() {
 		const height = this.props.text.scale;
 
-		this.backgroundGeo = new PlaneGeometry(this.backgroundWidth * height, 4 * height, 16, 16);
+		this.backgroundGeo = new PlaneGeometry(this.backgroundWidth * height, 5 * height, 16, 16);
 		this.backgroundMat = new MeshBasicMaterial({
 			color: this.backgroundColor,
 			transparent: true,
@@ -94,12 +98,15 @@ export class UiButton extends BaseComponent {
 		const tx = (this.props.componentWidth - this.UiText.width) / 2;
 		const mappedAlignLeft = map(tx, 0, vw, 0, 160);
 
+		const height = this.props.text.scale;
+
+
 		switch (this.props.justifyContent) {
 			case 'left':
-				this.background.position.set(-mappedAlignLeft, 1.5, -1);
+				this.background.position.set(-mappedAlignLeft, 1.5 * height, -1);
 				break;
 			case 'right':
-				this.background.position.set(mappedAlignLeft, 1.5, -1);
+				this.background.position.set(mappedAlignLeft, 1.5 * height, -1);
 				break;
 		}
 	}
@@ -114,18 +121,19 @@ export class UiButton extends BaseComponent {
 
 		if (!this.props.forceHover) this.onLeave();
 
-		this.webgl.$renderer.drawingBufferSize.watch(this.resize.bind(this));
+		// this.webgl.$renderer.drawingBufferSize.watch(this.resize.bind(this));
 	}
 
-	resize() {
-		this.setupText();
-		this.justifyContent();
-	}
+	// resize() {
+	// 	this.setupText();
+	// 	this.justifyContent();
+	// }
 
 	onClick(e) {
 		if (!this?.parent?.base.visible) return;
 
 		this.props.callback?.call(this, e);
+		if (this.props.blurOnClick) this.hoverOut();
 	}
 
 	onEnter() {
@@ -142,6 +150,10 @@ export class UiButton extends BaseComponent {
 		this.hoverOut();
 	}
 
+	blur() {
+		this.hoverOut(true);
+	}
+
 	hoverIn() {
 		const { $audio } = this.webgl;
 		$audio.play('common/select', { volume: 3 });
@@ -151,19 +163,19 @@ export class UiButton extends BaseComponent {
 		// document.body.style.cursor = 'pointer';
 	}
 
-	hoverOut() {
+	hoverOut(force = false) {
+		if (this.forceHover && !force) return;
+
 		this.background.visible = false;
 		this.UiText.text.editColor(this.color.clone());
 		// document.body.style.cursor = 'auto';
 	}
 
 	show() {
-		// console.log('[UI BUTTON] SHOW', this.raycastObject);
 		this.raycastObject.enable();
 	}
 
 	hide() {
-		// console.log('[UI BUTTON] HIDE', this.raycastObject);
 		this.raycastObject.disable();
 		this.onLeave();
 		document.body.style.cursor = 'auto';

@@ -1,9 +1,8 @@
 import { ShaderMaterial, Vector2 } from 'three';
-import { BaseInteractiveObject } from '../../base/BaseInteractiveObject';
 
+import BaseComponent from '#webgl/core/BaseComponent.js';
 import fs from './ScreenFs.frag?hotshader';
 import vs from './ScreenVs.vert?hotshader';
-import BaseComponent from '#webgl/core/BaseComponent.js';
 
 export class Screen extends BaseComponent {
 	init() {
@@ -14,8 +13,8 @@ export class Screen extends BaseComponent {
 		this.mesh.material = new ShaderMaterial({
 			uniforms: {
 				...uniforms,
-				uInterferences: { value: new Vector2(2, 0.2) },
-				tMap: { value: this.getInstructionsScreen() },
+				uScreenInterferences: { value: new Vector2(1, 0.002) },
+				tMap: { value: this.getMap('instructions_map') },
 			},
 		});
 
@@ -27,40 +26,21 @@ export class Screen extends BaseComponent {
 		this.base = this.mesh;
 
 		this.isSimpleObject = true;
-		// this.audioId = 'common/footstep';
 	}
 
-	getSplashScreen() {
-		return this.webgl.$assets.textures['tv-room']['splash_screen_map'];
-	}
-
-	getInstructionsScreen() {
-		return this.webgl.$assets.textures['tv-room']['instructions_map'];
-	}
-
-	getEndingScreen() {
-		return this.webgl.$assets.textures['tv-room']['gobelins_screen_map'];
+	getMap(id) {
+		return this.webgl.$assets.textures['tv-room'][id];
 	}
 
 	setSplashScreen() {
-		this.uniforms.tMap.value = this.getSplashScreen();
+		this.uniforms.tMap.value = this.getMap('splash_screen_map');
 	}
 
 	setInstructionsScreen() {
-		this.uniforms.tMap.value = this.getInstructionsScreen();
+		this.uniforms.tMap.value = this.getMap('instructions_map');
 	}
 
 	setEndingScreen() {
-		this.uniforms.tMap.value = this.getEndingScreen();
+		this.uniforms.tMap.value = this.getMap('gobelins_screen_map');
 	}
-
-	// createSheets() {
-	// 	this.$sheet = this.$project.getSheet('read-instructions');
-	// 	// this.$sheet.attachAudio(this.audioId);
-	// 	this.$sheet.$addCamera();
-	// }
-
-	// reset() {
-	// 	super.reset();
-	// }
 }

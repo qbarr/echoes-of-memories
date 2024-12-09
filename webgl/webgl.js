@@ -105,7 +105,7 @@ export default createWebgl({
 	async start() {
 		const { $renderer, $raycast } = webgl;
 
-		$raycast.disable(); // Disable raycast until preloader is done
+		$raycast.realEnabled.set(false); // Disable raycast until preloader is done
 
 		$renderer.resize();
 		createSheets(webgl);

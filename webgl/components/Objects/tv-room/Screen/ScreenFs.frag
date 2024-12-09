@@ -9,13 +9,13 @@ uniform sampler2D tMap;
 
 // uniform vec2 uPadding;
 // uniform vec2 uFishEye;
-uniform vec2 uInterferences;
+uniform vec2 uScreenInterferences;
 // uniform vec2 uVignette;
 // uniform vec2 uScanLines;
 
 const vec2 uPadding = vec2(0.2, 0.);
 const vec2 uFishEye = vec2(0.1, 0.24);
-// const vec2 uInterferences = vec2(2., 0.2);
+// const vec2 uScreenInterferences = vec2(2., 0.2);
 const vec2 uVignette = vec2(130, 0.8);
 const vec2 uScanLines = vec2(0.25, 0.23);
 
@@ -57,8 +57,8 @@ void main() {
 	if (r > 0.995)
 		r *= 3.0;
 
-	float ifx1 = uInterferences.x * 2.0 / res.x * r;
-	float ifx2 = uInterferences.y * (r * peak(uv.y, 2.5 - mod(uTime * .0005, 4.), .05));
+	float ifx1 = uScreenInterferences.x * 2.0 / res.x * r;
+	float ifx2 = uScreenInterferences.y * (r * peak(uv.y, 2.5 - mod(uTime * .0005, 4.), .05));
 	uv.x += ifx1 + -ifx2;
 
 	vec3 texel = texture2D(tMap, uv).xyz;

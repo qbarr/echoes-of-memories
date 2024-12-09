@@ -87,7 +87,7 @@ export default function Preloader(app, base) {
     NODES.progress.style.transition = 'opacity 600ms cubic-bezier(0.55, 0, 0.1, 1)'
     NODES.rec.style.transition = 'opacity 600ms cubic-bezier(0.55, 0, 0.1, 1)'
 
-    await wait(2000)
+    await wait(1000)
 
     wait(100).then(() => { NODES.loading.style.opacity = 0 })
     wait(300).then(() => { NODES.title.style.opacity = 0 })
@@ -96,8 +96,6 @@ export default function Preloader(app, base) {
     for (let i = 0; i < progressBars.length; i++) {
       wait(45 * i).then(() => { progressBars[i].classList.remove('is-loaded') })
     }
-
-    await wait(750)
 
     // Calling done tell the app when the page can be visible
     // It is NOT when the preloader is destroyed !
