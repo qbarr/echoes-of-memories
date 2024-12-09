@@ -21,6 +21,11 @@ async function enter({ machine }) {
 	$app.$store.GAME_OVER = true;
 
 	bgm.stop({ fade: 3000 });
+
+	setTimeout(() => {
+		$app.$store.showHint = true;
+		$app.$store.hintContent = 'C\'est fini';
+	}, 3000);
 }
 function update() {}
 async function leave({ machine }) {}
