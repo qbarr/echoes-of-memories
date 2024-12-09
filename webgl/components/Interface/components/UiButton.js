@@ -72,7 +72,6 @@ export class UiButton extends BaseComponent {
 		});
 
 		this.backgroundWidth = map(this.UiText.width, 0, vw, 0, 160) + 2;
-		console.log(this.UiText);
 
 		// this.backgroundWidth = map(this.props.componentWidth, 0, vw, 0, 160);
 	}

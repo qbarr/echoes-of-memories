@@ -8,9 +8,12 @@ export default () => {
 		isPaused: false,
 		pointerLocked: false,
 		hasInteractedOnce: false,
-		isReadingInstructions: false,
 		GAME_OVER: false,
 		hasSeenNecklaceFlashback: false,
+
+		// Hint
+		showHint: false,
+		hintContent: 'Hint content',
 
 		subtitles: {
 			colors: {

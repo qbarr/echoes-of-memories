@@ -20,6 +20,9 @@ createApp({
 		// Enable raycasting after preloader exit
 		$preloader.afterExit(() => {
 			if (!$device.type.mobile) $webgl.$raycast.realEnabled.set(true);
+
+			$store.hintContent = 'Cliquer pour commencer'
+			$store.showHint = true;
 		})
 	},
 });

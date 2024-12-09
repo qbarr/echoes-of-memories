@@ -31,6 +31,7 @@ export class TV extends BaseInteractiveObject {
 
 		const { lecteur } = this.scene.interactiveObjects;
 		const { $povCamera, $raycast } = this.webgl;
+		const { $store } = this.webgl.$app;
 
 		lecteur.disableInteraction();
 		$povCamera.$setState('cinematic');
@@ -48,7 +49,8 @@ export class TV extends BaseInteractiveObject {
 			this.dp = deferredPromise();
 			window.addEventListener('keydown', this.onKeyDown);
 
-			this.webgl.$app.$store.isReadingInstructions = true;
+			$store.showHint = true;
+			$store.hintContent = 'Appuyez sur ESPACE pour quitter'
 
 			await this.dp;
 		} else {
@@ -56,7 +58,7 @@ export class TV extends BaseInteractiveObject {
 			this.hasReadInstructions = true;
 		}
 
-		this.webgl.$app.$store.isReadingInstructions = false;
+		$store.showHint = false;
 
 		this.enableInteraction();
 		lecteur.enableInteraction();

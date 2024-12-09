@@ -144,6 +144,8 @@ export default class BedroomScene extends BaseScene {
 		this._hasStarted = true;
 
 		const { $povCamera, $app, $scenes } = this.webgl;
+		const { $store } = $app;
+
 		$povCamera.onSceneSwitch(this);
 
 		const uiScene = $scenes.ui.component;
@@ -170,6 +172,13 @@ export default class BedroomScene extends BaseScene {
 		await this.$sheet.play();
 
 		$povCamera.$setState('free');
+
+		$store.showHint = true;
+		$store.hintContent = 'Explore la chambre à la cherche de souvenirs';
+
+		setTimeout(() => {
+			$store.showHint = false;
+		}, 5000);
 	}
 
 	setCameraToSpawn() {
