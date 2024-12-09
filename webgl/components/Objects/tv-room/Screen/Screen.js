@@ -13,7 +13,7 @@ export class Screen extends BaseComponent {
 		this.mesh.material = new ShaderMaterial({
 			uniforms: {
 				...uniforms,
-				uScreenInterferences: { value: new Vector2(1, 0.002) },
+				uScreenInterferences: { value: new Vector2(2, .2) },
 				tMap: { value: this.getMap('instructions_map') },
 			},
 		});
@@ -42,5 +42,10 @@ export class Screen extends BaseComponent {
 
 	setEndingScreen() {
 		this.uniforms.tMap.value = this.getMap('gobelins_screen_map');
+	}
+
+	reset() {
+		this.setInstructionsScreen();
+		this.mesh.material.uniforms.uScreenInterferences.value.set(2, .2);
 	}
 }

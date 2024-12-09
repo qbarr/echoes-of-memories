@@ -15,6 +15,10 @@ export default () => {
 		showHint: false,
 		hintContent: 'Hint content',
 
+		// Instruction
+		showInstruction: false,
+		instructionContent: 'Instruction content',
+
 		subtitles: {
 			colors: {
 				white: new Color(0xffffff),

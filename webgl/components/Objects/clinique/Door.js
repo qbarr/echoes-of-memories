@@ -48,6 +48,8 @@ export class Door extends BaseInteractiveObject {
 		super.onClick();
 		this.disableInteraction();
 
+		$store.showHint = false
+
 		const { $povCamera: camera, $scenes } = this.webgl;
 		camera.$setState('cinematic');
 

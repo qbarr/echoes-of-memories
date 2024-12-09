@@ -124,6 +124,6 @@ export default class TVRoomScene extends BaseScene {
 	}
 
 	reset() {
-		this.screen.setInstructionsScreen();
+		this.screen.reset()
 	}
 }

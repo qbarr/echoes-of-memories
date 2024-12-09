@@ -49,8 +49,8 @@ export class TV extends BaseInteractiveObject {
 			this.dp = deferredPromise();
 			window.addEventListener('keydown', this.onKeyDown);
 
-			$store.showHint = true;
-			$store.hintContent = 'Appuyez sur ESPACE pour quitter'
+			$store.showInstruction = true;
+			$store.instructionContent = 'Appuyer sur ESPACE pour quitter'
 
 			await this.dp;
 		} else {
@@ -58,7 +58,7 @@ export class TV extends BaseInteractiveObject {
 			this.hasReadInstructions = true;
 		}
 
-		$store.showHint = false;
+		$store.showInstruction = false;
 
 		this.enableInteraction();
 		lecteur.enableInteraction();
@@ -71,6 +71,7 @@ export class TV extends BaseInteractiveObject {
 	awaitPlayOut(ev) {
 		if (ev.code === 'Space') {
 			this.$sheetOut.play().then(this.dp.resolve);
+			$store.showInstruction = false;
 			window.removeEventListener('keydown', this.onKeyDown);
 		}
 	}

@@ -31,6 +31,9 @@ export class Cassette extends BaseInteractiveObject {
 		camera.$setState('free');
 		porte.enableInteraction();
 		contrat.enableInteraction();
+
+		$store.hintContent = 'Trouver la salle de visionnage';
+		$store.showHint = true;
 	}
 
 	async createSheets() {

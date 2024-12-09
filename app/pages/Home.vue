@@ -3,15 +3,16 @@
     <!-- <button class="btn btn-primary" @click="onCLick">START</button> -->
     <Letter />
     <Hint />
+    <Instruction />
   </section>
 </template>
 
 <script setup>
 import { app } from "#app/core";
-import { shallowRef } from "vue";
 
-import Letter from "#app/components/Letter.vue";
 import Hint from "#app/components/Hint.vue";
+import Instruction from "#app/components/Instruction.vue";
+import Letter from "#app/components/Letter.vue";
 
 function onCLick(e) {
   e.preventDefault();

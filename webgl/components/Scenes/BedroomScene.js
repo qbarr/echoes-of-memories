@@ -174,11 +174,11 @@ export default class BedroomScene extends BaseScene {
 		$povCamera.$setState('free');
 
 		$store.showHint = true;
-		$store.hintContent = 'Explore la chambre à la cherche de souvenirs';
+		$store.hintContent = 'Explorer la chambre à la cherche de souvenirs';
 
 		setTimeout(() => {
 			$store.showHint = false;
-		}, 5000);
+		}, 6000);
 	}
 
 	setCameraToSpawn() {
